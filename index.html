@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>香港中文大學醫院急症醫學中心輪候系統 CUHKMC Emergency Medicine Centre Queue Management System 1.3.4 Cloud</title>
+  <title>香港中文大學醫院急症醫學中心輪候系統 CUHKMC Emergency Medicine Centre Queue Management System 1.4.0 Cloud</title>
   <link rel="icon" href="data:," />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -321,6 +321,18 @@
       border: 1px solid #cbd5e1;
     }
 
+    .pill-manual {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
+    }
+
+    .pill-auto-assign {
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #86efac;
+    }
+
     .transfer-room-select, .insert-pos-input {
       min-width: 120px;
       max-width: 220px;
@@ -374,7 +386,7 @@
 
     .toast {
       min-width: 240px;
-      max-width: 360px;
+      max-width: 420px;
       padding: 12px 14px;
       border-radius: 14px;
       color: #fff;
@@ -615,212 +627,34 @@
       transform: translateY(1px);
     }
 
-    /* ===== Display board: hospital screen mode ===== */
-
-    body.display-mode {
-      background: #0b1220;
-      overflow: hidden;
-    }
-
-    body.display-mode .topbar {
-      display: none !important;
-    }
-
-    body.display-mode .app {
-      width: 100%;
-      max-width: none;
-      padding: 10px 14px;
-      margin: 0;
-    }
-
-    body.display-mode #staffPage,
-    body.display-mode #patientPage {
-      display: none !important;
-    }
-
-    body.display-mode #displayPage.page {
-      display: block !important;
-    }
-
-    body.display-mode .board-toolbar {
-      margin-bottom: 10px;
-      padding: 0 2px;
-    }
-
-    body.display-mode .board-title {
-      font-size: 2rem;
-      font-weight: 900;
-      color: #f8fafc;
-      letter-spacing: 0.01em;
-    }
-
-    body.display-mode .board-time {
-      font-size: 1.15rem;
-      color: #cbd5e1;
-      font-weight: 800;
-    }
-
-    body.display-mode .board-disclaimer {
-      margin-bottom: 10px;
-    }
-
-    body.display-mode .info-card.board-disclaimer {
-      border: 1px solid #1e3a8a;
-      background: #0f172a;
-      color: #e2e8f0;
-      border-radius: 16px;
-      padding: 10px 14px;
-    }
-
-    body.display-mode .inline-note {
-      font-size: 0.95rem;
-      color: #e2e8f0;
-      font-weight: 700;
-      line-height: 1.45;
-    }
-
-    body.display-mode #displayPage {
-      min-height: calc(100vh - 20px);
-    }
-
-    body.display-mode #displayBoard {
-      height: calc(100vh - 150px);
-    }
-
-    body.display-mode .board-wrap {
-      height: 100%;
-      border-radius: 22px;
-      border: 2px solid #1d4ed8;
-      background: #ffffff;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
-    }
-
-    body.display-mode .board-head {
-      grid-template-columns: 0.7fr 1.15fr 1.45fr 2.85fr 1.3fr;
-      background: linear-gradient(90deg, #0f2f7a 0%, #1d4ed8 100%);
-    }
-
-    body.display-mode .board-head div {
-      padding: 18px 10px 16px;
-      border-right: 1px solid rgba(255,255,255,0.22);
-    }
-
-    body.display-mode .board-head-zh {
-      font-size: 1.6rem;
-      margin-bottom: 3px;
-    }
-
-    body.display-mode .board-head-en {
-      font-size: 1rem;
-    }
-
-    body.display-mode .board-body {
-      height: calc(100% - 78px);
-    }
-
-    body.display-mode .board-row {
-      grid-template-columns: 0.7fr 1.15fr 1.45fr 2.85fr 1.3fr;
-      min-height: calc((100vh - 240px) / 6);
-    }
-
-    body.display-mode .board-cell {
-      padding: 14px 10px;
-      border-right: 1px solid #dbe7f5;
-    }
-
-    body.display-mode .board-room {
-      font-size: 3.1rem;
-      color: #0f3fb8;
-      letter-spacing: 0.02em;
-    }
-
-    body.display-mode .board-doctor {
-      gap: 6px;
-      padding-left: 8px;
-      padding-right: 8px;
-    }
-
-    body.display-mode .board-doctor-zh {
-      font-size: 1.42rem;
-      line-height: 1.22;
-    }
-
-    body.display-mode .board-doctor-en {
-      font-size: 1rem;
-      line-height: 1.2;
-    }
-
-    body.display-mode .board-current {
-      gap: 8px;
-    }
-
-    body.display-mode .board-current-priority-ticket,
-    body.display-mode .board-current-normal-ticket {
-      font-size: 2.35rem;
-      line-height: 1.05;
-    }
-
-    body.display-mode .board-meta {
-      font-size: 0.9rem;
-      line-height: 1.25;
-    }
-
-    body.display-mode .board-paused {
-      font-size: 2rem;
-      line-height: 1.18;
-    }
-
-    body.display-mode .board-queue,
-    body.display-mode .board-skip {
+    .toolbar-row {
+      display: flex;
+      flex-wrap: wrap;
       gap: 10px;
-      align-content: center;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
     }
 
-    body.display-mode .board-tag {
-      padding: 10px 16px;
-      font-size: 1.85rem;
-      min-width: 118px;
-      letter-spacing: 0.01em;
-    }
-
-    body.display-mode .board-empty {
-      font-size: 1.25rem;
-      color: #94a3b8;
+    .confirm-box {
+      border: 1px solid #fde68a;
+      background: #fffbeb;
+      color: #92400e;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      line-height: 1.6;
     }
 
     @media (max-width: 1350px) {
       .grid-5, .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
-
-      body.display-mode {
-        overflow: auto;
-      }
-
-      body.display-mode #displayBoard {
-        height: auto;
-      }
-
-      body.display-mode .board-head,
-      body.display-mode .board-row,
-      .board-head,
-      .board-row {
-        grid-template-columns: 1fr;
-      }
-
-      body.display-mode .board-head div,
-      body.display-mode .board-cell,
-      .board-head div,
-      .board-cell {
+      .board-head, .board-row { grid-template-columns: 1fr; }
+      .board-head div, .board-cell {
         border-right: none;
         border-bottom: 1px solid #eef2f7;
       }
-
-      body.display-mode .board-cell:last-child,
-      body.display-mode .board-head div:last-child,
-      .board-cell:last-child,
-      .board-head div:last-child {
-        border-bottom: none;
-      }
-
+      .board-cell:last-child, .board-head div:last-child { border-bottom: none; }
       .board-room { font-size: 2rem; }
       .board-doctor-zh { font-size: 1.28rem; }
       .board-doctor-en { font-size: 1.08rem; }
@@ -974,8 +808,20 @@
       </div>
 
       <div class="panel">
-        <div class="panel-title">各診室輪候情況</div>
-        <div id="roomsContainer" class="room-list"></div>
+        <div class="toolbar-row">
+          <div class="panel-title" style="margin-bottom:0;">各診室輪候情況</div>
+          <div class="actions">
+            <button class="btn-primary" id="rebalanceWaitingBtn" type="button">一鍵平均分流候診病人</button>
+          </div>
+        </div>
+
+        <div class="confirm-box">
+          只會重新平均分流以下病人：<br>
+          候診中 `waiting`、非預約、首次登記時非手動派房、未診症、未過號、未完成、未取消。<br>
+          不會影響：預約、診症中、過號、已完成、已取消，以及首次登記時手動選擇診室的病人。醫療優先會繼續保持優先。
+        </div>
+
+        <div id="roomsContainer" class="room-list" style="margin-top:14px;"></div>
       </div>
     </div>
 
@@ -1150,7 +996,7 @@
       el.className = "toast " + type;
       el.textContent = message;
       wrap.appendChild(el);
-      setTimeout(() => el.remove(), 2600);
+      setTimeout(() => el.remove(), 2800);
     }
 
     function sortedRooms() {
@@ -1504,6 +1350,10 @@
       return String(select?.value || "").trim();
     }
 
+    function isPatientLockedFromRebalance(patient) {
+      return patient.initialAssignmentMode === "manual";
+    }
+
     async function loadStateFromSupabase(showErrorToast = true) {
       try {
         const { data: roomsData, error: roomsError } = await sb
@@ -1543,11 +1393,12 @@
           registeredAt: patient.registered_at || hktNowIso(),
           status: patient.status || "waiting",
           createdAt: patient.created_at || hktNowIso(),
-          queueOrder: Number.isFinite(patient.queueOrder) ? patient.queueOrder : (typeof patient.queue_order === "number" ? patient.queue_order : null),
+          queueOrder: Number.isFinite(patient.queue_order) ? patient.queue_order : (typeof patient.queue_order === "number" ? patient.queue_order : null),
           skippedAt: patient.skipped_at || null,
           calledAt: patient.called_at || null,
           doneAt: patient.done_at || null,
           cancelledAt: patient.cancelled_at || null,
+          initialAssignmentMode: patient.initial_assignment_mode || "auto",
           logs: Array.isArray(patient.logs_json) ? patient.logs_json : []
         }));
 
@@ -1608,6 +1459,7 @@
         called_at: patient.calledAt,
         done_at: patient.doneAt,
         cancelled_at: patient.cancelledAt,
+        initial_assignment_mode: patient.initialAssignmentMode || "auto",
         logs_json: Array.isArray(patient.logs) ? patient.logs : []
       };
 
@@ -1677,6 +1529,7 @@
                   <th>診室</th>
                   <th>狀態</th>
                   <th>類型</th>
+                  <th>首次派房</th>
                   <th>登記時間（HKT）</th>
                 </tr>
               </thead>
@@ -1689,6 +1542,7 @@
                       <td>${room ? `${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}` : "—"}</td>
                       <td>${escapeHtml(getStatusLabel(patient.status))}</td>
                       <td>${escapeHtml(getPatientTypeLabel(patient.sourceType))}</td>
+                      <td>${patient.initialAssignmentMode === "manual" ? "手動派房" : "自動派房"}</td>
                       <td>${escapeHtml(formatDateTime(patient.registeredAt))}</td>
                     </tr>
                   `;
@@ -1728,6 +1582,7 @@
             <div><strong>狀態：</strong>${escapeHtml(getStatusLabel(patient.status))}</div>
             <div><strong>病人類型：</strong>${escapeHtml(getPatientTypeLabel(patient.sourceType))}</div>
             <div><strong>醫療優先症：</strong>${patient.priority ? "是" : "否"}</div>
+            <div><strong>首次派房：</strong>${patient.initialAssignmentMode === "manual" ? "手動派房（不可自動分流）" : "自動派房"}</div>
             <div><strong>登記時間：</strong>${escapeHtml(formatDateTime(patient.registeredAt))}</div>
             <div><strong>系統建立時間：</strong>${escapeHtml(formatDateTime(patient.createdAt))}</div>
             <div><strong>首次叫號時間：</strong>${escapeHtml(formatDateTime(patient.calledAt))}</div>
@@ -1817,6 +1672,7 @@
                   <div class="${currentPatient.priority ? "board-current-priority-ticket" : "board-current-normal-ticket"}">
                     ${escapeHtml(currentPatient.ticketNo)}
                   </div>
+                  <div class="board-meta">${escapeHtml(formatBoardDateTime(currentPatient.registeredAt))}</div>
                 `
                 : `<div class="board-current-normal-ticket">—</div>`
             }
@@ -1889,6 +1745,9 @@
                   <span class="pill ${getPatientTypePill(patient.sourceType)}">${getPatientTypeLabel(patient.sourceType)}</span>
                   <span class="pill ${patient.priority ? "pill-priority" : "pill-normal"}">
                     ${patient.priority ? "醫療優先" : "一般"}
+                  </span>
+                  <span class="pill ${patient.initialAssignmentMode === "manual" ? "pill-manual" : "pill-auto-assign"}">
+                    ${patient.initialAssignmentMode === "manual" ? "手動派房" : "自動派房"}
                   </span>
                 </div>
               </td>
@@ -2206,13 +2065,14 @@
           calledAt: null,
           doneAt: null,
           cancelledAt: null,
+          initialAssignmentMode: assignMode === "manual" ? "manual" : "auto",
           logs: []
         };
 
         addPatientLog(
           patient,
           "首次登記",
-          `已登記到 ${room.roomNo} / ${room.doctorName}；類型：${getPatientTypeLabel(patientType)}；登記時間：${formatDateTime(registeredAt)}${useCustomRegisteredAt ? "（後備手動香港時間）" : "（系統即時香港時間）"}${priority ? "；醫療優先症" : ""}`
+          `已登記到 ${room.roomNo} / ${room.doctorName}；類型：${getPatientTypeLabel(patientType)}；首次派房：${patient.initialAssignmentMode === "manual" ? "手動派房" : "自動派房"}；登記時間：${formatDateTime(registeredAt)}${useCustomRegisteredAt ? "（後備手動香港時間）" : "（系統即時香港時間）"}${priority ? "；醫療優先症" : ""}`
         );
 
         state.patients.push(patient);
@@ -2235,8 +2095,10 @@
         document.getElementById("registeredAt").value = toHktDateTimeLocalValue(new Date());
         document.getElementById("insertMode").value = "auto";
         document.getElementById("insertPosition").value = "";
+        document.getElementById("assignMode").value = "smart";
         refreshInsertModeFields();
         refreshRegisteredAtField();
+        populateRoomSelect();
 
         await refreshFromCloudAndRender();
         notify(`已加入系統：${patient.ticketNo} → ${room.roomNo}`, "success");
@@ -2746,6 +2608,78 @@
       }
     }
 
+    async function rebalanceWaitingPatients() {
+      try {
+        await refreshFromCloudAndRender();
+
+        const eligibleRooms = sortedRooms().filter(room =>
+          room.status === "open" && room.acceptingNew
+        );
+
+        if (eligibleRooms.length < 2) {
+          notify("可分流的開放診室不足兩間", "warning");
+          return;
+        }
+
+        const movablePatients = state.patients
+          .filter(p => p.status === "waiting")
+          .filter(p => p.sourceType !== "appointment")
+          .filter(p => !isPatientLockedFromRebalance(p));
+
+        if (!movablePatients.length) {
+          notify("沒有可重新分流的候診病人", "warning");
+          return;
+        }
+
+        const confirmText =
+          `將重新平均分流 ${movablePatients.length} 位候診病人。\n\n` +
+          `只會處理：waiting、非 appointment、首次非手動派房。\n` +
+          `不會處理：預約、診症中、過號、已完成、已取消、首次手動派房病人。\n\n` +
+          `是否繼續？`;
+
+        if (!window.confirm(confirmText)) {
+          return;
+        }
+
+        movablePatients.sort(compareWaitingBase);
+
+        const movablePatientIdSet = new Set(movablePatients.map(p => p.id));
+
+        for (const room of eligibleRooms) {
+          room.queuePatientIds = room.queuePatientIds.filter(id => !movablePatientIdSet.has(id));
+        }
+
+        movablePatients.forEach((patient, index) => {
+          const targetRoom = eligibleRooms[index % eligibleRooms.length];
+          patient.roomId = targetRoom.id;
+          patient.status = "waiting";
+          patient.queueOrder = null;
+          targetRoom.queuePatientIds.push(patient.id);
+          addPatientLog(
+            patient,
+            "重新平均分流",
+            `已重新分派到 ${targetRoom.roomNo} / ${targetRoom.doctorName}`
+          );
+        });
+
+        for (const room of eligibleRooms) {
+          sortRoomQueue(room);
+          await saveRoomToSupabase(room);
+          await syncRoomQueuePatients(room);
+        }
+
+        for (const patient of movablePatients) {
+          await savePatientToSupabase(patient);
+        }
+
+        await refreshFromCloudAndRender();
+        notify(`已重新平均分流 ${movablePatients.length} 位候診病人`, "success");
+      } catch (error) {
+        console.error(error);
+        notify("平均分流失敗", "error");
+      }
+    }
+
     function searchPatient() {
       const ticket = document.getElementById("searchTicket").value.trim().toLowerCase();
       const roomNo = document.getElementById("searchRoom").value.trim().toLowerCase();
@@ -2786,62 +2720,14 @@
       renderPatientSearchResult(matchedPatients);
     }
 
-    async function enterBrowserFullscreen() {
-      const el = document.documentElement;
-      if (!document.fullscreenElement && el.requestFullscreen) {
-        try {
-          await el.requestFullscreen();
-        } catch (error) {
-          console.warn("Fullscreen request failed:", error);
-        }
-      }
-    }
-
-    async function exitBrowserFullscreen() {
-      if (document.fullscreenElement && document.exitFullscreen) {
-        try {
-          await document.exitFullscreen();
-        } catch (error) {
-          console.warn("Exit fullscreen failed:", error);
-        }
-      }
-    }
-
-    async function setDisplayMode(enabled) {
-      document.body.classList.toggle("display-mode", enabled);
-
-      const pages = document.querySelectorAll(".page");
-      const tabs = document.querySelectorAll(".tab-btn");
-
-      if (enabled) {
-        pages.forEach(page => page.classList.remove("active"));
-        tabs.forEach(btn => btn.classList.remove("active"));
-
-        const displayPage = document.getElementById("displayPage");
-        if (displayPage) displayPage.classList.add("active");
-
-        await enterBrowserFullscreen();
-      } else {
-        await exitBrowserFullscreen();
-      }
-
-      renderDisplayBoard();
-    }
-
     document.addEventListener("click", (event) => {
       const tabBtn = event.target.closest("[data-tab]");
       if (tabBtn) {
         const tabId = tabBtn.dataset.tab;
-
-        if (tabId === "displayPage") {
-          setDisplayMode(true);
-        } else {
-          setDisplayMode(false);
-          document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-          document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
-          tabBtn.classList.add("active");
-          document.getElementById(tabId).classList.add("active");
-        }
+        document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+        document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+        tabBtn.classList.add("active");
+        document.getElementById(tabId).classList.add("active");
         return;
       }
 
@@ -2880,6 +2766,7 @@
     document.getElementById("addRoomBtn").addEventListener("click", addRoom);
     document.getElementById("searchPatientBtn").addEventListener("click", searchPatient);
     document.getElementById("assignMode").addEventListener("change", toggleManualRoomSelect);
+    document.getElementById("rebalanceWaitingBtn").addEventListener("click", rebalanceWaitingPatients);
 
     document.getElementById("patientCumcNo").addEventListener("input", (event) => {
       event.target.value = event.target.value.toUpperCase();
@@ -2921,11 +2808,6 @@
       refreshInsertModeFields();
       refreshRegisteredAtField();
       await refreshFromCloudAndRender(true);
-
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("mode") === "display") {
-        await setDisplayMode(true);
-      }
 
       sb
         .channel("emc-cqms-live")
