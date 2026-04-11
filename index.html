@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>香港中文大學醫院急症醫學中心輪候系統 CUHKMC Emergency Medicine Centre Queue Management System 1.3.2 Cloud</title>
+  <link rel="icon" href="data:," />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -832,7 +833,7 @@
   <script>
     const SUPABASE_URL = "https://dvyberdrmmfgutjqnpjr.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const DOCTOR_SUGGESTIONS = [
       "林家強醫生 Dr. LAM Ka Keung",
@@ -1269,14 +1270,14 @@
 
     async function loadStateFromSupabase(showErrorToast = true) {
       try {
-        const { data: roomsData, error: roomsError } = await supabase
+        const { data: roomsData, error: roomsError } = await sb
           .from("rooms")
           .select("*")
           .order("room_no", { ascending: true });
 
         if (roomsError) throw roomsError;
 
-        const { data: patientsData, error: patientsError } = await supabase
+        const { data: patientsData, error: patientsError } = await sb
           .from("patients")
           .select("*")
           .order("created_at", { ascending: true });
@@ -1351,7 +1352,7 @@
         sort_order: room.sortOrder ?? 0
       };
 
-      const { error } = await supabase.from("rooms").upsert(payload);
+      const { error } = await sb.from("rooms").upsert(payload);
       if (error) throw error;
     }
 
@@ -1373,17 +1374,17 @@
         logs_json: Array.isArray(patient.logs) ? patient.logs : []
       };
 
-      const { error } = await supabase.from("patients").upsert(payload);
+      const { error } = await sb.from("patients").upsert(payload);
       if (error) throw error;
     }
 
     async function deleteRoomFromSupabase(roomId) {
-      const { error } = await supabase.from("rooms").delete().eq("id", roomId);
+      const { error } = await sb.from("rooms").delete().eq("id", roomId);
       if (error) throw error;
     }
 
     async function deletePatientFromSupabase(patientId) {
-      const { error } = await supabase.from("patients").delete().eq("id", patientId);
+      const { error } = await sb.from("patients").delete().eq("id", patientId);
       if (error) throw error;
     }
 
@@ -2634,7 +2635,7 @@
       refreshRegisteredAtField();
       await refreshFromCloudAndRender(true);
 
-      supabase
+      sb
         .channel("emc-cqms-live")
         .on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, async () => {
           await refreshFromCloudAndRender(false);
