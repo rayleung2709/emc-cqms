@@ -808,7 +808,7 @@
 
     <div class="page" id="displayPage">
       <div class="board-toolbar">
-        <div class="board-title">候診情況 Queue Status</div>
+        <div class="board-title">門診病人看板 Patient Queue Board</div>
         <div class="board-time" id="boardTime"></div>
       </div>
 
@@ -1826,7 +1826,24 @@
                 <button class="btn-danger btn-small" data-action="deleteRoom" data-room-id="${room.id}" type="button">刪除此房 / 醫生</button>
               </div>
 
-              
+              <div class="form-row" style="margin-bottom:14px;">
+                <label>暫停原因（可下拉選擇或自訂）</label>
+                <div class="actions">
+                  <select data-pause-reason-select="${room.id}" style="max-width:220px;">
+                    <option value="">自訂原因</option>
+                    ${PAUSE_REASON_OPTIONS.map(reason => `
+                      <option value="${escapeHtml(reason)}" ${room.pauseReason === reason ? "selected" : ""}>${escapeHtml(reason)}</option>
+                    `).join("")}
+                  </select>
+                  <input
+                    type="text"
+                    data-pause-reason="${room.id}"
+                    value="${PAUSE_REASON_OPTIONS.includes(room.pauseReason || "") ? "" : escapeHtml(room.pauseReason || "")}"
+                    placeholder="可自訂原因"
+                    style="max-width:260px;"
+                  />
+                </div>
+              </div>
 
               <div class="section-title">候診名單</div>
               <table>
