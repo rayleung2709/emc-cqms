@@ -615,14 +615,212 @@
       transform: translateY(1px);
     }
 
+    /* ===== Display board: hospital screen mode ===== */
+
+    body.display-mode {
+      background: #0b1220;
+      overflow: hidden;
+    }
+
+    body.display-mode .topbar {
+      display: none !important;
+    }
+
+    body.display-mode .app {
+      width: 100%;
+      max-width: none;
+      padding: 10px 14px;
+      margin: 0;
+    }
+
+    body.display-mode #staffPage,
+    body.display-mode #patientPage {
+      display: none !important;
+    }
+
+    body.display-mode #displayPage.page {
+      display: block !important;
+    }
+
+    body.display-mode .board-toolbar {
+      margin-bottom: 10px;
+      padding: 0 2px;
+    }
+
+    body.display-mode .board-title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #f8fafc;
+      letter-spacing: 0.01em;
+    }
+
+    body.display-mode .board-time {
+      font-size: 1.15rem;
+      color: #cbd5e1;
+      font-weight: 800;
+    }
+
+    body.display-mode .board-disclaimer {
+      margin-bottom: 10px;
+    }
+
+    body.display-mode .info-card.board-disclaimer {
+      border: 1px solid #1e3a8a;
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 16px;
+      padding: 10px 14px;
+    }
+
+    body.display-mode .inline-note {
+      font-size: 0.95rem;
+      color: #e2e8f0;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    body.display-mode #displayPage {
+      min-height: calc(100vh - 20px);
+    }
+
+    body.display-mode #displayBoard {
+      height: calc(100vh - 150px);
+    }
+
+    body.display-mode .board-wrap {
+      height: 100%;
+      border-radius: 22px;
+      border: 2px solid #1d4ed8;
+      background: #ffffff;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    body.display-mode .board-head {
+      grid-template-columns: 0.7fr 1.15fr 1.45fr 2.85fr 1.3fr;
+      background: linear-gradient(90deg, #0f2f7a 0%, #1d4ed8 100%);
+    }
+
+    body.display-mode .board-head div {
+      padding: 18px 10px 16px;
+      border-right: 1px solid rgba(255,255,255,0.22);
+    }
+
+    body.display-mode .board-head-zh {
+      font-size: 1.6rem;
+      margin-bottom: 3px;
+    }
+
+    body.display-mode .board-head-en {
+      font-size: 1rem;
+    }
+
+    body.display-mode .board-body {
+      height: calc(100% - 78px);
+    }
+
+    body.display-mode .board-row {
+      grid-template-columns: 0.7fr 1.15fr 1.45fr 2.85fr 1.3fr;
+      min-height: calc((100vh - 240px) / 6);
+    }
+
+    body.display-mode .board-cell {
+      padding: 14px 10px;
+      border-right: 1px solid #dbe7f5;
+    }
+
+    body.display-mode .board-room {
+      font-size: 3.1rem;
+      color: #0f3fb8;
+      letter-spacing: 0.02em;
+    }
+
+    body.display-mode .board-doctor {
+      gap: 6px;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    body.display-mode .board-doctor-zh {
+      font-size: 1.42rem;
+      line-height: 1.22;
+    }
+
+    body.display-mode .board-doctor-en {
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
+    body.display-mode .board-current {
+      gap: 8px;
+    }
+
+    body.display-mode .board-current-priority-ticket,
+    body.display-mode .board-current-normal-ticket {
+      font-size: 2.35rem;
+      line-height: 1.05;
+    }
+
+    body.display-mode .board-meta {
+      font-size: 0.9rem;
+      line-height: 1.25;
+    }
+
+    body.display-mode .board-paused {
+      font-size: 2rem;
+      line-height: 1.18;
+    }
+
+    body.display-mode .board-queue,
+    body.display-mode .board-skip {
+      gap: 10px;
+      align-content: center;
+    }
+
+    body.display-mode .board-tag {
+      padding: 10px 16px;
+      font-size: 1.85rem;
+      min-width: 118px;
+      letter-spacing: 0.01em;
+    }
+
+    body.display-mode .board-empty {
+      font-size: 1.25rem;
+      color: #94a3b8;
+    }
+
     @media (max-width: 1350px) {
       .grid-5, .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
-      .board-head, .board-row { grid-template-columns: 1fr; }
-      .board-head div, .board-cell {
+
+      body.display-mode {
+        overflow: auto;
+      }
+
+      body.display-mode #displayBoard {
+        height: auto;
+      }
+
+      body.display-mode .board-head,
+      body.display-mode .board-row,
+      .board-head,
+      .board-row {
+        grid-template-columns: 1fr;
+      }
+
+      body.display-mode .board-head div,
+      body.display-mode .board-cell,
+      .board-head div,
+      .board-cell {
         border-right: none;
         border-bottom: 1px solid #eef2f7;
       }
-      .board-cell:last-child, .board-head div:last-child { border-bottom: none; }
+
+      body.display-mode .board-cell:last-child,
+      body.display-mode .board-head div:last-child,
+      .board-cell:last-child,
+      .board-head div:last-child {
+        border-bottom: none;
+      }
+
       .board-room { font-size: 2rem; }
       .board-doctor-zh { font-size: 1.28rem; }
       .board-doctor-en { font-size: 1.08rem; }
@@ -891,10 +1089,6 @@
 
     function hktNowIso() {
       return new Date().toISOString();
-    }
-
-    function pad2(n) {
-      return String(n).padStart(2, "0");
     }
 
     function toHktDateTimeLocalValue(date = new Date()) {
@@ -1349,7 +1543,7 @@
           registeredAt: patient.registered_at || hktNowIso(),
           status: patient.status || "waiting",
           createdAt: patient.created_at || hktNowIso(),
-          queueOrder: Number.isFinite(patient.queue_order) ? patient.queue_order : (typeof patient.queue_order === "number" ? patient.queue_order : null),
+          queueOrder: Number.isFinite(patient.queueOrder) ? patient.queueOrder : (typeof patient.queue_order === "number" ? patient.queue_order : null),
           skippedAt: patient.skipped_at || null,
           calledAt: patient.called_at || null,
           doneAt: patient.done_at || null,
@@ -1623,7 +1817,6 @@
                   <div class="${currentPatient.priority ? "board-current-priority-ticket" : "board-current-normal-ticket"}">
                     ${escapeHtml(currentPatient.ticketNo)}
                   </div>
-                  <div class="board-meta">${escapeHtml(formatBoardDateTime(currentPatient.registeredAt))}</div>
                 `
                 : `<div class="board-current-normal-ticket">—</div>`
             }
@@ -2593,14 +2786,62 @@
       renderPatientSearchResult(matchedPatients);
     }
 
+    async function enterBrowserFullscreen() {
+      const el = document.documentElement;
+      if (!document.fullscreenElement && el.requestFullscreen) {
+        try {
+          await el.requestFullscreen();
+        } catch (error) {
+          console.warn("Fullscreen request failed:", error);
+        }
+      }
+    }
+
+    async function exitBrowserFullscreen() {
+      if (document.fullscreenElement && document.exitFullscreen) {
+        try {
+          await document.exitFullscreen();
+        } catch (error) {
+          console.warn("Exit fullscreen failed:", error);
+        }
+      }
+    }
+
+    async function setDisplayMode(enabled) {
+      document.body.classList.toggle("display-mode", enabled);
+
+      const pages = document.querySelectorAll(".page");
+      const tabs = document.querySelectorAll(".tab-btn");
+
+      if (enabled) {
+        pages.forEach(page => page.classList.remove("active"));
+        tabs.forEach(btn => btn.classList.remove("active"));
+
+        const displayPage = document.getElementById("displayPage");
+        if (displayPage) displayPage.classList.add("active");
+
+        await enterBrowserFullscreen();
+      } else {
+        await exitBrowserFullscreen();
+      }
+
+      renderDisplayBoard();
+    }
+
     document.addEventListener("click", (event) => {
       const tabBtn = event.target.closest("[data-tab]");
       if (tabBtn) {
         const tabId = tabBtn.dataset.tab;
-        document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-        document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
-        tabBtn.classList.add("active");
-        document.getElementById(tabId).classList.add("active");
+
+        if (tabId === "displayPage") {
+          setDisplayMode(true);
+        } else {
+          setDisplayMode(false);
+          document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+          document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+          tabBtn.classList.add("active");
+          document.getElementById(tabId).classList.add("active");
+        }
         return;
       }
 
@@ -2680,6 +2921,11 @@
       refreshInsertModeFields();
       refreshRegisteredAtField();
       await refreshFromCloudAndRender(true);
+
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("mode") === "display") {
+        await setDisplayMode(true);
+      }
 
       sb
         .channel("emc-cqms-live")
