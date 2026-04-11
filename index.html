@@ -2915,27 +2915,55 @@
       }
     });
 
-    setInterval(() => {
-      renderDisplayBoard();
-    }, 1000);
+    let liveRefreshTimer = null;
+let boardPollingTimer = null;
+let realtimeChannel = null;
 
-    async function initApp() {
-      document.getElementById("registeredAt").value = toHktDateTimeLocalValue(new Date());
-      refreshInsertModeFields();
-      refreshRegisteredAtField();
-      setDisplayModeByTab("staffPage");
-      await refreshFromCloudAndRender(true);
-
-      sb
-        .channel("emc-cqms-live")
-        .on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, async () => {
-          await refreshFromCloudAndRender(false);
-        })
-        .on("postgres_changes", { event: "*", schema: "public", table: "patients" }, async () => {
-          await refreshFromCloudAndRender(false);
-        })
-        .subscribe();
+async function setupRealtimeAndPolling() {
+  if (realtimeChannel) {
+    try {
+      await sb.removeChannel(realtimeChannel);
+    } catch (e) {
+      console.warn("removeChannel failed", e);
     }
+  }
+
+  realtimeChannel = sb
+    .channel("emc-cqms-live")
+    .on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, async (payload) => {
+      console.log("Realtime rooms change:", payload);
+      await refreshFromCloudAndRender(false);
+    })
+    .on("postgres_changes", { event: "*", schema: "public", table: "patients" }, async (payload) => {
+      console.log("Realtime patients change:", payload);
+      await refreshFromCloudAndRender(false);
+    })
+    .subscribe((status, err) => {
+      console.log("Realtime subscribe status:", status, err || "");
+      if (status === "CHANNEL_ERROR") {
+        notify("Realtime 連線異常，系統改用自動刷新", "warning");
+      }
+    });
+
+  if (liveRefreshTimer) clearInterval(liveRefreshTimer);
+  liveRefreshTimer = setInterval(async () => {
+    await refreshFromCloudAndRender(false);
+  }, 3000);
+
+  if (boardPollingTimer) clearInterval(boardPollingTimer);
+  boardPollingTimer = setInterval(() => {
+    renderDisplayBoard();
+  }, 1000);
+}
+
+async function initApp() {
+  document.getElementById("registeredAt").value = toHktDateTimeLocalValue(new Date());
+  refreshInsertModeFields();
+  refreshRegisteredAtField();
+  setDisplayModeByTab("staffPage");
+  await refreshFromCloudAndRender(true);
+  await setupRealtimeAndPolling();
+}
 
     initApp();
   </script>
