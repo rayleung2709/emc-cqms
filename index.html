@@ -1913,12 +1913,15 @@
 
         await refreshFromCloudAndRender();
 
-        const exists = state.patients.some(p => String(p.ticketNo).toLowerCase() === cumcNo.toLowerCase());
-        if (exists) {
-          notify("CUMC號碼已存在", "warning");
-          return;
-        }
+const activeExists = state.patients.some(p =>
+  String(p.cumcNo || "").toLowerCase() === cumcNo.toLowerCase() &&
+  ["waiting", "called", "skipped"].includes(p.status)
+);
 
+if (activeExists) {
+  notify("此病人目前已有未完成就診記錄", "warning");
+  return;
+}
         let room = null;
 
         if (assignMode === "manual") {
@@ -2625,10 +2628,6 @@
     setInterval(() => {
       renderDisplayBoard();
     }, 1000);
-
-    setInterval(async () => {
-      await refreshFromCloudAndRender(false);
-    }, 2000);
 
     async function initApp() {
       document.getElementById("registeredAt").value = toDateTimeLocalValue(new Date());
