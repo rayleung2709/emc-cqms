@@ -916,12 +916,6 @@
           </div>
         </div>
 
-        <div class="confirm-box">
-          只會重新平均分流以下病人：<br>
-          候診中 `waiting`、非預約、首次登記非手動派房、未曾人工轉房鎖定。<br>
-          不會影響：預約、診症中、過號、已完成、已取消、首次登記手動派房、以及曾人工轉房病人。醫療優先會繼續保持優先。
-        </div>
-
         <div id="roomsContainer" class="room-list" style="margin-top:14px;"></div>
       </div>
     </div>
@@ -2754,8 +2748,8 @@
 
         const confirmText =
           `將重新平均分流 ${movablePatients.length} 位候診病人。\n\n` +
-          `只會處理：waiting、非 appointment、首次非手動派房、未曾人工轉房鎖定。\n` +
-          `不會處理：預約、診症中、過號、已完成、已取消、首次手動派房病人、曾人工轉房病人。\n\n` +
+          `只會處理：等候中、非預約、非手動派房或轉房病人。\n` +
+          `不會處理：預約、診症中、過號、已完成、已取消、手動派房或轉房病人。\n\n` +
           `是否繼續？`;
 
         if (!window.confirm(confirmText)) {
