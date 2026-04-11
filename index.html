@@ -47,7 +47,7 @@
 
     body.display-mode {
       background: var(--board-bg);
-      overflow: hidden;
+      overflow: auto;
     }
 
     .app {
@@ -119,10 +119,12 @@
     }
 
     body.display-mode #displayPage {
-      display: block !important;
-      min-height: 100vh;
-      padding: 18px 20px 20px;
+      display: flex !important;
+      flex-direction: column;
+      height: 100vh;
+      padding: 12px 16px 14px;
       background: var(--board-bg);
+      overflow: hidden;
     }
 
     .panel {
@@ -456,50 +458,52 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 14px;
-      margin-bottom: 14px;
+      gap: 10px;
+      margin-bottom: 10px;
       flex-wrap: wrap;
       color: var(--board-text);
+      flex: 0 0 auto;
     }
 
     .board-title {
-      font-size: 2.1rem;
+      font-size: 1.7rem;
       font-weight: 900;
       color: var(--board-text);
       letter-spacing: 0.02em;
     }
 
     .board-time {
-      font-size: 1.25rem;
+      font-size: 1.05rem;
       color: var(--board-sub);
       font-weight: 900;
       letter-spacing: 0.03em;
     }
 
     .board-disclaimer {
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
 
     .info-card {
       border: 1px solid rgba(96,165,250,0.28);
       background: rgba(30,41,59,0.9);
-      border-radius: 16px;
-      padding: 14px 18px;
-      margin-top: 14px;
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-top: 10px;
     }
 
     body.display-mode .info-card {
       margin-top: 0;
-      margin-bottom: 16px;
+      margin-bottom: 10px;
       background: rgba(15,23,42,0.95);
       border-color: rgba(255,255,255,0.12);
+      flex: 0 0 auto;
     }
 
     .inline-note {
-      font-size: 1rem;
+      font-size: 0.88rem;
       color: #dbeafe;
       font-weight: 800;
-      line-height: 1.6;
+      line-height: 1.45;
     }
 
     .sub-option {
@@ -538,27 +542,39 @@
       line-height: 1.6;
     }
 
+    #displayBoard {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
     .board-wrap {
       background: var(--board-panel);
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 24px;
+      border-radius: 20px;
       box-shadow: 0 12px 30px rgba(0,0,0,0.28);
-      overflow: hidden;
       width: 100%;
-      min-height: calc(100vh - 140px);
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
     }
 
     .board-head {
       display: grid;
-      grid-template-columns: 0.55fr 1.1fr 1.25fr 3.2fr 1.6fr;
+      grid-template-columns: 0.55fr 1.05fr 1.15fr 2.8fr 1.45fr;
       background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%);
       color: #fff;
       font-weight: 900;
       padding: 0;
+      position: sticky;
+      top: 0;
+      z-index: 5;
     }
 
     .board-head div {
-      padding: 18px 10px 16px;
+      padding: 12px 8px 10px;
       border-right: 1px solid rgba(255,255,255,0.16);
       text-align: center;
     }
@@ -567,16 +583,16 @@
 
     .board-head-zh {
       display: block;
-      font-size: 1.55rem;
-      line-height: 1.08;
-      margin-bottom: 6px;
+      font-size: 1.18rem;
+      line-height: 1.05;
+      margin-bottom: 4px;
       font-weight: 900;
     }
 
     .board-head-en {
       display: block;
-      font-size: 1rem;
-      line-height: 1.08;
+      font-size: 0.8rem;
+      line-height: 1.05;
       opacity: 0.95;
       font-weight: 800;
       letter-spacing: 0.04em;
@@ -588,15 +604,15 @@
 
     .board-row {
       display: grid;
-      grid-template-columns: 0.55fr 1.1fr 1.25fr 3.2fr 1.6fr;
+      grid-template-columns: 0.55fr 1.05fr 1.15fr 2.8fr 1.45fr;
       align-items: stretch;
       border-top: 1px solid var(--board-line);
-      min-height: 156px;
+      min-height: 96px;
       background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0));
     }
 
     .board-cell {
-      padding: 18px 14px;
+      padding: 10px 10px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -609,7 +625,7 @@
     .board-cell:last-child { border-right: none; }
 
     .board-room {
-      font-size: 3.4rem;
+      font-size: 2.25rem;
       color: #93c5fd;
       font-weight: 900;
       letter-spacing: 0.03em;
@@ -618,37 +634,37 @@
     .board-doctor {
       color: var(--board-text);
       font-weight: 900;
-      line-height: 1.35;
+      line-height: 1.25;
       flex-direction: column;
-      gap: 8px;
+      gap: 4px;
       align-items: flex-start;
       text-align: left;
     }
 
     .board-doctor-zh {
-      font-size: 1.6rem;
+      font-size: 1.08rem;
       color: #ffffff;
       font-weight: 900;
-      line-height: 1.25;
+      line-height: 1.2;
       word-break: break-word;
     }
 
     .board-doctor-en {
-      font-size: 1.08rem;
+      font-size: 0.82rem;
       color: var(--board-sub);
       font-weight: 800;
-      line-height: 1.28;
+      line-height: 1.18;
       word-break: break-word;
     }
 
     .board-current {
       flex-direction: column;
-      gap: 10px;
+      gap: 6px;
     }
 
     .board-current-priority-ticket {
       color: #fca5a5;
-      font-size: 2.4rem;
+      font-size: 1.5rem;
       font-weight: 900;
       line-height: 1.06;
       letter-spacing: 0.03em;
@@ -656,23 +672,23 @@
 
     .board-current-normal-ticket {
       color: #4ade80;
-      font-size: 2.4rem;
+      font-size: 1.5rem;
       font-weight: 900;
       line-height: 1.06;
       letter-spacing: 0.03em;
     }
 
     .board-meta {
-      font-size: 1.05rem;
+      font-size: 0.78rem;
       color: var(--board-sub);
       font-weight: 800;
-      line-height: 1.35;
+      line-height: 1.25;
     }
 
     .board-paused {
       color: #fbbf24;
-      font-size: 2rem;
-      line-height: 1.25;
+      font-size: 1.2rem;
+      line-height: 1.2;
       word-break: break-word;
       font-weight: 900;
     }
@@ -680,7 +696,7 @@
     .board-queue, .board-skip {
       display: flex;
       flex-wrap: wrap;
-      gap: 14px;
+      gap: 8px;
       align-items: center;
       justify-content: flex-start;
       width: 100%;
@@ -689,10 +705,10 @@
 
     .board-tag {
       border-radius: 999px;
-      padding: 14px 20px;
-      font-size: 2rem;
+      padding: 8px 12px;
+      font-size: 1.05rem;
       font-weight: 900;
-      min-width: 150px;
+      min-width: 86px;
       text-align: center;
       line-height: 1.04;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
@@ -719,35 +735,36 @@
 
     .board-empty {
       color: #64748b;
-      font-size: 1.2rem;
+      font-size: 0.95rem;
       font-weight: 800;
     }
 
     .board-footer-tip {
-      margin-top: 10px;
+      margin-top: 8px;
       color: #93c5fd;
-      font-size: 0.98rem;
+      font-size: 0.8rem;
       font-weight: 800;
       text-align: right;
-      opacity: 0.95;
+      opacity: 0.9;
+      flex: 0 0 auto;
     }
 
     @media (max-width: 1500px) {
       .grid-5, .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
 
       .board-head {
-        grid-template-columns: 0.6fr 1fr 1.2fr 2.4fr 1.4fr;
+        grid-template-columns: 0.6fr 1fr 1.1fr 2.2fr 1.2fr;
       }
 
       .board-row {
-        grid-template-columns: 0.6fr 1fr 1.2fr 2.4fr 1.4fr;
+        grid-template-columns: 0.6fr 1fr 1.1fr 2.2fr 1.2fr;
       }
 
-      .board-room { font-size: 2.8rem; }
-      .board-doctor-zh { font-size: 1.36rem; }
+      .board-room { font-size: 1.95rem; }
+      .board-doctor-zh { font-size: 1rem; }
       .board-current-priority-ticket,
-      .board-current-normal-ticket,
-      .board-tag { font-size: 1.75rem; }
+      .board-current-normal-ticket { font-size: 1.3rem; }
+      .board-tag { font-size: 0.95rem; min-width: 76px; }
     }
 
     @media (max-width: 1150px) {
@@ -757,12 +774,12 @@
         border-bottom: 1px solid rgba(255,255,255,0.08);
       }
       .board-cell:last-child, .board-head div:last-child { border-bottom: none; }
-      .board-room { font-size: 2.2rem; }
-      .board-doctor-zh { font-size: 1.28rem; }
-      .board-doctor-en { font-size: 1rem; }
+      .board-room { font-size: 2rem; }
+      .board-doctor-zh { font-size: 1.1rem; }
+      .board-doctor-en { font-size: 0.9rem; }
       .board-current-priority-ticket,
       .board-current-normal-ticket,
-      .board-tag { font-size: 1.5rem; min-width: 118px; }
+      .board-tag { font-size: 1rem; min-width: 82px; }
       .board-wrap { min-height: auto; }
     }
 
@@ -770,10 +787,10 @@
       .app { padding: 12px; }
       .room-list { grid-template-columns: 1fr; }
       body.display-mode #displayPage { padding: 10px; }
-      .board-title { font-size: 1.4rem; }
-      .board-time { font-size: 1rem; }
-      .inline-note { font-size: 0.9rem; }
-      .board-tag { padding: 10px 14px; }
+      .board-title { font-size: 1.3rem; }
+      .board-time { font-size: 0.95rem; }
+      .inline-note { font-size: 0.82rem; }
+      .board-tag { padding: 7px 10px; }
     }
   </style>
 </head>
@@ -1493,7 +1510,7 @@
           registeredAt: patient.registered_at || hktNowIso(),
           status: patient.status || "waiting",
           createdAt: patient.created_at || hktNowIso(),
-          queueOrder: Number.isFinite(patient.queue_order) ? patient.queue_order : (typeof patient.queue_order === "number" ? patient.queue_order : null),
+          queueOrder: Number.isFinite(patient.queueOrder) ? patient.queueOrder : (typeof patient.queueOrder === "number" ? patient.queueOrder : null),
           skippedAt: patient.skipped_at || null,
           calledAt: patient.called_at || null,
           doneAt: patient.done_at || null,
@@ -1741,7 +1758,7 @@
             <div class="board-body">
               <div class="board-row">
                 <div class="board-cell" style="grid-column: 1 / -1; min-height: 240px;">
-                  <div class="board-empty" style="font-size:1.5rem; line-height:1.6;">
+                  <div class="board-empty" style="font-size:1.2rem; line-height:1.6;">
                     目前沒有顯示中的診室<br>
                     No rooms currently displayed
                   </div>
@@ -1757,15 +1774,20 @@
         const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
         const doctorParts = splitDoctorName(room.doctorName);
 
-        const waitingPatients = getOrderedWaitingPatients(room).slice(0, 18);
-        const skippedPatients = state.patients
+        const waitingAll = getOrderedWaitingPatients(room);
+        const waitingPatients = waitingAll.slice(0, 10);
+        const waitingMore = Math.max(0, waitingAll.length - waitingPatients.length);
+
+        const skippedAll = state.patients
           .filter(patient => patient.roomId === room.id && patient.status === "skipped")
           .sort((a, b) => {
             const aTime = new Date(a.skippedAt || a.createdAt).getTime();
             const bTime = new Date(b.skippedAt || b.createdAt).getTime();
             return aTime - bTime;
-          })
-          .slice(0, 12);
+          });
+
+        const skippedPatients = skippedAll.slice(0, 6);
+        const skippedMore = Math.max(0, skippedAll.length - skippedPatients.length);
 
         const currentBoardContent = room.status === "paused"
           ? `
@@ -1797,12 +1819,22 @@
             </div>
             <div class="board-cell">
               <div class="board-queue">
-                ${waitingPatients.length ? waitingPatients.map(patient => renderBoardTag(patient, "wait")).join("") : `<span class="board-empty">—</span>`}
+                ${
+                  waitingPatients.length
+                    ? waitingPatients.map(patient => renderBoardTag(patient, "wait")).join("") +
+                      (waitingMore > 0 ? `<span class="board-empty">+${waitingMore}</span>` : "")
+                    : `<span class="board-empty">—</span>`
+                }
               </div>
             </div>
             <div class="board-cell">
               <div class="board-skip">
-                ${skippedPatients.length ? skippedPatients.map(patient => renderBoardTag(patient, "skip")).join("") : `<span class="board-empty">—</span>`}
+                ${
+                  skippedPatients.length
+                    ? skippedPatients.map(patient => renderBoardTag(patient, "skip")).join("") +
+                      (skippedMore > 0 ? `<span class="board-empty">+${skippedMore}</span>` : "")
+                    : `<span class="board-empty">—</span>`
+                }
               </div>
             </div>
           </div>
@@ -2916,54 +2948,54 @@
     });
 
     let liveRefreshTimer = null;
-let boardPollingTimer = null;
-let realtimeChannel = null;
+    let boardPollingTimer = null;
+    let realtimeChannel = null;
 
-async function setupRealtimeAndPolling() {
-  if (realtimeChannel) {
-    try {
-      await sb.removeChannel(realtimeChannel);
-    } catch (e) {
-      console.warn("removeChannel failed", e);
-    }
-  }
-
-  realtimeChannel = sb
-    .channel("emc-cqms-live")
-    .on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, async (payload) => {
-      console.log("Realtime rooms change:", payload);
-      await refreshFromCloudAndRender(false);
-    })
-    .on("postgres_changes", { event: "*", schema: "public", table: "patients" }, async (payload) => {
-      console.log("Realtime patients change:", payload);
-      await refreshFromCloudAndRender(false);
-    })
-    .subscribe((status, err) => {
-      console.log("Realtime subscribe status:", status, err || "");
-      if (status === "CHANNEL_ERROR") {
-        notify("Realtime 連線異常，系統改用自動刷新", "warning");
+    async function setupRealtimeAndPolling() {
+      if (realtimeChannel) {
+        try {
+          await sb.removeChannel(realtimeChannel);
+        } catch (e) {
+          console.warn("removeChannel failed", e);
+        }
       }
-    });
 
-  if (liveRefreshTimer) clearInterval(liveRefreshTimer);
-  liveRefreshTimer = setInterval(async () => {
-    await refreshFromCloudAndRender(false);
-  }, 3000);
+      realtimeChannel = sb
+        .channel("emc-cqms-live")
+        .on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, async (payload) => {
+          console.log("Realtime rooms change:", payload);
+          await refreshFromCloudAndRender(false);
+        })
+        .on("postgres_changes", { event: "*", schema: "public", table: "patients" }, async (payload) => {
+          console.log("Realtime patients change:", payload);
+          await refreshFromCloudAndRender(false);
+        })
+        .subscribe((status, err) => {
+          console.log("Realtime subscribe status:", status, err || "");
+          if (status === "CHANNEL_ERROR") {
+            notify("Realtime 連線異常，系統改用自動刷新", "warning");
+          }
+        });
 
-  if (boardPollingTimer) clearInterval(boardPollingTimer);
-  boardPollingTimer = setInterval(() => {
-    renderDisplayBoard();
-  }, 1000);
-}
+      if (liveRefreshTimer) clearInterval(liveRefreshTimer);
+      liveRefreshTimer = setInterval(async () => {
+        await refreshFromCloudAndRender(false);
+      }, 3000);
 
-async function initApp() {
-  document.getElementById("registeredAt").value = toHktDateTimeLocalValue(new Date());
-  refreshInsertModeFields();
-  refreshRegisteredAtField();
-  setDisplayModeByTab("staffPage");
-  await refreshFromCloudAndRender(true);
-  await setupRealtimeAndPolling();
-}
+      if (boardPollingTimer) clearInterval(boardPollingTimer);
+      boardPollingTimer = setInterval(() => {
+        renderDisplayBoard();
+      }, 1000);
+    }
+
+    async function initApp() {
+      document.getElementById("registeredAt").value = toHktDateTimeLocalValue(new Date());
+      refreshInsertModeFields();
+      refreshRegisteredAtField();
+      setDisplayModeByTab("staffPage");
+      await refreshFromCloudAndRender(true);
+      await setupRealtimeAndPolling();
+    }
 
     initApp();
   </script>
