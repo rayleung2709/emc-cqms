@@ -562,86 +562,287 @@
     }
 
     .board-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-    }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
 
-    .board-title {
-      font-size: 1.6rem;
-      font-weight: 900;
-      color: #0f172a;
-    }
+.board-title {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #0f172a;
+}
 
-    .board-time {
-      font-size: 1rem;
-      color: #475569;
-      font-weight: 800;
-    }
+.board-time {
+  font-size: 0.95rem;
+  color: #475569;
+  font-weight: 800;
+}
 
-    .board-disclaimer { margin-bottom: 14px; }
+.board-disclaimer {
+  margin-bottom: 10px;
+}
 
-    .info-card {
-      border: 1px solid #dbeafe;
-      background: #eff6ff;
-      border-radius: 14px;
-      padding: 12px 14px;
-      margin-top: 14px;
-    }
+#displayPage {
+  min-height: calc(100vh - 110px);
+}
 
-    .inline-note {
-      font-size: 0.86rem;
-      color: #475569;
-      font-weight: 700;
-      line-height: 1.55;
-    }
+#displayBoard {
+  height: calc(100vh - 230px);
+}
 
-    .sub-option {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 8px;
-      font-size: 0.92rem;
-      color: #334155;
-      font-weight: 800;
-    }
+.board-wrap {
+  height: 100%;
+  background: #fff;
+  border: 1px solid #dbe3ee;
+  border-radius: 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+  padding: 12px;
+}
 
-    .sub-option input[type="checkbox"] {
-      width: auto;
-      margin: 0;
-      transform: translateY(1px);
-    }
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  height: 100%;
+  align-content: start;
+}
 
-    @media (max-width: 1350px) {
-      .grid-5, .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
-      .board-head, .board-row { grid-template-columns: 1fr; }
-      .board-head div, .board-cell {
-        border-right: none;
-        border-bottom: 1px solid #eef2f7;
-      }
-      .board-cell:last-child, .board-head div:last-child { border-bottom: none; }
-      .board-room { font-size: 2rem; }
-      .board-doctor-zh { font-size: 1.28rem; }
-      .board-doctor-en { font-size: 1.08rem; }
-      .board-current, .board-current-priority-ticket, .board-current-normal-ticket, .board-tag {
-        font-size: 1.6rem;
-      }
-    }
+.board-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid #dbe3ee;
+  border-radius: 18px;
+  background: linear-gradient(to bottom, #ffffff 0%, #f8fbff 100%);
+  overflow: hidden;
+}
 
-    @media (max-width: 900px) {
-      .app { padding: 12px; }
-      .room-list { grid-template-columns: 1fr; }
-      .board-current, .board-current-priority-ticket, .board-current-normal-ticket, .board-tag {
-        font-size: 1.35rem;
-      }
-      .board-tag {
-        min-width: 102px;
-        padding: 10px 14px;
-      }
-    }
+.board-card-head {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) minmax(72px, auto);
+  align-items: center;
+  gap: 8px;
+  padding: 10px 10px 8px;
+  border-bottom: 1px solid #eaf0f7;
+  background: #f8fbff;
+}
+
+.board-room {
+  font-size: 1.8rem;
+  color: #1d4ed8;
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.board-doctor {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.board-doctor-zh {
+  font-size: 0.98rem;
+  color: #111827;
+  font-weight: 900;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.board-doctor-en {
+  font-size: 0.78rem;
+  color: #64748b;
+  font-weight: 800;
+  line-height: 1.15;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.board-now-box {
+  text-align: center;
+  min-width: 72px;
+}
+
+.board-now-label {
+  font-size: 0.66rem;
+  color: #64748b;
+  font-weight: 900;
+  margin-bottom: 2px;
+  letter-spacing: 0.02em;
+}
+
+.board-current-priority-ticket,
+.board-current-normal-ticket {
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1.05;
+}
+
+.board-current-priority-ticket {
+  color: #b91c1c;
+}
+
+.board-current-normal-ticket {
+  color: #15803d;
+}
+
+.board-paused {
+  color: #b45309;
+  font-size: 1rem;
+  line-height: 1.2;
+  font-weight: 900;
+}
+
+.board-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  min-height: 0;
+  flex: 1;
+}
+
+.board-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+}
+
+.board-section-title {
+  font-size: 0.78rem;
+  color: #334155;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.board-queue,
+.board-skip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  width: 100%;
+}
+
+.board-queue {
+  flex: 1;
+  align-content: flex-start;
+}
+
+.board-tag {
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 1rem;
+  font-weight: 900;
+  min-width: 72px;
+  text-align: center;
+  line-height: 1.05;
+}
+
+.tag-wait {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #93c5fd;
+}
+
+.tag-skip {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+.tag-priority {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 2px solid #ef4444;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.55);
+}
+
+.board-empty {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.board-meta {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.board-empty-state {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.6;
+}
+
+@media (min-width: 1600px) {
+  .board-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .board-tag {
+    min-width: 68px;
+    font-size: 0.96rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  #displayBoard {
+    height: auto;
+  }
+
+  .board-wrap {
+    height: auto;
+  }
+
+  .board-grid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    height: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .app {
+    padding: 12px;
+  }
+
+  #displayPage {
+    min-height: auto;
+  }
+
+  #displayBoard {
+    height: auto;
+  }
+
+  .board-grid {
+    grid-template-columns: 1fr;
+  }
+}
   </style>
 </head>
 <body>
@@ -1575,97 +1776,107 @@
     }
 
     function renderDisplayBoard() {
-      const container = document.getElementById("displayBoard");
-      const timeEl = document.getElementById("boardTime");
-      if (!container || !timeEl) return;
+  const container = document.getElementById("displayBoard");
+  const timeEl = document.getElementById("boardTime");
+  if (!container || !timeEl) return;
 
-      const now = new Date();
-      timeEl.textContent = formatBoardNow(now);
+  const now = new Date();
+  timeEl.textContent = formatBoardNow(now);
 
-      const visibleRooms = sortedRooms().filter(room => room.status !== "closed");
+  const visibleRooms = sortedRooms().filter(room => room.status !== "closed");
 
-      if (!visibleRooms.length) {
-        container.innerHTML = `
-          <div class="board-wrap">
-            <div class="board-body">
-              <div class="board-row">
-                <div class="board-cell" style="grid-column: 1 / -1; min-height: 180px;">
-                  <div class="board-empty" style="font-size:1.2rem; line-height:1.6;">
-                    目前沒有顯示中的診室<br>
-                    No rooms currently displayed
-                  </div>
-                </div>
-              </div>
-            </div>
+  if (!visibleRooms.length) {
+    container.innerHTML = `
+      <div class="board-wrap">
+        <div class="board-empty-state">
+          <div>
+            目前沒有顯示中的診室<br>
+            No rooms currently displayed
           </div>
-        `;
-        return;
-      }
-
-      const rows = visibleRooms.map(room => {
-        const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
-        const doctorParts = splitDoctorName(room.doctorName);
-
-        const waitingPatients = getOrderedWaitingPatients(room).slice(0, 12);
-        const skippedPatients = state.patients
-          .filter(patient => patient.roomId === room.id && patient.status === "skipped")
-          .slice(0, 12);
-
-        const currentBoardContent = room.status === "paused"
-          ? `
-            <div class="board-paused">暫停 Paused</div>
-            ${room.pauseReason ? `<div class="board-meta">原因 Reason: ${escapeHtml(room.pauseReason)}</div>` : ""}
-          `
-          : `
-            ${
-              currentPatient
-                ? `
-                  <div class="${currentPatient.priority ? "board-current-priority-ticket" : "board-current-normal-ticket"}">
-                    ${escapeHtml(currentPatient.ticketNo)}
-                  </div>
-                  <div class="board-meta">${escapeHtml(formatBoardDateTime(currentPatient.registeredAt))}</div>
-                `
-                : `<div class="board-current-normal-ticket">—</div>`
-            }
-          `;
-
-        return `
-          <div class="board-row">
-            <div class="board-cell board-room">${escapeHtml(getRoomDisplayShort(room.roomNo))}</div>
-            <div class="board-cell board-doctor">
-              <div class="board-doctor-zh">${escapeHtml(doctorParts.zh)}</div>
-              ${doctorParts.en ? `<div class="board-doctor-en">${escapeHtml(doctorParts.en)}</div>` : ""}
-            </div>
-            <div class="board-cell board-current">
-              ${currentBoardContent}
-            </div>
-            <div class="board-cell">
-              <div class="board-queue">
-                ${waitingPatients.length ? waitingPatients.map(patient => renderBoardTag(patient, "wait")).join("") : `<span class="board-empty">—</span>`}
-              </div>
-            </div>
-            <div class="board-cell">
-              <div class="board-skip">
-                ${skippedPatients.length ? skippedPatients.map(patient => renderBoardTag(patient, "skip")).join("") : `<span class="board-empty">—</span>`}
-              </div>
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      container.innerHTML = `
-        <div class="board-wrap">
-          <div class="board-head">
-            <div><span class="board-head-zh">房號</span><span class="board-head-en">Room</span></div>
-            <div><span class="board-head-zh">醫生</span><span class="board-head-en">Doctor</span></div>
-            <div><span class="board-head-zh">現在看號</span><span class="board-head-en">Seeing</span></div>
-            <div><span class="board-head-zh">隊列</span><span class="board-head-en">Waiting</span></div>
-            <div><span class="board-head-zh">過號</span><span class="board-head-en">Skipped</span></div>
-          </div>
-          <div class="board-body">${rows}</div>
         </div>
+      </div>
+    `;
+    return;
+  }
+
+  const cards = visibleRooms.map(room => {
+    const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
+    const doctorParts = splitDoctorName(room.doctorName);
+
+    const waitingPatients = getOrderedWaitingPatients(room).slice(0, 10);
+    const skippedPatients = state.patients
+      .filter(patient => patient.roomId === room.id && patient.status === "skipped")
+      .slice(0, 6);
+
+    const currentBoardContent = room.status === "paused"
+      ? `
+        <div class="board-paused">暫停</div>
+        ${room.pauseReason ? `<div class="board-meta">${escapeHtml(room.pauseReason)}</div>` : ""}
+      `
+      : `
+        ${
+          currentPatient
+            ? `
+              <div class="${currentPatient.priority ? "board-current-priority-ticket" : "board-current-normal-ticket"}">
+                ${escapeHtml(currentPatient.ticketNo)}
+              </div>
+              <div class="board-meta">${escapeHtml(formatBoardDateTime(currentPatient.registeredAt))}</div>
+            `
+            : `
+              <div class="board-current-normal-ticket">—</div>
+            `
+        }
       `;
-    }
+
+    return `
+      <div class="board-card">
+        <div class="board-card-head">
+          <div class="board-room">${escapeHtml(getRoomDisplayShort(room.roomNo))}</div>
+
+          <div class="board-doctor">
+            <div class="board-doctor-zh">${escapeHtml(doctorParts.zh)}</div>
+            ${doctorParts.en ? `<div class="board-doctor-en">${escapeHtml(doctorParts.en)}</div>` : ""}
+          </div>
+
+          <div class="board-now-box">
+            <div class="board-now-label">現在</div>
+            ${currentBoardContent}
+          </div>
+        </div>
+
+        <div class="board-card-body">
+          <div class="board-section">
+            <div class="board-section-title">隊列 Waiting</div>
+            <div class="board-queue">
+              ${
+                waitingPatients.length
+                  ? waitingPatients.map(patient => renderBoardTag(patient, "wait")).join("")
+                  : `<span class="board-empty">—</span>`
+              }
+            </div>
+          </div>
+
+          <div class="board-section">
+            <div class="board-section-title">過號 Skipped</div>
+            <div class="board-skip">
+              ${
+                skippedPatients.length
+                  ? skippedPatients.map(patient => renderBoardTag(patient, "skip")).join("")
+                  : `<span class="board-empty">—</span>`
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  container.innerHTML = `
+    <div class="board-wrap">
+      <div class="board-grid">${cards}</div>
+    </div>
+  `;
+}
 
     function renderRooms() {
       const container = document.getElementById("roomsContainer");
