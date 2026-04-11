@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>香港中文大學醫院急症醫學中心輪候系統 CUHKMC Emergency Medicine Centre Queue Management System 1.3.2 Cloud</title>
+  <title>香港中文大學醫院急症醫學中心輪候系統 CUHKMC Emergency Medicine Centre Queue Management System 1.3.3 Cloud</title>
   <link rel="icon" href="data:," />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -658,9 +658,9 @@
     <div class="topbar">
       <div class="title">香港中文大學醫院急症醫學中心輪候系統 CUHKMC Emergency Medicine Centre Queue Management System</div>
       <div class="tabs">
-        <button class="tab-btn active" data-tab="staffPage">職員管理</button>
-        <button class="tab-btn" data-tab="patientPage">狀態查詢</button>
-        <button class="tab-btn" data-tab="displayPage">病人看板</button>
+        <button class="tab-btn active" data-tab="staffPage" type="button">職員管理</button>
+        <button class="tab-btn" data-tab="patientPage" type="button">狀態查詢</button>
+        <button class="tab-btn" data-tab="displayPage" type="button">病人看板</button>
       </div>
     </div>
 
@@ -929,11 +929,11 @@
     }
 
     function getRoom(roomId) {
-      return state.rooms.find(room => room.id === roomId);
+      return state.rooms.find(room => room.id === roomId) || null;
     }
 
     function getPatient(patientId) {
-      return state.patients.find(patient => patient.id === patientId);
+      return state.patients.find(patient => patient.id === patientId) || null;
     }
 
     function addPatientLog(patient, action, details = "") {
@@ -1044,7 +1044,7 @@
     }
 
     function insertPatientIntoQueue(room, patient, mode = "tail", positionValue = null) {
-      room.queuePatientIds = room.queuePatientIds.filter(id => id !== patient.id);
+      room.queuePatientIds = (room.queuePatientIds || []).filter(id => id !== patient.id);
 
       if (patient.status !== "waiting") {
         patient.queueOrder = null;
@@ -1266,6 +1266,13 @@
       if (mode === "position") return `指定第 ${position} 位`;
       if (mode === "auto") return `自動安排（第 ${actualPosition} 位）`;
       return "排隊尾";
+    }
+
+    function getTransferTargetRoomIdFromButton(button) {
+      const row = button.closest("tr");
+      if (!row) return "";
+      const select = row.querySelector(".transfer-room-select");
+      return String(select?.value || "").trim();
     }
 
     async function loadStateFromSupabase(showErrorToast = true) {
@@ -1669,7 +1676,7 @@
                   <button class="btn-secondary btn-small" type="button" data-action="insertAtPosition" data-patient-id="${patient.id}">
                     指定位置
                   </button>
-                  <select data-transfer-room-id="${patient.id}" class="transfer-room-select">
+                  <select class="transfer-room-select">
                     <option value="">選擇轉去房間</option>
                     ${transferOptions}
                   </select>
@@ -1704,7 +1711,7 @@
                   <button class="btn-success btn-small" type="button" data-action="requeueSkipped" data-patient-id="${patient.id}">
                     回原房（自動排位）
                   </button>
-                  <select data-transfer-room-id="${patient.id}" class="transfer-room-select">
+                  <select class="transfer-room-select">
                     <option value="">選擇轉去房間</option>
                     ${transferOptions}
                   </select>
@@ -1913,15 +1920,16 @@
 
         await refreshFromCloudAndRender();
 
-const activeExists = state.patients.some(p =>
-  String(p.cumcNo || "").toLowerCase() === cumcNo.toLowerCase() &&
-  ["waiting", "called", "skipped"].includes(p.status)
-);
+        const activeExists = state.patients.some(p =>
+          String(p.cumcNo || "").toLowerCase() === cumcNo.toLowerCase() &&
+          ["waiting", "called", "skipped"].includes(p.status)
+        );
 
-if (activeExists) {
-  notify("此病人目前已有未完成就診記錄", "warning");
-  return;
-}
+        if (activeExists) {
+          notify("此病人目前已有未完成就診記錄", "warning");
+          return;
+        }
+
         let room = null;
 
         if (assignMode === "manual") {
@@ -2302,7 +2310,7 @@ if (activeExists) {
       }
     }
 
-    async function transferPatient(patientId, mode = "auto") {
+    async function transferPatient(patientId, mode = "auto", triggerButton = null) {
       try {
         await refreshFromCloudAndRender();
         const patient = getPatient(patientId);
@@ -2316,8 +2324,10 @@ if (activeExists) {
           return;
         }
 
-        const select = document.querySelector(`[data-transfer-room-id="${patient.id}"]`);
-        const targetRoomId = select ? select.value : "";
+        let targetRoomId = "";
+        if (triggerButton) {
+          targetRoomId = getTransferTargetRoomIdFromButton(triggerButton);
+        }
 
         if (!targetRoomId) {
           notify("請先選擇目標房間", "warning");
@@ -2584,9 +2594,9 @@ if (activeExists) {
       if (action === "cancelPatient") cancelPatient(patientId);
       if (action === "recallSkipped") recallSkipped(patientId);
       if (action === "requeueSkipped") requeueSkipped(patientId);
-      if (action === "transferAuto") transferPatient(patientId, "auto");
-      if (action === "transferTail") transferPatient(patientId, "tail");
-      if (action === "transferFront") transferPatient(patientId, "front");
+      if (action === "transferAuto") transferPatient(patientId, "auto", btn);
+      if (action === "transferTail") transferPatient(patientId, "tail", btn);
+      if (action === "transferFront") transferPatient(patientId, "front", btn);
     });
 
     document.getElementById("addPatientBtn").addEventListener("click", addPatient);
