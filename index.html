@@ -1524,7 +1524,7 @@
               <label for="registeredAt"
                      data-help-title="後備登記時間"
                      data-help="通常唔需要手動改，系統會自動用當刻香港時間。只喺補錄或特殊情況先勾選使用後備時間。">
-                後備登記時間（香港時間）
+                登記時間
               </label>
               <input id="registeredAt" type="datetime-local" disabled
                      data-help-title="後備登記時間輸入"
@@ -1535,7 +1535,7 @@
                      data-help-title="使用後備登記時間"
                      data-help="勾選後，系統會用你手動輸入的香港時間作登記時間。未勾選就會直接用系統即時時間。">
                 <input id="useCustomRegisteredAt" type="checkbox" style="width:auto;" />
-                使用後備登記時間（否則自動擷取香港時間）
+                使用手動登記時間（預約或網上取票用）
               </label>
             </div>
 
@@ -1638,7 +1638,7 @@
           <div class="muted" style="margin-top:12px;"
                data-help-title="房間補充說明"
                data-help="房間可以新增、修改、刪除。截籌後會停止接收新派症，但病人看板仍會顯示；關房則會喺病人看板隱藏。">
-            可新增、修改、刪除房間；亦可截籌但繼續顯示在病人看板。看板會將「1號房」顯示為「1」。
+            看板會將「1號房」顯示為「1」。
           </div>
         </div>
       </div>
@@ -3059,9 +3059,9 @@
                               type="button"
                               data-action="transferAuto"
                               data-patient-id="${patient.id}"
-                              data-help-title="轉到該房"
+                              data-help-title="轉房"
                               data-help="將病人轉去所選房間，並由系統按規則自動安排新位置。病人之後會被鎖定，不再參與一鍵平均分流。">
-                        轉到該房
+                        轉房
                       </button>
                     </div>
 
@@ -3070,18 +3070,18 @@
                               type="button"
                               data-action="transferFront"
                               data-patient-id="${patient.id}"
-                              data-help-title="轉該房隊首"
+                              data-help-title="轉房隊頭"
                               data-help="將病人轉去另一間房，並直接放到該房隊首。">
-                        轉該房隊首
+                        轉房隊頭
                       </button>
 
                       <button class="btn-primary btn-small"
                               type="button"
                               data-action="transferTail"
                               data-patient-id="${patient.id}"
-                              data-help-title="轉該房隊尾"
+                              data-help-title="轉房隊尾"
                               data-help="將病人轉去另一間房，並直接放到該房最後。">
-                        轉該房隊尾
+                        轉房隊尾
                       </button>
                     </div>
 
@@ -3154,7 +3154,7 @@
                           type="button"
                           data-more-toggle="${patient.id}"
                           data-help-title="更多操作"
-                          data-help="一按即展開更多操作，包括轉房、轉該房隊首、轉該房隊尾及刪除。">
+                          data-help="一按即展開更多操作，包括轉房、轉房隊頭、轉房隊尾及刪除。">
                     更多
                   </button>
                 </div>
@@ -3178,9 +3178,9 @@
                               type="button"
                               data-action="transferAuto"
                               data-patient-id="${patient.id}"
-                              data-help-title="轉到該房"
+                              data-help-title="轉房"
                               data-help="將過號病人轉去另一房，並重新回到候診中，由系統自動排位。">
-                        轉到該房
+                        轉房
                       </button>
                     </div>
 
@@ -3189,18 +3189,18 @@
                               type="button"
                               data-action="transferFront"
                               data-patient-id="${patient.id}"
-                              data-help-title="轉該房隊首"
+                              data-help-title="轉房隊頭"
                               data-help="將過號病人轉去另一房，並直接放到新房隊首。">
-                        轉該房隊首
+                        轉房隊頭
                       </button>
 
                       <button class="btn-primary btn-small"
                               type="button"
                               data-action="transferTail"
                               data-patient-id="${patient.id}"
-                              data-help-title="轉該房隊尾"
+                              data-help-title="轉房隊尾"
                               data-help="將過號病人轉去另一房，並直接放到新房最後。">
-                        轉該房隊尾
+                        轉房隊尾
                       </button>
                     </div>
 
@@ -4499,9 +4499,9 @@
         const actualPosition = insertPatientIntoQueue(newRoom, patient, mode);
 
         const modeText =
-          mode === "front" ? "轉該房隊首" :
-          mode === "tail" ? "轉該房隊尾" :
-          "轉到該房";
+          mode === "front" ? "轉房隊頭" :
+          mode === "tail" ? "轉房隊尾" :
+          "轉房";
 
         addPatientLog(
           patient,
