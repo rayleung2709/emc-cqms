@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>香港中文大學醫院急症醫學中心輪候系統 CUHKMC Emergency Medicine Centre Queue Management System 1.4.1 Cloud Final</title>
+  <title>香港中文大學醫院急症醫學中心輪候系統 CUHKMC Emergency Medicine Centre Queue Management System TV Large</title>
   <link rel="icon" href="data:," />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -22,8 +22,8 @@
       --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
       --radius: 18px;
 
-      --board-bg: #0b1220;
-      --board-panel: #0f172a;
+      --board-bg: #06101f;
+      --board-panel: #0b1528;
       --board-line: rgba(255,255,255,0.12);
       --board-head: #1d4ed8;
       --board-text: #f8fafc;
@@ -122,7 +122,7 @@
       display: flex !important;
       flex-direction: column;
       height: 100vh;
-      padding: 12px 16px 14px;
+      padding: 14px 18px 14px;
       background: var(--board-bg);
       overflow: hidden;
     }
@@ -454,72 +454,61 @@
     .toast.error { background: #dc2626; }
     .toast.info { background: #2563eb; }
 
+    /* ==========================
+       超大電視版看板
+       ========================== */
+
     .board-toolbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
+      gap: 14px;
+      margin-bottom: 12px;
       flex-wrap: wrap;
       color: var(--board-text);
       flex: 0 0 auto;
     }
 
     .board-title {
-      font-size: 1.7rem;
+      font-size: 2.6rem;
       font-weight: 900;
       color: var(--board-text);
       letter-spacing: 0.02em;
+      line-height: 1.1;
     }
 
     .board-time {
-      font-size: 1.05rem;
+      font-size: 1.6rem;
       color: var(--board-sub);
       font-weight: 900;
       letter-spacing: 0.03em;
     }
 
     .board-disclaimer {
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .info-card {
       border: 1px solid rgba(96,165,250,0.28);
       background: rgba(30,41,59,0.9);
-      border-radius: 14px;
-      padding: 10px 14px;
+      border-radius: 16px;
+      padding: 14px 18px;
       margin-top: 10px;
     }
 
     body.display-mode .info-card {
       margin-top: 0;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       background: rgba(15,23,42,0.95);
       border-color: rgba(255,255,255,0.12);
       flex: 0 0 auto;
     }
 
     .inline-note {
-      font-size: 0.88rem;
+      font-size: 1.12rem;
       color: #dbeafe;
       font-weight: 800;
-      line-height: 1.45;
-    }
-
-    .sub-option {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 8px;
-      font-size: 0.92rem;
-      color: #334155;
-      font-weight: 800;
-    }
-
-    .sub-option input[type="checkbox"] {
-      width: auto;
-      margin: 0;
-      transform: translateY(1px);
+      line-height: 1.55;
     }
 
     .toolbar-row {
@@ -550,10 +539,48 @@
       overflow: hidden;
     }
 
+    .board-pagination-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex: 0 0 auto;
+      color: var(--board-text);
+    }
+
+    .board-page-indicator {
+      font-size: 1.28rem;
+      font-weight: 900;
+      color: #bfdbfe;
+      letter-spacing: 0.04em;
+    }
+
+    .board-page-dots {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .board-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.22);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+    }
+
+    .board-dot.active {
+      background: #60a5fa;
+      box-shadow: 0 0 0 3px rgba(96,165,250,0.18);
+    }
+
     .board-wrap {
       background: var(--board-panel);
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 20px;
+      border-radius: 22px;
       box-shadow: 0 12px 30px rgba(0,0,0,0.28);
       width: 100%;
       flex: 1 1 auto;
@@ -563,7 +590,7 @@
 
     .board-head {
       display: grid;
-      grid-template-columns: 0.55fr 1.05fr 1.15fr 2.8fr 1.45fr;
+      grid-template-columns: 0.7fr 1.2fr 1.25fr 3.2fr 1.8fr;
       background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%);
       color: #fff;
       font-weight: 900;
@@ -574,7 +601,7 @@
     }
 
     .board-head div {
-      padding: 12px 8px 10px;
+      padding: 18px 12px 16px;
       border-right: 1px solid rgba(255,255,255,0.16);
       text-align: center;
     }
@@ -583,19 +610,19 @@
 
     .board-head-zh {
       display: block;
-      font-size: 1.18rem;
-      line-height: 1.05;
-      margin-bottom: 4px;
+      font-size: 1.85rem;
+      line-height: 1.04;
+      margin-bottom: 6px;
       font-weight: 900;
     }
 
     .board-head-en {
       display: block;
-      font-size: 0.8rem;
-      line-height: 1.05;
-      opacity: 0.95;
+      font-size: 1.02rem;
+      line-height: 1.08;
+      opacity: 0.96;
       font-weight: 800;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.06em;
     }
 
     .board-body {
@@ -604,15 +631,15 @@
 
     .board-row {
       display: grid;
-      grid-template-columns: 0.55fr 1.05fr 1.15fr 2.8fr 1.45fr;
+      grid-template-columns: 0.7fr 1.2fr 1.25fr 3.2fr 1.8fr;
       align-items: stretch;
       border-top: 1px solid var(--board-line);
-      min-height: 96px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0));
+      min-height: 148px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0));
     }
 
     .board-cell {
-      padding: 10px 10px;
+      padding: 16px 14px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -625,10 +652,11 @@
     .board-cell:last-child { border-right: none; }
 
     .board-room {
-      font-size: 2.25rem;
+      font-size: 4rem;
       color: #93c5fd;
       font-weight: 900;
       letter-spacing: 0.03em;
+      line-height: 1;
     }
 
     .board-doctor {
@@ -636,59 +664,60 @@
       font-weight: 900;
       line-height: 1.25;
       flex-direction: column;
-      gap: 4px;
+      gap: 8px;
       align-items: flex-start;
       text-align: left;
+      justify-content: center;
     }
 
     .board-doctor-zh {
-      font-size: 1.08rem;
+      font-size: 1.7rem;
       color: #ffffff;
       font-weight: 900;
-      line-height: 1.2;
+      line-height: 1.15;
       word-break: break-word;
     }
 
     .board-doctor-en {
-      font-size: 0.82rem;
+      font-size: 1.12rem;
       color: var(--board-sub);
       font-weight: 800;
-      line-height: 1.18;
+      line-height: 1.2;
       word-break: break-word;
     }
 
     .board-current {
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
 
     .board-current-priority-ticket {
       color: #fca5a5;
-      font-size: 1.5rem;
+      font-size: 2.5rem;
       font-weight: 900;
-      line-height: 1.06;
+      line-height: 1.04;
       letter-spacing: 0.03em;
     }
 
     .board-current-normal-ticket {
       color: #4ade80;
-      font-size: 1.5rem;
+      font-size: 2.5rem;
       font-weight: 900;
-      line-height: 1.06;
+      line-height: 1.04;
       letter-spacing: 0.03em;
     }
 
     .board-meta {
-      font-size: 0.78rem;
+      font-size: 1rem;
       color: var(--board-sub);
       font-weight: 800;
-      line-height: 1.25;
+      line-height: 1.3;
     }
 
     .board-paused {
       color: #fbbf24;
-      font-size: 1.2rem;
-      line-height: 1.2;
+      font-size: 1.9rem;
+      line-height: 1.18;
       word-break: break-word;
       font-weight: 900;
     }
@@ -696,7 +725,7 @@
     .board-queue, .board-skip {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 12px;
       align-items: center;
       justify-content: flex-start;
       width: 100%;
@@ -705,10 +734,10 @@
 
     .board-tag {
       border-radius: 999px;
-      padding: 8px 12px;
-      font-size: 1.05rem;
+      padding: 12px 18px;
+      font-size: 1.42rem;
       font-weight: 900;
-      min-width: 86px;
+      min-width: 122px;
       text-align: center;
       line-height: 1.04;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
@@ -734,37 +763,44 @@
     }
 
     .board-empty {
-      color: #64748b;
-      font-size: 0.95rem;
+      color: #94a3b8;
+      font-size: 1.2rem;
       font-weight: 800;
     }
 
     .board-footer-tip {
       margin-top: 8px;
       color: #93c5fd;
-      font-size: 0.8rem;
+      font-size: 0.96rem;
       font-weight: 800;
       text-align: right;
-      opacity: 0.9;
+      opacity: 0.95;
       flex: 0 0 auto;
+    }
+
+    @media (max-width: 1600px) {
+      .board-title { font-size: 2.15rem; }
+      .board-time { font-size: 1.35rem; }
+      .inline-note { font-size: 0.98rem; }
+      .board-head-zh { font-size: 1.5rem; }
+      .board-head-en { font-size: 0.9rem; }
+      .board-room { font-size: 3.1rem; }
+      .board-doctor-zh { font-size: 1.4rem; }
+      .board-doctor-en { font-size: 0.98rem; }
+      .board-current-priority-ticket,
+      .board-current-normal-ticket { font-size: 2rem; }
+      .board-tag { font-size: 1.15rem; min-width: 100px; }
+      .board-row { min-height: 126px; }
     }
 
     @media (max-width: 1500px) {
       .grid-5, .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
-
       .board-head {
-        grid-template-columns: 0.6fr 1fr 1.1fr 2.2fr 1.2fr;
+        grid-template-columns: 0.72fr 1.1fr 1.15fr 2.8fr 1.55fr;
       }
-
       .board-row {
-        grid-template-columns: 0.6fr 1fr 1.1fr 2.2fr 1.2fr;
+        grid-template-columns: 0.72fr 1.1fr 1.15fr 2.8fr 1.55fr;
       }
-
-      .board-room { font-size: 1.95rem; }
-      .board-doctor-zh { font-size: 1rem; }
-      .board-current-priority-ticket,
-      .board-current-normal-ticket { font-size: 1.3rem; }
-      .board-tag { font-size: 0.95rem; min-width: 76px; }
     }
 
     @media (max-width: 1150px) {
@@ -774,23 +810,25 @@
         border-bottom: 1px solid rgba(255,255,255,0.08);
       }
       .board-cell:last-child, .board-head div:last-child { border-bottom: none; }
-      .board-room { font-size: 2rem; }
-      .board-doctor-zh { font-size: 1.1rem; }
-      .board-doctor-en { font-size: 0.9rem; }
+      .board-room { font-size: 2.8rem; }
+      .board-doctor-zh { font-size: 1.25rem; }
+      .board-doctor-en { font-size: 0.95rem; }
       .board-current-priority-ticket,
-      .board-current-normal-ticket,
-      .board-tag { font-size: 1rem; min-width: 82px; }
+      .board-current-normal-ticket { font-size: 1.8rem; }
+      .board-tag { font-size: 1rem; min-width: 88px; }
       .board-wrap { min-height: auto; }
+      .board-title { font-size: 1.6rem; }
+      .board-time { font-size: 1.05rem; }
+      .inline-note { font-size: 0.9rem; }
     }
 
     @media (max-width: 900px) {
       .app { padding: 12px; }
       .room-list { grid-template-columns: 1fr; }
       body.display-mode #displayPage { padding: 10px; }
-      .board-title { font-size: 1.3rem; }
-      .board-time { font-size: 0.95rem; }
-      .inline-note { font-size: 0.82rem; }
-      .board-tag { padding: 7px 10px; }
+      .board-tag { padding: 9px 12px; }
+      .board-page-indicator { font-size: 1rem; }
+      .board-dot { width: 10px; height: 10px; }
     }
   </style>
 </head>
@@ -855,8 +893,8 @@
             <div class="form-row">
               <label for="registeredAt">後備登記時間（香港時間）</label>
               <input id="registeredAt" type="datetime-local" disabled />
-              <label class="sub-option" for="useCustomRegisteredAt">
-                <input id="useCustomRegisteredAt" type="checkbox" />
+              <label class="sub-option" for="useCustomRegisteredAt" style="display:flex;gap:8px;align-items:center;">
+                <input id="useCustomRegisteredAt" type="checkbox" style="width:auto;" />
                 使用後備登記時間（否則自動擷取香港時間）
               </label>
             </div>
@@ -976,17 +1014,20 @@
       </div>
 
       <div id="displayBoard"></div>
-      <div class="board-footer-tip">建議將瀏覽器切換至全屏模式以獲得最佳顯示效果。</div>
+      <div class="board-footer-tip">超大電視版：每頁最多顯示 5 個診室；多過 5 個診室時，每 8 秒自動翻頁。</div>
     </div>
   </div>
 
   <script>
     const SUPABASE_URL = "https://dvyberdrmmfgutjqnpjr.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmVyZHIbW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const HKT_TIMEZONE = "Asia/Hong_Kong";
     const HKT_OFFSET_MINUTES = 8 * 60;
+
+    const BOARD_ROOMS_PER_PAGE = 5;
+    const BOARD_PAGE_ROTATE_MS = 8000;
 
     const DOCTOR_SUGGESTIONS = [
       "林家強醫生 Dr. LAM Ka Keung",
@@ -1007,7 +1048,7 @@
       nextRoundRobinIndex: 0,
       rooms: [],
       patients: [],
-      isLoading: false
+      displayPageIndex: 0
     };
 
     function escapeHtml(value) {
@@ -1510,7 +1551,7 @@
           registeredAt: patient.registered_at || hktNowIso(),
           status: patient.status || "waiting",
           createdAt: patient.created_at || hktNowIso(),
-          queueOrder: Number.isFinite(patient.queueOrder) ? patient.queueOrder : (typeof patient.queueOrder === "number" ? patient.queueOrder : null),
+          queueOrder: Number.isFinite(patient.queue_order) ? patient.queue_order : null,
           skippedAt: patient.skipped_at || null,
           calledAt: patient.called_at || null,
           doneAt: patient.done_at || null,
@@ -1742,6 +1783,27 @@
       return `<span class="board-tag ${baseClass} ${priorityClass}">${escapeHtml(patient.ticketNo)}</span>`;
     }
 
+    function getVisibleBoardRooms() {
+      return sortedRooms().filter(room => room.status !== "closed");
+    }
+
+    function getBoardTotalPages(rooms) {
+      return Math.max(1, Math.ceil(rooms.length / BOARD_ROOMS_PER_PAGE));
+    }
+
+    function normalizeBoardPageIndex(totalPages) {
+      if (totalPages <= 0) {
+        state.displayPageIndex = 0;
+        return;
+      }
+      if (state.displayPageIndex >= totalPages) {
+        state.displayPageIndex = 0;
+      }
+      if (state.displayPageIndex < 0) {
+        state.displayPageIndex = 0;
+      }
+    }
+
     function renderDisplayBoard() {
       const container = document.getElementById("displayBoard");
       const timeEl = document.getElementById("boardTime");
@@ -1750,15 +1812,15 @@
       const now = new Date();
       timeEl.textContent = formatBoardNow(now);
 
-      const visibleRooms = sortedRooms().filter(room => room.status !== "closed");
+      const visibleRooms = getVisibleBoardRooms();
 
       if (!visibleRooms.length) {
         container.innerHTML = `
           <div class="board-wrap">
             <div class="board-body">
               <div class="board-row">
-                <div class="board-cell" style="grid-column: 1 / -1; min-height: 240px;">
-                  <div class="board-empty" style="font-size:1.2rem; line-height:1.6;">
+                <div class="board-cell" style="grid-column: 1 / -1; min-height: 320px;">
+                  <div class="board-empty" style="font-size:1.8rem; line-height:1.6;">
                     目前沒有顯示中的診室<br>
                     No rooms currently displayed
                   </div>
@@ -1770,7 +1832,17 @@
         return;
       }
 
-      const rows = visibleRooms.map(room => {
+      const totalPages = getBoardTotalPages(visibleRooms);
+      normalizeBoardPageIndex(totalPages);
+
+      const startIndex = state.displayPageIndex * BOARD_ROOMS_PER_PAGE;
+      const pageRooms = visibleRooms.slice(startIndex, startIndex + BOARD_ROOMS_PER_PAGE);
+
+      const dotsHtml = Array.from({ length: totalPages }, (_, i) => `
+        <span class="board-dot ${i === state.displayPageIndex ? "active" : ""}"></span>
+      `).join("");
+
+      const rows = pageRooms.map(room => {
         const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
         const doctorParts = splitDoctorName(room.doctorName);
 
@@ -1842,6 +1914,11 @@
       }).join("");
 
       container.innerHTML = `
+        <div class="board-pagination-bar">
+          <div class="board-page-indicator">第 ${state.displayPageIndex + 1} 頁 / 共 ${totalPages} 頁</div>
+          <div class="board-page-dots">${dotsHtml}</div>
+        </div>
+
         <div class="board-wrap">
           <div class="board-head">
             <div><span class="board-head-zh">房號</span><span class="board-head-en">ROOM</span></div>
@@ -1888,9 +1965,7 @@
                   <span class="pill ${patient.initialAssignmentMode === "manual" ? "pill-manual" : "pill-auto-assign"}">
                     ${patient.initialAssignmentMode === "manual" ? "首次手動派房" : "首次自動派房"}
                   </span>
-                  ${patient.manualLock ? `
-                    <span class="pill pill-locked">人工轉房已鎖定</span>
-                  ` : ``}
+                  ${patient.manualLock ? `<span class="pill pill-locked">人工轉房已鎖定</span>` : ``}
                 </div>
               </td>
               <td>
@@ -2876,6 +2951,7 @@
         tabBtn.classList.add("active");
         document.getElementById(tabId).classList.add("active");
         setDisplayModeByTab(tabId);
+        renderDisplayBoard();
         return;
       }
 
@@ -2948,8 +3024,27 @@
     });
 
     let liveRefreshTimer = null;
-    let boardPollingTimer = null;
+    let boardClockTimer = null;
+    let boardPageRotateTimer = null;
     let realtimeChannel = null;
+
+    function startBoardPageRotation() {
+      if (boardPageRotateTimer) clearInterval(boardPageRotateTimer);
+
+      boardPageRotateTimer = setInterval(() => {
+        const visibleRooms = getVisibleBoardRooms();
+        const totalPages = getBoardTotalPages(visibleRooms);
+
+        if (totalPages <= 1) {
+          state.displayPageIndex = 0;
+          renderDisplayBoard();
+          return;
+        }
+
+        state.displayPageIndex = (state.displayPageIndex + 1) % totalPages;
+        renderDisplayBoard();
+      }, BOARD_PAGE_ROTATE_MS);
+    }
 
     async function setupRealtimeAndPolling() {
       if (realtimeChannel) {
@@ -2962,12 +3057,10 @@
 
       realtimeChannel = sb
         .channel("emc-cqms-live")
-        .on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, async (payload) => {
-          console.log("Realtime rooms change:", payload);
+        .on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, async () => {
           await refreshFromCloudAndRender(false);
         })
-        .on("postgres_changes", { event: "*", schema: "public", table: "patients" }, async (payload) => {
-          console.log("Realtime patients change:", payload);
+        .on("postgres_changes", { event: "*", schema: "public", table: "patients" }, async () => {
           await refreshFromCloudAndRender(false);
         })
         .subscribe((status, err) => {
@@ -2982,10 +3075,12 @@
         await refreshFromCloudAndRender(false);
       }, 3000);
 
-      if (boardPollingTimer) clearInterval(boardPollingTimer);
-      boardPollingTimer = setInterval(() => {
+      if (boardClockTimer) clearInterval(boardClockTimer);
+      boardClockTimer = setInterval(() => {
         renderDisplayBoard();
       }, 1000);
+
+      startBoardPageRotation();
     }
 
     async function initApp() {
