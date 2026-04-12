@@ -1435,7 +1435,7 @@
         <label class="teach-toggle"
                data-help-title="教學模式開關"
                data-help="開啟後，滑鼠移到欄位或按鈕會顯示操作說明。關閉後，畫面會接近正式版。">
-          <input id="teachModeToggle" type="checkbox" checked />
+          <input id="teachModeToggle" type="checkbox" />
           <span>教學模式</span>
           <span class="teach-badge" id="teachModeBadge">已開啟</span>
         </label>
@@ -1850,7 +1850,7 @@
       roomRenderFingerprints: new Map(),
       roomDomMap: new Map(),
       nextRoundRobinIndex: 0,
-      teachMode: true
+      teachMode: false
     };
 
     let liveRefreshTimer = null;
@@ -2973,7 +2973,7 @@
                   <div class="hover-log-anchor"
                        ${renderPatientHoverLogAttrs(patient)}
                        data-help-title="病人活動紀錄"
-                       data-help="將滑鼠移到 CUMC號碼，會喺游標旁邊顯示最近 5 個 activity log。">
+                       data-help="將滑鼠移到 CUMC號碼，會喺游標旁邊顯示最近 5 個活動記錄。">
                     <div class="queue-ticket-text">${escapeHtml(getPatientDisplayNo(patient))}</div>
                     <div class="hover-log-hint">i</div>
                   </div>
