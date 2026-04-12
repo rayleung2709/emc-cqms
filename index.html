@@ -1653,7 +1653,7 @@
                     type="button"
                     data-help-title="一鍵平均分流候診病人"
                     data-help="系統會將可重新分配的候診病人，按各房目前智能負荷分數動態平衡分流。會考慮診症中病人、一般候診人數及醫療優先病人數。只處理候診中、非預約、非手動或轉房病人。">
-              一鍵平均分流候診病人
+              平均分流候診病人
             </button>
           </div>
         </div>
@@ -4505,7 +4505,7 @@
         addPatientLog(
           patient,
           "轉房間",
-          `${fromText} → ${newRoom.roomNo} / ${newRoom.doctorName}（${modeText}；現排第 ${actualPosition} 位；已鎖定不再參與 rebalance）`
+          `${fromText} → ${newRoom.roomNo} / ${newRoom.doctorName}（${modeText}；現排第 ${actualPosition} 位；已鎖定不再參與平均分流）`
         );
 
         renderRoomsPair(oldRoomId, newRoomId);
