@@ -951,6 +951,7 @@
           <div class="panel-title" style="margin-bottom:0;">各診室輪候情況</div>
           <div class="actions">
             <button class="btn-primary" id="rebalanceWaitingBtn" type="button">一鍵平均分流候診病人</button>
+            <button class="btn-secondary" id="cleanupExpiredBtn" type="button">清理超過24小時個案</button>
           </div>
         </div>
 
@@ -1003,7 +1004,7 @@
 
   <script>
     const SUPABASE_URL = "https://dvyberdrmmfgutjqnpjr.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const HKT_TIMEZONE = "Asia/Hong_Kong";
@@ -1013,6 +1014,7 @@
     const BOARD_PAGE_ROTATE_MS = 8000;
     const POLLING_MS = 8000;
     const RENDER_DEBOUNCE_MS = 80;
+    const EXPIRE_HOURS = 24;
 
     const DOCTOR_SUGGESTIONS = [
       "林家強醫生 Dr. LAM Ka Keung",
@@ -1050,6 +1052,7 @@
     let refreshInFlight = false;
     let queuedRefresh = false;
     let softRefreshTimer = null;
+    let cleanupInFlight = false;
 
     function debugLog(...args) {
       console.log("[CQMS DEBUG]", ...args);
@@ -1122,7 +1125,6 @@
       };
     }
 
-    // 儲存到 DB 一律用 UTC ISO，顯示時再轉 HKT
     function nowIsoUtc() {
       return new Date().toISOString();
     }
@@ -1558,6 +1560,78 @@
       return patient.initialAssignmentMode === "manual" || patient.manualLock === true;
     }
 
+    function isExpiredPatient(patient) {
+      if (!patient) return false;
+      if (!["waiting", "called", "skipped"].includes(patient.status)) return false;
+
+      const baseTime = patient.registeredAt || patient.createdAt;
+      const ts = new Date(baseTime).getTime();
+      if (Number.isNaN(ts)) return false;
+
+      const expireMs = EXPIRE_HOURS * 60 * 60 * 1000;
+      return Date.now() - ts >= expireMs;
+    }
+
+    async function cleanupExpiredPatients(showToast = false) {
+      if (cleanupInFlight) return 0;
+      cleanupInFlight = true;
+
+      try {
+        const expiredPatients = state.patients.filter(isExpiredPatient);
+        if (!expiredPatients.length) return 0;
+
+        const affectedRoomIds = new Set();
+
+        for (const patient of expiredPatients) {
+          const room = getRoom(patient.roomId);
+          if (room) {
+            room.queuePatientIds = (room.queuePatientIds || []).filter(id => id !== patient.id);
+            if (room.currentPatientId === patient.id) {
+              room.currentPatientId = null;
+            }
+            affectedRoomIds.add(room.id);
+          }
+
+          patient.status = "cancelled";
+          patient.cancelledAt = nowIsoUtc();
+          patient.queueOrder = null;
+          addPatientLog(
+            patient,
+            "系統自動取消",
+            `已超過登記時間 ${EXPIRE_HOURS} 小時，自動取消`
+          );
+        }
+
+        for (const roomId of affectedRoomIds) {
+          const room = getRoom(roomId);
+          if (room) sortRoomQueue(room);
+        }
+
+        await savePatientsBatchToSupabase(expiredPatients);
+
+        for (const roomId of affectedRoomIds) {
+          const room = getRoom(roomId);
+          if (!room) continue;
+          await updateRoomInSupabase(room);
+          await syncRoomQueuePatients(room);
+        }
+
+        if (showToast) {
+          notify(`已自動取消 ${expiredPatients.length} 位超過${EXPIRE_HOURS}小時個案`, "warning");
+        }
+
+        return expiredPatients.length;
+      } catch (error) {
+        console.error("cleanupExpiredPatients error:", error);
+        if (showToast) {
+          notify("清理超時個案失敗\n" + formatSupabaseError(error), "error");
+        }
+        return 0;
+      } finally {
+        cleanupInFlight = false;
+      }
+    }
+
     async function loadStateFromSupabase(showErrorToast = true) {
       try {
         const { data: roomsData, error: roomsError } = await sb
@@ -1619,7 +1693,8 @@
             .sort((a, b) => {
               const aOrder = typeof a.queueOrder === "number" ? a.queueOrder : 999999;
               const bOrder = typeof b.queueOrder === "number" ? b.queueOrder : 999999;
-              return aOrder - bOrder;
+              if (aOrder !== bOrder) return aOrder - bOrder;
+              return compareWaitingBase(a, b);
             })
             .map(patient => patient.id);
 
@@ -1762,6 +1837,11 @@
       try {
         const ok = await loadStateFromSupabase(showErrorToast);
         if (!ok) return;
+
+        const expiredCount = await cleanupExpiredPatients(false);
+        if (expiredCount > 0) {
+          await loadStateFromSupabase(false);
+        }
 
         const activeTab = getActiveTabId();
         if (activeTab === "staffPage" && isUiBusy()) {
@@ -2497,6 +2577,9 @@
       }
 
       await savePatientsBatchToSupabase(affectedPatients);
+
+      if (oldRoom) await updateRoomInSupabase(oldRoom);
+      if (newRoom) await updateRoomInSupabase(newRoom);
     }
 
     async function withButtonLoading(button, fn) {
@@ -2823,6 +2906,7 @@
         populateSearchRoomSelect();
 
         await updateRoomInSupabase(room);
+        await syncRoomQueuePatients(room);
 
         notify("已標記為過號", "warning");
         scheduleSoftCloudRefresh();
@@ -2866,6 +2950,7 @@
 
         await savePatientToSupabase(patient);
         await updateRoomInSupabase(room);
+        await syncRoomQueuePatients(room);
 
         notify(`重叫 ${patient.cumcNo}`, "info");
         scheduleSoftCloudRefresh();
@@ -3355,6 +3440,7 @@
         await savePatientsBatchToSupabase(movablePatients);
         for (const room of eligibleRooms) {
           await syncRoomQueuePatients(room);
+          await updateRoomInSupabase(room);
         }
 
         notify(`已重新平均分流 ${movablePatients.length} 位候診病人`, "success");
@@ -3465,6 +3551,17 @@
     document.getElementById("addPatientBtn").addEventListener("click", (e) => withButtonLoading(e.currentTarget, addPatient));
     document.getElementById("addRoomBtn").addEventListener("click", (e) => withButtonLoading(e.currentTarget, addRoom));
     document.getElementById("searchPatientBtn").addEventListener("click", searchPatient);
+    document.getElementById("cleanupExpiredBtn").addEventListener("click", async (e) => {
+      await withButtonLoading(e.currentTarget, async () => {
+        const count = await cleanupExpiredPatients(true);
+        if (count > 0) {
+          await loadStateFromSupabase(false);
+          renderAll(true, { resortQueues: false });
+        } else {
+          notify("沒有超過24小時仍未完成的個案", "info");
+        }
+      });
+    });
 
     document.getElementById("assignMode").addEventListener("change", () => {
       toggleManualRoomSelect();
@@ -3623,7 +3720,13 @@
       setDisplayModeByTab("staffPage");
 
       const ok = await loadStateFromSupabase(true);
-      if (ok) renderAll(true, { resortQueues: false });
+      if (ok) {
+        const expiredCount = await cleanupExpiredPatients(false);
+        if (expiredCount > 0) {
+          await loadStateFromSupabase(false);
+        }
+        renderAll(true, { resortQueues: false });
+      }
 
       await setupRealtimeAndPolling();
     }
