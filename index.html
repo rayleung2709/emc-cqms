@@ -1652,7 +1652,7 @@
                     id="rebalanceWaitingBtn"
                     type="button"
                     data-help-title="一鍵平均分流候診病人"
-                    data-help="系統會將可重新分配的候診病人，按各房目前智能負荷分數動態平衡分流。會考慮診症中病人、一般候診人數及醫療優先病人數。只處理候診中、非預約、非手動派房、非人工轉房鎖定病人。">
+                    data-help="系統會將可重新分配的候診病人，按各房目前智能負荷分數動態平衡分流。會考慮診症中病人、一般候診人數及醫療優先病人數。只處理候診中、非預約、非手動或轉房病人。">
               一鍵平均分流候診病人
             </button>
           </div>
@@ -4020,7 +4020,7 @@
         addPatientLog(
           patient,
           "首次登記",
-          `已登記到 ${room.roomNo} / ${room.doctorName}；類型：${getPatientTypeLabel(patientType)}；首次派房：${patient.initialAssignmentMode === "manual" ? "手動派房" : "自動派房"}；登記時間：${formatDateTime(registeredAt)}${useCustomRegisteredAt ? "（後備手動香港時間）" : "（系統即時香港時間）"}；級別：${getPriorityLabel(patient)}`
+          `已登記到 ${room.roomNo} / ${room.doctorName}；類型：${getPatientTypeLabel(patientType)}；首次派房：${patient.initialAssignmentMode === "manual" ? "手動派房" : "自動派房"}；登記時間：${formatDateTime(registeredAt)}${useCustomRegisteredAt ? "（手動時間）" : "（系統時間）"}；級別：${getPriorityLabel(patient)}`
         );
 
         state.patients.push(patient);
@@ -4217,7 +4217,7 @@
         patient.skippedAt = null;
         patient.queueOrder = null;
         if (!patient.calledAt) patient.calledAt = nowIso();
-        addPatientLog(patient, "重叫", `${room.roomNo} / ${room.doctorName} 已重叫（人工即時處理）`);
+        addPatientLog(patient, "重叫", `${room.roomNo} / ${room.doctorName} 已重叫`);
 
         renderRoomOnly(room.id, true);
         renderDisplayBoard(true);
