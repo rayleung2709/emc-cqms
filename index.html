@@ -1437,7 +1437,7 @@
                data-help="開啟後，滑鼠移到欄位或按鈕會顯示操作說明。關閉後，畫面會接近正式版。">
           <input id="teachModeToggle" type="checkbox" />
           <span>教學模式</span>
-          <span class="teach-badge" id="teachModeBadge">已開啟</span>
+          <span class="teach-badge" id="teachModeBadge">已關閉</span>
         </label>
       </div>
     </div>
@@ -2694,6 +2694,85 @@
           }
         </div>
       `;
+    }
+
+    function renderRoomSearchResult(room, filters) {
+      const container = document.getElementById("patientSearchResult");
+      if (!container || !room) return;
+
+      const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
+
+      let roomPatients = state.patients.filter(patient => patient.roomId === room.id);
+
+      if (filters.status !== "all") {
+        roomPatients = roomPatients.filter(patient => patient.status === filters.status);
+      }
+
+      if (filters.patientType !== "all") {
+        roomPatients = roomPatients.filter(patient => patient.sourceType === filters.patientType);
+      }
+
+      if (filters.activeOnly) {
+        roomPatients = roomPatients.filter(patient => isActivePatientStatus(patient.status));
+      }
+
+      const waitingPatients = getOrderedWaitingPatients(room).filter(patient => roomPatients.some(p => p.id === patient.id));
+      const skippedPatients = getSkippedPatients(room).filter(patient => roomPatients.some(p => p.id === patient.id));
+      const calledPatients = roomPatients.filter(patient => patient.status === "called").sort(compareSearchPatients);
+      const donePatients = roomPatients.filter(patient => patient.status === "done").sort(compareSearchPatients);
+      const cancelledPatients = roomPatients.filter(patient => patient.status === "cancelled").sort(compareSearchPatients);
+
+      const summaryText = `房間 ${room.roomNo} / ${room.doctorName}：共找到 ${roomPatients.length} 位病人`;
+
+      const html = `
+        ${renderSearchSummary(summaryText)}
+        <div class="search-room-hero teach-anchor" data-help-title="房間查詢結果" data-help="當只選房號查詢時，系統會用房間視圖顯示該房目前情況，包括診症中、候診、過號及其他符合篩選條件的病人。">
+          <div class="search-room-hero-top">
+            <div>
+              <div class="search-room-title">${escapeHtml(room.roomNo)}</div>
+              <div class="search-room-sub">${escapeHtml(room.doctorName)}</div>
+            </div>
+            <div class="status-stack" style="align-items:flex-end;">
+              <div class="status-badge ${room.status === "open" ? "status-open" : room.status === "paused" ? "status-paused" : "status-closed"}">
+                ${room.status === "open" ? "開放中" : room.status === "paused" ? "暫停" : "已關房"}
+              </div>
+              <div class="status-badge ${room.acceptingNew ? "status-accepting" : "status-stop-assign"}">
+                ${room.acceptingNew ? "可派症" : "已截籌"}
+              </div>
+            </div>
+          </div>
+
+          <div class="search-mini-grid">
+            <div class="search-mini-card">
+              <div class="search-mini-label">現在診症</div>
+              <div class="search-mini-value">${currentPatient ? escapeHtml(getPatientDisplayNo(currentPatient)) : "—"}</div>
+            </div>
+            <div class="search-mini-card">
+              <div class="search-mini-label">候診中</div>
+              <div class="search-mini-value">${waitingPatients.length}</div>
+            </div>
+            <div class="search-mini-card">
+              <div class="search-mini-label">過號</div>
+              <div class="search-mini-value">${skippedPatients.length}</div>
+            </div>
+            <div class="search-mini-card">
+              <div class="search-mini-label">總數</div>
+              <div class="search-mini-value">${roomPatients.length}</div>
+            </div>
+          </div>
+        </div>
+
+        ${renderRoomSearchSection("診症中", calledPatients, false)}
+        ${renderRoomSearchSection("候診中", waitingPatients, false)}
+        ${renderRoomSearchSection("過號", skippedPatients, false)}
+        ${!filters.activeOnly ? renderRoomSearchSection("已完成", donePatients, false) : ""}
+        ${!filters.activeOnly ? renderRoomSearchSection("已取消", cancelledPatients, false) : ""}
+      `;
+
+      if (state.lastSearchRenderKey !== html) {
+        container.innerHTML = html;
+        state.lastSearchRenderKey = html;
+      }
     }
 
     function renderNoSearchResult(message = "找不到病人資料") {
@@ -4753,16 +4832,13 @@
 
     function searchPatient() {
       const filters = getSearchFiltersFromUi();
+
       const hasMeaningfulFilter =
         !!filters.ticket ||
         !!filters.roomNo ||
         filters.status !== "all" ||
-        filters.patientType !== "all";
-
-      if (!hasMeaningfulFilter) {
-        notify("請輸入 CUMC號碼、選擇房號，或設定狀態 / 類型篩選", "warning");
-        return;
-      }
+        filters.patientType !== "all" ||
+        filters.activeOnly !== true;
 
       const room = filters.roomNo ? state.rooms.find(r => r.roomNo === filters.roomNo) : null;
 
@@ -4797,7 +4873,18 @@
         return;
       }
 
-      renderPatientSearchList(matchedPatients, "找到多個符合條件結果");
+      if (!hasMeaningfulFilter && !filters.ticket && !filters.roomNo) {
+        renderPatientSearchList(matchedPatients, "全部病人列表");
+        return;
+      }
+
+      renderPatientSearchList(matchedPatients, filters.ticket ? "找到多個符合條件結果" : "符合條件的病人列表");
+    }
+
+    function submitAddPatientByEnter() {
+      const addPatientBtn = document.getElementById("addPatientBtn");
+      if (!addPatientBtn || addPatientBtn.disabled) return;
+      withButtonLoading(addPatientBtn, addPatient);
     }
 
     function initTeachingMode() {
@@ -5225,6 +5312,28 @@
         event.preventDefault();
         searchPatient();
       }
+    });
+
+    [
+      "patientCumcNo",
+      "patientType",
+      "assignMode",
+      "assignRoom",
+      "isPriority",
+      "registeredAt",
+      "useCustomRegisteredAt",
+      "insertMode",
+      "insertPosition"
+    ].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      el.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          submitAddPatientByEnter();
+        }
+      });
     });
 
     document.addEventListener("focusin", (event) => {
