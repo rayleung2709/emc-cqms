@@ -3,822 +3,140 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>香港中文大學醫院急症醫學中心輪候系統 CUHKMC Emergency Medicine Centre Queue Management System TV Large</title>
+  <title>CUHKMC EMC Queue Management System - Production Fast v4</title>
   <link rel="icon" href="data:," />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root {
-      --bg: #f3f6fb;
-      --card: #ffffff;
-      --line: #dbe3ee;
-      --text: #1f2937;
-      --muted: #64748b;
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --success: #16a34a;
-      --warning: #d97706;
-      --danger: #dc2626;
-      --soft: #f8fafc;
-      --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
-      --radius: 18px;
-
-      --board-bg: #06101f;
-      --board-panel: #0b1528;
-      --board-line: rgba(255,255,255,0.12);
-      --board-head: #1d4ed8;
-      --board-text: #f8fafc;
-      --board-sub: #cbd5e1;
-      --board-green: #22c55e;
-      --board-red: #ef4444;
-      --board-amber: #f59e0b;
-      --board-blue: #60a5fa;
-      --board-sky: #38bdf8;
-    }
-
-    * { box-sizing: border-box; }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, "Microsoft JhengHei", "PingFang TC", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    body.display-mode {
-      background: var(--board-bg);
-      overflow: auto;
-    }
-
-    .app {
-      max-width: 1680px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    body.display-mode .app {
-      max-width: none;
-      width: 100vw;
-      min-height: 100vh;
-      padding: 0;
-      margin: 0;
-      background: var(--board-bg);
-    }
-
-    .topbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-    }
-
-    body.display-mode .topbar {
-      display: none !important;
-    }
-
-    .title {
-      font-size: 1.8rem;
-      font-weight: 900;
-      color: #0f172a;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    body.display-mode .tabs {
-      display: none !important;
-    }
-
-    .tab-btn {
-      border: 1px solid var(--line);
-      background: #fff;
-      color: var(--text);
-      padding: 10px 16px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-weight: 800;
-    }
-
-    .tab-btn.active {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
-    }
-
-    .page { display: none; }
-    .page.active { display: block; }
-
-    body.display-mode #staffPage,
-    body.display-mode #patientPage {
-      display: none !important;
-    }
-
-    body.display-mode #displayPage {
-      display: flex !important;
-      flex-direction: column;
-      height: 100vh;
-      padding: 14px 18px 14px;
-      background: var(--board-bg);
-      overflow: hidden;
-    }
-
-    .panel {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 18px;
-      margin-bottom: 18px;
-    }
-
-    .panel-title {
-      font-size: 1.1rem;
-      font-weight: 900;
-      margin-bottom: 14px;
-      color: #0f172a;
-    }
-
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
-
-    .form-row {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    label {
-      font-size: 0.92rem;
-      font-weight: 800;
-      color: #334155;
-    }
-
-    input, select, textarea, datalist {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid #cbd5e1;
-      font-size: 0.98rem;
-      background: #fff;
-      color: var(--text);
-      font-family: inherit;
-    }
-
-    input[disabled], select[disabled], textarea[disabled] {
-      background: #f1f5f9;
-      color: #94a3b8;
-      cursor: not-allowed;
-    }
-
-    textarea {
-      min-height: 82px;
-      resize: vertical;
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
-
-    button {
-      border: none;
-      border-radius: 12px;
-      padding: 10px 14px;
-      cursor: pointer;
-      font-weight: 800;
-      font-size: 0.94rem;
-    }
-
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-secondary { background: #e2e8f0; color: #0f172a; }
-    .btn-success { background: var(--success); color: #fff; }
-    .btn-warning { background: var(--warning); color: #fff; }
-    .btn-danger { background: var(--danger); color: #fff; }
-
-    .btn-small {
-      padding: 8px 10px;
-      font-size: 0.86rem;
-      border-radius: 10px;
-    }
-
-    .muted { color: var(--muted); }
-
-    .room-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
-      gap: 16px;
-    }
-
-    .room-card {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: #fff;
-      overflow: hidden;
-    }
-
-    .room-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 16px;
-      border-bottom: 1px solid #edf2f7;
-      background: #f8fafc;
-    }
-
-    .room-no {
-      font-size: 1.3rem;
-      font-weight: 900;
-      color: var(--primary-dark);
-    }
-
-    .doctor-name {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #334155;
-      margin-top: 4px;
-    }
-
-    .status-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      align-items: flex-end;
-    }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 7px 12px;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      font-weight: 800;
-      white-space: nowrap;
-      border: 1px solid transparent;
-    }
-
-    .status-open { background: #ecfdf5; color: #047857; border-color: #86efac; }
-    .status-paused { background: #fffbeb; color: #b45309; border-color: #fcd34d; }
-    .status-closed { background: #f3f4f6; color: #6b7280; border-color: #d1d5db; }
-    .status-accepting { background: #eff6ff; color: #1d4ed8; border-color: #93c5fd; }
-    .status-stop-assign { background: #fef2f2; color: #b91c1c; border-color: #fca5a5; }
-
-    .room-card-body { padding: 16px; }
-
-    .current-box {
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 14px;
-    }
-
-    .current-label {
-      font-size: 0.88rem;
-      font-weight: 800;
-      color: #475569;
-      margin-bottom: 8px;
-    }
-
-    .current-ticket {
-      font-size: 2rem;
-      font-weight: 900;
-      color: #1d4ed8;
-      line-height: 1.2;
-    }
-
-    .current-subtext {
-      margin-top: 8px;
-      color: #64748b;
-      font-weight: 800;
-      font-size: 0.92rem;
-    }
-
-    .section-title {
-      font-size: 1rem;
-      font-weight: 900;
-      margin: 14px 0 8px;
-      color: #0f172a;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-    }
-
-    th, td {
-      text-align: left;
-      padding: 10px 8px;
-      border-bottom: 1px solid #edf2f7;
-      vertical-align: top;
-      font-size: 0.92rem;
-    }
-
-    th {
-      color: #334155;
-      font-size: 0.86rem;
-      font-weight: 900;
-      background: #f8fafc;
-    }
-
-    .pill {
-      display: inline-block;
-      padding: 5px 10px;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 800;
-    }
-
-    .pill-priority {
-      background: #fff7ed;
-      color: #c2410c;
-      border: 1px solid #fdba74;
-    }
-
-    .pill-normal {
-      background: #eff6ff;
-      color: #1d4ed8;
-      border: 1px solid #93c5fd;
-    }
-
-    .pill-appointment {
-      background: #f5f3ff;
-      color: #6d28d9;
-      border: 1px solid #c4b5fd;
-    }
-
-    .pill-online {
-      background: #ecfeff;
-      color: #0f766e;
-      border: 1px solid #67e8f9;
-    }
-
-    .pill-walkin {
-      background: #f1f5f9;
-      color: #334155;
-      border: 1px solid #cbd5e1;
-    }
-
-    .pill-manual {
-      background: #fef2f2;
-      color: #b91c1c;
-      border: 1px solid #fca5a5;
-    }
-
-    .pill-auto-assign {
-      background: #ecfdf5;
-      color: #047857;
-      border: 1px solid #86efac;
-    }
-
-    .pill-locked {
-      background: #111827;
-      color: #fff;
-      border: 1px solid #374151;
-    }
-
-    .transfer-room-select, .insert-pos-input {
-      min-width: 120px;
-      max-width: 220px;
-    }
-
-    .patient-search-result {
-      margin-top: 14px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 16px;
-      background: #fff;
-    }
-
-    .history-list {
-      margin-top: 16px;
-      border-top: 1px solid #e2e8f0;
-      padding-top: 14px;
-    }
-
-    .history-item {
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 10px 12px;
-      margin-bottom: 10px;
-      background: #f8fafc;
-    }
-
-    .history-time {
-      font-size: 0.86rem;
-      color: #475569;
-      font-weight: 800;
-      margin-bottom: 4px;
-    }
-
-    .history-text {
-      font-size: 0.95rem;
-      color: #0f172a;
-      font-weight: 700;
-      line-height: 1.45;
-    }
-
-    .toast-wrap {
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 9999;
-    }
-
-    .toast {
-      min-width: 240px;
-      max-width: 420px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      color: #fff;
-      font-weight: 800;
-      box-shadow: var(--shadow);
-    }
-
-    .toast.success { background: #16a34a; }
-    .toast.warning { background: #d97706; }
-    .toast.error { background: #dc2626; }
-    .toast.info { background: #2563eb; }
-
-    .board-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-      color: var(--board-text);
-      flex: 0 0 auto;
-    }
-
-    .board-title {
-      font-size: 2.6rem;
-      font-weight: 900;
-      color: var(--board-text);
-      letter-spacing: 0.02em;
-      line-height: 1.1;
-    }
-
-    .board-time {
-      font-size: 1.6rem;
-      color: var(--board-sub);
-      font-weight: 900;
-      letter-spacing: 0.03em;
-    }
-
-    .board-disclaimer {
-      margin-bottom: 12px;
-    }
-
-    .info-card {
-      border: 1px solid rgba(96,165,250,0.28);
-      background: rgba(30,41,59,0.9);
-      border-radius: 16px;
-      padding: 14px 18px;
-      margin-top: 10px;
-    }
-
-    body.display-mode .info-card {
-      margin-top: 0;
-      margin-bottom: 12px;
-      background: rgba(15,23,42,0.95);
-      border-color: rgba(255,255,255,0.12);
-      flex: 0 0 auto;
-    }
-
-    .inline-note {
-      font-size: 1.12rem;
-      color: #dbeafe;
-      font-weight: 800;
-      line-height: 1.55;
-    }
-
-    .toolbar-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
-
-    #displayBoard {
-      flex: 1 1 auto;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .board-pagination-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 10px;
-      flex: 0 0 auto;
-      color: var(--board-text);
-    }
-
-    .board-page-indicator {
-      font-size: 1.28rem;
-      font-weight: 900;
-      color: #bfdbfe;
-      letter-spacing: 0.04em;
-    }
-
-    .board-page-dots {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .board-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.22);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
-    }
-
-    .board-dot.active {
-      background: #60a5fa;
-      box-shadow: 0 0 0 3px rgba(96,165,250,0.18);
-    }
-
-    .board-wrap {
-      background: var(--board-panel);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 22px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.28);
-      width: 100%;
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow: auto;
-    }
-
-    .board-head {
-      display: grid;
-      grid-template-columns: 0.7fr 1.2fr 1.25fr 3.2fr 1.8fr;
-      background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%);
-      color: #fff;
-      font-weight: 900;
-      padding: 0;
-      position: sticky;
-      top: 0;
-      z-index: 5;
-    }
-
-    .board-head div {
-      padding: 18px 12px 16px;
-      border-right: 1px solid rgba(255,255,255,0.16);
-      text-align: center;
-    }
-
-    .board-head div:last-child { border-right: none; }
-
-    .board-head-zh {
-      display: block;
-      font-size: 1.85rem;
-      line-height: 1.04;
-      margin-bottom: 6px;
-      font-weight: 900;
-    }
-
-    .board-head-en {
-      display: block;
-      font-size: 1.02rem;
-      line-height: 1.08;
-      opacity: 0.96;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-    }
-
-    .board-body {
-      background: var(--board-panel);
-    }
-
-    .board-row {
-      display: grid;
-      grid-template-columns: 0.7fr 1.2fr 1.25fr 3.2fr 1.8fr;
-      align-items: stretch;
-      border-top: 1px solid var(--board-line);
-      min-height: 148px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0));
-    }
-
-    .board-cell {
-      padding: 16px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      border-right: 1px solid rgba(255,255,255,0.08);
-      font-weight: 800;
-      color: var(--board-text);
-    }
-
-    .board-cell:last-child { border-right: none; }
-
-    .board-room {
-      font-size: 4rem;
-      color: #93c5fd;
-      font-weight: 900;
-      letter-spacing: 0.03em;
-      line-height: 1;
-    }
-
-    .board-doctor {
-      color: var(--board-text);
-      font-weight: 900;
-      line-height: 1.25;
-      flex-direction: column;
-      gap: 8px;
-      align-items: flex-start;
-      text-align: left;
-      justify-content: center;
-    }
-
-    .board-doctor-zh {
-      font-size: 1.7rem;
-      color: #ffffff;
-      font-weight: 900;
-      line-height: 1.15;
-      word-break: break-word;
-    }
-
-    .board-doctor-en {
-      font-size: 1.12rem;
-      color: var(--board-sub);
-      font-weight: 800;
-      line-height: 1.2;
-      word-break: break-word;
-    }
-
-    .board-current {
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .board-current-priority-ticket {
-      color: #fca5a5;
-      font-size: 2.5rem;
-      font-weight: 900;
-      line-height: 1.04;
-      letter-spacing: 0.03em;
-    }
-
-    .board-current-normal-ticket {
-      color: #4ade80;
-      font-size: 2.5rem;
-      font-weight: 900;
-      line-height: 1.04;
-      letter-spacing: 0.03em;
-    }
-
-    .board-meta {
-      font-size: 1rem;
-      color: var(--board-sub);
-      font-weight: 800;
-      line-height: 1.3;
-    }
-
-    .board-paused {
-      color: #fbbf24;
-      font-size: 1.9rem;
-      line-height: 1.18;
-      word-break: break-word;
-      font-weight: 900;
-    }
-
-    .board-queue, .board-skip {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      justify-content: flex-start;
-      width: 100%;
-      text-align: left;
-    }
-
-    .board-tag {
-      border-radius: 999px;
-      padding: 12px 18px;
-      font-size: 1.42rem;
-      font-weight: 900;
-      min-width: 122px;
-      text-align: center;
-      line-height: 1.04;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
-    }
-
-    .tag-wait {
-      background: rgba(37,99,235,0.16);
-      color: #bfdbfe;
-      border: 1px solid rgba(96,165,250,0.42);
-    }
-
-    .tag-skip {
-      background: rgba(239,68,68,0.12);
-      color: #fecaca;
-      border: 1px solid rgba(248,113,113,0.4);
-    }
-
-    .tag-priority {
-      background: rgba(185,28,28,0.2);
-      color: #fee2e2;
-      border: 2px solid #ef4444;
-      box-shadow: 0 0 0 2px rgba(239,68,68,0.12) inset;
-    }
-
-    .board-empty {
-      color: #94a3b8;
-      font-size: 1.2rem;
-      font-weight: 800;
-    }
-
-    .board-footer-tip {
-      margin-top: 8px;
-      color: #93c5fd;
-      font-size: 0.96rem;
-      font-weight: 800;
-      text-align: right;
-      opacity: 0.95;
-      flex: 0 0 auto;
-    }
-
-    @media (max-width: 1600px) {
-      .board-title { font-size: 2.15rem; }
-      .board-time { font-size: 1.35rem; }
-      .inline-note { font-size: 0.98rem; }
-      .board-head-zh { font-size: 1.5rem; }
-      .board-head-en { font-size: 0.9rem; }
-      .board-room { font-size: 3.1rem; }
-      .board-doctor-zh { font-size: 1.4rem; }
-      .board-doctor-en { font-size: 0.98rem; }
-      .board-current-priority-ticket,
-      .board-current-normal-ticket { font-size: 2rem; }
-      .board-tag { font-size: 1.15rem; min-width: 100px; }
-      .board-row { min-height: 126px; }
-    }
-
-    @media (max-width: 1500px) {
-      .grid-5, .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
-      .board-head {
-        grid-template-columns: 0.72fr 1.1fr 1.15fr 2.8fr 1.55fr;
-      }
-      .board-row {
-        grid-template-columns: 0.72fr 1.1fr 1.15fr 2.8fr 1.55fr;
-      }
-    }
-
-    @media (max-width: 1150px) {
-      .board-head, .board-row { grid-template-columns: 1fr; }
-      .board-head div, .board-cell {
-        border-right: none;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-      }
-      .board-cell:last-child, .board-head div:last-child { border-bottom: none; }
-      .board-room { font-size: 2.8rem; }
-      .board-doctor-zh { font-size: 1.25rem; }
-      .board-doctor-en { font-size: 0.95rem; }
-      .board-current-priority-ticket,
-      .board-current-normal-ticket { font-size: 1.8rem; }
-      .board-tag { font-size: 1rem; min-width: 88px; }
-      .board-wrap { min-height: auto; }
-      .board-title { font-size: 1.6rem; }
-      .board-time { font-size: 1.05rem; }
-      .inline-note { font-size: 0.9rem; }
-    }
-
-    @media (max-width: 900px) {
-      .app { padding: 12px; }
-      .room-list { grid-template-columns: 1fr; }
-      body.display-mode #displayPage { padding: 10px; }
-      .board-tag { padding: 9px 12px; }
-      .board-page-indicator { font-size: 1rem; }
-      .board-dot { width: 10px; height: 10px; }
-    }
+    :root{
+      --bg:#f3f6fb;--card:#fff;--line:#dbe3ee;--text:#1f2937;--muted:#64748b;
+      --primary:#2563eb;--primary-dark:#1d4ed8;--success:#16a34a;--warning:#d97706;--danger:#dc2626;
+      --soft:#f8fafc;--shadow:0 10px 28px rgba(15,23,42,.08);--radius:18px;
+      --board-bg:#06101f;--board-panel:#0b1528;--board-line:rgba(255,255,255,.12);
+      --board-text:#f8fafc;--board-sub:#cbd5e1;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:Arial,"Microsoft JhengHei","PingFang TC",sans-serif;background:var(--bg);color:var(--text)}
+    body.display-mode{background:var(--board-bg);overflow:auto}
+    .app{max-width:1680px;margin:0 auto;padding:20px}
+    body.display-mode .app{max-width:none;width:100vw;min-height:100vh;padding:0;margin:0;background:var(--board-bg)}
+    .topbar{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin-bottom:18px}
+    body.display-mode .topbar{display:none!important}
+    .title{font-size:1.6rem;font-weight:900;color:#0f172a}
+    .tabs{display:flex;gap:10px;flex-wrap:wrap}
+    body.display-mode .tabs{display:none!important}
+    .tab-btn{border:1px solid var(--line);background:#fff;color:var(--text);padding:10px 16px;border-radius:999px;cursor:pointer;font-weight:800}
+    .tab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .page{display:none}.page.active{display:block}
+    body.display-mode #staffPage, body.display-mode #patientPage{display:none!important}
+    body.display-mode #displayPage{display:flex!important;flex-direction:column;height:100vh;padding:14px 18px;background:var(--board-bg);overflow:hidden}
+    .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:18px}
+    .panel-title{font-size:1.1rem;font-weight:900;margin-bottom:14px;color:#0f172a}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+    .form-row{display:flex;flex-direction:column;gap:6px}
+    label{font-size:.92rem;font-weight:800;color:#334155}
+    input,select,textarea,datalist{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #cbd5e1;font-size:.98rem;background:#fff;color:var(--text);font-family:inherit}
+    input[disabled],select[disabled],textarea[disabled]{background:#f1f5f9;color:#94a3b8;cursor:not-allowed}
+    .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+    button{border:none;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:800;font-size:.94rem}
+    .btn-primary{background:var(--primary);color:#fff}.btn-secondary{background:#e2e8f0;color:#0f172a}
+    .btn-success{background:var(--success);color:#fff}.btn-warning{background:var(--warning);color:#fff}.btn-danger{background:var(--danger);color:#fff}
+    .btn-small{padding:8px 10px;font-size:.86rem;border-radius:10px}
+    .muted{color:var(--muted)}
+    .room-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(520px,1fr));gap:16px}
+    .room-card{border:1px solid var(--line);border-radius:18px;background:#fff;overflow:hidden}
+    .room-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:16px;border-bottom:1px solid #edf2f7;background:#f8fafc}
+    .room-no{font-size:1.3rem;font-weight:900;color:var(--primary-dark)}
+    .doctor-name{font-size:1rem;font-weight:700;color:#334155;margin-top:4px}
+    .status-stack{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+    .status-badge{display:inline-flex;align-items:center;justify-content:center;padding:7px 12px;border-radius:999px;font-size:.82rem;font-weight:800;white-space:nowrap;border:1px solid transparent}
+    .status-open{background:#ecfdf5;color:#047857;border-color:#86efac}
+    .status-paused{background:#fffbeb;color:#b45309;border-color:#fcd34d}
+    .status-closed{background:#f3f4f6;color:#6b7280;border-color:#d1d5db}
+    .status-accepting{background:#eff6ff;color:#1d4ed8;border-color:#93c5fd}
+    .status-stop-assign{background:#fef2f2;color:#b91c1c;border-color:#fca5a5}
+    .room-card-body{padding:16px}
+    .current-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:16px;padding:14px;margin-bottom:14px}
+    .current-label{font-size:.88rem;font-weight:800;color:#475569;margin-bottom:8px}
+    .current-ticket{font-size:2rem;font-weight:900;color:#1d4ed8;line-height:1.2}
+    .current-subtext{margin-top:8px;color:#64748b;font-weight:800;font-size:.92rem}
+    .section-title{font-size:1rem;font-weight:900;margin:14px 0 8px;color:#0f172a}
+    table{width:100%;border-collapse:collapse;background:#fff}
+    th,td{text-align:left;padding:10px 8px;border-bottom:1px solid #edf2f7;vertical-align:top;font-size:.92rem}
+    th{color:#334155;font-size:.86rem;font-weight:900;background:#f8fafc}
+    .pill{display:inline-block;padding:5px 10px;border-radius:999px;font-size:.78rem;font-weight:800}
+    .pill-priority{background:#fff7ed;color:#c2410c;border:1px solid #fdba74}
+    .pill-normal{background:#eff6ff;color:#1d4ed8;border:1px solid #93c5fd}
+    .pill-appointment{background:#f5f3ff;color:#6d28d9;border:1px solid #c4b5fd}
+    .pill-online{background:#ecfeff;color:#0f766e;border:1px solid #67e8f9}
+    .pill-walkin{background:#f1f5f9;color:#334155;border:1px solid #cbd5e1}
+    .pill-manual{background:#fef2f2;color:#b91c1c;border:1px solid #fca5a5}
+    .pill-auto-assign{background:#ecfdf5;color:#047857;border:1px solid #86efac}
+    .pill-locked{background:#111827;color:#fff;border:1px solid #374151}
+    .transfer-room-select,.insert-pos-input{min-width:120px;max-width:220px}
+    .patient-search-result{margin-top:14px;border:1px solid var(--line);border-radius:16px;padding:16px;background:#fff}
+    .history-list{margin-top:16px;border-top:1px solid #e2e8f0;padding-top:14px}
+    .history-item{border:1px solid #e2e8f0;border-radius:12px;padding:10px 12px;margin-bottom:10px;background:#f8fafc}
+    .history-time{font-size:.86rem;color:#475569;font-weight:800;margin-bottom:4px}
+    .history-text{font-size:.95rem;color:#0f172a;font-weight:700;line-height:1.45}
+    .toast-wrap{position:fixed;top:16px;right:16px;display:flex;flex-direction:column;gap:10px;z-index:9999}
+    .toast{min-width:240px;max-width:420px;padding:12px 14px;border-radius:14px;color:#fff;font-weight:800;box-shadow:var(--shadow)}
+    .toast.success{background:#16a34a}.toast.warning{background:#d97706}.toast.error{background:#dc2626}.toast.info{background:#2563eb}
+    .sync-badge{
+      position:fixed;left:16px;bottom:16px;z-index:9999;
+      padding:10px 14px;border-radius:999px;font-weight:900;font-size:.88rem;
+      background:#0f172a;color:#fff;box-shadow:var(--shadow)
+    }
+    .sync-badge.pending{background:#b45309}
+    .sync-badge.error{background:#b91c1c}
+    .sync-badge.ok{background:#166534}
+    .board-toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap;color:#fff;flex:0 0 auto}
+    .board-title{font-size:2.4rem;font-weight:900;color:#fff;line-height:1.1}
+    .board-time{font-size:1.5rem;color:#cbd5e1;font-weight:900}
+    .info-card{border:1px solid rgba(96,165,250,.28);background:rgba(30,41,59,.9);border-radius:16px;padding:14px 18px}
+    body.display-mode .info-card{margin-bottom:12px;background:rgba(15,23,42,.95);border-color:rgba(255,255,255,.12);flex:0 0 auto}
+    .inline-note{font-size:1.02rem;color:#dbeafe;font-weight:800;line-height:1.55}
+    #displayBoard{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+    .board-pagination-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px;flex:0 0 auto;color:#fff}
+    .board-page-indicator{font-size:1.15rem;font-weight:900;color:#bfdbfe}
+    .board-page-dots{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+    .board-dot{width:14px;height:14px;border-radius:999px;background:rgba(255,255,255,.22)}
+    .board-dot.active{background:#60a5fa}
+    .board-wrap{background:#0b1528;border:1px solid rgba(255,255,255,.1);border-radius:22px;box-shadow:0 12px 30px rgba(0,0,0,.28);width:100%;flex:1 1 auto;min-height:0;overflow:auto}
+    .board-head,.board-row{display:grid;grid-template-columns:.7fr 1.2fr 1.25fr 3.2fr 1.8fr}
+    .board-head{background:linear-gradient(90deg,#1d4ed8 0%,#2563eb 100%);color:#fff;font-weight:900;position:sticky;top:0;z-index:5}
+    .board-head div{padding:18px 12px 16px;border-right:1px solid rgba(255,255,255,.16);text-align:center}
+    .board-head div:last-child{border-right:none}
+    .board-head-zh{display:block;font-size:1.4rem;line-height:1.04;margin-bottom:6px;font-weight:900}
+    .board-head-en{display:block;font-size:.9rem;line-height:1.08;opacity:.96;font-weight:800}
+    .board-row{align-items:stretch;border-top:1px solid rgba(255,255,255,.12);min-height:126px;background:linear-gradient(180deg,rgba(255,255,255,.015),rgba(255,255,255,0))}
+    .board-cell{padding:16px 14px;display:flex;align-items:center;justify-content:center;text-align:center;border-right:1px solid rgba(255,255,255,.08);font-weight:800;color:#f8fafc}
+    .board-cell:last-child{border-right:none}
+    .board-room{font-size:3rem;color:#93c5fd;font-weight:900;line-height:1}
+    .board-doctor{flex-direction:column;gap:8px;align-items:flex-start;text-align:left}
+    .board-doctor-zh{font-size:1.35rem;color:#fff;font-weight:900;line-height:1.15;word-break:break-word}
+    .board-doctor-en{font-size:.96rem;color:#cbd5e1;font-weight:800;line-height:1.2;word-break:break-word}
+    .board-current{flex-direction:column;gap:8px}
+    .board-current-priority-ticket{color:#fca5a5;font-size:2rem;font-weight:900;line-height:1.04}
+    .board-current-normal-ticket{color:#4ade80;font-size:2rem;font-weight:900;line-height:1.04}
+    .board-meta{font-size:.95rem;color:#cbd5e1;font-weight:800;line-height:1.3}
+    .board-paused{color:#fbbf24;font-size:1.55rem;line-height:1.18;font-weight:900}
+    .board-queue,.board-skip{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:flex-start;width:100%;text-align:left}
+    .board-tag{border-radius:999px;padding:10px 16px;font-size:1.05rem;font-weight:900;min-width:96px;text-align:center;line-height:1.04}
+    .tag-wait{background:rgba(37,99,235,.16);color:#bfdbfe;border:1px solid rgba(96,165,250,.42)}
+    .tag-skip{background:rgba(239,68,68,.12);color:#fecaca;border:1px solid rgba(248,113,113,.4)}
+    .tag-priority{background:rgba(185,28,28,.2);color:#fee2e2;border:2px solid #ef4444}
+    .board-empty{color:#94a3b8;font-size:1rem;font-weight:800}
+    .board-footer-tip{margin-top:8px;color:#93c5fd;font-size:.96rem;font-weight:800;text-align:right;opacity:.95;flex:0 0 auto}
+    .toolbar-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
+    @media (max-width:1500px){.grid-5,.grid-3,.grid-2{grid-template-columns:1fr}}
+    @media (max-width:900px){.app{padding:12px}.room-list{grid-template-columns:1fr}body.display-mode #displayPage{padding:10px}}
   </style>
 </head>
 <body>
   <div class="toast-wrap" id="toastWrap"></div>
+  <div class="sync-badge ok" id="syncBadge">已同步</div>
 
   <div class="app">
     <div class="topbar">
@@ -834,13 +152,11 @@
       <div class="grid-2">
         <div class="panel">
           <div class="panel-title">新增病人</div>
-
           <div class="grid-5">
             <div class="form-row">
               <label for="patientCumcNo">CUMC號碼</label>
               <input id="patientCumcNo" type="text" placeholder="例如：ABC1234" />
             </div>
-
             <div class="form-row">
               <label for="patientType">病人類型</label>
               <select id="patientType">
@@ -849,7 +165,6 @@
                 <option value="appointment">預約</option>
               </select>
             </div>
-
             <div class="form-row">
               <label for="assignMode">派去診室</label>
               <select id="assignMode">
@@ -859,12 +174,10 @@
                 <option value="manual">手動選擇診室</option>
               </select>
             </div>
-
             <div class="form-row">
               <label for="assignRoom">選擇診室</label>
               <select id="assignRoom"></select>
             </div>
-
             <div class="form-row">
               <label for="isPriority">醫療優先症</label>
               <select id="isPriority">
@@ -878,12 +191,11 @@
             <div class="form-row">
               <label for="registeredAt">後備登記時間（香港時間）</label>
               <input id="registeredAt" type="datetime-local" disabled />
-              <label class="sub-option" for="useCustomRegisteredAt" style="display:flex;gap:8px;align-items:center;">
+              <label style="display:flex;gap:8px;align-items:center;">
                 <input id="useCustomRegisteredAt" type="checkbox" style="width:auto;" />
-                使用後備登記時間（否則自動擷取香港時間）
+                使用後備登記時間
               </label>
             </div>
-
             <div class="form-row">
               <label for="insertMode">插入方式</label>
               <select id="insertMode">
@@ -893,14 +205,13 @@
                 <option value="position">指定位置</option>
               </select>
             </div>
-
             <div class="form-row">
               <label for="insertPosition">指定位置（第幾位）</label>
               <input id="insertPosition" type="number" min="1" placeholder="例如：2" />
             </div>
           </div>
 
-          <div class="actions" style="margin-top:14px; justify-content:flex-end;">
+          <div class="actions" style="margin-top:14px;justify-content:flex-end;">
             <button class="btn-primary" id="addPatientBtn" type="button">加入系統</button>
           </div>
         </div>
@@ -912,39 +223,21 @@
               <label for="newRoomNo">房號</label>
               <input id="newRoomNo" list="roomNoOptions" type="text" placeholder="可選或自由輸入" />
               <datalist id="roomNoOptions">
-                <option value="1號房"></option>
-                <option value="2號房"></option>
-                <option value="3號房"></option>
-                <option value="5號房"></option>
-                <option value="7號房"></option>
-                <option value="8號房"></option>
-                <option value="9號房"></option>
-                <option value="10號房"></option>
+                <option value="1號房"></option><option value="2號房"></option><option value="3號房"></option><option value="5號房"></option>
+                <option value="7號房"></option><option value="8號房"></option><option value="9號房"></option><option value="10號房"></option>
               </datalist>
             </div>
             <div class="form-row">
               <label for="newDoctorName">醫生</label>
               <input id="newDoctorName" list="doctorOptions" type="text" placeholder="可選或自由輸入" />
-              <datalist id="doctorOptions">
-                <option value="林家強醫生 Dr. LAM Ka Keung"></option>
-                <option value="麥應良醫生 Dr. MAK Ying Leung Elvis"></option>
-                <option value="楊聿川醫生 Dr. YANG Li Chuan Marc"></option>
-                <option value="鄧志安醫生 Dr. TANG Chi On"></option>
-                <option value="戴俊權醫生 Dr. TAI Chun Kuen Marcus"></option>
-                <option value="羅國強醫生 Dr. LAW Kwok Keung Alex"></option>
-                <option value="黃展鵬醫生 Dr. WONG Chin Pang Ben"></option>
-                <option value="梁子恒醫生 Dr. LEUNG Tsz Hang Ray"></option>
-                <option value="謝昭倫醫生 Dr. TSE Chiu Lun Joseph"></option>
-              </datalist>
+              <datalist id="doctorOptions"></datalist>
             </div>
             <div class="form-row">
               <label>&nbsp;</label>
               <button class="btn-success" id="addRoomBtn" type="button">新增診室</button>
             </div>
           </div>
-          <div class="muted" style="margin-top:12px;">
-            可新增、修改、刪除房間；亦可截籌但繼續顯示在病人看板。看板會將「1號房」顯示為「1」。
-          </div>
+          <div class="muted" style="margin-top:12px;">可新增、修改、刪除房間；亦可截籌但繼續顯示在病人看板。</div>
         </div>
       </div>
 
@@ -953,9 +246,9 @@
           <div class="panel-title" style="margin-bottom:0;">各診室輪候情況</div>
           <div class="actions">
             <button class="btn-primary" id="rebalanceWaitingBtn" type="button">一鍵平均分流候診病人</button>
+            <button class="btn-secondary" id="forceReloadBtn" type="button">手動重新同步</button>
           </div>
         </div>
-
         <div id="roomsContainer" class="room-list" style="margin-top:14px;"></div>
       </div>
     </div>
@@ -978,9 +271,6 @@
             <button class="btn-primary" id="searchPatientBtn" type="button">查詢</button>
           </div>
         </div>
-        <div class="muted" style="margin-top:10px;">
-          可輸入完整 CUMC 號碼，或者只輸入開頭幾個字作篩選，再於清單中選擇；房號可配合下拉式選單一併查詢。
-        </div>
         <div id="patientSearchResult"></div>
       </div>
     </div>
@@ -990,14 +280,12 @@
         <div class="board-title">候診情況 Queue Status</div>
         <div class="board-time" id="boardTime"></div>
       </div>
-
-      <div class="info-card board-disclaimer">
+      <div class="info-card">
         <div class="inline-note">
-          此輪候隊列只供參考，會因應病人臨床情況、醫療優次、診症安排及實際運作而隨時調整，敬請見諒。<br>
-          This queue is for reference only and may change at any time due to patients' clinical condition, medical priority, consultation arrangements, and actual operational needs. Thank you for your understanding.
+          此輪候隊列只供參考，會因應病人臨床情況、醫療優次、診症安排及實際運作而隨時調整。<br>
+          This queue is for reference only and may change at any time.
         </div>
       </div>
-
       <div id="displayBoard"></div>
       <div class="board-footer-tip">超大電視版：每頁最多顯示 5 個診室；多過 5 個診室時，每 8 秒自動翻頁。</div>
     </div>
@@ -1008,13 +296,14 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    const ACTIVE_STATUSES = ["waiting", "called", "skipped"];
     const HKT_TIMEZONE = "Asia/Hong_Kong";
     const HKT_OFFSET_MINUTES = 8 * 60;
-
     const BOARD_ROOMS_PER_PAGE = 5;
     const BOARD_PAGE_ROTATE_MS = 8000;
-    const POLLING_MS = 8000;
-    const RENDER_DEBOUNCE_MS = 80;
+    const POLL_MS = 30000;
+    const FLUSH_DEBOUNCE_MS = 220;
+    const MAX_FLUSH_RETRY = 6;
 
     const DOCTOR_SUGGESTIONS = [
       "林家強醫生 Dr. LAM Ka Keung",
@@ -1027,988 +316,464 @@
       "謝昭倫醫生 Dr. TSE Chiu Lun Joseph",
       "黃展鵬醫生 Dr. WONG Chin-Pang Ben"
     ];
-
     const PAUSE_REASON_OPTIONS = ["急救中 Resus", "小手術 Procedure", "巡房 Ward"];
 
     const state = {
-      nextRoomNumber: 1,
-      nextRoundRobinIndex: 0,
       rooms: [],
       patients: [],
-      displayPageIndex: 0,
-      uiBusyUntil: 0,
       currentTab: "staffPage",
-      lastSearchRenderKey: "",
-      lastBoardRenderKey: "",
-      roomRenderFingerprints: new Map(),
-      roomDomMap: new Map()
+      displayPageIndex: 0,
+      roomDomMap: new Map(),
+      roomFingerprints: new Map(),
+      boardKey: "",
+      searchKey: ""
     };
 
-    let liveRefreshTimer = null;
-    let boardClockTimer = null;
-    let boardPageRotateTimer = null;
+    const dirty = {
+      rooms: new Set(),
+      patients: new Set(),
+      deletedRooms: new Set(),
+      deletedPatients: new Set()
+    };
+
+    let flushTimer = null;
+    let flushInFlight = false;
     let realtimeChannel = null;
-    let renderTimer = null;
-    let refreshInFlight = false;
-    let queuedRefresh = false;
+    let boardClockTimer = null;
+    let boardRotateTimer = null;
+    let pollTimer = null;
+    let ignoreRealtimeUntil = 0;
+    let flushRetryCount = 0;
 
-    function markUiBusy(ms = 5000) {
-      state.uiBusyUntil = Date.now() + ms;
+    function escapeHtml(v){return String(v ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+    function notify(message,type="info"){const wrap=document.getElementById("toastWrap");const el=document.createElement("div");el.className="toast "+type;el.textContent=message;wrap.appendChild(el);setTimeout(()=>el.remove(),2200)}
+    function setSyncBadge(text, cls){const el=document.getElementById("syncBadge"); el.textContent=text; el.className="sync-badge "+cls;}
+    function getHktDateParts(date=new Date()){
+      const formatter=new Intl.DateTimeFormat("en-CA",{timeZone:HKT_TIMEZONE,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hourCycle:"h23"});
+      const parts=formatter.formatToParts(date); const map={}; for(const p of parts){if(p.type!=="literal") map[p.type]=p.value;}
+      return {year:map.year,month:map.month,day:map.day,hour:map.hour,minute:map.minute,second:map.second};
     }
-
-    function isUiBusy() {
-      return Date.now() < (state.uiBusyUntil || 0);
+    function hktNowIso(){return new Date().toISOString()}
+    function toHktDateTimeLocalValue(date=new Date()){const p=getHktDateParts(date);return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`}
+    function hktLocalDateTimeToIso(value){
+      if(!value) return null;
+      const m=String(value).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+      if(!m) return null;
+      const [,y,mo,d,h,mi]=m;
+      return new Date(Date.UTC(Number(y),Number(mo)-1,Number(d),Number(h),Number(mi)-HKT_OFFSET_MINUTES,0,0)).toISOString();
     }
-
-    function getActiveTabId() {
-      return state.currentTab || "staffPage";
+    function formatDateTime(iso){
+      if(!iso) return "—";
+      const date=new Date(iso); if(Number.isNaN(date.getTime())) return "—";
+      return new Intl.DateTimeFormat("zh-HK",{timeZone:HKT_TIMEZONE,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hourCycle:"h23"}).format(date);
     }
-
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function formatBoardDateTime(iso){
+      if(!iso) return "—"; const d=new Date(iso); if(Number.isNaN(d.getTime())) return "—";
+      const p=getHktDateParts(d); return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second}`;
     }
+    function formatBoardNow(date=new Date()){const p=getHktDateParts(date); return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second}`}
 
-    function getHktDateParts(date = new Date()) {
-      const formatter = new Intl.DateTimeFormat("en-CA", {
-        timeZone: HKT_TIMEZONE,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hourCycle: "h23"
-      });
+    function sortedRooms(){return [...state.rooms].sort((a,b)=>a.roomNo.localeCompare(b.roomNo,"zh-HK",{numeric:true}))}
+    function getRoom(id){return state.rooms.find(x=>x.id===id)||null}
+    function getPatient(id){return state.patients.find(x=>x.id===id)||null}
+    function getRoomDisplayShort(roomNo){return String(roomNo||"").replace(/號房/g,"").trim()||String(roomNo||"")}
+    function getPatientTypeLabel(type){if(type==="walkin") return "即場"; if(type==="onlineTicket") return "網上拎籌"; if(type==="appointment") return "預約"; return "—"}
+    function getPatientTypePill(type){if(type==="walkin") return "pill-walkin"; if(type==="onlineTicket") return "pill-online"; if(type==="appointment") return "pill-appointment"; return "pill-normal"}
+    function getStatusLabel(status){return ({waiting:"候診中",called:"診症中",skipped:"過號",done:"已完成",cancelled:"已取消"})[status]||status}
+    function addPatientLog(patient,action,details=""){if(!patient.logs) patient.logs=[]; patient.logs.unshift({time:hktNowIso(),action,details})}
 
-      const parts = formatter.formatToParts(date);
-      const map = {};
-      for (const p of parts) {
-        if (p.type !== "literal") map[p.type] = p.value;
-      }
-      return {
-        year: map.year,
-        month: map.month,
-        day: map.day,
-        hour: map.hour,
-        minute: map.minute,
-        second: map.second
-      };
-    }
-
-    function hktNowIso() {
-      return new Date().toISOString();
-    }
-
-    function toHktDateTimeLocalValue(date = new Date()) {
-      const p = getHktDateParts(date);
-      return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
-    }
-
-    function hktLocalDateTimeToIso(value) {
-      if (!value) return null;
-      const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
-      if (!match) return null;
-
-      const [, y, m, d, hh, mm] = match;
-      const utcMillis = Date.UTC(
-        Number(y),
-        Number(m) - 1,
-        Number(d),
-        Number(hh),
-        Number(mm) - HKT_OFFSET_MINUTES,
-        0,
-        0
-      );
-      return new Date(utcMillis).toISOString();
-    }
-
-    function formatDateTime(iso) {
-      if (!iso) return "—";
-      const date = new Date(iso);
-      if (Number.isNaN(date.getTime())) return "—";
-
-      return new Intl.DateTimeFormat("zh-HK", {
-        timeZone: HKT_TIMEZONE,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hourCycle: "h23"
-      }).format(date);
-    }
-
-    function formatBoardDateTime(iso) {
-      if (!iso) return "—";
-      const date = new Date(iso);
-      if (Number.isNaN(date.getTime())) return "—";
-      const p = getHktDateParts(date);
-      return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second}`;
-    }
-
-    function formatBoardNow(date = new Date()) {
-      const p = getHktDateParts(date);
-      return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second}`;
-    }
-
-    function notify(message, type = "info") {
-      const wrap = document.getElementById("toastWrap");
-      const el = document.createElement("div");
-      el.className = "toast " + type;
-      el.textContent = message;
-      wrap.appendChild(el);
-      setTimeout(() => el.remove(), 2800);
-    }
-
-    function setDisplayModeByTab(tabId) {
-      document.body.classList.toggle("display-mode", tabId === "displayPage");
-    }
-
-    function sortedRooms() {
-      return [...state.rooms].sort((a, b) => a.roomNo.localeCompare(b.roomNo, "zh-HK", { numeric: true }));
-    }
-
-    function getRoom(roomId) {
-      return state.rooms.find(room => room.id === roomId) || null;
-    }
-
-    function getPatient(patientId) {
-      return state.patients.find(patient => patient.id === patientId) || null;
-    }
-
-    function addPatientLog(patient, action, details = "") {
-      if (!patient) return;
-      if (!Array.isArray(patient.logs)) patient.logs = [];
-      patient.logs.unshift({
-        time: hktNowIso(),
-        action,
-        details
-      });
-    }
-
-    function getRoomDisplayShort(roomNo) {
-      return String(roomNo || "").replace(/號房/g, "").trim() || String(roomNo || "");
-    }
-
-    function getPatientTypeLabel(type) {
-      if (type === "walkin") return "即場";
-      if (type === "onlineTicket") return "網上拎籌";
-      if (type === "appointment") return "預約";
-      return "—";
-    }
-
-    function getPatientTypePill(type) {
-      if (type === "walkin") return "pill-walkin";
-      if (type === "onlineTicket") return "pill-online";
-      if (type === "appointment") return "pill-appointment";
-      return "pill-normal";
-    }
-
-    function getStatusLabel(status) {
-      const statusMap = {
-        waiting: "候診中",
-        called: "診症中",
-        skipped: "過號",
-        done: "已完成",
-        cancelled: "已取消"
-      };
-      return statusMap[status] || status;
-    }
-
-    function getPatientTypeWeight(patient) {
-      if (patient.sourceType === "appointment") return 1;
-      if (patient.sourceType === "onlineTicket") return 2;
+    function getPatientTypeWeight(patient){
+      if(patient.sourceType==="appointment") return 1;
+      if(patient.sourceType==="onlineTicket") return 2;
       return 3;
     }
-
-    function compareWaitingBase(a, b) {
-      if (!!a.priority !== !!b.priority) return a.priority ? -1 : 1;
-
-      const aTime = new Date(a.registeredAt || a.createdAt).getTime();
-      const bTime = new Date(b.registeredAt || b.createdAt).getTime();
-      if (aTime !== bTime) return aTime - bTime;
-
-      const aType = getPatientTypeWeight(a);
-      const bType = getPatientTypeWeight(b);
-      if (aType !== bType) return aType - bType;
-
-      const aCreated = new Date(a.createdAt).getTime();
-      const bCreated = new Date(b.createdAt).getTime();
-      if (aCreated !== bCreated) return aCreated - bCreated;
-
-      return String(a.ticketNo || "").localeCompare(String(b.ticketNo || ""), "zh-HK");
+    function compareWaitingBase(a,b){
+      if(!!a.priority!==!!b.priority) return a.priority?-1:1;
+      const at=new Date(a.registeredAt||a.createdAt).getTime();
+      const bt=new Date(b.registeredAt||b.createdAt).getTime();
+      if(at!==bt) return at-bt;
+      const aw=getPatientTypeWeight(a), bw=getPatientTypeWeight(b);
+      if(aw!==bw) return aw-bw;
+      return String(a.ticketNo||"").localeCompare(String(b.ticketNo||""),"zh-HK");
     }
 
-    function getWaitingPatientsArray(room, excludePatientId = null) {
-      return state.patients
-        .filter(patient => patient.roomId === room.id)
-        .filter(patient => patient.status === "waiting")
-        .filter(patient => patient.id !== excludePatientId);
+    function getWaitingPatientsArray(room, excludePatientId=null){
+      return state.patients.filter(p=>p.roomId===room.id && p.status==="waiting" && p.id!==excludePatientId);
     }
-
-    function getOrderedWaitingPatients(room, excludePatientId = null) {
-      const waiting = getWaitingPatientsArray(room, excludePatientId);
-
-      waiting.sort((a, b) => {
-        const aOrder = Number.isFinite(a.queueOrder) ? a.queueOrder : null;
-        const bOrder = Number.isFinite(b.queueOrder) ? b.queueOrder : null;
-
-        if (aOrder !== null && bOrder !== null && aOrder !== bOrder) return aOrder - bOrder;
-        if (aOrder !== null && bOrder === null) return -1;
-        if (aOrder === null && bOrder !== null) return 1;
-
-        return compareWaitingBase(a, b);
+    function getOrderedWaitingPatients(room, excludePatientId=null){
+      const waiting=getWaitingPatientsArray(room, excludePatientId);
+      waiting.sort((a,b)=>{
+        const aq=Number.isFinite(a.queueOrder)?a.queueOrder:null;
+        const bq=Number.isFinite(b.queueOrder)?b.queueOrder:null;
+        if(aq!==null && bq!==null && aq!==bq) return aq-bq;
+        if(aq!==null && bq===null) return -1;
+        if(aq===null && bq!==null) return 1;
+        return compareWaitingBase(a,b);
       });
-
       return waiting;
     }
-
-    function rebuildRoomQueue(room, waitingPatients) {
-      waitingPatients.forEach((patient, index) => {
-        patient.queueOrder = index + 1;
-      });
-
-      room.queuePatientIds = waitingPatients.map(patient => patient.id);
+    function rebuildRoomQueue(room, waitingPatients){
+      waitingPatients.forEach((p,i)=>p.queueOrder=i+1);
+      room.queuePatientIds=waitingPatients.map(p=>p.id);
+      markRoomDirty(room.id,false);
+      waitingPatients.forEach(p=>markPatientDirty(p.id,false));
     }
-
-    function sortRoomQueue(room) {
-      const waitingPatients = getOrderedWaitingPatients(room);
-      rebuildRoomQueue(room, waitingPatients);
-    }
-
-    function getAutoInsertIndexFromList(waitingPatients, patient) {
-      for (let i = 0; i < waitingPatients.length; i++) {
-        if (compareWaitingBase(patient, waitingPatients[i]) < 0) return i;
+    function sortRoomQueue(room){rebuildRoomQueue(room, getOrderedWaitingPatients(room))}
+    function getAutoInsertIndexFromList(waitingPatients, patient){
+      for(let i=0;i<waitingPatients.length;i++){
+        if(compareWaitingBase(patient,waitingPatients[i])<0) return i;
       }
       return waitingPatients.length;
     }
-
-    function insertPatientIntoQueue(room, patient, mode = "tail", positionValue = null) {
-      room.queuePatientIds = (room.queuePatientIds || []).filter(id => id !== patient.id);
-
-      if (patient.status !== "waiting") {
-        patient.queueOrder = null;
-        sortRoomQueue(room);
-        return null;
-      }
-
-      const waitingPatients = getOrderedWaitingPatients(room, patient.id);
-      let insertIndex = waitingPatients.length;
-
-      if (mode === "front") {
-        insertIndex = 0;
-      } else if (mode === "position") {
-        insertIndex = Math.max(0, Math.min(waitingPatients.length, (parseInt(positionValue, 10) || 1) - 1));
-      } else if (mode === "auto") {
-        insertIndex = getAutoInsertIndexFromList(waitingPatients, patient);
-      } else {
-        insertIndex = waitingPatients.length;
-      }
-
-      waitingPatients.splice(insertIndex, 0, patient);
+    function insertPatientIntoQueue(room, patient, mode="tail", positionValue=null){
+      room.queuePatientIds=(room.queuePatientIds||[]).filter(id=>id!==patient.id);
+      if(patient.status!=="waiting"){patient.queueOrder=null; sortRoomQueue(room); return null;}
+      const waitingPatients=getOrderedWaitingPatients(room, patient.id);
+      let insertIndex=waitingPatients.length;
+      if(mode==="front") insertIndex=0;
+      else if(mode==="position") insertIndex=Math.max(0,Math.min(waitingPatients.length,(parseInt(positionValue,10)||1)-1));
+      else if(mode==="auto") insertIndex=getAutoInsertIndexFromList(waitingPatients, patient);
+      waitingPatients.splice(insertIndex,0,patient);
       rebuildRoomQueue(room, waitingPatients);
-      return insertIndex + 1;
+      return insertIndex+1;
     }
 
-    function canAssignPatientToRoom(room, patientType = "walkin") {
-      if (!room || !room.acceptingNew) return false;
-
-      if (patientType === "appointment") {
-        return room.status === "open" || room.status === "paused";
-      }
-
-      return room.status === "open";
+    function canAssignPatientToRoom(room, patientType="walkin"){
+      if(!room || !room.acceptingNew) return false;
+      if(patientType==="appointment") return room.status==="open" || room.status==="paused";
+      return room.status==="open";
     }
-
-    function getAssignableRooms(patientType = "walkin") {
-      return sortedRooms().filter(room => canAssignPatientToRoom(room, patientType));
-    }
-
-    function getWaitingCount(room) {
-      const waitingCount = getOrderedWaitingPatients(room).length;
-      const currentCount = room.currentPatientId ? 1 : 0;
-      return waitingCount + currentCount;
-    }
-
-    function getSmartScore(room) {
-      const waitingPatients = getOrderedWaitingPatients(room);
-      let score = 0;
-
-      if (room.currentPatientId) score += 1.5;
-
-      waitingPatients.forEach(patient => {
-        score += patient.priority ? 2 : 1;
-      });
-
+    function getAssignableRooms(patientType="walkin"){return sortedRooms().filter(room=>canAssignPatientToRoom(room, patientType))}
+    function getWaitingCount(room){return getOrderedWaitingPatients(room).length + (room.currentPatientId ? 1 : 0)}
+    function getSmartScore(room){
+      const waiting=getOrderedWaitingPatients(room); let score=0;
+      if(room.currentPatientId) score += 1.5;
+      waiting.forEach(p=>score += p.priority ? 2 : 1);
       return score;
     }
-
-    function getAutoAssignedRoom(assignMode, patientType = "walkin") {
-      const rooms = getAssignableRooms(patientType);
-      if (!rooms.length) return null;
-
-      if (assignMode === "roundRobin") {
-        const index = state.nextRoundRobinIndex % rooms.length;
-        const room = rooms[index];
-        state.nextRoundRobinIndex = (index + 1) % rooms.length;
-        return room;
-      }
-
-      if (assignMode === "smart") {
-        let bestRoom = rooms[0];
-        let bestScore = getSmartScore(bestRoom);
-        let bestCount = getWaitingCount(bestRoom);
-
-        for (let i = 1; i < rooms.length; i++) {
-          const room = rooms[i];
-          const score = getSmartScore(room);
-          const count = getWaitingCount(room);
-
-          if (score < bestScore) {
-            bestRoom = room;
-            bestScore = score;
-            bestCount = count;
-            continue;
-          }
-
-          if (score === bestScore) {
-            if (count < bestCount) {
-              bestRoom = room;
-              bestScore = score;
-              bestCount = count;
-              continue;
-            }
-
-            if (count === bestCount) {
-              const currentBestKey = `${bestRoom.roomNo}`;
-              const currentRoomKey = `${room.roomNo}`;
-              if (currentRoomKey.localeCompare(currentBestKey, "zh-HK", { numeric: true }) < 0) {
-                bestRoom = room;
-                bestScore = score;
-                bestCount = count;
-              }
-            }
+    function getAutoAssignedRoom(assignMode, patientType="walkin"){
+      const rooms=getAssignableRooms(patientType);
+      if(!rooms.length) return null;
+      if(assignMode==="smart"){
+        let best=rooms[0], bestScore=getSmartScore(best), bestCount=getWaitingCount(best);
+        for(let i=1;i<rooms.length;i++){
+          const room=rooms[i], score=getSmartScore(room), count=getWaitingCount(room);
+          if(score<bestScore || (score===bestScore && (count<bestCount || (count===bestCount && room.roomNo.localeCompare(best.roomNo,"zh-HK",{numeric:true})<0)))){
+            best=room; bestScore=score; bestCount=count;
           }
         }
-
-        return bestRoom;
+        return best;
       }
-
-      let bestRoom = rooms[0];
-      let bestCount = getWaitingCount(bestRoom);
-
-      for (let i = 1; i < rooms.length; i++) {
-        const count = getWaitingCount(rooms[i]);
-        if (count < bestCount) {
-          bestCount = count;
-          bestRoom = rooms[i];
-        }
+      if(assignMode==="roundRobin"){
+        if(!window.__rrIndex) window.__rrIndex=0;
+        const idx=window.__rrIndex % rooms.length;
+        window.__rrIndex=(idx+1)%rooms.length;
+        return rooms[idx];
       }
-
-      return bestRoom;
+      let best=rooms[0], bestCount=getWaitingCount(best);
+      for(let i=1;i<rooms.length;i++){const c=getWaitingCount(rooms[i]); if(c<bestCount){best=rooms[i]; bestCount=c;}}
+      return best;
     }
 
-    function populateRoomSelect() {
-      const select = document.getElementById("assignRoom");
-      const patientType = document.getElementById("patientType")?.value || "walkin";
-      const currentValue = select.value;
-      const rooms = getAssignableRooms(patientType);
+    function hasPendingDirty(){
+      return dirty.rooms.size || dirty.patients.size || dirty.deletedRooms.size || dirty.deletedPatients.size;
+    }
+    function markRoomDirty(roomId, schedule=true){dirty.rooms.add(roomId); if(schedule) scheduleFlush();}
+    function markPatientDirty(patientId, schedule=true){dirty.patients.add(patientId); if(schedule) scheduleFlush();}
+    function markRoomDeleted(roomId){dirty.deletedRooms.add(roomId); dirty.rooms.delete(roomId); scheduleFlush();}
+    function markPatientDeleted(patientId){dirty.deletedPatients.add(patientId); dirty.patients.delete(patientId); scheduleFlush();}
 
-      if (!rooms.length) {
-        select.innerHTML = `<option value="">暫無可派症診室</option>`;
-      } else {
-        select.innerHTML = rooms.map(room => `
-          <option value="${room.id}">
-            ${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}${room.status === "paused" && patientType === "appointment" ? "（暫停中，可收預約）" : ""}
-          </option>
-        `).join("");
+    function scheduleFlush(delay=FLUSH_DEBOUNCE_MS){
+      setSyncBadge("同步中…","pending");
+      if(flushTimer) clearTimeout(flushTimer);
+      flushTimer=setTimeout(flushDirty, delay);
+    }
+
+    function roomToPayload(room){
+      return {
+        id:room.id,
+        room_no:room.roomNo,
+        doctor_name:room.doctorName,
+        status:room.status,
+        pause_reason:room.pauseReason||"",
+        accepting_new:room.acceptingNew,
+        current_patient_id:room.currentPatientId||null,
+        sort_order:room.sortOrder ?? 0
+      };
+    }
+    function patientToPayload(p){
+      return {
+        id:p.id,
+        ticket_no:p.ticketNo,
+        cumc_no:p.cumcNo,
+        room_id:p.roomId || null,
+        source_type:p.sourceType,
+        priority:!!p.priority,
+        registered_at:p.registeredAt,
+        status:p.status,
+        queue_order:Number.isFinite(p.queueOrder)?p.queueOrder:null,
+        created_at:p.createdAt,
+        skipped_at:p.skippedAt||null,
+        called_at:p.calledAt||null,
+        done_at:p.doneAt||null,
+        cancelled_at:p.cancelledAt||null,
+        initial_assignment_mode:p.initialAssignmentMode||"auto",
+        manual_lock:!!p.manualLock,
+        manual_lock_reason:p.manualLockReason||null,
+        logs_json:Array.isArray(p.logs)?p.logs:[]
+      };
+    }
+
+    async function flushDirty(){
+      if(flushInFlight || !hasPendingDirty()) return;
+      flushInFlight=true;
+      ignoreRealtimeUntil=Date.now()+5000;
+
+      const roomIds=[...dirty.rooms];
+      const patientIds=[...dirty.patients];
+      const deletedRoomIds=[...dirty.deletedRooms];
+      const deletedPatientIds=[...dirty.deletedPatients];
+
+      dirty.rooms.clear();
+      dirty.patients.clear();
+      dirty.deletedRooms.clear();
+      dirty.deletedPatients.clear();
+
+      try{
+        const roomPayload=roomIds.map(id=>getRoom(id)).filter(Boolean).map(roomToPayload);
+        const patientPayload=patientIds.map(id=>getPatient(id)).filter(Boolean).map(patientToPayload);
+
+        const jobs=[];
+        if(roomPayload.length) jobs.push(sb.from("rooms").upsert(roomPayload));
+        if(patientPayload.length) jobs.push(sb.from("patients").upsert(patientPayload));
+        if(deletedRoomIds.length) jobs.push(sb.from("rooms").delete().in("id", deletedRoomIds));
+        if(deletedPatientIds.length) jobs.push(sb.from("patients").delete().in("id", deletedPatientIds));
+
+        const results=await Promise.all(jobs);
+        const err=results.find(r=>r.error)?.error;
+        if(err) throw err;
+
+        flushRetryCount=0;
+        setSyncBadge("已同步","ok");
+
+        if(hasPendingDirty()) scheduleFlush(80);
+      }catch(error){
+        console.error("flushDirty failed", error);
+        flushRetryCount += 1;
+        setSyncBadge("同步失敗，重試中…","error");
+
+        roomIds.forEach(id=>dirty.rooms.add(id));
+        patientIds.forEach(id=>dirty.patients.add(id));
+        deletedRoomIds.forEach(id=>dirty.deletedRooms.add(id));
+        deletedPatientIds.forEach(id=>dirty.deletedPatients.add(id));
+
+        if(flushRetryCount >= MAX_FLUSH_RETRY){
+          notify("同步連續失敗，系統將重新讀取雲端資料", "error");
+          await fullReload(false);
+          flushRetryCount = 0;
+        }else{
+          const delay=Math.min(1500 * flushRetryCount, 6000);
+          setTimeout(()=>scheduleFlush(50), delay);
+        }
+      }finally{
+        flushInFlight=false;
       }
+    }
 
-      if (rooms.some(room => room.id === currentValue)) {
-        select.value = currentValue;
+    async function fetchRooms(){
+      const {data,error}=await sb.from("rooms").select("*").order("room_no",{ascending:true});
+      if(error) throw error;
+      return data||[];
+    }
+    async function fetchActivePatients(){
+      const {data,error}=await sb.from("patients").select("*").in("status", ACTIVE_STATUSES).order("created_at",{ascending:true});
+      if(error) throw error;
+      return data||[];
+    }
+
+    async function fullReload(showToast=false){
+      try{
+        const [roomsData, patientsData] = await Promise.all([fetchRooms(), fetchActivePatients()]);
+
+        state.rooms=(roomsData||[]).map((room,index)=>({
+          id:room.id,
+          roomNo:room.room_no,
+          doctorName:room.doctor_name||"",
+          status:room.status||"open",
+          pauseReason:room.pause_reason||"",
+          acceptingNew:room.accepting_new!==false,
+          currentPatientId:room.current_patient_id||null,
+          queuePatientIds:[],
+          skippedPatientIds:[],
+          sortOrder:room.sort_order ?? index
+        }));
+
+        state.patients=(patientsData||[]).map(p=>({
+          id:p.id,
+          ticketNo:p.ticket_no,
+          cumcNo:p.cumc_no,
+          roomId:p.room_id||"",
+          sourceType:p.source_type||"walkin",
+          priority:!!p.priority,
+          registeredAt:p.registered_at||hktNowIso(),
+          status:p.status||"waiting",
+          createdAt:p.created_at||hktNowIso(),
+          queueOrder:Number.isFinite(p.queue_order)?p.queue_order:null,
+          skippedAt:p.skipped_at||null,
+          calledAt:p.called_at||null,
+          doneAt:p.done_at||null,
+          cancelledAt:p.cancelled_at||null,
+          initialAssignmentMode:p.initial_assignment_mode||"auto",
+          manualLock:!!p.manual_lock,
+          manualLockReason:p.manual_lock_reason||"",
+          logs:Array.isArray(p.logs_json)?p.logs_json:[]
+        }));
+
+        state.rooms.forEach(room=>{
+          room.queuePatientIds=state.patients.filter(p=>p.roomId===room.id && p.status==="waiting")
+            .sort((a,b)=>(Number.isFinite(a.queueOrder)?a.queueOrder:999999)-(Number.isFinite(b.queueOrder)?b.queueOrder:999999))
+            .map(p=>p.id);
+          room.skippedPatientIds=state.patients.filter(p=>p.roomId===room.id && p.status==="skipped").map(p=>p.id);
+        });
+
+        renderAll(true);
+        if(showToast) notify("已重新讀取雲端資料","success");
+        setSyncBadge("已同步","ok");
+      }catch(error){
+        console.error(error);
+        notify("讀取雲端資料失敗","error");
+        setSyncBadge("離線 / 同步異常","error");
       }
+    }
 
+    async function loadPatientByExactTicketForSearch(ticket){
+      const exact = String(ticket||"").trim().toUpperCase();
+      if(!exact) return null;
+
+      const local = state.patients.find(p => String(p.ticketNo||"").toUpperCase() === exact);
+      if(local) return local;
+
+      const {data,error} = await sb.from("patients").select("*").eq("ticket_no", exact).order("created_at",{ascending:false}).limit(1);
+      if(error){console.error(error); return null;}
+      const p=(data||[])[0];
+      if(!p) return null;
+
+      return {
+        id:p.id,
+        ticketNo:p.ticket_no,
+        cumcNo:p.cumc_no,
+        roomId:p.room_id||"",
+        sourceType:p.source_type||"walkin",
+        priority:!!p.priority,
+        registeredAt:p.registered_at||hktNowIso(),
+        status:p.status||"waiting",
+        createdAt:p.created_at||hktNowIso(),
+        queueOrder:Number.isFinite(p.queue_order)?p.queue_order:null,
+        skippedAt:p.skipped_at||null,
+        calledAt:p.called_at||null,
+        doneAt:p.done_at||null,
+        cancelledAt:p.cancelled_at||null,
+        initialAssignmentMode:p.initial_assignment_mode||"auto",
+        manualLock:!!p.manual_lock,
+        manualLockReason:p.manual_lock_reason||"",
+        logs:Array.isArray(p.logs_json)?p.logs_json:[]
+      };
+    }
+
+    function populateRoomSelect(){
+      const select=document.getElementById("assignRoom");
+      const patientType=document.getElementById("patientType")?.value || "walkin";
+      const current=select.value;
+      const rooms=getAssignableRooms(patientType);
+      select.innerHTML=!rooms.length
+        ? `<option value="">暫無可派症診室</option>`
+        : rooms.map(room=>`<option value="${room.id}">${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}</option>`).join("");
+      if(rooms.some(r=>r.id===current)) select.value=current;
       toggleManualRoomSelect();
     }
 
-    function populateSearchRoomSelect() {
-      const select = document.getElementById("searchRoom");
-      if (!select) return;
-
-      const currentValue = select.value;
-      const rooms = sortedRooms();
-
-      select.innerHTML = `
-        <option value="">全部房號</option>
-        ${rooms.map(room => `
-          <option value="${escapeHtml(room.roomNo)}">${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}</option>
-        `).join("")}
-      `;
-
-      if ([...select.options].some(opt => opt.value === currentValue)) {
-        select.value = currentValue;
-      }
+    function populateSearchRoomSelect(){
+      const select=document.getElementById("searchRoom");
+      const current=select.value;
+      const rooms=sortedRooms();
+      select.innerHTML=`<option value="">全部房號</option>${rooms.map(room=>`<option value="${escapeHtml(room.roomNo)}">${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}</option>`).join("")}`;
+      if([...select.options].some(o=>o.value===current)) select.value=current;
     }
 
-    function updateSearchTicketSuggestions(keyword = "") {
-      const datalist = document.getElementById("searchTicketOptions");
-      if (!datalist) return;
-
-      const query = keyword.trim().toLowerCase();
-
-      const matchedPatients = state.patients
-        .filter(patient => {
-          if (!query) return true;
-          return String(patient.ticketNo || "").toLowerCase().startsWith(query);
-        })
-        .sort((a, b) => String(a.ticketNo).localeCompare(String(b.ticketNo), "zh-HK"));
-
-      const uniqueTicketNos = Array.from(
-        new Set(matchedPatients.map(patient => String(patient.ticketNo || "").trim()).filter(Boolean))
-      ).slice(0, 20);
-
-      datalist.innerHTML = uniqueTicketNos.map(ticketNo => `
-        <option value="${escapeHtml(ticketNo)}"></option>
-      `).join("");
+    function updateSearchTicketSuggestions(keyword=""){
+      const datalist=document.getElementById("searchTicketOptions");
+      const q=keyword.trim().toLowerCase();
+      const unique=[...new Set(
+        state.patients
+          .filter(p=>!q || String(p.ticketNo||"").toLowerCase().startsWith(q))
+          .map(p=>String(p.ticketNo||"").trim())
+          .filter(Boolean)
+      )].slice(0,20);
+      datalist.innerHTML=unique.map(v=>`<option value="${escapeHtml(v)}"></option>`).join("");
     }
 
-    function toggleManualRoomSelect() {
-      const assignMode = document.getElementById("assignMode");
-      const assignRoom = document.getElementById("assignRoom");
-      if (!assignMode || !assignRoom) return;
-
-      assignRoom.disabled = assignMode.value !== "manual";
-      assignRoom.style.background = assignMode.value !== "manual" ? "#f1f5f9" : "#fff";
-      assignRoom.style.color = assignMode.value !== "manual" ? "#94a3b8" : "#1f2937";
+    function renderDoctorOptionsDatalist(){
+      const list=document.getElementById("doctorOptions");
+      const arr=[...new Set([...DOCTOR_SUGGESTIONS,...state.rooms.map(r=>r.doctorName).filter(Boolean)])]
+        .sort((a,b)=>a.localeCompare(b,"zh-HK"));
+      list.innerHTML=arr.map(v=>`<option value="${escapeHtml(v)}"></option>`).join("");
     }
 
-    function refreshInsertModeFields() {
-      const insertMode = document.getElementById("insertMode").value;
-      const insertPosition = document.getElementById("insertPosition");
-      insertPosition.disabled = insertMode !== "position";
-
-      if (insertMode === "position") {
-        insertPosition.placeholder = "例如：2";
-      } else if (insertMode === "auto") {
-        insertPosition.placeholder = "系統自動安排";
-        insertPosition.value = "";
-      } else {
-        insertPosition.placeholder = "例如：2";
-      }
+    function toggleManualRoomSelect(){
+      const assignMode=document.getElementById("assignMode");
+      const assignRoom=document.getElementById("assignRoom");
+      assignRoom.disabled=assignMode.value!=="manual";
+    }
+    function refreshInsertModeFields(){
+      const mode=document.getElementById("insertMode").value;
+      const input=document.getElementById("insertPosition");
+      input.disabled=mode!=="position";
+      if(mode!=="position") input.value="";
+    }
+    function refreshRegisteredAtField(){
+      const checkbox=document.getElementById("useCustomRegisteredAt");
+      const input=document.getElementById("registeredAt");
+      input.disabled=!checkbox.checked;
+      if(!input.value || !checkbox.checked) input.value=toHktDateTimeLocalValue(new Date());
     }
 
-    function refreshRegisteredAtField() {
-      const checkbox = document.getElementById("useCustomRegisteredAt");
-      const input = document.getElementById("registeredAt");
-      if (!checkbox || !input) return;
-
-      input.disabled = !checkbox.checked;
-      if (checkbox.checked && !input.value) {
-        input.value = toHktDateTimeLocalValue(new Date());
-      }
-      if (!checkbox.checked) {
-        input.value = toHktDateTimeLocalValue(new Date());
-      }
+    function splitDoctorName(fullName){
+      const text=String(fullName||"").trim();
+      const m=text.match(/^(.*?醫生)\s*(Dr\..*)$/i);
+      return m ? {zh:m[1].trim(), en:m[2].trim()} : {zh:text, en:""};
     }
-
-    function getInsertModeText(mode, position, actualPosition) {
-      if (mode === "front") return "排隊首";
-      if (mode === "tail") return "排隊尾";
-      if (mode === "position") return `指定第 ${position} 位`;
-      if (mode === "auto") return `自動安排（第 ${actualPosition} 位）`;
-      return "排隊尾";
-    }
-
-    function getTransferTargetRoomIdFromButton(button) {
-      const row = button.closest("tr");
-      if (!row) return "";
-      const select = row.querySelector(".transfer-room-select");
-      return String(select?.value || "").trim();
-    }
-
-    function isPatientLockedFromRebalance(patient) {
-      return patient.initialAssignmentMode === "manual" || patient.manualLock === true;
-    }
-
-    async function loadStateFromSupabase(showErrorToast = true) {
-      try {
-        const { data: roomsData, error: roomsError } = await sb
-          .from("rooms")
-          .select("*")
-          .order("room_no", { ascending: true });
-
-        if (roomsError) throw roomsError;
-
-        const { data: patientsData, error: patientsError } = await sb
-          .from("patients")
-          .select("*")
-          .order("created_at", { ascending: true });
-
-        if (patientsError) throw patientsError;
-
-        state.rooms = (roomsData || []).map((room, index) => ({
-          id: room.id,
-          roomNo: room.room_no,
-          doctorName: room.doctor_name || "",
-          status: room.status || "open",
-          pauseReason: room.pause_reason || "",
-          acceptingNew: room.accepting_new !== false,
-          queuePatientIds: [],
-          skippedPatientIds: [],
-          currentPatientId: room.current_patient_id || null,
-          sortOrder: room.sort_order ?? index
-        }));
-
-        state.patients = (patientsData || []).map(patient => ({
-          id: patient.id,
-          ticketNo: patient.ticket_no,
-          cumcNo: patient.cumc_no,
-          roomId: patient.room_id || "",
-          sourceType: patient.source_type || "walkin",
-          priority: !!patient.priority,
-          registeredAt: patient.registered_at || hktNowIso(),
-          status: patient.status || "waiting",
-          createdAt: patient.created_at || hktNowIso(),
-          queueOrder: Number.isFinite(patient.queue_order) ? patient.queue_order : null,
-          skippedAt: patient.skipped_at || null,
-          calledAt: patient.called_at || null,
-          doneAt: patient.done_at || null,
-          cancelledAt: patient.cancelled_at || null,
-          initialAssignmentMode: patient.initial_assignment_mode || "auto",
-          manualLock: !!patient.manual_lock,
-          manualLockReason: patient.manual_lock_reason || "",
-          logs: Array.isArray(patient.logs_json) ? patient.logs_json : []
-        }));
-
-        state.nextRoomNumber = state.rooms.length + 1;
-
-        state.rooms.forEach(room => {
-          room.queuePatientIds = state.patients
-            .filter(patient => patient.roomId === room.id && patient.status === "waiting")
-            .sort((a, b) => {
-              const aOrder = Number.isFinite(a.queueOrder) ? a.queueOrder : 999999;
-              const bOrder = Number.isFinite(b.queueOrder) ? b.queueOrder : 999999;
-              return aOrder - bOrder;
-            })
-            .map(patient => patient.id);
-
-          room.skippedPatientIds = state.patients
-            .filter(patient => patient.roomId === room.id && patient.status === "skipped")
-            .map(patient => patient.id);
-        });
-
-        return true;
-      } catch (error) {
-        console.error("Failed to load from Supabase:", error);
-        if (showErrorToast) notify("讀取雲端資料失敗", "error");
-        return false;
-      }
-    }
-
-    async function saveRoomToSupabase(room) {
-      const payload = {
-        id: room.id,
-        room_no: room.roomNo,
-        doctor_name: room.doctorName,
-        status: room.status,
-        pause_reason: room.pauseReason || "",
-        accepting_new: room.acceptingNew,
-        current_patient_id: room.currentPatientId || null,
-        sort_order: room.sortOrder ?? 0
-      };
-
-      const { error } = await sb.from("rooms").upsert(payload);
-      if (error) throw error;
-    }
-
-    function toPatientPayload(patient) {
-      return {
-        id: patient.id,
-        ticket_no: patient.ticketNo,
-        cumc_no: patient.cumcNo,
-        room_id: patient.roomId || null,
-        source_type: patient.sourceType,
-        priority: patient.priority,
-        registered_at: patient.registeredAt,
-        status: patient.status,
-        queue_order: Number.isFinite(patient.queueOrder) ? patient.queueOrder : null,
-        created_at: patient.createdAt,
-        skipped_at: patient.skippedAt,
-        called_at: patient.calledAt,
-        done_at: patient.doneAt,
-        cancelled_at: patient.cancelledAt,
-        initial_assignment_mode: patient.initialAssignmentMode || "auto",
-        manual_lock: !!patient.manualLock,
-        manual_lock_reason: patient.manualLockReason || null,
-        logs_json: Array.isArray(patient.logs) ? patient.logs : []
-      };
-    }
-
-    async function savePatientToSupabase(patient) {
-      const payload = toPatientPayload(patient);
-      const { error } = await sb.from("patients").upsert(payload);
-      if (error) throw error;
-    }
-
-    async function savePatientsBatchToSupabase(patients) {
-      if (!patients || !patients.length) return;
-      const payload = patients.map(toPatientPayload);
-      const { error } = await sb.from("patients").upsert(payload);
-      if (error) throw error;
-    }
-
-    async function deleteRoomFromSupabase(roomId) {
-      const { error } = await sb.from("rooms").delete().eq("id", roomId);
-      if (error) throw error;
-    }
-
-    async function syncRoomQueuePatients(room) {
-      const waitingPatients = getOrderedWaitingPatients(room);
-      await savePatientsBatchToSupabase(waitingPatients);
-    }
-
-    function renderDoctorOptionsHtml() {
-      const uniqueNames = Array.from(
-        new Set([
-          ...DOCTOR_SUGGESTIONS,
-          ...state.rooms.map(room => room.doctorName).filter(Boolean)
-        ])
-      ).sort((a, b) => a.localeCompare(b, "zh-HK"));
-
-      return uniqueNames.map(name => `<option value="${escapeHtml(name)}"></option>`).join("");
-    }
-
-    function renderDoctorOptionsDatalist() {
-      const datalist = document.getElementById("doctorOptions");
-      if (!datalist) return;
-      const nextHtml = renderDoctorOptionsHtml();
-      if (datalist.innerHTML !== nextHtml) {
-        datalist.innerHTML = nextHtml;
-      }
-    }
-
-    function scheduleRenderAll(delay = RENDER_DEBOUNCE_MS) {
-      if (renderTimer) clearTimeout(renderTimer);
-      renderTimer = setTimeout(() => {
-        renderAll();
-      }, delay);
-    }
-
-    async function refreshFromCloudAndRender(showErrorToast = false) {
-      if (refreshInFlight) {
-        queuedRefresh = true;
-        return;
-      }
-
-      refreshInFlight = true;
-      try {
-        const ok = await loadStateFromSupabase(showErrorToast);
-        if (!ok) return;
-
-        const activeTab = getActiveTabId();
-        if (activeTab === "staffPage" && isUiBusy()) {
-          renderDisplayBoard(false);
-          return;
-        }
-
-        scheduleRenderAll();
-      } finally {
-        refreshInFlight = false;
-        if (queuedRefresh) {
-          queuedRefresh = false;
-          refreshFromCloudAndRender(false);
-        }
-      }
-    }
-
-    function renderPatientSearchResult(patientOrPatients) {
-      const container = document.getElementById("patientSearchResult");
-
-      if (!patientOrPatients || (Array.isArray(patientOrPatients) && !patientOrPatients.length)) {
-        const html = `
-          <div class="patient-search-result">
-            <div class="muted">找不到病人資料</div>
-          </div>
-        `;
-        if (state.lastSearchRenderKey !== html) {
-          container.innerHTML = html;
-          state.lastSearchRenderKey = html;
-        }
-        return;
-      }
-
-      if (Array.isArray(patientOrPatients) && patientOrPatients.length > 1) {
-        const html = `
-          <div class="patient-search-result">
-            <div class="section-title" style="margin-top:0;">找到多個結果，請輸入更完整 CUMC 號碼</div>
-            <table>
-              <thead>
-                <tr>
-                  <th>CUMC號碼</th>
-                  <th>診室</th>
-                  <th>狀態</th>
-                  <th>類型</th>
-                  <th>首次派房</th>
-                  <th>人工轉房鎖定</th>
-                  <th>登記時間（HKT）</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${patientOrPatients.map(patient => {
-                  const room = getRoom(patient.roomId);
-                  return `
-                    <tr>
-                      <td>${escapeHtml(patient.ticketNo)}</td>
-                      <td>${room ? `${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}` : "—"}</td>
-                      <td>${escapeHtml(getStatusLabel(patient.status))}</td>
-                      <td>${escapeHtml(getPatientTypeLabel(patient.sourceType))}</td>
-                      <td>${patient.initialAssignmentMode === "manual" ? "手動派房" : "自動派房"}</td>
-                      <td>${patient.manualLock ? "是" : "否"}</td>
-                      <td>${escapeHtml(formatDateTime(patient.registeredAt))}</td>
-                    </tr>
-                  `;
-                }).join("")}
-              </tbody>
-            </table>
-          </div>
-        `;
-        if (state.lastSearchRenderKey !== html) {
-          container.innerHTML = html;
-          state.lastSearchRenderKey = html;
-        }
-        return;
-      }
-
-      const patient = Array.isArray(patientOrPatients) ? patientOrPatients[0] : patientOrPatients;
-      const room = getRoom(patient.roomId);
-      let queuePosition = null;
-
-      if (room && patient.status === "waiting") {
-        const waitingIds = getOrderedWaitingPatients(room).map(p => p.id);
-        queuePosition = waitingIds.indexOf(patient.id) + 1;
-      }
-
-      const historyHtml = (patient.logs || []).length
-        ? patient.logs.map(log => `
-          <div class="history-item">
-            <div class="history-time">${escapeHtml(formatDateTime(log.time))}</div>
-            <div class="history-text">
-              ${escapeHtml(log.action)}${log.details ? `：${escapeHtml(log.details)}` : ""}
-            </div>
-          </div>
-        `).join("")
-        : `<div class="muted">暫無活動紀錄</div>`;
-
-      const html = `
-        <div class="patient-search-result">
-          <div class="grid-2">
-            <div><strong>CUMC號碼：</strong>${escapeHtml(patient.ticketNo)}</div>
-            <div><strong>診室：</strong>${room ? `${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}` : "—"}</div>
-            <div><strong>狀態：</strong>${escapeHtml(getStatusLabel(patient.status))}</div>
-            <div><strong>病人類型：</strong>${escapeHtml(getPatientTypeLabel(patient.sourceType))}</div>
-            <div><strong>醫療優先症：</strong>${patient.priority ? "是" : "否"}</div>
-            <div><strong>首次派房：</strong>${patient.initialAssignmentMode === "manual" ? "手動派房（不可自動分流）" : "自動派房"}</div>
-            <div><strong>人工轉房鎖定：</strong>${patient.manualLock ? `是${patient.manualLockReason ? `（${escapeHtml(patient.manualLockReason)}）` : ""}` : "否"}</div>
-            <div><strong>登記時間：</strong>${escapeHtml(formatDateTime(patient.registeredAt))}</div>
-            <div><strong>系統建立時間：</strong>${escapeHtml(formatDateTime(patient.createdAt))}</div>
-            <div><strong>首次叫號時間：</strong>${escapeHtml(formatDateTime(patient.calledAt))}</div>
-            <div><strong>過號時間：</strong>${escapeHtml(formatDateTime(patient.skippedAt))}</div>
-            <div><strong>完成時間：</strong>${escapeHtml(formatDateTime(patient.doneAt))}</div>
-            <div><strong>取消時間：</strong>${escapeHtml(formatDateTime(patient.cancelledAt))}</div>
-            <div><strong>輪候位置：</strong>${queuePosition || "—"}</div>
-          </div>
-
-          <div class="history-list">
-            <div class="section-title" style="margin-top:0;">活動紀錄</div>
-            ${historyHtml}
-          </div>
-        </div>
-      `;
-
-      if (state.lastSearchRenderKey !== html) {
-        container.innerHTML = html;
-        state.lastSearchRenderKey = html;
-      }
-    }
-
-    function splitDoctorName(fullName) {
-      const text = String(fullName || "").trim();
-      const match = text.match(/^(.*?醫生)\s*(Dr\..*)$/i);
-
-      if (match) {
-        return {
-          zh: match[1].trim(),
-          en: match[2].trim()
-        };
-      }
-
-      return {
-        zh: text,
-        en: ""
-      };
-    }
-
-    function renderBoardTag(patient, type = "wait") {
-      const priorityClass = patient.priority ? "tag-priority" : "";
-      const baseClass = type === "skip" ? "tag-skip" : "tag-wait";
+    function renderBoardTag(patient, type="wait"){
+      const priorityClass=patient.priority?"tag-priority":"";
+      const baseClass=type==="skip"?"tag-skip":"tag-wait";
       return `<span class="board-tag ${baseClass} ${priorityClass}">${escapeHtml(patient.ticketNo)}</span>`;
     }
-
-    function getVisibleBoardRooms() {
-      return sortedRooms().filter(room => room.status !== "closed");
+    function getVisibleBoardRooms(){return sortedRooms().filter(room=>room.status!=="closed")}
+    function getBoardTotalPages(rooms){return Math.max(1, Math.ceil(rooms.length / BOARD_ROOMS_PER_PAGE))}
+    function normalizeBoardPageIndex(totalPages){
+      if(totalPages<=0) state.displayPageIndex=0;
+      else if(state.displayPageIndex>=totalPages || state.displayPageIndex<0) state.displayPageIndex=0;
     }
 
-    function getBoardTotalPages(rooms) {
-      return Math.max(1, Math.ceil(rooms.length / BOARD_ROOMS_PER_PAGE));
-    }
+    function renderDisplayBoard(force=false){
+      const container=document.getElementById("displayBoard");
+      const timeEl=document.getElementById("boardTime");
+      timeEl.textContent=formatBoardNow(new Date());
 
-    function normalizeBoardPageIndex(totalPages) {
-      if (totalPages <= 0) {
-        state.displayPageIndex = 0;
-        return;
-      }
-      if (state.displayPageIndex >= totalPages) {
-        state.displayPageIndex = 0;
-      }
-      if (state.displayPageIndex < 0) {
-        state.displayPageIndex = 0;
-      }
-    }
-
-    function getBoardRenderModel() {
-      const visibleRooms = getVisibleBoardRooms();
-      const totalPages = getBoardTotalPages(visibleRooms);
+      const visibleRooms=getVisibleBoardRooms();
+      const totalPages=getBoardTotalPages(visibleRooms);
       normalizeBoardPageIndex(totalPages);
+      const start=state.displayPageIndex*BOARD_ROOMS_PER_PAGE;
+      const pageRooms=visibleRooms.slice(start, start+BOARD_ROOMS_PER_PAGE);
 
-      const startIndex = state.displayPageIndex * BOARD_ROOMS_PER_PAGE;
-      const pageRooms = visibleRooms.slice(startIndex, startIndex + BOARD_ROOMS_PER_PAGE);
-
-      return {
-        visibleRooms,
-        totalPages,
-        pageRooms
-      };
-    }
-
-    function renderDisplayBoard(force = false) {
-      const container = document.getElementById("displayBoard");
-      const timeEl = document.getElementById("boardTime");
-      if (!container || !timeEl) return;
-
-      timeEl.textContent = formatBoardNow(new Date());
-
-      const { visibleRooms, totalPages, pageRooms } = getBoardRenderModel();
-
-      if (!visibleRooms.length) {
-        const html = `
-          <div class="board-wrap">
-            <div class="board-body">
-              <div class="board-row">
-                <div class="board-cell" style="grid-column: 1 / -1; min-height: 320px;">
-                  <div class="board-empty" style="font-size:1.8rem; line-height:1.6;">
-                    目前沒有顯示中的診室<br>
-                    No rooms currently displayed
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-
-        if (force || state.lastBoardRenderKey !== html) {
-          container.innerHTML = html;
-          state.lastBoardRenderKey = html;
-        }
-        return;
-      }
-
-      const dotsHtml = Array.from({ length: totalPages }, (_, i) => `
-        <span class="board-dot ${i === state.displayPageIndex ? "active" : ""}"></span>
-      `).join("");
-
-      const rows = pageRooms.map(room => {
-        const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
-        const doctorParts = splitDoctorName(room.doctorName);
-
-        const waitingAll = getOrderedWaitingPatients(room);
-        const waitingPatients = waitingAll.slice(0, 10);
-        const waitingMore = Math.max(0, waitingAll.length - waitingPatients.length);
-
-        const skippedAll = state.patients
-          .filter(patient => patient.roomId === room.id && patient.status === "skipped")
-          .sort((a, b) => {
-            const aTime = new Date(a.skippedAt || a.createdAt).getTime();
-            const bTime = new Date(b.skippedAt || b.createdAt).getTime();
-            return aTime - bTime;
-          });
-
-        const skippedPatients = skippedAll.slice(0, 6);
-        const skippedMore = Math.max(0, skippedAll.length - skippedPatients.length);
-
-        const currentBoardContent = room.status === "paused"
-          ? `
-            <div class="board-paused">暫停 Paused</div>
-            ${room.pauseReason ? `<div class="board-meta">原因 Reason: ${escapeHtml(room.pauseReason)}</div>` : ""}
-          `
-          : `
-            ${
-              currentPatient
-                ? `
-                  <div class="${currentPatient.priority ? "board-current-priority-ticket" : "board-current-normal-ticket"}">
-                    ${escapeHtml(currentPatient.ticketNo)}
-                  </div>
-                  <div class="board-meta">${escapeHtml(formatBoardDateTime(currentPatient.registeredAt))}</div>
-                `
-                : `<div class="board-current-normal-ticket">—</div>`
-            }
-          `;
-
-        return `
-          <div class="board-row">
-            <div class="board-cell board-room">${escapeHtml(getRoomDisplayShort(room.roomNo))}</div>
-            <div class="board-cell board-doctor">
-              <div class="board-doctor-zh">${escapeHtml(doctorParts.zh)}</div>
-              ${doctorParts.en ? `<div class="board-doctor-en">${escapeHtml(doctorParts.en)}</div>` : ""}
-            </div>
-            <div class="board-cell board-current">
-              ${currentBoardContent}
-            </div>
-            <div class="board-cell">
-              <div class="board-queue">
-                ${
-                  waitingPatients.length
-                    ? waitingPatients.map(patient => renderBoardTag(patient, "wait")).join("") +
-                      (waitingMore > 0 ? `<span class="board-empty">+${waitingMore}</span>` : "")
-                    : `<span class="board-empty">—</span>`
-                }
-              </div>
-            </div>
-            <div class="board-cell">
-              <div class="board-skip">
-                ${
-                  skippedPatients.length
-                    ? skippedPatients.map(patient => renderBoardTag(patient, "skip")).join("") +
-                      (skippedMore > 0 ? `<span class="board-empty">+${skippedMore}</span>` : "")
-                    : `<span class="board-empty">—</span>`
-                }
-              </div>
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      const html = `
+      const html = !visibleRooms.length ? `
+        <div class="board-wrap"><div class="board-row">
+          <div class="board-cell" style="grid-column:1 / -1;min-height:280px;"><div class="board-empty">目前沒有顯示中的診室</div></div>
+        </div></div>
+      ` : `
         <div class="board-pagination-bar">
-          <div class="board-page-indicator">第 ${state.displayPageIndex + 1} 頁 / 共 ${totalPages} 頁</div>
-          <div class="board-page-dots">${dotsHtml}</div>
+          <div class="board-page-indicator">第 ${state.displayPageIndex+1} 頁 / 共 ${totalPages} 頁</div>
+          <div class="board-page-dots">${Array.from({length:totalPages},(_,i)=>`<span class="board-dot ${i===state.displayPageIndex?"active":""}"></span>`).join("")}</div>
         </div>
-
         <div class="board-wrap">
           <div class="board-head">
             <div><span class="board-head-zh">房號</span><span class="board-head-en">ROOM</span></div>
@@ -2017,167 +782,66 @@
             <div><span class="board-head-zh">隊列</span><span class="board-head-en">WAITING</span></div>
             <div><span class="board-head-zh">過號</span><span class="board-head-en">SKIPPED</span></div>
           </div>
-          <div class="board-body">${rows}</div>
+          <div class="board-body">
+            ${pageRooms.map(room=>{
+              const current=room.currentPatientId?getPatient(room.currentPatientId):null;
+              const doctor=splitDoctorName(room.doctorName);
+              const waiting=getOrderedWaitingPatients(room).slice(0,10);
+              const skipped=state.patients.filter(p=>p.roomId===room.id&&p.status==="skipped")
+                .sort((a,b)=>new Date(a.skippedAt||a.createdAt)-new Date(b.skippedAt||b.createdAt)).slice(0,6);
+              return `
+                <div class="board-row">
+                  <div class="board-cell board-room">${escapeHtml(getRoomDisplayShort(room.roomNo))}</div>
+                  <div class="board-cell board-doctor">
+                    <div class="board-doctor-zh">${escapeHtml(doctor.zh)}</div>
+                    ${doctor.en?`<div class="board-doctor-en">${escapeHtml(doctor.en)}</div>`:""}
+                  </div>
+                  <div class="board-cell board-current">
+                    ${
+                      room.status==="paused"
+                      ? `<div class="board-paused">暫停 Paused</div>${room.pauseReason?`<div class="board-meta">${escapeHtml(room.pauseReason)}</div>`:""}`
+                      : current
+                        ? `<div class="${current.priority?"board-current-priority-ticket":"board-current-normal-ticket"}">${escapeHtml(current.ticketNo)}</div><div class="board-meta">${escapeHtml(formatBoardDateTime(current.registeredAt))}</div>`
+                        : `<div class="board-current-normal-ticket">—</div>`
+                    }
+                  </div>
+                  <div class="board-cell"><div class="board-queue">${waiting.length?waiting.map(p=>renderBoardTag(p,"wait")).join(""):`<span class="board-empty">—</span>`}</div></div>
+                  <div class="board-cell"><div class="board-skip">${skipped.length?skipped.map(p=>renderBoardTag(p,"skip")).join(""):`<span class="board-empty">—</span>`}</div></div>
+                </div>
+              `;
+            }).join("")}
+          </div>
         </div>
       `;
-
-      if (force || state.lastBoardRenderKey !== html) {
-        container.innerHTML = html;
-        state.lastBoardRenderKey = html;
-      }
+      if(force || state.boardKey!==html){container.innerHTML=html; state.boardKey=html;}
     }
 
-    function getRoomFingerprint(room) {
-      const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
-      const waitingPatients = getOrderedWaitingPatients(room);
-      const skippedPatients = state.patients
-        .filter(patient => patient.roomId === room.id && patient.status === "skipped")
-        .sort((a, b) => String(a.id).localeCompare(String(b.id)));
+    function getTransferOptionsHtml(room){
+      return sortedRooms().filter(t=>t.id!==room.id && t.status==="open" && t.acceptingNew)
+        .map(t=>`<option value="${t.id}">${escapeHtml(t.roomNo)} / ${escapeHtml(t.doctorName)}</option>`).join("");
+    }
 
+    function getRoomFingerprint(room){
+      const current=room.currentPatientId?getPatient(room.currentPatientId):null;
+      const waiting=getOrderedWaitingPatients(room);
+      const skipped=state.patients.filter(p=>p.roomId===room.id && p.status==="skipped");
       return JSON.stringify({
-        roomId: room.id,
-        roomNo: room.roomNo,
-        doctorName: room.doctorName,
-        status: room.status,
-        pauseReason: room.pauseReason,
-        acceptingNew: room.acceptingNew,
-        currentPatientId: room.currentPatientId,
-        currentPatientTicket: currentPatient?.ticketNo || null,
-        waiting: waitingPatients.map(p => ({
-          id: p.id,
-          t: p.ticketNo,
-          q: p.queueOrder,
-          pr: p.priority,
-          s: p.status,
-          src: p.sourceType,
-          init: p.initialAssignmentMode,
-          lock: p.manualLock,
-          reg: p.registeredAt
-        })),
-        skipped: skippedPatients.map(p => ({
-          id: p.id,
-          t: p.ticketNo,
-          pr: p.priority,
-          s: p.status,
-          sk: p.skippedAt
-        }))
+        roomNo:room.roomNo, doctorName:room.doctorName, status:room.status, pauseReason:room.pauseReason, acceptingNew:room.acceptingNew,
+        current:current?current.ticketNo:null,
+        waiting:waiting.map(p=>[p.id,p.ticketNo,p.queueOrder,p.priority,p.status,p.roomId,p.manualLock]),
+        skipped:skipped.map(p=>[p.id,p.ticketNo,p.priority,p.status])
       });
     }
 
-    function getTransferOptionsHtml(room) {
-      return sortedRooms()
-        .filter(targetRoom => targetRoom.id !== room.id && targetRoom.status === "open" && targetRoom.acceptingNew)
-        .map(targetRoom => `
-          <option value="${targetRoom.id}">
-            ${escapeHtml(targetRoom.roomNo)} / ${escapeHtml(targetRoom.doctorName)}
-          </option>
-        `).join("");
-    }
+    function renderRoomCardHtml(room){
+      const currentPatient=room.currentPatientId?getPatient(room.currentPatientId):null;
+      const waiting=getOrderedWaitingPatients(room);
+      const skipped=state.patients.filter(p=>p.roomId===room.id && p.status==="skipped");
+      const transferOptions=getTransferOptionsHtml(room);
 
-    function renderRoomCardHtml(room) {
-      const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
-      const waitingPatients = getOrderedWaitingPatients(room);
-      const skippedPatients = state.patients
-        .filter(patient => patient.roomId === room.id && patient.status === "skipped");
-
-      const transferOptions = getTransferOptionsHtml(room);
-
-      const queueRows = waitingPatients.length
-        ? waitingPatients.map((patient, index) => `
-          <tr data-row-patient-id="${patient.id}">
-            <td>${index + 1}</td>
-            <td>${escapeHtml(patient.ticketNo)}</td>
-            <td>${escapeHtml(formatDateTime(patient.registeredAt))}</td>
-            <td>
-              <div class="actions">
-                <span class="pill ${getPatientTypePill(patient.sourceType)}">${getPatientTypeLabel(patient.sourceType)}</span>
-                <span class="pill ${patient.priority ? "pill-priority" : "pill-normal"}">
-                  ${patient.priority ? "醫療優先" : "一般"}
-                </span>
-                <span class="pill ${patient.initialAssignmentMode === "manual" ? "pill-manual" : "pill-auto-assign"}">
-                  ${patient.initialAssignmentMode === "manual" ? "首次手動派房" : "首次自動派房"}
-                </span>
-                ${patient.manualLock ? `<span class="pill pill-locked">人工轉房已鎖定</span>` : ``}
-              </div>
-            </td>
-            <td>
-              <div class="actions">
-                <button class="btn-warning btn-small" type="button" data-action="togglePriority" data-patient-id="${patient.id}">
-                  ${patient.priority ? "取消優先" : "設優先"}
-                </button>
-                <button class="btn-secondary btn-small" type="button" data-action="moveToFront" data-patient-id="${patient.id}">
-                  移到最前
-                </button>
-                <input class="insert-pos-input" type="number" min="1" placeholder="第幾位" data-insert-position="${patient.id}" />
-                <button class="btn-secondary btn-small" type="button" data-action="insertAtPosition" data-patient-id="${patient.id}">
-                  指定位置
-                </button>
-                <select class="transfer-room-select">
-                  <option value="">選擇轉去房間</option>
-                  ${transferOptions}
-                </select>
-                <button class="btn-success btn-small" type="button" data-action="transferAuto" data-patient-id="${patient.id}">
-                  轉房（自動排位）
-                </button>
-                <button class="btn-primary btn-small" type="button" data-action="transferFront" data-patient-id="${patient.id}">
-                  轉隊首
-                </button>
-                <button class="btn-primary btn-small" type="button" data-action="transferTail" data-patient-id="${patient.id}">
-                  轉隊尾
-                </button>
-                <button class="btn-danger btn-small" type="button" data-action="cancelPatient" data-patient-id="${patient.id}">
-                  取消
-                </button>
-              </div>
-            </td>
-          </tr>
-        `).join("")
-        : `<tr><td colspan="5" class="muted">暫無候診病人</td></tr>`;
-
-      const skippedRows = skippedPatients.length
-        ? skippedPatients.map(patient => `
-          <tr data-row-patient-id="${patient.id}">
-            <td>${escapeHtml(patient.ticketNo)}</td>
-            <td>${escapeHtml(formatDateTime(patient.registeredAt))}</td>
-            <td>
-              <div class="actions">
-                <button class="btn-primary btn-small" type="button" data-action="recallSkipped" data-patient-id="${patient.id}">
-                  重叫
-                </button>
-                <button class="btn-success btn-small" type="button" data-action="requeueSkipped" data-patient-id="${patient.id}">
-                  回原房（自動排位）
-                </button>
-                <select class="transfer-room-select">
-                  <option value="">選擇轉去房間</option>
-                  ${transferOptions}
-                </select>
-                <button class="btn-success btn-small" type="button" data-action="transferAuto" data-patient-id="${patient.id}">
-                  轉房（自動排位）
-                </button>
-                <button class="btn-primary btn-small" type="button" data-action="transferFront" data-patient-id="${patient.id}">
-                  轉隊首
-                </button>
-                <button class="btn-primary btn-small" type="button" data-action="transferTail" data-patient-id="${patient.id}">
-                  轉隊尾
-                </button>
-                <button class="btn-danger btn-small" type="button" data-action="cancelPatient" data-patient-id="${patient.id}">
-                  取消
-                </button>
-              </div>
-            </td>
-          </tr>
-        `).join("")
-        : `<tr><td colspan="3" class="muted">暫無過號病人</td></tr>`;
-
-      const currentDisplay = room.status === "paused"
-        ? `
-          <div class="current-ticket" style="color:#b45309;">${escapeHtml(room.pauseReason || "暫停")}</div>
-          <div class="current-subtext">此房目前暫停</div>
-        `
-        : `
-          <div class="current-ticket">${currentPatient ? escapeHtml(currentPatient.ticketNo) : "—"}</div>
-          ${currentPatient ? `<div class="current-subtext">登記時間：${escapeHtml(formatDateTime(currentPatient.registeredAt))}</div>` : ""}
-        `;
+      const currentDisplay=room.status==="paused"
+        ? `<div class="current-ticket" style="color:#b45309;">${escapeHtml(room.pauseReason||"暫停")}</div><div class="current-subtext">此房目前暫停</div>`
+        : `<div class="current-ticket">${currentPatient?escapeHtml(currentPatient.ticketNo):"—"}</div>${currentPatient?`<div class="current-subtext">登記時間：${escapeHtml(formatDateTime(currentPatient.registeredAt))}</div>`:""}`;
 
       return `
         <div class="room-card" data-room-id="${room.id}">
@@ -2187,15 +851,14 @@
               <div class="doctor-name">${escapeHtml(room.doctorName)}</div>
             </div>
             <div class="status-stack">
-              <div class="status-badge ${room.status === "open" ? "status-open" : room.status === "paused" ? "status-paused" : "status-closed"}">
-                ${room.status === "open" ? "開放中" : room.status === "paused" ? "暫停" : "已關房"}
+              <div class="status-badge ${room.status==="open"?"status-open":room.status==="paused"?"status-paused":"status-closed"}">
+                ${room.status==="open"?"開放中":room.status==="paused"?"暫停":"已關房"}
               </div>
-              <div class="status-badge ${room.acceptingNew ? "status-accepting" : "status-stop-assign"}">
-                ${room.acceptingNew ? "可派症" : "已截籌"}
+              <div class="status-badge ${room.acceptingNew?"status-accepting":"status-stop-assign"}">
+                ${room.acceptingNew?"可派症":"已截籌"}
               </div>
             </div>
           </div>
-
           <div class="room-card-body">
             <div class="current-box">
               <div class="current-label">現在診症</div>
@@ -2209,20 +872,13 @@
               <button class="btn-secondary btn-small" data-action="setOpen" data-room-id="${room.id}" type="button">開放</button>
               <button class="btn-secondary btn-small" data-action="setPausedWithReason" data-room-id="${room.id}" type="button">暫停</button>
               <button class="btn-danger btn-small" data-action="setClosed" data-room-id="${room.id}" type="button">關房</button>
-              <button class="${room.acceptingNew ? "btn-warning" : "btn-success"} btn-small" data-action="toggleAcceptingNew" data-room-id="${room.id}" type="button">
-                ${room.acceptingNew ? "截籌" : "恢復派症"}
+              <button class="${room.acceptingNew?"btn-warning":"btn-success"} btn-small" data-action="toggleAcceptingNew" data-room-id="${room.id}" type="button">
+                ${room.acceptingNew?"截籌":"恢復派症"}
               </button>
             </div>
 
             <div class="actions" style="margin-bottom:14px;">
-              <input
-                type="text"
-                list="doctorOptions"
-                value="${escapeHtml(room.doctorName)}"
-                data-doctor-input="${room.id}"
-                style="max-width:220px;"
-                placeholder="可選或自由輸入"
-              />
+              <input type="text" list="doctorOptions" value="${escapeHtml(room.doctorName)}" data-doctor-input="${room.id}" style="max-width:220px;" placeholder="可選或自由輸入" />
               <button class="btn-secondary btn-small" data-action="updateDoctor" data-room-id="${room.id}" type="button">更新醫生</button>
               <button class="btn-danger btn-small" data-action="deleteRoom" data-room-id="${room.id}" type="button">刪除此房 / 醫生</button>
             </div>
@@ -2232,1225 +888,706 @@
               <div class="actions">
                 <select data-pause-reason-select="${room.id}" style="max-width:220px;">
                   <option value="">自訂原因</option>
-                  ${PAUSE_REASON_OPTIONS.map(reason => `
-                    <option value="${escapeHtml(reason)}" ${room.pauseReason === reason ? "selected" : ""}>${escapeHtml(reason)}</option>
-                  `).join("")}
+                  ${PAUSE_REASON_OPTIONS.map(reason=>`<option value="${escapeHtml(reason)}" ${room.pauseReason===reason?"selected":""}>${escapeHtml(reason)}</option>`).join("")}
                 </select>
-                <input
-                  type="text"
-                  data-pause-reason="${room.id}"
-                  value="${PAUSE_REASON_OPTIONS.includes(room.pauseReason || "") ? "" : escapeHtml(room.pauseReason || "")}"
-                  placeholder="可自訂原因"
-                  style="max-width:260px;"
-                />
+                <input type="text" data-pause-reason="${room.id}" value="${PAUSE_REASON_OPTIONS.includes(room.pauseReason||"")?"":escapeHtml(room.pauseReason||"")}" placeholder="可自訂原因" style="max-width:260px;" />
               </div>
             </div>
 
             <div class="section-title">候診名單</div>
             <table>
-              <thead>
-                <tr>
-                  <th>位置</th>
-                  <th>CUMC號碼</th>
-                  <th>登記時間</th>
-                  <th>類別</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody>${queueRows}</tbody>
+              <thead><tr><th>位置</th><th>CUMC號碼</th><th>登記時間</th><th>類別</th><th>操作</th></tr></thead>
+              <tbody>
+                ${waiting.length ? waiting.map((patient,index)=>`
+                  <tr data-row-patient-id="${patient.id}">
+                    <td>${index+1}</td>
+                    <td>${escapeHtml(patient.ticketNo)}</td>
+                    <td>${escapeHtml(formatDateTime(patient.registeredAt))}</td>
+                    <td>
+                      <div class="actions">
+                        <span class="pill ${getPatientTypePill(patient.sourceType)}">${getPatientTypeLabel(patient.sourceType)}</span>
+                        <span class="pill ${patient.priority?"pill-priority":"pill-normal"}">${patient.priority?"醫療優先":"一般"}</span>
+                        <span class="pill ${patient.initialAssignmentMode==="manual"?"pill-manual":"pill-auto-assign"}">${patient.initialAssignmentMode==="manual"?"首次手動派房":"首次自動派房"}</span>
+                        ${patient.manualLock?`<span class="pill pill-locked">人工轉房已鎖定</span>`:""}
+                      </div>
+                    </td>
+                    <td>
+                      <div class="actions">
+                        <button class="btn-warning btn-small" type="button" data-action="togglePriority" data-patient-id="${patient.id}">${patient.priority?"取消優先":"設優先"}</button>
+                        <button class="btn-secondary btn-small" type="button" data-action="moveToFront" data-patient-id="${patient.id}">移到最前</button>
+                        <input class="insert-pos-input" type="number" min="1" placeholder="第幾位" data-insert-position="${patient.id}" />
+                        <button class="btn-secondary btn-small" type="button" data-action="insertAtPosition" data-patient-id="${patient.id}">指定位置</button>
+                        <select class="transfer-room-select">
+                          <option value="">選擇轉去房間</option>${transferOptions}
+                        </select>
+                        <button class="btn-success btn-small" type="button" data-action="transferAuto" data-patient-id="${patient.id}">轉房（自動排位）</button>
+                        <button class="btn-primary btn-small" type="button" data-action="transferFront" data-patient-id="${patient.id}">轉隊首</button>
+                        <button class="btn-primary btn-small" type="button" data-action="transferTail" data-patient-id="${patient.id}">轉隊尾</button>
+                        <button class="btn-danger btn-small" type="button" data-action="cancelPatient" data-patient-id="${patient.id}">取消</button>
+                      </div>
+                    </td>
+                  </tr>
+                `).join("") : `<tr><td colspan="5" class="muted">暫無候診病人</td></tr>`}
+              </tbody>
             </table>
 
             <div class="section-title">過號名單</div>
             <table>
-              <thead>
-                <tr>
-                  <th>CUMC號碼</th>
-                  <th>登記時間</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody>${skippedRows}</tbody>
+              <thead><tr><th>CUMC號碼</th><th>登記時間</th><th>操作</th></tr></thead>
+              <tbody>
+                ${skipped.length ? skipped.map(patient=>`
+                  <tr data-row-patient-id="${patient.id}">
+                    <td>${escapeHtml(patient.ticketNo)}</td>
+                    <td>${escapeHtml(formatDateTime(patient.registeredAt))}</td>
+                    <td>
+                      <div class="actions">
+                        <button class="btn-primary btn-small" type="button" data-action="recallSkipped" data-patient-id="${patient.id}">重叫</button>
+                        <button class="btn-success btn-small" type="button" data-action="requeueSkipped" data-patient-id="${patient.id}">回原房（自動排位）</button>
+                        <select class="transfer-room-select">
+                          <option value="">選擇轉去房間</option>${transferOptions}
+                        </select>
+                        <button class="btn-success btn-small" type="button" data-action="transferAuto" data-patient-id="${patient.id}">轉房（自動排位）</button>
+                        <button class="btn-primary btn-small" type="button" data-action="transferFront" data-patient-id="${patient.id}">轉隊首</button>
+                        <button class="btn-primary btn-small" type="button" data-action="transferTail" data-patient-id="${patient.id}">轉隊尾</button>
+                        <button class="btn-danger btn-small" type="button" data-action="cancelPatient" data-patient-id="${patient.id}">取消</button>
+                      </div>
+                    </td>
+                  </tr>
+                `).join("") : `<tr><td colspan="3" class="muted">暫無過號病人</td></tr>`}
+              </tbody>
             </table>
           </div>
         </div>
       `;
     }
 
-    function replaceElementPreserveInteractiveState(oldEl, newEl) {
-      const active = document.activeElement;
-      let focusSelector = null;
-      let focusStart = null;
-      let focusEnd = null;
-      let selectedValue = null;
-
-      if (active && oldEl.contains(active)) {
-        if (active.matches("[data-doctor-input]")) {
-          focusSelector = `[data-doctor-input="${active.getAttribute("data-doctor-input")}"]`;
-        } else if (active.matches("[data-pause-reason-select]")) {
-          focusSelector = `[data-pause-reason-select="${active.getAttribute("data-pause-reason-select")}"]`;
-        } else if (active.matches("[data-pause-reason]")) {
-          focusSelector = `[data-pause-reason="${active.getAttribute("data-pause-reason")}"]`;
-        } else if (active.matches("[data-insert-position]")) {
-          focusSelector = `[data-insert-position="${active.getAttribute("data-insert-position")}"]`;
-        } else if (active.matches(".transfer-room-select")) {
-          const row = active.closest("tr");
-          const patientId = row?.getAttribute("data-row-patient-id");
-          if (patientId) focusSelector = `tr[data-row-patient-id="${patientId}"] .transfer-room-select`;
+    function preserveAndReplace(oldEl, newEl){
+      const active=document.activeElement;
+      let selector=null,value=null,start=null,end=null;
+      if(active && oldEl.contains(active)){
+        if(active.matches("[data-doctor-input]")) selector=`[data-doctor-input="${active.getAttribute("data-doctor-input")}"]`;
+        else if(active.matches("[data-pause-reason-select]")) selector=`[data-pause-reason-select="${active.getAttribute("data-pause-reason-select")}"]`;
+        else if(active.matches("[data-pause-reason]")) selector=`[data-pause-reason="${active.getAttribute("data-pause-reason")}"]`;
+        else if(active.matches("[data-insert-position]")) selector=`[data-insert-position="${active.getAttribute("data-insert-position")}"]`;
+        else if(active.matches(".transfer-room-select")){
+          const row=active.closest("tr"); const patientId=row?.getAttribute("data-row-patient-id");
+          if(patientId) selector=`tr[data-row-patient-id="${patientId}"] .transfer-room-select`;
         }
-
-        selectedValue = active.value;
-        try {
-          focusStart = active.selectionStart;
-          focusEnd = active.selectionEnd;
-        } catch (_) {}
+        value=active.value;
+        try{start=active.selectionStart; end=active.selectionEnd;}catch(_){}
       }
-
       oldEl.replaceWith(newEl);
-
-      if (focusSelector) {
-        const target = newEl.querySelector(focusSelector);
-        if (target) {
-          if (selectedValue != null) target.value = selectedValue;
-          try {
-            target.focus();
-            if (focusStart != null && focusEnd != null && typeof target.setSelectionRange === "function") {
-              target.setSelectionRange(focusStart, focusEnd);
-            }
-          } catch (_) {}
+      if(selector){
+        const t=newEl.querySelector(selector);
+        if(t){
+          if(value!=null) t.value=value;
+          try{t.focus(); if(start!=null && end!=null && typeof t.setSelectionRange==="function") t.setSelectionRange(start,end);}catch(_){}
         }
       }
     }
 
-    function renderRoomsPartial(force = false) {
-      const container = document.getElementById("roomsContainer");
-      const rooms = sortedRooms();
-      const nextIds = new Set(rooms.map(r => r.id));
+    function renderRoomsPartial(force=false){
+      const container=document.getElementById("roomsContainer");
+      const rooms=sortedRooms();
+      const ids=new Set(rooms.map(r=>r.id));
 
-      for (const [roomId, el] of state.roomDomMap.entries()) {
-        if (!nextIds.has(roomId)) {
+      for(const [roomId, el] of state.roomDomMap.entries()){
+        if(!ids.has(roomId)){
           el.remove();
           state.roomDomMap.delete(roomId);
-          state.roomRenderFingerprints.delete(roomId);
+          state.roomFingerprints.delete(roomId);
         }
       }
 
-      rooms.forEach(room => {
-        const fingerprint = getRoomFingerprint(room);
-        const prevFingerprint = state.roomRenderFingerprints.get(room.id);
-        const existingEl = state.roomDomMap.get(room.id);
+      rooms.forEach(room=>{
+        const fp=getRoomFingerprint(room);
+        const prev=state.roomFingerprints.get(room.id);
+        const oldEl=state.roomDomMap.get(room.id);
 
-        if (!existingEl) {
-          const tpl = document.createElement("template");
-          tpl.innerHTML = renderRoomCardHtml(room).trim();
-          const newEl = tpl.content.firstElementChild;
+        if(!oldEl){
+          const tpl=document.createElement("template");
+          tpl.innerHTML=renderRoomCardHtml(room).trim();
+          const newEl=tpl.content.firstElementChild;
           container.appendChild(newEl);
           state.roomDomMap.set(room.id, newEl);
-          state.roomRenderFingerprints.set(room.id, fingerprint);
+          state.roomFingerprints.set(room.id, fp);
           return;
         }
 
-        if (!force && prevFingerprint === fingerprint) {
-          return;
-        }
+        if(!force && prev===fp) return;
 
-        const tpl = document.createElement("template");
-        tpl.innerHTML = renderRoomCardHtml(room).trim();
-        const newEl = tpl.content.firstElementChild;
-        replaceElementPreserveInteractiveState(existingEl, newEl);
-        state.roomDomMap.set(room.id, newEl);
-        state.roomRenderFingerprints.set(room.id, fingerprint);
+        const tpl=document.createElement("template");
+        tpl.innerHTML=renderRoomCardHtml(room).trim();
+        const newEl=tpl.content.firstElementChild;
+        preserveAndReplace(oldEl,newEl);
+        state.roomDomMap.set(room.id,newEl);
+        state.roomFingerprints.set(room.id,fp);
       });
     }
 
-    function renderAll(force = false) {
-      state.rooms.forEach(sortRoomQueue);
+    function renderPatientSearchResult(patientOrPatients){
+      const container=document.getElementById("patientSearchResult");
+      let html="";
+      if(!patientOrPatients || (Array.isArray(patientOrPatients)&&!patientOrPatients.length)){
+        html=`<div class="patient-search-result"><div class="muted">找不到病人資料</div></div>`;
+      }else if(Array.isArray(patientOrPatients)&&patientOrPatients.length>1){
+        html=`
+          <div class="patient-search-result">
+            <div class="section-title" style="margin-top:0;">找到多個結果，請輸入更完整 CUMC 號碼</div>
+            <table>
+              <thead><tr><th>CUMC號碼</th><th>診室</th><th>狀態</th><th>類型</th><th>首次派房</th><th>人工轉房鎖定</th><th>登記時間（HKT）</th></tr></thead>
+              <tbody>
+                ${patientOrPatients.map(patient=>{
+                  const room=getRoom(patient.roomId);
+                  return `<tr>
+                    <td>${escapeHtml(patient.ticketNo)}</td>
+                    <td>${room?`${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}`:"—"}</td>
+                    <td>${escapeHtml(getStatusLabel(patient.status))}</td>
+                    <td>${escapeHtml(getPatientTypeLabel(patient.sourceType))}</td>
+                    <td>${patient.initialAssignmentMode==="manual"?"手動派房":"自動派房"}</td>
+                    <td>${patient.manualLock?"是":"否"}</td>
+                    <td>${escapeHtml(formatDateTime(patient.registeredAt))}</td>
+                  </tr>`;
+                }).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }else{
+        const patient=Array.isArray(patientOrPatients)?patientOrPatients[0]:patientOrPatients;
+        const room=getRoom(patient.roomId);
+        let queuePosition=null;
+        if(room && patient.status==="waiting"){
+          queuePosition=getOrderedWaitingPatients(room).map(p=>p.id).indexOf(patient.id)+1;
+        }
+        html=`
+          <div class="patient-search-result">
+            <div class="grid-2">
+              <div><strong>CUMC號碼：</strong>${escapeHtml(patient.ticketNo)}</div>
+              <div><strong>診室：</strong>${room?`${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}`:"—"}</div>
+              <div><strong>狀態：</strong>${escapeHtml(getStatusLabel(patient.status))}</div>
+              <div><strong>病人類型：</strong>${escapeHtml(getPatientTypeLabel(patient.sourceType))}</div>
+              <div><strong>醫療優先症：</strong>${patient.priority?"是":"否"}</div>
+              <div><strong>首次派房：</strong>${patient.initialAssignmentMode==="manual"?"手動派房（不可自動分流）":"自動派房"}</div>
+              <div><strong>人工轉房鎖定：</strong>${patient.manualLock?"是":"否"}</div>
+              <div><strong>登記時間：</strong>${escapeHtml(formatDateTime(patient.registeredAt))}</div>
+              <div><strong>首次叫號時間：</strong>${escapeHtml(formatDateTime(patient.calledAt))}</div>
+              <div><strong>過號時間：</strong>${escapeHtml(formatDateTime(patient.skippedAt))}</div>
+              <div><strong>完成時間：</strong>${escapeHtml(formatDateTime(patient.doneAt))}</div>
+              <div><strong>取消時間：</strong>${escapeHtml(formatDateTime(patient.cancelledAt))}</div>
+              <div><strong>輪候位置：</strong>${queuePosition||"—"}</div>
+            </div>
+            <div class="history-list">
+              <div class="section-title" style="margin-top:0;">活動紀錄</div>
+              ${(patient.logs||[]).length
+                ? patient.logs.map(log=>`<div class="history-item"><div class="history-time">${escapeHtml(formatDateTime(log.time))}</div><div class="history-text">${escapeHtml(log.action)}${log.details?`：${escapeHtml(log.details)}`:""}</div></div>`).join("")
+                : `<div class="muted">暫無活動紀錄</div>`
+              }
+            </div>
+          </div>
+        `;
+      }
+      if(state.searchKey!==html){container.innerHTML=html; state.searchKey=html;}
+    }
 
+    function renderAll(force=false){
+      state.rooms.forEach(sortRoomQueue);
       populateRoomSelect();
       populateSearchRoomSelect();
       updateSearchTicketSuggestions(document.getElementById("searchTicket")?.value || "");
       renderDoctorOptionsDatalist();
       refreshInsertModeFields();
       refreshRegisteredAtField();
-
-      const activeTab = getActiveTabId();
-
-      if (!(activeTab === "staffPage" && isUiBusy())) {
-        renderRoomsPartial(force);
-      }
-
+      renderRoomsPartial(force);
       renderDisplayBoard(force);
     }
 
-    async function addRoom() {
-      try {
-        markUiBusy(5000);
-
-        const roomNoInput = document.getElementById("newRoomNo");
-        const doctorInput = document.getElementById("newDoctorName");
-        const roomNo = roomNoInput.value.trim();
-        const doctorName = doctorInput.value.trim();
-
-        if (!roomNo || !doctorName) {
-          notify("請輸入房號及醫生名稱", "warning");
-          return;
-        }
-
-        const exists = state.rooms.some(room => room.roomNo === roomNo);
-        if (exists) {
-          notify("房號已存在", "warning");
-          return;
-        }
-
-        const room = {
-          id: crypto.randomUUID(),
-          roomNo,
-          doctorName,
-          status: "open",
-          pauseReason: "",
-          acceptingNew: true,
-          queuePatientIds: [],
-          skippedPatientIds: [],
-          currentPatientId: null,
-          sortOrder: state.rooms.length
-        };
-
-        state.rooms.push(room);
-        renderAll();
-
-        await saveRoomToSupabase(room);
-
-        roomNoInput.value = "";
-        doctorInput.value = "";
-        renderAll();
-        notify("已新增診室", "success");
-
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("新增診室失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
+    function getTransferTargetRoomIdFromButton(button){
+      const row=button.closest("tr");
+      const select=row?.querySelector(".transfer-room-select");
+      return String(select?.value || "").trim();
     }
 
-    async function addPatient() {
-      try {
-        markUiBusy(6000);
-
-        const cumcNo = document.getElementById("patientCumcNo").value.trim().toUpperCase();
-        document.getElementById("patientCumcNo").value = cumcNo;
-        const patientType = document.getElementById("patientType").value;
-        const assignMode = document.getElementById("assignMode").value;
-        const manualRoomId = document.getElementById("assignRoom").value;
-        const priority = document.getElementById("isPriority").value === "true";
-        const registeredAtInput = document.getElementById("registeredAt").value;
-        const useCustomRegisteredAt = document.getElementById("useCustomRegisteredAt").checked;
-        const insertMode = document.getElementById("insertMode").value;
-        const insertPosition = document.getElementById("insertPosition").value;
-
-        if (!cumcNo) {
-          notify("請輸入 CUMC號碼", "warning");
-          return;
-        }
-
-        const activeExists = state.patients.some(p =>
-          String(p.cumcNo || "").toLowerCase() === cumcNo.toLowerCase() &&
-          ["waiting", "called", "skipped"].includes(p.status)
-        );
-
-        if (activeExists) {
-          notify("此病人目前已有未完成就診記錄", "warning");
-          return;
-        }
-
-        let room = null;
-
-        if (assignMode === "manual") {
-          if (!manualRoomId) {
-            notify("請選擇診室", "warning");
-            return;
-          }
-          room = getRoom(manualRoomId);
-        } else {
-          room = getAutoAssignedRoom(assignMode, patientType);
-        }
-
-        if (!room) {
-          notify("找不到可派症診室", "warning");
-          return;
-        }
-
-        if (!canAssignPatientToRoom(room, patientType)) {
-          if (!room.acceptingNew) {
-            notify("此醫生已截籌，暫停派症", "warning");
-          } else if (patientType === "appointment") {
-            notify("此診室目前不可接收預約派症", "warning");
-          } else {
-            notify("此診室未開放，不能派症", "warning");
-          }
-          return;
-        }
-
-        const now = hktNowIso();
-        const registeredAt = useCustomRegisteredAt
-          ? (hktLocalDateTimeToIso(registeredAtInput) || now)
-          : now;
-
-        const patient = {
-          id: crypto.randomUUID(),
-          ticketNo: cumcNo,
-          cumcNo,
-          roomId: room.id,
-          sourceType: patientType,
-          priority,
-          registeredAt,
-          status: "waiting",
-          createdAt: now,
-          queueOrder: null,
-          skippedAt: null,
-          calledAt: null,
-          doneAt: null,
-          cancelledAt: null,
-          initialAssignmentMode: assignMode === "manual" ? "manual" : "auto",
-          manualLock: false,
-          manualLockReason: "",
-          logs: []
-        };
-
-        addPatientLog(
-          patient,
-          "首次登記",
-          `已登記到 ${room.roomNo} / ${room.doctorName}；類型：${getPatientTypeLabel(patientType)}；首次派房：${patient.initialAssignmentMode === "manual" ? "手動派房" : "自動派房"}；登記時間：${formatDateTime(registeredAt)}${useCustomRegisteredAt ? "（後備手動香港時間）" : "（系統即時香港時間）"}${priority ? "；醫療優先症" : ""}`
-        );
-
-        state.patients.push(patient);
-        room.queuePatientIds.push(patient.id);
-
-        const actualPosition = insertPatientIntoQueue(room, patient, insertMode, insertPosition);
-        addPatientLog(
-          patient,
-          "排隊位置",
-          `加入 ${room.roomNo} / ${room.doctorName}；${getInsertModeText(insertMode, Math.max(1, parseInt(insertPosition, 10) || 1), actualPosition)}`
-        );
-
-        renderAll();
-
-        await savePatientToSupabase(patient);
-        await syncRoomQueuePatients(room);
-
-        document.getElementById("patientCumcNo").value = "";
-        document.getElementById("isPriority").value = "false";
-        document.getElementById("patientType").value = "walkin";
-        document.getElementById("useCustomRegisteredAt").checked = false;
-        document.getElementById("registeredAt").value = toHktDateTimeLocalValue(new Date());
-        document.getElementById("insertMode").value = "auto";
-        document.getElementById("insertPosition").value = "";
-        document.getElementById("assignMode").value = "smart";
-        refreshInsertModeFields();
-        refreshRegisteredAtField();
-        populateRoomSelect();
-
-        renderAll();
-        notify(`已加入系統：${patient.ticketNo} → ${room.roomNo}`, "success");
-
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("新增病人失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function callNextPatient(roomId) {
-      try {
-        markUiBusy(5000);
-
-        const room = getRoom(roomId);
-        if (!room) return;
-
-        if (room.status !== "open") {
-          notify("該診室目前不可叫號", "warning");
-          return;
-        }
-
-        if (room.currentPatientId) {
-          notify("請先完成或過號目前病人", "warning");
-          return;
-        }
-
-        const waitingPatients = getOrderedWaitingPatients(room);
-        const nextPatient = waitingPatients[0];
-
-        if (!nextPatient) {
-          notify("暫無候診病人", "warning");
-          return;
-        }
-
-        room.queuePatientIds = room.queuePatientIds.filter(id => id !== nextPatient.id);
-        room.currentPatientId = nextPatient.id;
-
-        nextPatient.status = "called";
-        nextPatient.queueOrder = null;
-
-        if (!nextPatient.calledAt) {
-          nextPatient.calledAt = hktNowIso();
-          addPatientLog(nextPatient, "首次叫號", `${room.roomNo} / ${room.doctorName} 已首次叫號`);
-        } else {
-          addPatientLog(nextPatient, "再次叫號", `${room.roomNo} / ${room.doctorName} 已再次叫號`);
-        }
-
-        sortRoomQueue(room);
-        renderAll();
-
-        await savePatientToSupabase(nextPatient);
-        await saveRoomToSupabase(room);
-        await syncRoomQueuePatients(room);
-
-        notify(`${room.roomNo} 現在叫號：${nextPatient.ticketNo}`, "info");
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("叫號失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function finishCurrent(roomId) {
-      try {
-        markUiBusy(5000);
-
-        const room = getRoom(roomId);
-        if (!room || !room.currentPatientId) {
-          notify("目前沒有診症中病人", "warning");
-          return;
-        }
-
-        const patient = getPatient(room.currentPatientId);
-        if (patient) {
-          patient.status = "done";
-          patient.doneAt = hktNowIso();
-          patient.queueOrder = null;
-          addPatientLog(patient, "完成", `${room.roomNo} / ${room.doctorName} 已完成診症`);
-          await savePatientToSupabase(patient);
-        }
-
-        room.currentPatientId = null;
-        renderAll();
-
-        await saveRoomToSupabase(room);
-        await syncRoomQueuePatients(room);
-
-        notify("已完成診症", "success");
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("完成診症失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function skipCurrent(roomId) {
-      try {
-        markUiBusy(5000);
-
-        const room = getRoom(roomId);
-        if (!room || !room.currentPatientId) {
-          notify("目前沒有診症中病人", "warning");
-          return;
-        }
-
-        const patient = getPatient(room.currentPatientId);
-        if (patient) {
-          patient.status = "skipped";
-          patient.skippedAt = hktNowIso();
-          patient.queueOrder = null;
-          addPatientLog(patient, "過號", `${room.roomNo} / ${room.doctorName} 已標記為過號`);
-          await savePatientToSupabase(patient);
-        }
-
-        room.currentPatientId = null;
-        renderAll();
-
-        await saveRoomToSupabase(room);
-
-        notify("已標記為過號", "warning");
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("過號失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function recallSkipped(patientId) {
-      try {
-        markUiBusy(5000);
-
-        const patient = getPatient(patientId);
-        if (!patient) return;
-        const room = getRoom(patient.roomId);
-        if (!room) return;
-
-        if (room.status !== "open") {
-          notify("房間未開放，不能重叫", "warning");
-          return;
-        }
-
-        if (room.currentPatientId) {
-          notify("該診室仍有病人診症中", "warning");
-          return;
-        }
-
-        room.currentPatientId = patient.id;
-        patient.status = "called";
-        patient.skippedAt = null;
-        patient.queueOrder = null;
-        if (!patient.calledAt) patient.calledAt = hktNowIso();
-        addPatientLog(patient, "重叫", `${room.roomNo} / ${room.doctorName} 已重叫（人工即時處理）`);
-
-        renderAll();
-
-        await savePatientToSupabase(patient);
-        await saveRoomToSupabase(room);
-
-        notify(`重叫 ${patient.ticketNo}`, "info");
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("重叫失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function requeueSkipped(patientId) {
-      try {
-        markUiBusy(5000);
-
-        const patient = getPatient(patientId);
-        if (!patient) return;
-        const room = getRoom(patient.roomId);
-        if (!room) return;
-
-        patient.status = "waiting";
-        patient.skippedAt = null;
-        const actualPosition = insertPatientIntoQueue(room, patient, "auto");
-        addPatientLog(patient, "回原房隊列", `${room.roomNo} / ${room.doctorName} 已按登記時間自動排到第 ${actualPosition} 位`);
-
-        renderAll();
-
-        await savePatientToSupabase(patient);
-        await syncRoomQueuePatients(room);
-
-        notify(`${patient.ticketNo} 已按登記時間回隊`, "success");
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("回隊失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function cancelPatient(patientId) {
-      try {
-        markUiBusy(5000);
-
-        const patient = getPatient(patientId);
-        if (!patient) return;
-        const room = getRoom(patient.roomId);
-
-        if (room) {
-          room.queuePatientIds = room.queuePatientIds.filter(id => id !== patient.id);
-          if (room.currentPatientId === patient.id) room.currentPatientId = null;
-          sortRoomQueue(room);
-          await saveRoomToSupabase(room);
-          await syncRoomQueuePatients(room);
-        }
-
-        patient.status = "cancelled";
-        patient.cancelledAt = hktNowIso();
-        patient.queueOrder = null;
-        addPatientLog(patient, "取消", `病人已取消輪候${room ? `（原診室：${room.roomNo} / ${room.doctorName}）` : ""}`);
-        renderAll();
-
-        await savePatientToSupabase(patient);
-
-        notify(`${patient.ticketNo} 已取消`, "warning");
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("取消病人失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function togglePriority(patientId) {
-      try {
-        markUiBusy(5000);
-
-        const patient = getPatient(patientId);
-        if (!patient) return;
-
-        if (!["waiting", "skipped"].includes(patient.status)) {
-          notify("只有候診中或過號病人可設定醫療優先", "warning");
-          return;
-        }
-
-        patient.priority = !patient.priority;
-        const room = getRoom(patient.roomId);
-
-        if (room && patient.status === "waiting") {
-          const actualPosition = insertPatientIntoQueue(room, patient, "auto");
-          addPatientLog(
-            patient,
-            patient.priority ? "轉醫療優先" : "取消醫療優先",
-            `${room.roomNo} / ${room.doctorName} ${patient.priority ? "已設為醫療優先症" : "已取消醫療優先症"}；現排第 ${actualPosition} 位`
-          );
-          renderAll();
-          await syncRoomQueuePatients(room);
-        } else {
-          addPatientLog(
-            patient,
-            patient.priority ? "轉醫療優先" : "取消醫療優先",
-            `${room ? room.roomNo + " / " + room.doctorName : "診室"} ${patient.priority ? "已設為醫療優先症" : "已取消醫療優先症"}`
-          );
-          renderAll();
-        }
-
-        await savePatientToSupabase(patient);
-        notify(patient.priority ? "已設為醫療優先症" : "已取消醫療優先症", "success");
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("更新醫療優先失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function moveToFront(patientId) {
-      try {
-        markUiBusy(5000);
-
-        const patient = getPatient(patientId);
-        if (!patient || patient.status !== "waiting") {
-          notify("只有候診中病人可移到最前", "warning");
-          return;
-        }
-
-        const room = getRoom(patient.roomId);
-        if (!room) return;
-
-        const actualPosition = insertPatientIntoQueue(room, patient, "front");
-        addPatientLog(patient, "移到隊首", `${room.roomNo} / ${room.doctorName} 已移到第 ${actualPosition} 位`);
-
-        renderAll();
-
-        await savePatientToSupabase(patient);
-        await syncRoomQueuePatients(room);
-
-        notify(`${patient.ticketNo} 已移到最前`, "success");
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("移到最前失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function insertWaitingPatientAtPosition(patientId) {
-      try {
-        markUiBusy(5000);
-
-        const patient = getPatient(patientId);
-        if (!patient || patient.status !== "waiting") {
-          notify("只有候診中病人可指定位置", "warning");
-          return;
-        }
-
-        const room = getRoom(patient.roomId);
-        if (!room) return;
-
-        const input = document.querySelector(`[data-insert-position="${patient.id}"]`);
-        const pos = Math.max(1, parseInt(input ? input.value : "", 10) || 1);
-        const actualPosition = insertPatientIntoQueue(room, patient, "position", pos);
-
-        addPatientLog(patient, "指定位置", `${room.roomNo} / ${room.doctorName} 已插入第 ${actualPosition} 位`);
-        renderAll();
-
-        await savePatientToSupabase(patient);
-        await syncRoomQueuePatients(room);
-
-        notify(`${patient.ticketNo} 已插入第 ${actualPosition} 位`, "success");
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("指定位置失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function transferPatient(patientId, mode = "auto", targetRoomId = "") {
-      try {
-        markUiBusy(6000);
-
-        const patient = getPatient(patientId);
-        if (!patient) {
-          notify("找不到病人", "error");
-          return;
-        }
-
-        if (!["waiting", "skipped"].includes(patient.status)) {
-          notify("只有候診中或過號病人可以轉隊", "warning");
-          return;
-        }
-
-        if (!targetRoomId) {
-          notify("請先選擇目標房間", "warning");
-          return;
-        }
-
-        const oldRoom = getRoom(patient.roomId);
-        const newRoom = getRoom(targetRoomId);
-
-        if (!newRoom) {
-          notify("找不到目標房間", "error");
-          return;
-        }
-
-        if (newRoom.status !== "open") {
-          notify("目標房間未開放", "warning");
-          return;
-        }
-
-        if (!newRoom.acceptingNew) {
-          notify("目標房間已截籌，不能轉入", "warning");
-          return;
-        }
-
-        if (oldRoom && oldRoom.id === newRoom.id) {
-          notify("病人已在同一房間", "warning");
-          return;
-        }
-
-        if (oldRoom) {
-          oldRoom.queuePatientIds = oldRoom.queuePatientIds.filter(id => id !== patient.id);
-          if (oldRoom.currentPatientId === patient.id) oldRoom.currentPatientId = null;
-          sortRoomQueue(oldRoom);
-        }
-
-        const fromText = oldRoom ? `${oldRoom.roomNo} / ${oldRoom.doctorName}` : "原診室";
-        patient.roomId = newRoom.id;
-
-        if (patient.status === "skipped") {
-          patient.status = "waiting";
-          patient.skippedAt = null;
-        }
-
-        patient.manualLock = true;
-        patient.manualLockReason = "manual_transfer";
-
-        newRoom.queuePatientIds.push(patient.id);
-        const actualPosition = insertPatientIntoQueue(newRoom, patient, mode);
-
-        const modeText =
-          mode === "front" ? "轉隊首" :
-          mode === "tail" ? "轉隊尾" :
-          "自動排位";
-
-        addPatientLog(
-          patient,
-          "轉房間",
-          `${fromText} → ${newRoom.roomNo} / ${newRoom.doctorName}（${modeText}；現排第 ${actualPosition} 位；已鎖定不再參與 rebalance）`
-        );
-
-        renderAll();
-
-        if (oldRoom) {
-          await saveRoomToSupabase(oldRoom);
-          await syncRoomQueuePatients(oldRoom);
-        }
-
-        await savePatientToSupabase(patient);
-        await syncRoomQueuePatients(newRoom);
-
-        notify(`${patient.ticketNo} 已轉去 ${newRoom.roomNo}，並鎖定不再自動分流`, "success");
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("轉房失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function changeRoomStatus(roomId, status) {
-      try {
-        markUiBusy(5000);
-
-        const room = getRoom(roomId);
-        if (!room) return;
-
-        room.status = status;
-        if (status !== "paused") room.pauseReason = "";
-
-        renderAll();
-        await saveRoomToSupabase(room);
-
-        if (status === "closed") {
-          notify(`${room.roomNo} 已關房，病人看板會隱藏此房`, "info");
-        } else if (status === "paused") {
-          notify(`${room.roomNo} 已設為暫停`, "info");
-        } else {
-          notify(`${room.roomNo} 已設為開放`, "info");
-        }
-
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("更新房間狀態失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function setRoomPaused(roomId) {
-      try {
-        markUiBusy(5000);
-
-        const room = getRoom(roomId);
-        if (!room) return;
-
-        const select = document.querySelector(`[data-pause-reason-select="${roomId}"]`);
-        const input = document.querySelector(`[data-pause-reason="${roomId}"]`);
-
-        const selectedReason = select ? select.value.trim() : "";
-        const customReason = input ? input.value.trim() : "";
-        const reason = selectedReason || customReason;
-
-        room.status = "paused";
-        room.pauseReason = reason;
-
-        renderAll();
-        await saveRoomToSupabase(room);
-
-        notify(reason ? `${room.roomNo} 已暫停：${reason}` : `${room.roomNo} 已暫停`, "warning");
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("設定暫停失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function toggleAcceptingNew(roomId) {
-      try {
-        markUiBusy(5000);
-
-        const room = getRoom(roomId);
-        if (!room) return;
-
-        room.acceptingNew = !room.acceptingNew;
-
-        renderAll();
-        await saveRoomToSupabase(room);
-
-        notify(
-          room.acceptingNew ? `${room.roomNo} 已恢復派症` : `${room.roomNo} 已截籌，病人看板仍然顯示`,
-          room.acceptingNew ? "success" : "warning"
-        );
-
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("更新截籌狀態失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function updateDoctorName(roomId, newName) {
-      try {
-        markUiBusy(5000);
-
-        const room = getRoom(roomId);
-        if (!room) return;
-
-        const value = newName.trim();
-        if (!value) {
-          notify("醫生名稱不能留空", "warning");
-          return;
-        }
-
-        room.doctorName = value;
-
-        renderAll();
-        await saveRoomToSupabase(room);
-
-        notify("已更新醫生名稱", "success");
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("更新醫生名稱失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function deleteRoom(roomId) {
-      try {
-        markUiBusy(5000);
-
-        const room = getRoom(roomId);
-        if (!room) return;
-
-        const hasActivePatients =
-          !!room.currentPatientId ||
-          state.patients.some(p => p.roomId === room.id && ["waiting", "skipped", "called"].includes(p.status));
-
-        if (hasActivePatients) {
-          notify("此房仍有候診 / 過號 / 診症中病人，不能刪除", "warning");
-          return;
-        }
-
-        state.rooms = state.rooms.filter(r => r.id !== roomId);
-        renderAll(true);
-
-        await deleteRoomFromSupabase(roomId);
-
-        notify(`${room.roomNo} / ${room.doctorName} 已刪除`, "success");
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("刪除房間失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function rebalanceWaitingPatients() {
-      try {
-        markUiBusy(7000);
-
-        const eligibleRooms = sortedRooms().filter(room =>
-          room.status === "open" && room.acceptingNew
-        );
-
-        if (eligibleRooms.length < 2) {
-          notify("可分流的開放診室不足兩間", "warning");
-          return;
-        }
-
-        const movablePatients = state.patients
-          .filter(p => p.status === "waiting")
-          .filter(p => p.sourceType !== "appointment")
-          .filter(p => !isPatientLockedFromRebalance(p));
-
-        if (!movablePatients.length) {
-          notify("沒有可重新分流的候診病人", "warning");
-          return;
-        }
-
-        const confirmText =
-          `將重新平均分流 ${movablePatients.length} 位候診病人。\n\n` +
-          `只會處理：等候中、非預約、非手動派房或轉房病人。\n` +
-          `不會處理：預約、診症中、過號、已完成、已取消、手動派房或轉房病人。\n\n` +
-          `是否繼續？`;
-
-        if (!window.confirm(confirmText)) {
-          return;
-        }
-
-        movablePatients.sort(compareWaitingBase);
-
-        const movablePatientIdSet = new Set(movablePatients.map(p => p.id));
-
-        for (const room of eligibleRooms) {
-          room.queuePatientIds = room.queuePatientIds.filter(id => !movablePatientIdSet.has(id));
-        }
-
-        movablePatients.forEach((patient, index) => {
-          const targetRoom = eligibleRooms[index % eligibleRooms.length];
-          patient.roomId = targetRoom.id;
-          patient.status = "waiting";
-          patient.queueOrder = null;
-          targetRoom.queuePatientIds.push(patient.id);
-          addPatientLog(
-            patient,
-            "重新平均分流",
-            `已重新分派到 ${targetRoom.roomNo} / ${targetRoom.doctorName}`
-          );
-        });
-
-        for (const room of eligibleRooms) {
-          sortRoomQueue(room);
-        }
-
-        renderAll();
-
-        for (const room of eligibleRooms) {
-          await saveRoomToSupabase(room);
-          await syncRoomQueuePatients(room);
-        }
-
-        await savePatientsBatchToSupabase(movablePatients);
-
-        notify(`已重新平均分流 ${movablePatients.length} 位候診病人`, "success");
-        refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("平均分流失敗", "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    function searchPatient() {
-      const ticket = document.getElementById("searchTicket").value.trim().toLowerCase();
-      const roomNo = document.getElementById("searchRoom").value.trim().toLowerCase();
-
-      if (!ticket && !roomNo) {
-        notify("請輸入 CUMC號碼 或 選擇房號", "warning");
-        return;
+    async function searchPatient(){
+      const ticket=document.getElementById("searchTicket").value.trim().toUpperCase();
+      const roomNo=document.getElementById("searchRoom").value.trim().toLowerCase();
+
+      if(!ticket && !roomNo){notify("請輸入 CUMC號碼 或 選擇房號","warning"); return;}
+
+      if(ticket && !roomNo){
+        const exact = await loadPatientByExactTicketForSearch(ticket);
+        if(exact) return renderPatientSearchResult(exact);
       }
 
-      const matchedPatients = state.patients.filter(p => {
-        const room = getRoom(p.roomId);
-        const ticketMatch = ticket ? String(p.ticketNo || "").toLowerCase().startsWith(ticket) : true;
-        const roomMatch = roomNo ? (room && room.roomNo.toLowerCase() === roomNo) : true;
+      const matched=state.patients.filter(p=>{
+        const room=getRoom(p.roomId);
+        const ticketMatch=ticket ? String(p.ticketNo||"").toUpperCase().startsWith(ticket) : true;
+        const roomMatch=roomNo ? (room && room.roomNo.toLowerCase()===roomNo) : true;
         return ticketMatch && roomMatch;
-      }).sort((a, b) => {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+
+      if(!matched.length) return renderPatientSearchResult(null);
+      if(matched.length===1) return renderPatientSearchResult(matched[0]);
+      renderPatientSearchResult(matched);
+    }
+
+    function optimisticRender(){ renderAll(false); scheduleFlush(); }
+
+    async function addRoom(){
+      const roomNo=document.getElementById("newRoomNo").value.trim();
+      const doctorName=document.getElementById("newDoctorName").value.trim();
+      if(!roomNo || !doctorName) return notify("請輸入房號及醫生名稱","warning");
+      if(state.rooms.some(r=>r.roomNo===roomNo)) return notify("房號已存在","warning");
+
+      const room={
+        id:crypto.randomUUID(),
+        roomNo, doctorName, status:"open", pauseReason:"",
+        acceptingNew:true, currentPatientId:null, queuePatientIds:[], skippedPatientIds:[],
+        sortOrder:state.rooms.length
+      };
+      state.rooms.push(room);
+      markRoomDirty(room.id,false);
+      optimisticRender();
+
+      document.getElementById("newRoomNo").value="";
+      document.getElementById("newDoctorName").value="";
+      notify("已新增診室","success");
+    }
+
+    async function addPatient(){
+      const cumcNo=document.getElementById("patientCumcNo").value.trim().toUpperCase();
+      document.getElementById("patientCumcNo").value=cumcNo;
+      const patientType=document.getElementById("patientType").value;
+      const assignMode=document.getElementById("assignMode").value;
+      const manualRoomId=document.getElementById("assignRoom").value;
+      const priority=document.getElementById("isPriority").value==="true";
+      const registeredAtInput=document.getElementById("registeredAt").value;
+      const useCustomRegisteredAt=document.getElementById("useCustomRegisteredAt").checked;
+      const insertMode=document.getElementById("insertMode").value;
+      const insertPosition=document.getElementById("insertPosition").value;
+
+      if(!cumcNo) return notify("請輸入 CUMC號碼","warning");
+      const activeExists=state.patients.some(p=>String(p.cumcNo||"").toLowerCase()===cumcNo.toLowerCase() && ACTIVE_STATUSES.includes(p.status));
+      if(activeExists) return notify("此病人目前已有未完成就診記錄","warning");
+
+      const room=assignMode==="manual" ? getRoom(manualRoomId) : getAutoAssignedRoom(assignMode, patientType);
+      if(!room) return notify("找不到可派症診室","warning");
+      if(!canAssignPatientToRoom(room, patientType)) return notify("此診室目前不可派症","warning");
+
+      const now=hktNowIso();
+      const registeredAt=useCustomRegisteredAt ? (hktLocalDateTimeToIso(registeredAtInput) || now) : now;
+
+      const patient={
+        id:crypto.randomUUID(),
+        ticketNo:cumcNo, cumcNo, roomId:room.id, sourceType:patientType, priority,
+        registeredAt, status:"waiting", createdAt:now, queueOrder:null,
+        skippedAt:null, calledAt:null, doneAt:null, cancelledAt:null,
+        initialAssignmentMode:assignMode==="manual"?"manual":"auto",
+        manualLock:false, manualLockReason:"",
+        logs:[]
+      };
+      addPatientLog(patient,"首次登記",`已登記到 ${room.roomNo} / ${room.doctorName}`);
+      state.patients.push(patient);
+      const actualPosition=insertPatientIntoQueue(room, patient, insertMode, insertPosition);
+      addPatientLog(patient,"排隊位置",`加入 ${room.roomNo} / ${room.doctorName}；現排第 ${actualPosition} 位`);
+
+      markPatientDirty(patient.id,false);
+      markRoomDirty(room.id,false);
+      optimisticRender();
+
+      document.getElementById("patientCumcNo").value="";
+      document.getElementById("isPriority").value="false";
+      document.getElementById("patientType").value="walkin";
+      document.getElementById("useCustomRegisteredAt").checked=false;
+      document.getElementById("registeredAt").value=toHktDateTimeLocalValue(new Date());
+      document.getElementById("insertMode").value="auto";
+      document.getElementById("insertPosition").value="";
+      document.getElementById("assignMode").value="smart";
+      populateRoomSelect();
+      refreshInsertModeFields();
+      refreshRegisteredAtField();
+
+      notify(`已加入系統：${patient.ticketNo} → ${room.roomNo}`,"success");
+    }
+
+    async function callNextPatient(roomId){
+      const room=getRoom(roomId);
+      if(!room) return;
+      if(room.status!=="open") return notify("該診室目前不可叫號","warning");
+      if(room.currentPatientId) return notify("請先完成或過號目前病人","warning");
+      const next=getOrderedWaitingPatients(room)[0];
+      if(!next) return notify("暫無候診病人","warning");
+
+      room.queuePatientIds=room.queuePatientIds.filter(id=>id!==next.id);
+      room.currentPatientId=next.id;
+      next.status="called";
+      next.queueOrder=null;
+      if(!next.calledAt){next.calledAt=hktNowIso(); addPatientLog(next,"首次叫號",`${room.roomNo} / ${room.doctorName} 已首次叫號`);}
+      else addPatientLog(next,"再次叫號",`${room.roomNo} / ${room.doctorName} 已再次叫號`);
+
+      markRoomDirty(room.id,false); markPatientDirty(next.id,false);
+      optimisticRender();
+      notify(`${room.roomNo} 現在叫號：${next.ticketNo}`,"info");
+    }
+
+    async function finishCurrent(roomId){
+      const room=getRoom(roomId);
+      if(!room || !room.currentPatientId) return notify("目前沒有診症中病人","warning");
+      const patient=getPatient(room.currentPatientId);
+      if(patient){
+        patient.status="done";
+        patient.doneAt=hktNowIso();
+        patient.queueOrder=null;
+        addPatientLog(patient,"完成",`${room.roomNo} / ${room.doctorName} 已完成診症`);
+        markPatientDirty(patient.id,false);
+      }
+      room.currentPatientId=null;
+      markRoomDirty(room.id,false);
+      optimisticRender();
+
+      state.patients = state.patients.filter(p => !(p.id===patient.id && p.status==="done"));
+      renderAll(false);
+
+      notify("已完成診症","success");
+    }
+
+    async function skipCurrent(roomId){
+      const room=getRoom(roomId);
+      if(!room || !room.currentPatientId) return notify("目前沒有診症中病人","warning");
+      const patient=getPatient(room.currentPatientId);
+      if(patient){
+        patient.status="skipped"; patient.skippedAt=hktNowIso(); patient.queueOrder=null;
+        addPatientLog(patient,"過號",`${room.roomNo} / ${room.doctorName} 已標記為過號`);
+        markPatientDirty(patient.id,false);
+      }
+      room.currentPatientId=null;
+      markRoomDirty(room.id,false);
+      optimisticRender();
+      notify("已標記為過號","warning");
+    }
+
+    async function recallSkipped(patientId){
+      const patient=getPatient(patientId); if(!patient) return;
+      const room=getRoom(patient.roomId); if(!room) return;
+      if(room.status!=="open") return notify("房間未開放，不能重叫","warning");
+      if(room.currentPatientId) return notify("該診室仍有病人診症中","warning");
+
+      room.currentPatientId=patient.id;
+      patient.status="called"; patient.skippedAt=null; patient.queueOrder=null;
+      if(!patient.calledAt) patient.calledAt=hktNowIso();
+      addPatientLog(patient,"重叫",`${room.roomNo} / ${room.doctorName} 已重叫`);
+
+      markPatientDirty(patient.id,false); markRoomDirty(room.id,false);
+      optimisticRender();
+      notify(`重叫 ${patient.ticketNo}`,"info");
+    }
+
+    async function requeueSkipped(patientId){
+      const patient=getPatient(patientId); if(!patient) return;
+      const room=getRoom(patient.roomId); if(!room) return;
+
+      patient.status="waiting"; patient.skippedAt=null;
+      const pos=insertPatientIntoQueue(room, patient, "auto");
+      addPatientLog(patient,"回原房隊列",`${room.roomNo} / ${room.doctorName} 已按登記時間自動排到第 ${pos} 位`);
+
+      markPatientDirty(patient.id,false); markRoomDirty(room.id,false);
+      optimisticRender();
+      notify(`${patient.ticketNo} 已按登記時間回隊`,"success");
+    }
+
+    async function cancelPatient(patientId){
+      const patient=getPatient(patientId); if(!patient) return;
+      const room=getRoom(patient.roomId);
+      if(room){
+        room.queuePatientIds=room.queuePatientIds.filter(id=>id!==patient.id);
+        if(room.currentPatientId===patient.id) room.currentPatientId=null;
+        sortRoomQueue(room);
+        markRoomDirty(room.id,false);
+      }
+      patient.status="cancelled";
+      patient.cancelledAt=hktNowIso();
+      patient.queueOrder=null;
+      addPatientLog(patient,"取消","病人已取消輪候");
+      markPatientDirty(patient.id,false);
+      optimisticRender();
+
+      state.patients = state.patients.filter(p => !(p.id===patient.id && p.status==="cancelled"));
+      renderAll(false);
+
+      notify(`${patient.ticketNo} 已取消`,"warning");
+    }
+
+    async function togglePriority(patientId){
+      const patient=getPatient(patientId); if(!patient) return;
+      if(!["waiting","skipped"].includes(patient.status)) return notify("只有候診中或過號病人可設定醫療優先","warning");
+      patient.priority=!patient.priority;
+      const room=getRoom(patient.roomId);
+      if(room && patient.status==="waiting"){
+        const pos=insertPatientIntoQueue(room, patient, "auto");
+        addPatientLog(patient, patient.priority?"轉醫療優先":"取消醫療優先", `${room.roomNo} / ${room.doctorName}；現排第 ${pos} 位`);
+        markRoomDirty(room.id,false);
+      }
+      markPatientDirty(patient.id,false);
+      optimisticRender();
+      notify(patient.priority?"已設為醫療優先症":"已取消醫療優先症","success");
+    }
+
+    async function moveToFront(patientId){
+      const patient=getPatient(patientId); if(!patient || patient.status!=="waiting") return notify("只有候診中病人可移到最前","warning");
+      const room=getRoom(patient.roomId); if(!room) return;
+      const pos=insertPatientIntoQueue(room, patient, "front");
+      addPatientLog(patient,"移到隊首",`${room.roomNo} / ${room.doctorName} 已移到第 ${pos} 位`);
+      markPatientDirty(patient.id,false); markRoomDirty(room.id,false);
+      optimisticRender();
+      notify(`${patient.ticketNo} 已移到最前`,"success");
+    }
+
+    async function insertWaitingPatientAtPosition(patientId){
+      const patient=getPatient(patientId); if(!patient || patient.status!=="waiting") return notify("只有候診中病人可指定位置","warning");
+      const room=getRoom(patient.roomId); if(!room) return;
+      const input=document.querySelector(`[data-insert-position="${patient.id}"]`);
+      const posVal=Math.max(1, parseInt(input?.value || "",10) || 1);
+      const pos=insertPatientIntoQueue(room, patient, "position", posVal);
+      addPatientLog(patient,"指定位置",`${room.roomNo} / ${room.doctorName} 已插入第 ${pos} 位`);
+      markPatientDirty(patient.id,false); markRoomDirty(room.id,false);
+      optimisticRender();
+      notify(`${patient.ticketNo} 已插入第 ${pos} 位`,"success");
+    }
+
+    async function transferPatient(patientId, mode="auto", targetRoomId=""){
+      const patient=getPatient(patientId);
+      if(!patient) return notify("找不到病人","error");
+      if(!["waiting","skipped"].includes(patient.status)) return notify("只有候診中或過號病人可以轉隊","warning");
+      if(!targetRoomId) return notify("請先選擇目標房間","warning");
+
+      const oldRoom=getRoom(patient.roomId);
+      const newRoom=getRoom(targetRoomId);
+      if(!newRoom) return notify("找不到目標房間","error");
+      if(newRoom.status!=="open") return notify("目標房間未開放","warning");
+      if(!newRoom.acceptingNew) return notify("目標房間已截籌，不能轉入","warning");
+      if(oldRoom && oldRoom.id===newRoom.id) return notify("病人已在同一房間","warning");
+
+      if(oldRoom){
+        oldRoom.queuePatientIds=oldRoom.queuePatientIds.filter(id=>id!==patient.id);
+        if(oldRoom.currentPatientId===patient.id) oldRoom.currentPatientId=null;
+        sortRoomQueue(oldRoom);
+        markRoomDirty(oldRoom.id,false);
+      }
+
+      const fromText=oldRoom?`${oldRoom.roomNo} / ${oldRoom.doctorName}`:"原診室";
+      patient.roomId=newRoom.id;
+      if(patient.status==="skipped"){patient.status="waiting"; patient.skippedAt=null;}
+      patient.manualLock=true;
+      patient.manualLockReason="manual_transfer";
+
+      newRoom.queuePatientIds.push(patient.id);
+      const pos=insertPatientIntoQueue(newRoom, patient, mode);
+      addPatientLog(patient,"轉房間",`${fromText} → ${newRoom.roomNo} / ${newRoom.doctorName}；現排第 ${pos} 位；已鎖定不再參與 rebalance`);
+
+      markPatientDirty(patient.id,false);
+      markRoomDirty(newRoom.id,false);
+      optimisticRender();
+      notify(`${patient.ticketNo} 已轉去 ${newRoom.roomNo}`,"success");
+    }
+
+    async function changeRoomStatus(roomId, status){
+      const room=getRoom(roomId); if(!room) return;
+      room.status=status;
+      if(status!=="paused") room.pauseReason="";
+      markRoomDirty(room.id,false);
+      optimisticRender();
+      notify(status==="closed"?`${room.roomNo} 已關房`:status==="paused"?`${room.roomNo} 已設為暫停`:`${room.roomNo} 已設為開放`,"info");
+    }
+
+    async function setRoomPaused(roomId){
+      const room=getRoom(roomId); if(!room) return;
+      const select=document.querySelector(`[data-pause-reason-select="${roomId}"]`);
+      const input=document.querySelector(`[data-pause-reason="${roomId}"]`);
+      room.status="paused";
+      room.pauseReason=(select?.value || "").trim() || (input?.value || "").trim();
+      markRoomDirty(room.id,false);
+      optimisticRender();
+      notify(room.pauseReason?`${room.roomNo} 已暫停：${room.pauseReason}`:`${room.roomNo} 已暫停`,"warning");
+    }
+
+    async function toggleAcceptingNew(roomId){
+      const room=getRoom(roomId); if(!room) return;
+      room.acceptingNew=!room.acceptingNew;
+      markRoomDirty(room.id,false);
+      optimisticRender();
+      notify(room.acceptingNew?`${room.roomNo} 已恢復派症`:`${room.roomNo} 已截籌`, room.acceptingNew?"success":"warning");
+    }
+
+    async function updateDoctorName(roomId, newName){
+      const room=getRoom(roomId); if(!room) return;
+      const value=(newName||"").trim();
+      if(!value) return notify("醫生名稱不能留空","warning");
+      room.doctorName=value;
+      markRoomDirty(room.id,false);
+      optimisticRender();
+      notify("已更新醫生名稱","success");
+    }
+
+    async function deleteRoom(roomId){
+      const room=getRoom(roomId); if(!room) return;
+      const hasActive=!!room.currentPatientId || state.patients.some(p=>p.roomId===room.id && ACTIVE_STATUSES.includes(p.status));
+      if(hasActive) return notify("此房仍有候診 / 過號 / 診症中病人，不能刪除","warning");
+
+      state.rooms=state.rooms.filter(r=>r.id!==roomId);
+      markRoomDeleted(roomId);
+      optimisticRender();
+      notify(`${room.roomNo} / ${room.doctorName} 已刪除`,"success");
+    }
+
+    function isPatientLockedFromRebalance(patient){
+      return patient.initialAssignmentMode==="manual" || patient.manualLock===true;
+    }
+
+    async function rebalanceWaitingPatients(){
+      const eligibleRooms=sortedRooms().filter(room=>room.status==="open" && room.acceptingNew);
+      if(eligibleRooms.length<2) return notify("可分流的開放診室不足兩間","warning");
+
+      const movable=state.patients.filter(p=>p.status==="waiting" && p.sourceType!=="appointment" && !isPatientLockedFromRebalance(p));
+      if(!movable.length) return notify("沒有可重新分流的候診病人","warning");
+
+      if(!window.confirm(`將重新平均分流 ${movable.length} 位候診病人，是否繼續？`)) return;
+
+      movable.sort(compareWaitingBase);
+      const movingSet=new Set(movable.map(p=>p.id));
+
+      for(const room of eligibleRooms){
+        room.queuePatientIds=room.queuePatientIds.filter(id=>!movingSet.has(id));
+      }
+
+      movable.forEach((patient,index)=>{
+        const targetRoom=eligibleRooms[index % eligibleRooms.length];
+        patient.roomId=targetRoom.id;
+        patient.status="waiting";
+        patient.queueOrder=null;
+        targetRoom.queuePatientIds.push(patient.id);
+        addPatientLog(patient,"重新平均分流",`已重新分派到 ${targetRoom.roomNo} / ${targetRoom.doctorName}`);
+        markPatientDirty(patient.id,false);
       });
 
-      if (!matchedPatients.length) {
-        renderPatientSearchResult(null);
-        return;
+      for(const room of eligibleRooms){
+        sortRoomQueue(room);
+        markRoomDirty(room.id,false);
       }
 
-      const exactMatch = matchedPatients.find(
-        patient => String(patient.ticketNo || "").toLowerCase() === ticket
-      );
-
-      if (ticket && exactMatch) {
-        renderPatientSearchResult(exactMatch);
-        return;
-      }
-
-      if (matchedPatients.length === 1) {
-        renderPatientSearchResult(matchedPatients[0]);
-        return;
-      }
-
-      renderPatientSearchResult(matchedPatients);
+      optimisticRender();
+      notify(`已重新平均分流 ${movable.length} 位候診病人`,"success");
     }
 
-    document.addEventListener("click", (event) => {
-      const tabBtn = event.target.closest("[data-tab]");
-      if (tabBtn) {
-        const tabId = tabBtn.dataset.tab;
-        state.currentTab = tabId;
-        document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-        document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+    async function setupRealtime(){
+      if(realtimeChannel){
+        try{await sb.removeChannel(realtimeChannel);}catch(e){console.warn(e)}
+      }
+
+      realtimeChannel=sb.channel("emc-fast-live-v4")
+        .on("postgres_changes",{event:"*",schema:"public",table:"rooms"}, async ()=> {
+          if(Date.now() < ignoreRealtimeUntil) return;
+          if(flushInFlight || hasPendingDirty()) return;
+          await fullReload(false);
+        })
+        .on("postgres_changes",{event:"*",schema:"public",table:"patients"}, async ()=> {
+          if(Date.now() < ignoreRealtimeUntil) return;
+          if(flushInFlight || hasPendingDirty()) return;
+          await fullReload(false);
+        })
+        .subscribe((status)=>console.log("Realtime:",status));
+
+      if(pollTimer) clearInterval(pollTimer);
+      pollTimer=setInterval(async ()=>{
+        if(flushInFlight || hasPendingDirty()) return;
+        await fullReload(false);
+      }, POLL_MS);
+    }
+
+    function startBoardTimers(){
+      if(boardClockTimer) clearInterval(boardClockTimer);
+      boardClockTimer=setInterval(()=>renderDisplayBoard(false),1000);
+
+      if(boardRotateTimer) clearInterval(boardRotateTimer);
+      boardRotateTimer=setInterval(()=>{
+        const totalPages=getBoardTotalPages(getVisibleBoardRooms());
+        state.displayPageIndex = totalPages<=1 ? 0 : (state.displayPageIndex+1)%totalPages;
+        renderDisplayBoard(true);
+      }, BOARD_PAGE_ROTATE_MS);
+    }
+
+    document.addEventListener("click",(event)=>{
+      const tabBtn=event.target.closest("[data-tab]");
+      if(tabBtn){
+        const tabId=tabBtn.dataset.tab;
+        state.currentTab=tabId;
+        document.querySelectorAll(".tab-btn").forEach(btn=>btn.classList.remove("active"));
+        document.querySelectorAll(".page").forEach(page=>page.classList.remove("active"));
         tabBtn.classList.add("active");
         document.getElementById(tabId).classList.add("active");
-        setDisplayModeByTab(tabId);
+        document.body.classList.toggle("display-mode", tabId==="displayPage");
         renderDisplayBoard(true);
         return;
       }
 
-      const btn = event.target.closest("[data-action]");
-      if (!btn) return;
+      const btn=event.target.closest("[data-action]");
+      if(!btn) return;
+      const action=btn.dataset.action, roomId=btn.dataset.roomId, patientId=btn.dataset.patientId;
 
-      markUiBusy(6000);
-
-      const action = btn.dataset.action;
-      const roomId = btn.dataset.roomId;
-      const patientId = btn.dataset.patientId;
-
-      if (action === "callNext") callNextPatient(roomId);
-      if (action === "finishCurrent") finishCurrent(roomId);
-      if (action === "skipCurrent") skipCurrent(roomId);
-      if (action === "setOpen") changeRoomStatus(roomId, "open");
-      if (action === "setPausedWithReason") setRoomPaused(roomId);
-      if (action === "setClosed") changeRoomStatus(roomId, "closed");
-      if (action === "toggleAcceptingNew") toggleAcceptingNew(roomId);
-      if (action === "updateDoctor") {
-        const input = document.querySelector(`[data-doctor-input="${roomId}"]`);
-        updateDoctorName(roomId, input ? input.value : "");
+      if(action==="callNext") callNextPatient(roomId);
+      if(action==="finishCurrent") finishCurrent(roomId);
+      if(action==="skipCurrent") skipCurrent(roomId);
+      if(action==="setOpen") changeRoomStatus(roomId,"open");
+      if(action==="setPausedWithReason") setRoomPaused(roomId);
+      if(action==="setClosed") changeRoomStatus(roomId,"closed");
+      if(action==="toggleAcceptingNew") toggleAcceptingNew(roomId);
+      if(action==="updateDoctor"){
+        const input=document.querySelector(`[data-doctor-input="${roomId}"]`);
+        updateDoctorName(roomId, input?input.value:"");
       }
-      if (action === "deleteRoom") deleteRoom(roomId);
+      if(action==="deleteRoom") deleteRoom(roomId);
 
-      if (action === "togglePriority") togglePriority(patientId);
-      if (action === "moveToFront") moveToFront(patientId);
-      if (action === "insertAtPosition") insertWaitingPatientAtPosition(patientId);
-      if (action === "cancelPatient") cancelPatient(patientId);
-      if (action === "recallSkipped") recallSkipped(patientId);
-      if (action === "requeueSkipped") requeueSkipped(patientId);
+      if(action==="togglePriority") togglePriority(patientId);
+      if(action==="moveToFront") moveToFront(patientId);
+      if(action==="insertAtPosition") insertWaitingPatientAtPosition(patientId);
+      if(action==="cancelPatient") cancelPatient(patientId);
+      if(action==="recallSkipped") recallSkipped(patientId);
+      if(action==="requeueSkipped") requeueSkipped(patientId);
 
-      if (action === "transferAuto") {
-        const targetRoomId = getTransferTargetRoomIdFromButton(btn);
-        transferPatient(patientId, "auto", targetRoomId);
-      }
-      if (action === "transferTail") {
-        const targetRoomId = getTransferTargetRoomIdFromButton(btn);
-        transferPatient(patientId, "tail", targetRoomId);
-      }
-      if (action === "transferFront") {
-        const targetRoomId = getTransferTargetRoomIdFromButton(btn);
-        transferPatient(patientId, "front", targetRoomId);
-      }
+      if(action==="transferAuto") transferPatient(patientId,"auto",getTransferTargetRoomIdFromButton(btn));
+      if(action==="transferFront") transferPatient(patientId,"front",getTransferTargetRoomIdFromButton(btn));
+      if(action==="transferTail") transferPatient(patientId,"tail",getTransferTargetRoomIdFromButton(btn));
     });
 
     document.getElementById("addPatientBtn").addEventListener("click", addPatient);
     document.getElementById("addRoomBtn").addEventListener("click", addRoom);
     document.getElementById("searchPatientBtn").addEventListener("click", searchPatient);
-    document.getElementById("assignMode").addEventListener("change", () => {
-      toggleManualRoomSelect();
-      markUiBusy(4000);
-    });
     document.getElementById("rebalanceWaitingBtn").addEventListener("click", rebalanceWaitingPatients);
+    document.getElementById("forceReloadBtn").addEventListener("click", ()=>fullReload(true));
 
-    document.getElementById("patientCumcNo").addEventListener("input", (event) => {
-      event.target.value = event.target.value.toUpperCase();
-      markUiBusy(4000);
+    document.getElementById("assignMode").addEventListener("change", toggleManualRoomSelect);
+    document.getElementById("insertMode").addEventListener("change", refreshInsertModeFields);
+    document.getElementById("patientType").addEventListener("change", populateRoomSelect);
+    document.getElementById("useCustomRegisteredAt").addEventListener("change", refreshRegisteredAtField);
+    document.getElementById("searchTicket").addEventListener("input", (e)=>{e.target.value=e.target.value.toUpperCase(); updateSearchTicketSuggestions(e.target.value);});
+    document.getElementById("patientCumcNo").addEventListener("input", (e)=>{e.target.value=e.target.value.toUpperCase();});
+
+    document.addEventListener("change",(event)=>{
+      const select=event.target.closest("[data-pause-reason-select]");
+      if(!select) return;
+      const roomId=select.dataset.pauseReasonSelect;
+      const input=document.querySelector(`[data-pause-reason="${roomId}"]`);
+      if(input && select.value.trim()) input.value="";
     });
 
-    document.getElementById("insertMode").addEventListener("change", () => {
-      refreshInsertModeFields();
-      markUiBusy(4000);
-    });
-
-    document.getElementById("patientType").addEventListener("change", () => {
-      populateRoomSelect();
-      markUiBusy(4000);
-    });
-
-    document.getElementById("useCustomRegisteredAt").addEventListener("change", () => {
-      refreshRegisteredAtField();
-      markUiBusy(4000);
-    });
-
-    document.getElementById("searchTicket").addEventListener("input", (event) => {
-      event.target.value = event.target.value.toUpperCase();
-      updateSearchTicketSuggestions(event.target.value);
-      markUiBusy(3000);
-    });
-
-    document.getElementById("searchRoom").addEventListener("change", () => {
-      const ticketValue = document.getElementById("searchTicket").value || "";
-      updateSearchTicketSuggestions(ticketValue);
-      markUiBusy(3000);
-    });
-
-    document.addEventListener("focusin", (event) => {
-      const el = event.target;
-      if (!el) return;
-
-      if (
-        el.matches("select") ||
-        el.matches("input") ||
-        el.matches("textarea") ||
-        el.closest(".transfer-room-select") ||
-        el.closest("[data-insert-position]")
-      ) {
-        markUiBusy(6000);
-      }
-    });
-
-    document.addEventListener("pointerdown", (event) => {
-      const el = event.target;
-      if (!el) return;
-
-      if (
-        el.closest("select") ||
-        el.closest("input") ||
-        el.closest("textarea") ||
-        el.closest("button")
-      ) {
-        markUiBusy(6000);
-      }
-    });
-
-    document.addEventListener("change", (event) => {
-      const el = event.target;
-      if (!el) return;
-
-      if (
-        el.matches("select") ||
-        el.matches("input") ||
-        el.matches("textarea")
-      ) {
-        markUiBusy(4000);
-      }
-
-      const select = event.target.closest("[data-pause-reason-select]");
-      if (!select) return;
-
-      const roomId = select.dataset.pauseReasonSelect;
-      const input = document.querySelector(`[data-pause-reason="${roomId}"]`);
-      if (!input) return;
-
-      if (select.value.trim()) {
-        input.value = "";
-      }
-    });
-
-    function startBoardPageRotation() {
-      if (boardPageRotateTimer) clearInterval(boardPageRotateTimer);
-
-      boardPageRotateTimer = setInterval(() => {
-        const visibleRooms = getVisibleBoardRooms();
-        const totalPages = getBoardTotalPages(visibleRooms);
-
-        if (totalPages <= 1) {
-          state.displayPageIndex = 0;
-          renderDisplayBoard(false);
-          return;
-        }
-
-        state.displayPageIndex = (state.displayPageIndex + 1) % totalPages;
-        renderDisplayBoard(true);
-      }, BOARD_PAGE_ROTATE_MS);
-    }
-
-    async function setupRealtimeAndPolling() {
-      if (realtimeChannel) {
-        try {
-          await sb.removeChannel(realtimeChannel);
-        } catch (e) {
-          console.warn("removeChannel failed", e);
-        }
-      }
-
-      realtimeChannel = sb
-        .channel("emc-cqms-live")
-        .on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, async () => {
-          await refreshFromCloudAndRender(false);
-        })
-        .on("postgres_changes", { event: "*", schema: "public", table: "patients" }, async () => {
-          await refreshFromCloudAndRender(false);
-        })
-        .subscribe((status, err) => {
-          console.log("Realtime subscribe status:", status, err || "");
-          if (status === "CHANNEL_ERROR") {
-            notify("Realtime 連線異常，系統改用自動刷新", "warning");
-          }
-        });
-
-      if (liveRefreshTimer) clearInterval(liveRefreshTimer);
-      liveRefreshTimer = setInterval(async () => {
-        await refreshFromCloudAndRender(false);
-      }, POLLING_MS);
-
-      if (boardClockTimer) clearInterval(boardClockTimer);
-      boardClockTimer = setInterval(() => {
-        renderDisplayBoard(false);
-      }, 1000);
-
-      startBoardPageRotation();
-    }
-
-    async function initApp() {
-      state.currentTab = "staffPage";
-      document.getElementById("registeredAt").value = toHktDateTimeLocalValue(new Date());
+    async function initApp(){
+      document.getElementById("registeredAt").value=toHktDateTimeLocalValue(new Date());
       refreshInsertModeFields();
       refreshRegisteredAtField();
-      setDisplayModeByTab("staffPage");
-      const ok = await loadStateFromSupabase(true);
-      if (ok) renderAll(true);
-      await setupRealtimeAndPolling();
+      toggleManualRoomSelect();
+      await fullReload(false);
+      await setupRealtime();
+      startBoardTimers();
+      setSyncBadge("已同步","ok");
     }
 
     initApp();
