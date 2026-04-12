@@ -1015,7 +1015,7 @@
 
     const BOARD_ROOMS_PER_PAGE = 5;
     const BOARD_PAGE_ROTATE_MS = 8000;
-    const POLLING_MS = 8000;
+    const POLLING_MS = 2000;
     const RENDER_DEBOUNCE_MS = 80;
 
     const DOCTOR_SUGGESTIONS = [
@@ -1769,7 +1769,7 @@
       }, delay);
     }
 
-    function scheduleSoftCloudRefresh(delay = 1200) {
+    function scheduleSoftCloudRefresh(delay = 100) {
       if (softRefreshTimer) clearTimeout(softRefreshTimer);
       softRefreshTimer = setTimeout(() => {
         refreshFromCloudAndRender(false);
@@ -2600,7 +2600,7 @@
         renderAll(true, { resortQueues: false });
         notify("已新增診室", "success");
 
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("新增診室失敗\n" + formatSupabaseError(error), "error");
@@ -2730,7 +2730,7 @@
         populateRoomSelect();
 
         notify(`已加入系統：${patient.ticketNo} → ${room.roomNo}`, "success");
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("新增病人失敗\n" + formatSupabaseError(error), "error");
@@ -2787,7 +2787,7 @@
         await syncRoomQueuePatients(room);
 
         notify(`${room.roomNo} 現在叫號：${nextPatient.ticketNo}`, "info");
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("叫號失敗\n" + formatSupabaseError(error), "error");
@@ -2824,7 +2824,7 @@
         await syncRoomQueuePatients(room);
 
         notify("已完成診症", "success");
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("完成診症失敗\n" + formatSupabaseError(error), "error");
@@ -2860,7 +2860,7 @@
         await updateRoomInSupabase(room);
 
         notify("已標記為過號", "warning");
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("過號失敗\n" + formatSupabaseError(error), "error");
@@ -2903,7 +2903,7 @@
         await updateRoomInSupabase(room);
 
         notify(`重叫 ${patient.ticketNo}`, "info");
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("重叫失敗\n" + formatSupabaseError(error), "error");
@@ -2934,7 +2934,7 @@
         await syncRoomQueuePatients(room);
 
         notify(`${patient.ticketNo} 已按登記時間回隊`, "success");
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("回隊失敗\n" + formatSupabaseError(error), "error");
@@ -2995,7 +2995,7 @@
         }
 
         notify(`${patient.ticketNo} 已取消`, "warning");
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error("cancelPatient error:", error);
         notify("取消病人失敗\n" + formatSupabaseError(error), "error");
@@ -3043,7 +3043,7 @@
         }
 
         notify(patient.priority ? "已設為醫療優先症" : "已取消醫療優先症", "success");
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("更新醫療優先失敗\n" + formatSupabaseError(error), "error");
@@ -3074,7 +3074,7 @@
         await syncRoomQueuePatients(room);
 
         notify(`${patient.ticketNo} 已移到最前`, "success");
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("移到最前失敗\n" + formatSupabaseError(error), "error");
@@ -3107,7 +3107,7 @@
         await syncRoomQueuePatients(room);
 
         notify(`${patient.ticketNo} 已插入第 ${actualPosition} 位`, "success");
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("指定位置失敗\n" + formatSupabaseError(error), "error");
@@ -3200,7 +3200,7 @@
         await persistTransferChanges(oldRoom, newRoom, patient);
 
         notify(`${patient.ticketNo} 已轉去 ${newRoom.roomNo}，並鎖定不再自動分流`, "success");
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("轉房失敗\n" + formatSupabaseError(error), "error");
@@ -3230,7 +3230,7 @@
           notify(`${room.roomNo} 已設為開放`, "info");
         }
 
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("更新房間狀態失敗\n" + formatSupabaseError(error), "error");
@@ -3260,7 +3260,7 @@
         await updateRoomInSupabase(room);
 
         notify(reason ? `${room.roomNo} 已暫停：${reason}` : `${room.roomNo} 已暫停`, "warning");
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("設定暫停失敗\n" + formatSupabaseError(error), "error");
@@ -3286,7 +3286,7 @@
           room.acceptingNew ? "success" : "warning"
         );
 
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("更新截籌狀態失敗\n" + formatSupabaseError(error), "error");
@@ -3315,7 +3315,7 @@
 
         renderDoctorOptionsDatalist();
         notify("已更新醫生名稱", "success");
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("更新醫生名稱失敗\n" + formatSupabaseError(error), "error");
@@ -3345,7 +3345,7 @@
         await deleteRoomFromSupabase(roomId);
 
         notify(`${room.roomNo} / ${room.doctorName} 已刪除`, "success");
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("刪除房間失敗\n" + formatSupabaseError(error), "error");
@@ -3420,7 +3420,7 @@
         }
 
         notify(`已重新平均分流 ${movablePatients.length} 位候診病人`, "success");
-        scheduleSoftCloudRefresh();
+        await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
         notify("平均分流失敗\n" + formatSupabaseError(error), "error");
