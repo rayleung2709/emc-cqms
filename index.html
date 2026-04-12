@@ -3609,76 +3609,93 @@
       }
     }
 
-    async function rebalanceWaitingPatients() {
-      try {
-        markUiBusy(5000);
+async function rebalanceWaitingPatients() {
+  try {
+    markUiBusy(5000);
 
-        const eligibleRooms = sortedRooms().filter(room => room.status === "open" && room.acceptingNew);
+    const eligibleRooms = sortedRooms().filter(room => room.status === "open" && room.acceptingNew);
 
-        if (eligibleRooms.length < 2) {
-          notify("可分流的開放診室不足兩間", "warning");
-          return;
-        }
-
-        const movablePatients = state.patients
-          .filter(p => p.status === "waiting")
-          .filter(p => p.sourceType !== "appointment")
-          .filter(p => !isPatientLockedFromRebalance(p));
-
-        if (!movablePatients.length) {
-          notify("沒有可重新分流的候診病人", "warning");
-          return;
-        }
-
-        const confirmText =
-          `將重新平均分流 ${movablePatients.length} 位候診病人。\n\n` +
-          `只會處理：等候中、非預約、非手動派房或轉房病人。\n` +
-          `不會處理：預約、診症中、過號、已完成、已取消、手動派房或轉房病人。\n\n` +
-          `是否繼續？`;
-
-        if (!window.confirm(confirmText)) return;
-
-        movablePatients.sort(compareWaitingBase);
-        const movablePatientIdSet = new Set(movablePatients.map(p => p.id));
-
-        for (const room of eligibleRooms) {
-          room.queuePatientIds = room.queuePatientIds.filter(id => !movablePatientIdSet.has(id));
-        }
-
-        movablePatients.forEach((patient, index) => {
-          const targetRoom = eligibleRooms[index % eligibleRooms.length];
-          patient.roomId = targetRoom.id;
-          patient.status = "waiting";
-          patient.queueOrder = null;
-          targetRoom.queuePatientIds.push(patient.id);
-          addPatientLog(patient, "重新平均分流", `已重新分派到 ${targetRoom.roomNo} / ${targetRoom.doctorName}`);
-        });
-
-        for (const room of eligibleRooms) sortRoomQueue(room);
-
-        renderAll(true, { resortQueues: false });
-
-        await savePatientsBatchToSupabase(movablePatients);
-
-        for (const room of eligibleRooms) {
-          await safelyPersistWaitingQueue(room);
-          await updateRoomInSupabase(room);
-        }
-
-        await writeActivityLog({
-          action: "一鍵平均分流",
-          details: `已重新平均分流 ${movablePatients.length} 位候診病人`,
-          category: "system"
-        });
-
-        notify(`已重新平均分流 ${movablePatients.length} 位候診病人`, "success");
-        scheduleSoftCloudRefresh();
-      } catch (error) {
-        console.error(error);
-        notify("平均分流失敗\n" + formatSupabaseError(error), "error");
-        refreshFromCloudAndRender(false);
-      }
+    if (eligibleRooms.length < 2) {
+      notify("可分流的開放診室不足兩間", "warning");
+      return;
     }
+
+    const movablePatients = state.patients
+      .filter(p => p.status === "waiting")
+      .filter(p => p.sourceType !== "appointment")
+      .filter(p => !isPatientLockedFromRebalance(p));
+
+    if (!movablePatients.length) {
+      notify("沒有可重新分流的候診病人", "warning");
+      return;
+    }
+
+    const confirmText =
+      `將重新平均分流 ${movablePatients.length} 位候診病人。\n\n` +
+      `只會處理：等候中、非預約、非手動派房或轉房病人。\n` +
+      `不會處理：預約、診症中、過號、已完成、已取消、手動派房或轉房病人。\n\n` +
+      `是否繼續？`;
+
+    if (!window.confirm(confirmText)) return;
+
+    movablePatients.sort(compareWaitingBase);
+    const movablePatientIdSet = new Set(movablePatients.map(p => p.id));
+
+    // 先由所有 eligible rooms 移除可分流病人
+    for (const room of eligibleRooms) {
+      room.queuePatientIds = room.queuePatientIds.filter(id => !movablePatientIdSet.has(id));
+    }
+
+    // 重新平均分流，並清空 queueOrder，避免帶住舊位次寫回 DB
+    movablePatients.forEach((patient, index) => {
+      const targetRoom = eligibleRooms[index % eligibleRooms.length];
+      patient.roomId = targetRoom.id;
+      patient.status = "waiting";
+      patient.queueOrder = null;
+      targetRoom.queuePatientIds.push(patient.id);
+
+      addPatientLog(
+        patient,
+        "重新平均分流",
+        `已重新分派到 ${targetRoom.roomNo} / ${targetRoom.doctorName}`
+      );
+    });
+
+    // 先本地重建每房排序
+    for (const room of eligibleRooms) {
+      sortRoomQueue(room);
+    }
+
+    renderAll(true, { resortQueues: false });
+
+    // 關鍵修正：
+    // 不要先 savePatientsBatchToSupabase(movablePatients)
+    // 先逐房清空 + 重建 queue_order
+    for (const room of eligibleRooms) {
+      await safelyPersistWaitingQueue(room);
+      await updateRoomInSupabase(room);
+    }
+
+    // 再逐個病人保存其他欄位
+    // 這時 queueOrder 已經由 safelyPersistWaitingQueue 正確重建，不會撞 unique
+    for (const patient of movablePatients) {
+      await savePatientToSupabase(patient);
+    }
+
+    await writeActivityLog({
+      action: "一鍵平均分流",
+      details: `已重新平均分流 ${movablePatients.length} 位候診病人`,
+      category: "system"
+    });
+
+    notify(`已重新平均分流 ${movablePatients.length} 位候診病人`, "success");
+    scheduleSoftCloudRefresh();
+  } catch (error) {
+    console.error(error);
+    notify("平均分流失敗\n" + formatSupabaseError(error), "error");
+    refreshFromCloudAndRender(false);
+  }
+}
 
     function searchPatient() {
       const ticket = safeTrimUpper(document.getElementById("searchTicket").value);
