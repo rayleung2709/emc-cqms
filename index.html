@@ -1626,12 +1626,19 @@
           if (room) sortRoomQueue(room);
         }
 
-        await savePatientsBatchToSupabase(expiredPatients);
+        for (const patient of expiredPatients) {
+          await savePatientToSupabaseWithoutQueueOrder(patient);
+        }
 
         for (const roomId of affectedRoomIds) {
           const room = getRoom(roomId);
           if (!room) continue;
           await updateRoomInSupabase(room);
+        }
+
+        for (const roomId of affectedRoomIds) {
+          const room = getRoom(roomId);
+          if (!room) continue;
           await safelyPersistWaitingQueue(room);
         }
 
@@ -1816,27 +1823,16 @@
 
       const waitingPatients = getOrderedWaitingPatients(room);
 
-      const waitingIdsInRoom = state.patients
-        .filter(p => p.roomId === room.id && p.status === "waiting")
-        .map(p => p.id);
-
-      if (waitingIdsInRoom.length) {
-        const { error } = await sb
-          .from("patients")
-          .update({ queue_order: null })
-          .in("id", waitingIdsInRoom);
-
-        if (error) throw error;
-      }
-
-      if (!waitingPatients.length) return;
-
-      const payload = waitingPatients.map((patient, index) => {
+      waitingPatients.forEach((patient, index) => {
         patient.queueOrder = index + 1;
-        return toPatientPayload(patient);
       });
 
-      const { error } = await sb.from("patients").upsert(payload);
+      room.queuePatientIds = waitingPatients.map(patient => patient.id);
+
+      const { error } = await sb.rpc("rebuild_waiting_queue", {
+        p_room_id: room.id
+      });
+
       if (error) throw error;
     }
 
@@ -1847,9 +1843,13 @@
     async function normalizeAllWaitingQueues() {
       for (const room of sortedRooms()) {
         sortRoomQueue(room);
-        await safelyPersistWaitingQueue(room);
         await updateRoomInSupabase(room);
       }
+
+      for (const room of sortedRooms()) {
+        await safelyPersistWaitingQueue(room);
+      }
+
       await loadStateFromSupabase(false);
     }
 
@@ -2714,18 +2714,24 @@
     }
 
     async function persistTransferChanges(oldRoom, newRoom, movedPatient) {
-      if (movedPatient) {
-        await savePatientToSupabase(movedPatient);
-      }
-
       if (oldRoom) {
-        await safelyPersistWaitingQueue(oldRoom);
         await updateRoomInSupabase(oldRoom);
       }
 
       if (newRoom) {
-        await safelyPersistWaitingQueue(newRoom);
         await updateRoomInSupabase(newRoom);
+      }
+
+      if (movedPatient) {
+        await savePatientToSupabaseWithoutQueueOrder(movedPatient);
+      }
+
+      if (oldRoom) {
+        await safelyPersistWaitingQueue(oldRoom);
+      }
+
+      if (newRoom) {
+        await safelyPersistWaitingQueue(newRoom);
       }
     }
 
@@ -2912,7 +2918,8 @@
         populateSearchRoomSelect();
         updateSearchTicketSuggestions(document.getElementById("searchTicket")?.value || "");
 
-        await savePatientToSupabase(patient);
+        await savePatientToSupabaseWithoutQueueOrder(patient);
+        await updateRoomInSupabase(room);
         await syncRoomQueuePatients(room);
         await writeActivityLog({
           room,
@@ -2984,7 +2991,7 @@
         renderRoomOnly(roomId, true);
         renderDisplayBoard(true);
 
-        await savePatientToSupabase(nextPatient);
+        await savePatientToSupabaseWithoutQueueOrder(nextPatient);
         await updateRoomInSupabase(room);
         await syncRoomQueuePatients(room);
         await writeActivityLog({
@@ -3019,7 +3026,7 @@
           patient.doneAt = nowIsoUtc();
           patient.queueOrder = null;
           addPatientLog(patient, "完成", `${room.roomNo} / ${room.doctorName} 已完成診症`);
-          await savePatientToSupabase(patient);
+          await savePatientToSupabaseWithoutQueueOrder(patient);
           await writeActivityLog({
             room,
             patient,
@@ -3060,7 +3067,7 @@
           patient.skippedAt = nowIsoUtc();
           patient.queueOrder = null;
           addPatientLog(patient, "過號", `${room.roomNo} / ${room.doctorName} 已標記為過號`);
-          await savePatientToSupabase(patient);
+          await savePatientToSupabaseWithoutQueueOrder(patient);
           await writeActivityLog({
             room,
             patient,
@@ -3115,7 +3122,7 @@
         renderRoomOnly(room.id, true);
         renderDisplayBoard(true);
 
-        await savePatientToSupabase(patient);
+        await savePatientToSupabaseWithoutQueueOrder(patient);
         await updateRoomInSupabase(room);
         await syncRoomQueuePatients(room);
         await writeActivityLog({
@@ -3145,13 +3152,15 @@
 
         patient.status = "waiting";
         patient.skippedAt = null;
+        patient.queueOrder = null;
         const actualPosition = insertPatientIntoQueue(room, patient, "auto");
         addPatientLog(patient, "回原房隊列", `${room.roomNo} / ${room.doctorName} 已按登記時間自動排到第 ${actualPosition} 位`);
 
         renderRoomOnly(room.id, true);
         renderDisplayBoard(true);
 
-        await savePatientToSupabase(patient);
+        await savePatientToSupabaseWithoutQueueOrder(patient);
+        await updateRoomInSupabase(room);
         await syncRoomQueuePatients(room);
         await writeActivityLog({
           room,
@@ -3196,7 +3205,7 @@
         if (room) renderRoomOnly(room.id, true);
         renderDisplayBoard(true);
 
-        await savePatientToSupabase(patient);
+        await savePatientToSupabaseWithoutQueueOrder(patient);
 
         if (room) {
           await updateRoomInSupabase(room);
@@ -3235,6 +3244,7 @@
         const room = getRoom(patient.roomId);
 
         if (room && patient.status === "waiting") {
+          patient.queueOrder = null;
           const actualPosition = insertPatientIntoQueue(room, patient, "auto");
           addPatientLog(
             patient,
@@ -3245,7 +3255,8 @@
           renderRoomOnly(room.id, true);
           renderDisplayBoard(true);
 
-          await savePatientToSupabase(patient);
+          await savePatientToSupabaseWithoutQueueOrder(patient);
+          await updateRoomInSupabase(room);
           await syncRoomQueuePatients(room);
           await writeActivityLog({
             room,
@@ -3260,7 +3271,7 @@
             `${room ? room.roomNo + " / " + room.doctorName : "診室"} ${patient.priority ? "已設為醫療優先症" : "已取消醫療優先症"}`
           );
 
-          await savePatientToSupabase(patient);
+          await savePatientToSupabaseWithoutQueueOrder(patient);
           await writeActivityLog({
             room,
             patient,
@@ -3291,13 +3302,15 @@
         const room = getRoom(patient.roomId);
         if (!room) return;
 
+        patient.queueOrder = null;
         const actualPosition = insertPatientIntoQueue(room, patient, "front");
         addPatientLog(patient, "移到隊首", `${room.roomNo} / ${room.doctorName} 已移到第 ${actualPosition} 位`);
 
         renderRoomOnly(room.id, true);
         renderDisplayBoard(true);
 
-        await savePatientToSupabase(patient);
+        await savePatientToSupabaseWithoutQueueOrder(patient);
+        await updateRoomInSupabase(room);
         await syncRoomQueuePatients(room);
         await writeActivityLog({
           room,
@@ -3330,13 +3343,15 @@
 
         const input = document.querySelector(`[data-insert-position="${patient.id}"]`);
         const pos = Math.max(1, parseInt(input ? input.value : "", 10) || 1);
+        patient.queueOrder = null;
         const actualPosition = insertPatientIntoQueue(room, patient, "position", pos);
 
         addPatientLog(patient, "指定位置", `${room.roomNo} / ${room.doctorName} 已插入第 ${actualPosition} 位`);
         renderRoomOnly(room.id, true);
         renderDisplayBoard(true);
 
-        await savePatientToSupabase(patient);
+        await savePatientToSupabaseWithoutQueueOrder(patient);
+        await updateRoomInSupabase(room);
         await syncRoomQueuePatients(room);
         await writeActivityLog({
           room,
@@ -3417,6 +3432,7 @@
 
         patient.manualLock = true;
         patient.manualLockReason = "manual_transfer";
+        patient.queueOrder = null;
 
         newRoom.queuePatientIds = (newRoom.queuePatientIds || []).filter(id => id !== patient.id);
         newRoom.queuePatientIds.push(patient.id);
@@ -3663,7 +3679,12 @@
           patient.status = "waiting";
           patient.queueOrder = null;
           targetRoom.queuePatientIds.push(patient.id);
-          addPatientLog(patient, "重新平均分流", `已重新分派到 ${targetRoom.roomNo} / ${targetRoom.doctorName}`);
+
+          addPatientLog(
+            patient,
+            "重新平均分流",
+            `已重新分派到 ${targetRoom.roomNo} / ${targetRoom.doctorName}`
+          );
         });
 
         for (const room of eligibleRooms) {
@@ -3673,12 +3694,15 @@
         renderAll(true, { resortQueues: false });
 
         for (const room of eligibleRooms) {
-          await safelyPersistWaitingQueue(room);
           await updateRoomInSupabase(room);
         }
 
         for (const patient of movablePatients) {
           await savePatientToSupabaseWithoutQueueOrder(patient);
+        }
+
+        for (const room of eligibleRooms) {
+          await safelyPersistWaitingQueue(room);
         }
 
         await writeActivityLog({
