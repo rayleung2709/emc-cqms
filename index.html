@@ -11,6 +11,7 @@
       --bg: #f3f6fb;
       --card: #ffffff;
       --line: #dbe3ee;
+      --line-soft: #e8eef6;
       --text: #1f2937;
       --muted: #64748b;
       --primary: #2563eb;
@@ -318,7 +319,7 @@
     .room-card-body { padding: 16px; }
 
     .current-box {
-      background: #eff6ff;
+      background: linear-gradient(135deg, #eff6ff 0%, #f8fbff 100%);
       border: 1px solid #bfdbfe;
       border-radius: 16px;
       padding: 14px;
@@ -336,7 +337,8 @@
       font-size: 2rem;
       font-weight: 900;
       color: #1d4ed8;
-      line-height: 1.2;
+      line-height: 1.15;
+      letter-spacing: 0.04em;
     }
 
     .current-subtext {
@@ -349,85 +351,192 @@
     .section-title {
       font-size: 1rem;
       font-weight: 900;
-      margin: 14px 0 8px;
+      margin: 16px 0 10px;
       color: #0f172a;
     }
 
     table {
       width: 100%;
-      border-collapse: collapse;
-      background: #fff;
+      border-collapse: separate;
+      border-spacing: 0 10px;
+      background: transparent;
     }
 
-    th, td {
+    thead th {
       text-align: left;
-      padding: 10px 8px;
-      border-bottom: 1px solid #edf2f7;
+      padding: 0 10px 6px 10px;
+      color: #475569;
+      font-size: 0.82rem;
+      font-weight: 900;
+      background: transparent;
+      border-bottom: none;
       vertical-align: top;
+    }
+
+    tbody td {
+      background: #fff;
+      padding: 12px 10px;
+      vertical-align: top;
+      border-top: 1px solid var(--line-soft);
+      border-bottom: 1px solid var(--line-soft);
       font-size: 0.92rem;
     }
 
-    th {
-      color: #334155;
-      font-size: 0.86rem;
+    tbody tr td:first-child {
+      border-left: 1px solid var(--line-soft);
+      border-top-left-radius: 16px;
+      border-bottom-left-radius: 16px;
+    }
+
+    tbody tr td:last-child {
+      border-right: 1px solid var(--line-soft);
+      border-top-right-radius: 16px;
+      border-bottom-right-radius: 16px;
+    }
+
+    .queue-pos-badge {
+      display: inline-flex;
+      min-width: 52px;
+      justify-content: center;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-size: 0.82rem;
       font-weight: 900;
-      background: #f8fafc;
+    }
+
+    .ticket-block {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .queue-ticket-text {
+      font-size: 1.32rem;
+      font-weight: 900;
+      color: #0f172a;
+      letter-spacing: 0.04em;
+      line-height: 1.08;
+    }
+
+    .queue-ticket-sub {
+      font-size: 0.78rem;
+      color: #64748b;
+      font-weight: 800;
+    }
+
+    .queue-meta-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .queue-badges-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .queue-time {
+      color: #64748b;
+      font-size: 0.84rem;
+      font-weight: 800;
+    }
+
+    .main-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: flex-start;
+      justify-content: flex-end;
+      margin-bottom: 8px;
+    }
+
+    .sub-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .inline-tool-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .action-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: stretch;
     }
 
     .pill {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
       padding: 5px 10px;
       border-radius: 999px;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       font-weight: 800;
+      line-height: 1.1;
+      border: 1px solid transparent;
+      white-space: nowrap;
     }
 
     .pill-priority {
       background: #fff7ed;
       color: #c2410c;
-      border: 1px solid #fdba74;
+      border-color: #fdba74;
     }
 
     .pill-normal {
       background: #eff6ff;
       color: #1d4ed8;
-      border: 1px solid #93c5fd;
+      border-color: #93c5fd;
     }
 
     .pill-appointment {
       background: #f5f3ff;
       color: #6d28d9;
-      border: 1px solid #c4b5fd;
+      border-color: #c4b5fd;
     }
 
     .pill-online {
       background: #ecfeff;
       color: #0f766e;
-      border: 1px solid #67e8f9;
+      border-color: #67e8f9;
     }
 
     .pill-walkin {
       background: #f1f5f9;
       color: #334155;
-      border: 1px solid #cbd5e1;
+      border-color: #cbd5e1;
     }
 
     .pill-manual {
       background: #fef2f2;
       color: #b91c1c;
-      border: 1px solid #fca5a5;
+      border-color: #fca5a5;
     }
 
     .pill-auto-assign {
       background: #ecfdf5;
       color: #047857;
-      border: 1px solid #86efac;
+      border-color: #86efac;
     }
 
     .pill-locked {
       background: #111827;
       color: #fff;
-      border: 1px solid #374151;
+      border-color: #374151;
     }
 
     .transfer-room-select, .insert-pos-input {
@@ -867,7 +976,6 @@
       font-weight: 800;
     }
 
-    /* Search page enhancement */
     .search-toolbar-grid {
       display: grid;
       grid-template-columns: 2fr 1.2fr 1.2fr 1.2fr auto auto;
@@ -1089,6 +1197,42 @@
       .search-toolbar-grid,
       .search-mini-grid {
         grid-template-columns: 1fr;
+      }
+
+      table, thead, tbody, tr, th, td {
+        display: block;
+        width: 100%;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tbody tr {
+        margin-bottom: 12px;
+      }
+
+      tbody td {
+        border-left: 1px solid var(--line-soft) !important;
+        border-right: 1px solid var(--line-soft) !important;
+        border-radius: 0 !important;
+      }
+
+      tbody tr td:first-child {
+        border-top-left-radius: 16px !important;
+        border-top-right-radius: 16px !important;
+        border-bottom-left-radius: 0 !important;
+      }
+
+      tbody tr td:last-child {
+        border-bottom-left-radius: 16px !important;
+        border-bottom-right-radius: 16px !important;
+        border-top-right-radius: 0 !important;
+      }
+
+      .main-actions,
+      .sub-actions {
+        justify-content: flex-start;
       }
     }
   </style>
@@ -2104,7 +2248,6 @@
       return bestRoom;
     }
 
-    /* Search helpers */
     function isActivePatientStatus(status) {
       return ["waiting", "called", "skipped"].includes(status);
     }
@@ -2715,159 +2858,198 @@
       const queueRows = waitingPatients.length
         ? waitingPatients.map((patient, index) => `
           <tr data-row-patient-id="${patient.id}">
-            <td>${index + 1}</td>
-            <td>${escapeHtml(getPatientDisplayNo(patient))}</td>
-            <td>${escapeHtml(formatDateTime(patient.registeredAt))}</td>
             <td>
-              <div class="actions">
-                <span class="pill ${getPatientTypePill(patient.sourceType)}">${getPatientTypeLabel(patient.sourceType)}</span>
-                <span class="pill ${patient.priority ? "pill-priority" : "pill-normal"}">
-                  ${patient.priority ? "醫療優先" : "一般"}
-                </span>
-                <span class="pill ${patient.initialAssignmentMode === "manual" ? "pill-manual" : "pill-auto-assign"}">
-                  ${patient.initialAssignmentMode === "manual" ? "首次手動派房" : "首次自動派房"}
-                </span>
-                ${patient.manualLock ? `<span class="pill pill-locked">人工轉房已鎖定</span>` : ``}
+              <div class="queue-pos-badge">#${index + 1}</div>
+            </td>
+            <td>
+              <div class="ticket-block">
+                <div class="queue-ticket-text">${escapeHtml(getPatientDisplayNo(patient))}</div>
+                <div class="queue-ticket-sub">${index === 0 ? "候診首位" : "候診中"}</div>
               </div>
             </td>
             <td>
-              <div class="actions">
-                <button class="btn-warning btn-small"
-                        type="button"
-                        data-action="togglePriority"
-                        data-patient-id="${patient.id}"
-                        data-help-title="設優先 / 取消優先"
-                        data-help="切換病人是否屬於醫療優先症。候診中病人改完後，系統會重新調整佢喺隊中的位置。">
-                  ${patient.priority ? "取消優先" : "設優先"}
-                </button>
-                <button class="btn-secondary btn-small"
-                        type="button"
-                        data-action="moveToFront"
-                        data-patient-id="${patient.id}"
-                        data-help-title="移到最前"
-                        data-help="直接將呢位候診病人搬到該房候診名單最前。">
-                  移到最前
-                </button>
-                <input class="insert-pos-input"
-                       type="number"
-                       min="1"
-                       placeholder="第幾位"
-                       data-insert-position="${patient.id}"
-                       data-help-title="輸入指定位置"
-                       data-help="先輸入第幾位，再按『指定位置』將病人插入到指定位置。"/>
-                <button class="btn-secondary btn-small"
-                        type="button"
-                        data-action="insertAtPosition"
-                        data-patient-id="${patient.id}"
-                        data-help-title="指定位置"
-                        data-help="將病人插入去你輸入的排位，例如第 2 位。">
-                  指定位置
-                </button>
-                <select class="transfer-room-select"
-                        data-help-title="選擇轉去房間"
-                        data-help="先喺呢度揀一個目標房間，之後再按轉房按鈕。">
-                  <option value="">選擇轉去房間</option>
-                  ${transferOptions}
-                </select>
-                <button class="btn-success btn-small"
-                        type="button"
-                        data-action="transferAuto"
-                        data-patient-id="${patient.id}"
-                        data-help-title="轉房（自動排位）"
-                        data-help="將病人轉去另一間房，並由系統按規則自動安排新位置。病人之後會被鎖定，不再參與一鍵平均分流。">
-                  轉房（自動排位）
-                </button>
-                <button class="btn-primary btn-small"
-                        type="button"
-                        data-action="transferFront"
-                        data-patient-id="${patient.id}"
-                        data-help-title="轉隊首"
-                        data-help="將病人轉去另一間房，並直接放到該房隊首。">
-                  轉隊首
-                </button>
-                <button class="btn-primary btn-small"
-                        type="button"
-                        data-action="transferTail"
-                        data-patient-id="${patient.id}"
-                        data-help-title="轉隊尾"
-                        data-help="將病人轉去另一間房，並直接放到該房最後。">
-                  轉隊尾
-                </button>
-                <button class="btn-danger btn-small"
-                        type="button"
-                        data-action="cancelPatient"
-                        data-patient-id="${patient.id}"
-                        data-help-title="取消病人"
-                        data-help="將病人標記為已取消，並由現有候診或診症流程移除。">
-                  取消
-                </button>
+              <div class="queue-meta-stack">
+                <div class="queue-badges-row">
+                  <span class="pill ${getPatientTypePill(patient.sourceType)}">${getPatientTypeLabel(patient.sourceType)}</span>
+                  <span class="pill ${patient.priority ? "pill-priority" : "pill-normal"}">
+                    ${patient.priority ? "醫療優先" : "一般"}
+                  </span>
+                </div>
+                <div class="queue-badges-row">
+                  <span class="pill ${patient.initialAssignmentMode === "manual" ? "pill-manual" : "pill-auto-assign"}">
+                    ${patient.initialAssignmentMode === "manual" ? "首次手動派房" : "首次自動派房"}
+                  </span>
+                  ${patient.manualLock ? `<span class="pill pill-locked">人工轉房已鎖定</span>` : ``}
+                </div>
+                <div class="queue-time">登記時間：${escapeHtml(formatDateTime(patient.registeredAt))}</div>
+              </div>
+            </td>
+            <td>
+              <div class="action-stack">
+                <div class="main-actions">
+                  <button class="btn-warning btn-small"
+                          type="button"
+                          data-action="togglePriority"
+                          data-patient-id="${patient.id}"
+                          data-help-title="設優先 / 取消優先"
+                          data-help="切換病人是否屬於醫療優先症。候診中病人改完後，系統會重新調整佢喺隊中的位置。">
+                    ${patient.priority ? "取消優先" : "設優先"}
+                  </button>
+                  <button class="btn-success btn-small"
+                          type="button"
+                          data-action="transferAuto"
+                          data-patient-id="${patient.id}"
+                          data-help-title="轉房（自動排位）"
+                          data-help="將病人轉去另一間房，並由系統按規則自動安排新位置。病人之後會被鎖定，不再參與一鍵平均分流。">
+                    轉房
+                  </button>
+                  <button class="btn-secondary btn-small"
+                          type="button"
+                          data-action="moveToFront"
+                          data-patient-id="${patient.id}"
+                          data-help-title="移到最前"
+                          data-help="直接將呢位候診病人搬到該房候診名單最前。">
+                    移到最前
+                  </button>
+                </div>
+
+                <div class="inline-tool-row">
+                  <input class="insert-pos-input"
+                         type="number"
+                         min="1"
+                         placeholder="第幾位"
+                         data-insert-position="${patient.id}"
+                         data-help-title="輸入指定位置"
+                         data-help="先輸入第幾位，再按『指定位置』將病人插入到指定位置。"/>
+                  <button class="btn-secondary btn-small"
+                          type="button"
+                          data-action="insertAtPosition"
+                          data-patient-id="${patient.id}"
+                          data-help-title="指定位置"
+                          data-help="將病人插入去你輸入的排位，例如第 2 位。">
+                    指定位置
+                  </button>
+                </div>
+
+                <div class="inline-tool-row">
+                  <select class="transfer-room-select"
+                          data-help-title="選擇轉去房間"
+                          data-help="先喺呢度揀一個目標房間，之後再按轉房按鈕。">
+                    <option value="">選擇轉去房間</option>
+                    ${transferOptions}
+                  </select>
+                  <button class="btn-primary btn-small"
+                          type="button"
+                          data-action="transferFront"
+                          data-patient-id="${patient.id}"
+                          data-help-title="轉隊首"
+                          data-help="將病人轉去另一間房，並直接放到該房隊首。">
+                    轉隊首
+                  </button>
+                  <button class="btn-primary btn-small"
+                          type="button"
+                          data-action="transferTail"
+                          data-patient-id="${patient.id}"
+                          data-help-title="轉隊尾"
+                          data-help="將病人轉去另一間房，並直接放到該房最後。">
+                    轉隊尾
+                  </button>
+                  <button class="btn-danger btn-small"
+                          type="button"
+                          data-action="cancelPatient"
+                          data-patient-id="${patient.id}"
+                          data-help-title="取消病人"
+                          data-help="將病人標記為已取消，並由現有候診或診症流程移除。">
+                    取消
+                  </button>
+                </div>
               </div>
             </td>
           </tr>
         `).join("")
-        : `<tr><td colspan="5" class="muted">暫無候診病人</td></tr>`;
+        : `<tr><td colspan="4" class="muted">暫無候診病人</td></tr>`;
 
       const skippedRows = skippedPatients.length
         ? skippedPatients.map(patient => `
           <tr data-row-patient-id="${patient.id}">
-            <td>${escapeHtml(getPatientDisplayNo(patient))}</td>
-            <td>${escapeHtml(formatDateTime(patient.registeredAt))}</td>
             <td>
-              <div class="actions">
-                <button class="btn-primary btn-small"
-                        type="button"
-                        data-action="recallSkipped"
-                        data-patient-id="${patient.id}"
-                        data-help-title="重叫"
-                        data-help="如果該房目前無人診症中，可將過號病人即時重新叫入去。">
-                  重叫
-                </button>
-                <button class="btn-success btn-small"
-                        type="button"
-                        data-action="requeueSkipped"
-                        data-patient-id="${patient.id}"
-                        data-help-title="回原房（自動排位）"
-                        data-help="將過號病人放回原本房間的候診隊列，並由系統按規則自動排位。">
-                  回原房（自動排位）
-                </button>
-                <select class="transfer-room-select"
-                        data-help-title="選擇轉去房間"
-                        data-help="先揀目標房，再用下面轉房按鈕將病人轉去另一間房。">
-                  <option value="">選擇轉去房間</option>
-                  ${transferOptions}
-                </select>
-                <button class="btn-success btn-small"
-                        type="button"
-                        data-action="transferAuto"
-                        data-patient-id="${patient.id}"
-                        data-help-title="過號病人轉房（自動排位）"
-                        data-help="將過號病人轉去另一房，並重新回到候診中，由系統自動排位。">
-                  轉房（自動排位）
-                </button>
-                <button class="btn-primary btn-small"
-                        type="button"
-                        data-action="transferFront"
-                        data-patient-id="${patient.id}"
-                        data-help-title="過號病人轉隊首"
-                        data-help="將過號病人轉去另一房，並直接放到新房隊首。">
-                  轉隊首
-                </button>
-                <button class="btn-primary btn-small"
-                        type="button"
-                        data-action="transferTail"
-                        data-patient-id="${patient.id}"
-                        data-help-title="過號病人轉隊尾"
-                        data-help="將過號病人轉去另一房，並直接放到新房最後。">
-                  轉隊尾
-                </button>
-                <button class="btn-danger btn-small"
-                        type="button"
-                        data-action="cancelPatient"
-                        data-patient-id="${patient.id}"
-                        data-help-title="取消病人"
-                        data-help="將過號病人取消並移出後續流程。">
-                  取消
-                </button>
+              <div class="ticket-block">
+                <div class="queue-ticket-text">${escapeHtml(getPatientDisplayNo(patient))}</div>
+                <div class="queue-ticket-sub">過號病人</div>
+              </div>
+            </td>
+            <td>
+              <div class="queue-meta-stack">
+                <div class="queue-badges-row">
+                  <span class="pill ${getPatientTypePill(patient.sourceType)}">${getPatientTypeLabel(patient.sourceType)}</span>
+                  <span class="pill ${patient.priority ? "pill-priority" : "pill-normal"}">
+                    ${patient.priority ? "醫療優先" : "一般"}
+                  </span>
+                </div>
+                <div class="queue-time">登記時間：${escapeHtml(formatDateTime(patient.registeredAt))}</div>
+              </div>
+            </td>
+            <td>
+              <div class="action-stack">
+                <div class="main-actions">
+                  <button class="btn-primary btn-small"
+                          type="button"
+                          data-action="recallSkipped"
+                          data-patient-id="${patient.id}"
+                          data-help-title="重叫"
+                          data-help="如果該房目前無人診症中，可將過號病人即時重新叫入去。">
+                    重叫
+                  </button>
+                  <button class="btn-success btn-small"
+                          type="button"
+                          data-action="requeueSkipped"
+                          data-patient-id="${patient.id}"
+                          data-help-title="回原房（自動排位）"
+                          data-help="將過號病人放回原本房間的候診隊列，並由系統按規則自動排位。">
+                    回原房
+                  </button>
+                  <button class="btn-success btn-small"
+                          type="button"
+                          data-action="transferAuto"
+                          data-patient-id="${patient.id}"
+                          data-help-title="過號病人轉房（自動排位）"
+                          data-help="將過號病人轉去另一房，並重新回到候診中，由系統自動排位。">
+                    轉房
+                  </button>
+                </div>
+
+                <div class="inline-tool-row">
+                  <select class="transfer-room-select"
+                          data-help-title="選擇轉去房間"
+                          data-help="先揀目標房，再用下面轉房按鈕將病人轉去另一間房。">
+                    <option value="">選擇轉去房間</option>
+                    ${transferOptions}
+                  </select>
+                  <button class="btn-primary btn-small"
+                          type="button"
+                          data-action="transferFront"
+                          data-patient-id="${patient.id}"
+                          data-help-title="過號病人轉隊首"
+                          data-help="將過號病人轉去另一房，並直接放到新房隊首。">
+                    轉隊首
+                  </button>
+                  <button class="btn-primary btn-small"
+                          type="button"
+                          data-action="transferTail"
+                          data-patient-id="${patient.id}"
+                          data-help-title="過號病人轉隊尾"
+                          data-help="將過號病人轉去另一房，並直接放到新房最後。">
+                    轉隊尾
+                  </button>
+                  <button class="btn-danger btn-small"
+                          type="button"
+                          data-action="cancelPatient"
+                          data-patient-id="${patient.id}"
+                          data-help-title="取消病人"
+                          data-help="將過號病人取消並移出後續流程。">
+                    取消
+                  </button>
+                </div>
               </div>
             </td>
           </tr>
@@ -3036,17 +3218,16 @@
 
             <div class="section-title"
                  data-help-title="候診名單"
-                 data-help="顯示呢間房而家排緊隊的病人。可以喺右邊做設優先、移到最前、指定位置、轉房或取消。">
+                 data-help="顯示呢間房而家排緊隊的病人。保留 table 邏輯，但每行視覺上會似 compact card。">
               候診名單
             </div>
             <table>
               <thead>
                 <tr>
-                  <th>位置</th>
-                  <th>CUMC號碼</th>
-                  <th>登記時間</th>
-                  <th>類別</th>
-                  <th>操作</th>
+                  <th style="width:90px;">位置</th>
+                  <th style="width:210px;">CUMC號碼</th>
+                  <th>病人資訊</th>
+                  <th style="width:300px;">主操作</th>
                 </tr>
               </thead>
               <tbody>${queueRows}</tbody>
@@ -3054,15 +3235,15 @@
 
             <div class="section-title"
                  data-help-title="過號名單"
-                 data-help="顯示之前被標記為過號的病人。你可以重叫、回原房、自動轉房、轉隊首、轉隊尾或者取消。">
+                 data-help="顯示之前被標記為過號的病人。你可以重叫、回原房、轉房、轉隊首、轉隊尾或取消。">
               過號名單
             </div>
             <table>
               <thead>
                 <tr>
-                  <th>CUMC號碼</th>
-                  <th>登記時間</th>
-                  <th>操作</th>
+                  <th style="width:210px;">CUMC號碼</th>
+                  <th>病人資訊</th>
+                  <th style="width:300px;">主操作</th>
                 </tr>
               </thead>
               <tbody>${skippedRows}</tbody>
