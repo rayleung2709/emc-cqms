@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>香港中文大學醫院急症醫學中心輪候系統 CUHKMC Emergency Medicine Centre Queue Management System TV Large</title>
+  <title>香港中文大學醫院急症醫學中心輪候系統 教學版 CUHKMC Emergency Medicine Centre Queue Management System Tutorial</title>
   <link rel="icon" href="data:," />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -33,6 +33,13 @@
       --board-amber: #f59e0b;
       --board-blue: #60a5fa;
       --board-sky: #38bdf8;
+
+      --teach-bg: rgba(15, 23, 42, 0.96);
+      --teach-border: rgba(96, 165, 250, 0.55);
+      --teach-title: #bfdbfe;
+      --teach-text: #f8fafc;
+      --teach-sub: #cbd5e1;
+      --teach-glow: 0 16px 38px rgba(2, 6, 23, 0.42);
     }
 
     * { box-sizing: border-box; }
@@ -88,6 +95,7 @@
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
+      align-items: center;
     }
 
     body.display-mode .tabs {
@@ -108,6 +116,40 @@
       background: var(--primary);
       color: #fff;
       border-color: var(--primary);
+    }
+
+    .teach-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      font-weight: 800;
+      color: #0f172a;
+      white-space: nowrap;
+    }
+
+    .teach-toggle input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .teach-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #93c5fd;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      font-weight: 900;
     }
 
     .page { display: none; }
@@ -765,6 +807,66 @@
       flex: 0 0 auto;
     }
 
+    .teach-highlight {
+      outline: 2px dashed rgba(37, 99, 235, 0.52);
+      outline-offset: 3px;
+      transition: outline-color 0.15s ease;
+    }
+
+    .teach-anchor {
+      position: relative;
+    }
+
+    .teach-tooltip {
+      position: fixed;
+      left: 0;
+      top: 0;
+      transform: translate(18px, 18px);
+      z-index: 20000;
+      width: min(360px, calc(100vw - 24px));
+      background: var(--teach-bg);
+      border: 1px solid var(--teach-border);
+      border-radius: 16px;
+      box-shadow: var(--teach-glow);
+      color: var(--teach-text);
+      padding: 12px 14px;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.12s ease, visibility 0.12s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .teach-tooltip.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .teach-tooltip-title {
+      color: var(--teach-title);
+      font-weight: 900;
+      font-size: 0.92rem;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .teach-tooltip-body {
+      color: var(--teach-text);
+      font-size: 0.96rem;
+      line-height: 1.5;
+      font-weight: 700;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .teach-tooltip-tip {
+      color: var(--teach-sub);
+      font-size: 0.84rem;
+      margin-top: 8px;
+      line-height: 1.45;
+      font-weight: 800;
+    }
+
     @media (max-width: 1600px) {
       .board-title { font-size: 2.15rem; }
       .board-time { font-size: 1.35rem; }
@@ -816,36 +918,92 @@
       .board-tag { padding: 9px 12px; }
       .board-page-indicator { font-size: 1rem; }
       .board-dot { width: 10px; height: 10px; }
+      .teach-tooltip {
+        width: min(320px, calc(100vw - 18px));
+      }
     }
   </style>
 </head>
 <body>
   <div class="toast-wrap" id="toastWrap"></div>
 
+  <div class="teach-tooltip" id="teachTooltip" aria-hidden="true">
+    <div class="teach-tooltip-title" id="teachTooltipTitle"></div>
+    <div class="teach-tooltip-body" id="teachTooltipBody"></div>
+    <div class="teach-tooltip-tip" id="teachTooltipTip">教學模式已開啟：將滑鼠移到不同欄位或按鈕，可見功能說明。</div>
+  </div>
+
   <div class="app">
     <div class="topbar">
-      <div class="title">香港中文大學醫院急症醫學中心輪候系統 CUHKMC Emergency Medicine Centre Queue Management System</div>
+      <div class="title teach-anchor"
+           data-help-title="系統標題"
+           data-help="呢個頁面係急症醫學中心輪候系統。職員可喺呢度新增病人、管理房間、查詢狀態，同顯示病人看板。">
+        香港中文大學醫院急症醫學中心輪候系統 CUHKMC Emergency Medicine Centre Queue Management System
+      </div>
+
       <div class="tabs">
-        <button class="tab-btn active" data-tab="staffPage" type="button">職員管理</button>
-        <button class="tab-btn" data-tab="patientPage" type="button">狀態查詢</button>
-        <button class="tab-btn" data-tab="displayPage" type="button">病人看板</button>
+        <button class="tab-btn active"
+                data-tab="staffPage"
+                type="button"
+                data-help-title="職員管理"
+                data-help="喺呢頁做日常操作，例如新增病人、新增房間、叫號、過號、轉房、截籌同一鍵平均分流。">
+          職員管理
+        </button>
+
+        <button class="tab-btn"
+                data-tab="patientPage"
+                type="button"
+                data-help-title="狀態查詢"
+                data-help="用 CUMC 號碼或者房號查病人狀態，包括是否候診中、過號、完成、取消，以及活動紀錄。">
+          狀態查詢
+        </button>
+
+        <button class="tab-btn"
+                data-tab="displayPage"
+                type="button"
+                data-help-title="病人看板"
+                data-help="病人看板會顯示每間房而家睇到邊個號碼、候診名單同過號名單，俾病人或現場人士參考。">
+          病人看板
+        </button>
+
+        <label class="teach-toggle"
+               data-help-title="教學模式開關"
+               data-help="開啟後，滑鼠移到欄位或按鈕會顯示操作說明。關閉後，畫面會接近正式版。">
+          <input id="teachModeToggle" type="checkbox" checked />
+          <span>教學模式</span>
+          <span class="teach-badge" id="teachModeBadge">已開啟</span>
+        </label>
       </div>
     </div>
 
     <div class="page active" id="staffPage">
       <div class="grid-2">
-        <div class="panel">
+        <div class="panel teach-anchor"
+             data-help-title="新增病人區"
+             data-help="呢區用嚟將新症或已預先安排嘅病人加入系統。先輸入 CUMC 號碼，再揀病人類型、派房方式、是否優先，以及排位方式。">
           <div class="panel-title">新增病人</div>
 
           <div class="grid-5">
             <div class="form-row">
-              <label for="patientCumcNo">CUMC號碼</label>
-              <input id="patientCumcNo" type="text" placeholder="例如：ABC1234" />
+              <label for="patientCumcNo"
+                     data-help-title="CUMC號碼"
+                     data-help="輸入病人的 CUMC 號碼。系統會避免同一位未完成病人重複入隊。">
+                CUMC號碼
+              </label>
+              <input id="patientCumcNo" type="text" placeholder="例如：ABC1234"
+                     data-help-title="CUMC號碼輸入框"
+                     data-help="喺呢度輸入病人號碼。系統會自動轉做大楷。例子：ABC1234。" />
             </div>
 
             <div class="form-row">
-              <label for="patientType">病人類型</label>
-              <select id="patientType">
+              <label for="patientType"
+                     data-help-title="病人類型"
+                     data-help="病人類型包括即場、網上拎籌、預約。唔同類型會影響可派去邊類房，以及排序時嘅先後規則。">
+                病人類型
+              </label>
+              <select id="patientType"
+                      data-help-title="病人類型選擇"
+                      data-help="即場：現場登記。網上拎籌：預先拎號但未正式完成就診。預約：有預約安排，系統會按規則容許派去開放或暫停中但可收預約的房。">
                 <option value="walkin">即場</option>
                 <option value="onlineTicket">網上拎籌</option>
                 <option value="appointment">預約</option>
@@ -853,8 +1011,14 @@
             </div>
 
             <div class="form-row">
-              <label for="assignMode">派去診室</label>
-              <select id="assignMode">
+              <label for="assignMode"
+                     data-help-title="派去診室"
+                     data-help="你可以交俾系統自動分派，或者手動揀一間房。一般日常建議用智能分派。">
+                派去診室
+              </label>
+              <select id="assignMode"
+                      data-help-title="派房方式"
+                      data-help="智能分派：比較各房目前負荷。最短隊伍優先：揀人數最少房。輪流分派：輪住派去各房。手動選擇診室：由職員自己決定。">
                 <option value="smart" selected>自動分派：智能分派</option>
                 <option value="shortest">自動分派：最短隊伍優先</option>
                 <option value="roundRobin">自動分派：輪流分派</option>
@@ -863,13 +1027,25 @@
             </div>
 
             <div class="form-row">
-              <label for="assignRoom">選擇診室</label>
-              <select id="assignRoom"></select>
+              <label for="assignRoom"
+                     data-help-title="選擇診室"
+                     data-help="只有當你選擇『手動選擇診室』時，先需要喺呢度揀房。">
+                選擇診室
+              </label>
+              <select id="assignRoom"
+                      data-help-title="手動派房"
+                      data-help="如果你已知病人應該去某位醫生或某間房，就喺呢度手動指定。"></select>
             </div>
 
             <div class="form-row">
-              <label for="isPriority">醫療優先症</label>
-              <select id="isPriority">
+              <label for="isPriority"
+                     data-help-title="醫療優先症"
+                     data-help="如果病人有較高臨床優先需要，可設為醫療優先。排序時，系統會優先處理呢類病人。">
+                醫療優先症
+              </label>
+              <select id="isPriority"
+                      data-help-title="是否醫療優先"
+                      data-help="選『是』代表病人屬較高優先級別，入隊後通常會排得較前。">
                 <option value="false">否</option>
                 <option value="true">是</option>
               </select>
@@ -878,17 +1054,33 @@
 
           <div class="grid-3" style="margin-top:14px;">
             <div class="form-row">
-              <label for="registeredAt">後備登記時間（香港時間）</label>
-              <input id="registeredAt" type="datetime-local" disabled />
-              <label class="sub-option" for="useCustomRegisteredAt" style="display:flex;gap:8px;align-items:center;">
+              <label for="registeredAt"
+                     data-help-title="後備登記時間"
+                     data-help="通常唔需要手動改，系統會自動用當刻香港時間。只喺補錄或特殊情況先勾選使用後備時間。">
+                後備登記時間（香港時間）
+              </label>
+              <input id="registeredAt" type="datetime-local" disabled
+                     data-help-title="後備登記時間輸入"
+                     data-help="如果有需要補回較早前的登記資料，可以手動輸入時間。否則系統會自動使用現在香港時間。" />
+              <label class="sub-option"
+                     for="useCustomRegisteredAt"
+                     style="display:flex;gap:8px;align-items:center;"
+                     data-help-title="使用後備登記時間"
+                     data-help="勾選後，系統會用你手動輸入的香港時間作登記時間。未勾選就會直接用系統即時時間。">
                 <input id="useCustomRegisteredAt" type="checkbox" style="width:auto;" />
                 使用後備登記時間（否則自動擷取香港時間）
               </label>
             </div>
 
             <div class="form-row">
-              <label for="insertMode">插入方式</label>
-              <select id="insertMode">
+              <label for="insertMode"
+                     data-help-title="插入方式"
+                     data-help="病人分派入房之後，仲要決定喺隊列中排第幾位。你可以交俾系統自動安排，或者直接放最前、最後，或指定位置。">
+                插入方式
+              </label>
+              <select id="insertMode"
+                      data-help-title="排位方式"
+                      data-help="自動安排：按系統規則排序。排隊尾：放最後。排隊首：放最前。指定位置：由你輸入第幾位。">
                 <option value="auto" selected>自動安排</option>
                 <option value="tail">排隊尾</option>
                 <option value="front">排隊首</option>
@@ -897,22 +1089,42 @@
             </div>
 
             <div class="form-row">
-              <label for="insertPosition">指定位置（第幾位）</label>
-              <input id="insertPosition" type="number" min="1" placeholder="例如：2" />
+              <label for="insertPosition"
+                     data-help-title="指定位置"
+                     data-help="當插入方式選擇『指定位置』時，喺呢度輸入想放喺第幾位。">
+                指定位置（第幾位）
+              </label>
+              <input id="insertPosition" type="number" min="1" placeholder="例如：2"
+                     data-help-title="輸入指定排位"
+                     data-help="例如輸入 2，代表病人會被插入去第 2 位。若超出實際長度，系統會自動調整。">
             </div>
           </div>
 
           <div class="actions" style="margin-top:14px; justify-content:flex-end;">
-            <button class="btn-primary" id="addPatientBtn" type="button">加入系統</button>
+            <button class="btn-primary"
+                    id="addPatientBtn"
+                    type="button"
+                    data-help-title="加入系統"
+                    data-help="確認以上資料後，按呢度將病人正式加入輪候系統。">
+              加入系統
+            </button>
           </div>
         </div>
 
-        <div class="panel">
+        <div class="panel teach-anchor"
+             data-help-title="新增診室 / 醫生"
+             data-help="當有新房要用，或者要加一位新的醫生顯示，就喺呢區新增。">
           <div class="panel-title">新增診室 / 醫生</div>
           <div class="grid-3">
             <div class="form-row">
-              <label for="newRoomNo">房號</label>
-              <input id="newRoomNo" list="roomNoOptions" type="text" placeholder="可選或自由輸入" />
+              <label for="newRoomNo"
+                     data-help-title="房號"
+                     data-help="輸入房號，例如 1號房、2號房。你可揀建議選項，亦可以自由輸入。">
+                房號
+              </label>
+              <input id="newRoomNo" list="roomNoOptions" type="text" placeholder="可選或自由輸入"
+                     data-help-title="房號輸入框"
+                     data-help="可輸入新房號。系統唔會容許同名房號重複建立。" />
               <datalist id="roomNoOptions">
                 <option value="1號房"></option>
                 <option value="2號房"></option>
@@ -925,8 +1137,14 @@
               </datalist>
             </div>
             <div class="form-row">
-              <label for="newDoctorName">醫生</label>
-              <input id="newDoctorName" list="doctorOptions" type="text" placeholder="可選或自由輸入" />
+              <label for="newDoctorName"
+                     data-help-title="醫生名稱"
+                     data-help="輸入醫生名稱。可以用建議選項，亦可以自由輸入。">
+                醫生
+              </label>
+              <input id="newDoctorName" list="doctorOptions" type="text" placeholder="可選或自由輸入"
+                     data-help-title="醫生輸入框"
+                     data-help="新增或輸入一位醫生名稱，會顯示喺該房卡片及病人看板。"/>
               <datalist id="doctorOptions">
                 <option value="林家強醫生 Dr. LAM Ka Keung"></option>
                 <option value="麥應良醫生 Dr. MAK Ying Leung Elvis"></option>
@@ -941,20 +1159,36 @@
             </div>
             <div class="form-row">
               <label>&nbsp;</label>
-              <button class="btn-success" id="addRoomBtn" type="button">新增診室</button>
+              <button class="btn-success"
+                      id="addRoomBtn"
+                      type="button"
+                      data-help-title="新增診室"
+                      data-help="建立一個新房，之後系統先可以派病人去呢間房。">
+                新增診室
+              </button>
             </div>
           </div>
-          <div class="muted" style="margin-top:12px;">
+          <div class="muted" style="margin-top:12px;"
+               data-help-title="房間補充說明"
+               data-help="房間可以新增、修改、刪除。截籌後會停止接收新派症，但病人看板仍會顯示；關房則會喺病人看板隱藏。">
             可新增、修改、刪除房間；亦可截籌但繼續顯示在病人看板。看板會將「1號房」顯示為「1」。
           </div>
         </div>
       </div>
 
-      <div class="panel">
+      <div class="panel teach-anchor"
+           data-help-title="各診室輪候情況"
+           data-help="呢區會顯示每間房目前狀態、現在診症中病人、候診名單同過號名單，並可直接做叫號、完成、過號、轉房等操作。">
         <div class="toolbar-row">
           <div class="panel-title" style="margin-bottom:0;">各診室輪候情況</div>
           <div class="actions">
-            <button class="btn-primary" id="rebalanceWaitingBtn" type="button">一鍵平均分流候診病人</button>
+            <button class="btn-primary"
+                    id="rebalanceWaitingBtn"
+                    type="button"
+                    data-help-title="一鍵平均分流候診病人"
+                    data-help="系統會將符合條件的候診病人重新平均分配去各開放而且可派症的房。只會處理候診中、非預約、非手動派房、非人工轉房鎖定的病人。">
+              一鍵平均分流候診病人
+            </button>
           </div>
         </div>
 
@@ -963,24 +1197,46 @@
     </div>
 
     <div class="page" id="patientPage">
-      <div class="panel">
+      <div class="panel teach-anchor"
+           data-help-title="狀態查詢"
+           data-help="輸入 CUMC 號碼或房號查病人最新狀態。可見房間、狀態、是否優先、活動紀錄等資料。">
         <div class="panel-title">狀態查詢</div>
         <div class="grid-3">
           <div class="form-row">
-            <label for="searchTicket">CUMC號碼</label>
-            <input id="searchTicket" list="searchTicketOptions" type="text" placeholder="輸入頭幾個字都可以，例如：ABC" autocomplete="off" />
+            <label for="searchTicket"
+                   data-help-title="查詢 CUMC號碼"
+                   data-help="可輸入完整號碼，亦可只輸入開頭幾個字。系統會提供建議清單。">
+              CUMC號碼
+            </label>
+            <input id="searchTicket" list="searchTicketOptions" type="text" placeholder="輸入頭幾個字都可以，例如：ABC" autocomplete="off"
+                   data-help-title="輸入病人號碼作搜尋"
+                   data-help="例如輸入 ABC，可搜尋所有以 ABC 開頭的病人號碼。" />
             <datalist id="searchTicketOptions"></datalist>
           </div>
           <div class="form-row">
-            <label for="searchRoom">房號（可選）</label>
-            <select id="searchRoom"></select>
+            <label for="searchRoom"
+                   data-help-title="房號篩選"
+                   data-help="如果你想只查某一間房的病人，可以配合房號一齊查。">
+              房號（可選）
+            </label>
+            <select id="searchRoom"
+                    data-help-title="選擇房號"
+                    data-help="可選某一間房，只顯示該房相關病人。"></select>
           </div>
           <div class="form-row">
             <label>&nbsp;</label>
-            <button class="btn-primary" id="searchPatientBtn" type="button">查詢</button>
+            <button class="btn-primary"
+                    id="searchPatientBtn"
+                    type="button"
+                    data-help-title="查詢"
+                    data-help="按呢度開始搜尋病人資料。">
+              查詢
+            </button>
           </div>
         </div>
-        <div class="muted" style="margin-top:10px;">
+        <div class="muted" style="margin-top:10px;"
+             data-help-title="查詢提示"
+             data-help="如果輸入唔完整，系統可能搵到多個病人。此時請再輸入更完整的 CUMC 號碼。">
           可輸入完整 CUMC 號碼，或者只輸入開頭幾個字作篩選，再於清單中選擇；房號可配合下拉式選單一併查詢。
         </div>
         <div id="patientSearchResult"></div>
@@ -989,11 +1245,20 @@
 
     <div class="page" id="displayPage">
       <div class="board-toolbar">
-        <div class="board-title">候診情況 Queue Status</div>
-        <div class="board-time" id="boardTime"></div>
+        <div class="board-title"
+             data-help-title="候診情況看板"
+             data-help="呢個係俾病人睇的大看板，會顯示每間房的現在看號、候診及過號情況。">
+          候診情況 Queue Status
+        </div>
+        <div class="board-time"
+             id="boardTime"
+             data-help-title="看板時間"
+             data-help="顯示現在香港時間。"></div>
       </div>
 
-      <div class="info-card board-disclaimer">
+      <div class="info-card board-disclaimer"
+           data-help-title="看板提示"
+           data-help="看板資料只供參考。實際輪候可能會因病人臨床情況及現場運作需要而調整。">
         <div class="inline-note">
           此輪候隊列只供參考，會因應病人臨床情況及實際運作而隨時調整，敬請見諒。<br>
           This queue is for reference only and may change at any time due to patients' clinical condition and actual operational needs. Thank you for your understanding.
@@ -1007,7 +1272,7 @@
 
   <script>
     const SUPABASE_URL = "https://dvyberdrmmfgutjqnpjr.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY_HERE";
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const HKT_TIMEZONE = "Asia/Hong_Kong";
@@ -1032,9 +1297,9 @@
 
     const PAUSE_REASON_OPTIONS = ["急救中 Resus", "小手術 Procedure", "巡房 Ward"];
 
+    const DEBUG = false;
+
     const state = {
-      nextRoomNumber: 1,
-      nextRoundRobinIndex: 0,
       rooms: [],
       patients: [],
       displayPageIndex: 0,
@@ -1043,7 +1308,9 @@
       lastSearchRenderKey: "",
       lastBoardRenderKey: "",
       roomRenderFingerprints: new Map(),
-      roomDomMap: new Map()
+      roomDomMap: new Map(),
+      nextRoundRobinIndex: 0,
+      teachMode: true
     };
 
     let liveRefreshTimer = null;
@@ -1053,10 +1320,19 @@
     let renderTimer = null;
     let refreshInFlight = false;
     let queuedRefresh = false;
-    let softRefreshTimer = null;
+
+    const teachTooltip = {
+      el: null,
+      titleEl: null,
+      bodyEl: null,
+      tipEl: null,
+      activeTarget: null,
+      lastMouseX: 0,
+      lastMouseY: 0
+    };
 
     function debugLog(...args) {
-      console.log("[CQMS DEBUG]", ...args);
+      if (DEBUG) console.log("[CQMS DEBUG]", ...args);
     }
 
     function formatSupabaseError(error) {
@@ -1118,7 +1394,7 @@
       };
     }
 
-    function hktNowIso() {
+    function nowIso() {
       return new Date().toISOString();
     }
 
@@ -1204,7 +1480,7 @@
       if (!patient) return;
       if (!Array.isArray(patient.logs)) patient.logs = [];
       patient.logs.unshift({
-        time: hktNowIso(),
+        time: nowIso(),
         action,
         details
       });
@@ -1554,6 +1830,17 @@
       return patient.initialAssignmentMode === "manual" || patient.manualLock === true;
     }
 
+    function getSkippedPatients(room) {
+      return state.patients
+        .filter(patient => patient.roomId === room.id && patient.status === "skipped")
+        .sort((a, b) => {
+          const aTime = new Date(a.skippedAt || a.createdAt).getTime();
+          const bTime = new Date(b.skippedAt || b.createdAt).getTime();
+          if (aTime !== bTime) return aTime - bTime;
+          return String(a.ticketNo || "").localeCompare(String(b.ticketNo || ""), "zh-HK");
+        });
+    }
+
     async function loadStateFromSupabase(showErrorToast = true) {
       try {
         const { data: roomsData, error: roomsError } = await sb
@@ -1570,7 +1857,7 @@
 
         if (patientsError) throw patientsError;
 
-        state.rooms = (roomsData || []).map((room, index) => ({
+        state.rooms = (roomsData || []).map(room => ({
           id: room.id,
           roomNo: room.room_no,
           doctorName: room.doctor_name || "",
@@ -1579,8 +1866,7 @@
           acceptingNew: room.accepting_new !== false,
           queuePatientIds: [],
           skippedPatientIds: [],
-          currentPatientId: room.current_patient_id || null,
-          sortOrder: room.sort_order ?? index
+          currentPatientId: room.current_patient_id || null
         }));
 
         state.patients = (patientsData || []).map(patient => ({
@@ -1590,9 +1876,9 @@
           roomId: patient.room_id || "",
           sourceType: patient.source_type || "walkin",
           priority: !!patient.priority,
-          registeredAt: patient.registered_at || hktNowIso(),
+          registeredAt: patient.registered_at || nowIso(),
           status: patient.status || "waiting",
-          createdAt: patient.created_at || hktNowIso(),
+          createdAt: patient.created_at || nowIso(),
           queueOrder: Number.isFinite(patient.queue_order) ? patient.queue_order : null,
           skippedAt: patient.skipped_at || null,
           calledAt: patient.called_at || null,
@@ -1603,8 +1889,6 @@
           manualLockReason: patient.manual_lock_reason || "",
           logs: Array.isArray(patient.logs_json) ? patient.logs_json : []
         }));
-
-        state.nextRoomNumber = state.rooms.length + 1;
 
         state.rooms.forEach(room => {
           room.queuePatientIds = state.patients
@@ -1637,8 +1921,7 @@
         status: room.status,
         pause_reason: room.pauseReason || "",
         accepting_new: room.acceptingNew,
-        current_patient_id: room.currentPatientId || null,
-        sort_order: room.sortOrder ?? 0
+        current_patient_id: room.currentPatientId || null
       };
 
       const { data, error } = await sb.from("rooms").upsert(payload).select();
@@ -1658,8 +1941,7 @@
         status: room.status,
         pause_reason: room.pauseReason || "",
         accepting_new: room.acceptingNew,
-        current_patient_id: room.currentPatientId || null,
-        sort_order: room.sortOrder ?? 0
+        current_patient_id: room.currentPatientId || null
       };
 
       const { data, error } = await sb.from("rooms").update(payload).eq("id", room.id).select();
@@ -1769,13 +2051,6 @@
       }, delay);
     }
 
-    function scheduleSoftCloudRefresh(delay = 100) {
-      if (softRefreshTimer) clearTimeout(softRefreshTimer);
-      softRefreshTimer = setTimeout(() => {
-        refreshFromCloudAndRender(false);
-      }, delay);
-    }
-
     async function refreshFromCloudAndRender(showErrorToast = false) {
       if (refreshInFlight) {
         queuedRefresh = true;
@@ -1808,7 +2083,7 @@
 
       if (!patientOrPatients || (Array.isArray(patientOrPatients) && !patientOrPatients.length)) {
         const html = `
-          <div class="patient-search-result">
+          <div class="patient-search-result teach-anchor" data-help-title="查詢結果" data-help="系統目前找不到符合條件的病人資料。請檢查 CUMC 號碼或房號是否輸入正確。">
             <div class="muted">找不到病人資料</div>
           </div>
         `;
@@ -1821,7 +2096,7 @@
 
       if (Array.isArray(patientOrPatients) && patientOrPatients.length > 1) {
         const html = `
-          <div class="patient-search-result">
+          <div class="patient-search-result teach-anchor" data-help-title="多個查詢結果" data-help="代表你輸入的條件不夠精確。請輸入更完整的 CUMC 號碼。">
             <div class="section-title" style="margin-top:0;">找到多個結果，請輸入更完整 CUMC 號碼</div>
             <table>
               <thead>
@@ -1882,7 +2157,7 @@
         : `<div class="muted">暫無活動紀錄</div>`;
 
       const html = `
-        <div class="patient-search-result">
+        <div class="patient-search-result teach-anchor" data-help-title="病人詳細結果" data-help="呢度會顯示病人的最新狀態、所屬房間、時間紀錄、以及輪候位置。活動紀錄可幫你追蹤病人曾經做過咩操作。">
           <div class="grid-2">
             <div><strong>CUMC號碼：</strong>${escapeHtml(patient.ticketNo)}</div>
             <div><strong>診室：</strong>${room ? `${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}` : "—"}</div>
@@ -1986,7 +2261,7 @@
 
       if (!visibleRooms.length) {
         const html = `
-          <div class="board-wrap">
+          <div class="board-wrap teach-anchor" data-help-title="沒有顯示中的診室" data-help="代表目前所有房間都已關房，或者暫時未建立任何房間。">
             <div class="board-body">
               <div class="board-row">
                 <div class="board-cell" style="grid-column: 1 / -1; min-height: 320px;">
@@ -2019,14 +2294,7 @@
         const waitingPatients = waitingAll.slice(0, 10);
         const waitingMore = Math.max(0, waitingAll.length - waitingPatients.length);
 
-        const skippedAll = state.patients
-          .filter(patient => patient.roomId === room.id && patient.status === "skipped")
-          .sort((a, b) => {
-            const aTime = new Date(a.skippedAt || a.createdAt).getTime();
-            const bTime = new Date(b.skippedAt || b.createdAt).getTime();
-            return aTime - bTime;
-          });
-
+        const skippedAll = getSkippedPatients(room);
         const skippedPatients = skippedAll.slice(0, 6);
         const skippedMore = Math.max(0, skippedAll.length - skippedPatients.length);
 
@@ -2049,7 +2317,9 @@
           `;
 
         return `
-          <div class="board-row">
+          <div class="board-row teach-anchor"
+               data-help-title="看板上的一間房"
+               data-help="依行代表一間診室。由左到右依次顯示：房號、醫生、現在看號、候診名單、過號名單。">
             <div class="board-cell board-room">${escapeHtml(getRoomDisplayShort(room.roomNo))}</div>
             <div class="board-cell board-doctor">
               <div class="board-doctor-zh">${escapeHtml(doctorParts.zh)}</div>
@@ -2083,13 +2353,13 @@
       }).join("");
 
       const html = `
-        <div class="board-pagination-bar">
+        <div class="board-pagination-bar teach-anchor" data-help-title="看板分頁" data-help="如果房間太多，看板會自動分頁輪流顯示。呢度會顯示目前第幾頁。">
           <div class="board-page-indicator">第 ${state.displayPageIndex + 1} 頁 / 共 ${totalPages} 頁</div>
           <div class="board-page-dots">${dotsHtml}</div>
         </div>
 
         <div class="board-wrap">
-          <div class="board-head">
+          <div class="board-head teach-anchor" data-help-title="看板欄位標題" data-help="ROOM 係房號，DOCTOR 係醫生，NOW SERVING 係現在看號，WAITING 係候診，SKIPPED 係過號。">
             <div><span class="board-head-zh">房號</span><span class="board-head-en">ROOM</span></div>
             <div><span class="board-head-zh">醫生</span><span class="board-head-en">DOCTOR</span></div>
             <div><span class="board-head-zh">現在看號</span><span class="board-head-en">NOW SERVING</span></div>
@@ -2109,9 +2379,7 @@
     function getRoomFingerprint(room) {
       const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
       const waitingPatients = getOrderedWaitingPatients(room);
-      const skippedPatients = state.patients
-        .filter(patient => patient.roomId === room.id && patient.status === "skipped")
-        .sort((a, b) => String(a.id).localeCompare(String(b.id)));
+      const skippedPatients = getSkippedPatients(room);
 
       return JSON.stringify({
         roomId: room.id,
@@ -2156,8 +2424,7 @@
     function renderRoomCardHtml(room) {
       const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
       const waitingPatients = getOrderedWaitingPatients(room);
-      const skippedPatients = state.patients
-        .filter(patient => patient.roomId === room.id && patient.status === "skipped");
+      const skippedPatients = getSkippedPatients(room);
 
       const transferOptions = getTransferOptionsHtml(room);
 
@@ -2181,30 +2448,73 @@
             </td>
             <td>
               <div class="actions">
-                <button class="btn-warning btn-small" type="button" data-action="togglePriority" data-patient-id="${patient.id}">
+                <button class="btn-warning btn-small"
+                        type="button"
+                        data-action="togglePriority"
+                        data-patient-id="${patient.id}"
+                        data-help-title="設優先 / 取消優先"
+                        data-help="切換病人是否屬於醫療優先症。候診中病人改完後，系統會重新調整佢喺隊中的位置。">
                   ${patient.priority ? "取消優先" : "設優先"}
                 </button>
-                <button class="btn-secondary btn-small" type="button" data-action="moveToFront" data-patient-id="${patient.id}">
+                <button class="btn-secondary btn-small"
+                        type="button"
+                        data-action="moveToFront"
+                        data-patient-id="${patient.id}"
+                        data-help-title="移到最前"
+                        data-help="直接將呢位候診病人搬到該房候診名單最前。">
                   移到最前
                 </button>
-                <input class="insert-pos-input" type="number" min="1" placeholder="第幾位" data-insert-position="${patient.id}" />
-                <button class="btn-secondary btn-small" type="button" data-action="insertAtPosition" data-patient-id="${patient.id}">
+                <input class="insert-pos-input"
+                       type="number"
+                       min="1"
+                       placeholder="第幾位"
+                       data-insert-position="${patient.id}"
+                       data-help-title="輸入指定位置"
+                       data-help="先輸入第幾位，再按『指定位置』將病人插入到指定位置。"/>
+                <button class="btn-secondary btn-small"
+                        type="button"
+                        data-action="insertAtPosition"
+                        data-patient-id="${patient.id}"
+                        data-help-title="指定位置"
+                        data-help="將病人插入去你輸入的排位，例如第 2 位。">
                   指定位置
                 </button>
-                <select class="transfer-room-select">
+                <select class="transfer-room-select"
+                        data-help-title="選擇轉去房間"
+                        data-help="先喺呢度揀一個目標房間，之後再按轉房按鈕。">
                   <option value="">選擇轉去房間</option>
                   ${transferOptions}
                 </select>
-                <button class="btn-success btn-small" type="button" data-action="transferAuto" data-patient-id="${patient.id}">
+                <button class="btn-success btn-small"
+                        type="button"
+                        data-action="transferAuto"
+                        data-patient-id="${patient.id}"
+                        data-help-title="轉房（自動排位）"
+                        data-help="將病人轉去另一間房，並由系統按規則自動安排新位置。病人之後會被鎖定，不再參與一鍵平均分流。">
                   轉房（自動排位）
                 </button>
-                <button class="btn-primary btn-small" type="button" data-action="transferFront" data-patient-id="${patient.id}">
+                <button class="btn-primary btn-small"
+                        type="button"
+                        data-action="transferFront"
+                        data-patient-id="${patient.id}"
+                        data-help-title="轉隊首"
+                        data-help="將病人轉去另一間房，並直接放到該房隊首。">
                   轉隊首
                 </button>
-                <button class="btn-primary btn-small" type="button" data-action="transferTail" data-patient-id="${patient.id}">
+                <button class="btn-primary btn-small"
+                        type="button"
+                        data-action="transferTail"
+                        data-patient-id="${patient.id}"
+                        data-help-title="轉隊尾"
+                        data-help="將病人轉去另一間房，並直接放到該房最後。">
                   轉隊尾
                 </button>
-                <button class="btn-danger btn-small" type="button" data-action="cancelPatient" data-patient-id="${patient.id}">
+                <button class="btn-danger btn-small"
+                        type="button"
+                        data-action="cancelPatient"
+                        data-patient-id="${patient.id}"
+                        data-help-title="取消病人"
+                        data-help="將病人標記為已取消，並由現有候診或診症流程移除。">
                   取消
                 </button>
               </div>
@@ -2220,26 +2530,58 @@
             <td>${escapeHtml(formatDateTime(patient.registeredAt))}</td>
             <td>
               <div class="actions">
-                <button class="btn-primary btn-small" type="button" data-action="recallSkipped" data-patient-id="${patient.id}">
+                <button class="btn-primary btn-small"
+                        type="button"
+                        data-action="recallSkipped"
+                        data-patient-id="${patient.id}"
+                        data-help-title="重叫"
+                        data-help="如果該房目前無人診症中，可將過號病人即時重新叫入去。">
                   重叫
                 </button>
-                <button class="btn-success btn-small" type="button" data-action="requeueSkipped" data-patient-id="${patient.id}">
+                <button class="btn-success btn-small"
+                        type="button"
+                        data-action="requeueSkipped"
+                        data-patient-id="${patient.id}"
+                        data-help-title="回原房（自動排位）"
+                        data-help="將過號病人放回原本房間的候診隊列，並由系統按規則自動排位。">
                   回原房（自動排位）
                 </button>
-                <select class="transfer-room-select">
+                <select class="transfer-room-select"
+                        data-help-title="選擇轉去房間"
+                        data-help="先揀目標房，再用下面轉房按鈕將病人轉去另一間房。">
                   <option value="">選擇轉去房間</option>
                   ${transferOptions}
                 </select>
-                <button class="btn-success btn-small" type="button" data-action="transferAuto" data-patient-id="${patient.id}">
+                <button class="btn-success btn-small"
+                        type="button"
+                        data-action="transferAuto"
+                        data-patient-id="${patient.id}"
+                        data-help-title="過號病人轉房（自動排位）"
+                        data-help="將過號病人轉去另一房，並重新回到候診中，由系統自動排位。">
                   轉房（自動排位）
                 </button>
-                <button class="btn-primary btn-small" type="button" data-action="transferFront" data-patient-id="${patient.id}">
+                <button class="btn-primary btn-small"
+                        type="button"
+                        data-action="transferFront"
+                        data-patient-id="${patient.id}"
+                        data-help-title="過號病人轉隊首"
+                        data-help="將過號病人轉去另一房，並直接放到新房隊首。">
                   轉隊首
                 </button>
-                <button class="btn-primary btn-small" type="button" data-action="transferTail" data-patient-id="${patient.id}">
+                <button class="btn-primary btn-small"
+                        type="button"
+                        data-action="transferTail"
+                        data-patient-id="${patient.id}"
+                        data-help-title="過號病人轉隊尾"
+                        data-help="將過號病人轉去另一房，並直接放到新房隊尾。">
                   轉隊尾
                 </button>
-                <button class="btn-danger btn-small" type="button" data-action="cancelPatient" data-patient-id="${patient.id}">
+                <button class="btn-danger btn-small"
+                        type="button"
+                        data-action="cancelPatient"
+                        data-patient-id="${patient.id}"
+                        data-help-title="取消病人"
+                        data-help="將過號病人取消並移出後續流程。">
                   取消
                 </button>
               </div>
@@ -2259,36 +2601,95 @@
         `;
 
       return `
-        <div class="room-card" data-room-id="${room.id}">
+        <div class="room-card teach-anchor" data-room-id="${room.id}"
+             data-help-title="診室卡片"
+             data-help="呢張卡代表一間房。可喺呢度睇房間狀態、現在診症中病人、候診名單、過號名單，以及直接進行管理操作。">
           <div class="room-card-header">
             <div>
-              <div class="room-no">${escapeHtml(room.roomNo)}</div>
-              <div class="doctor-name">${escapeHtml(room.doctorName)}</div>
+              <div class="room-no"
+                   data-help-title="房號"
+                   data-help="呢個係診室名稱或房號。">${escapeHtml(room.roomNo)}</div>
+              <div class="doctor-name"
+                   data-help-title="醫生名稱"
+                   data-help="顯示目前該房負責醫生。">${escapeHtml(room.doctorName)}</div>
             </div>
             <div class="status-stack">
-              <div class="status-badge ${room.status === "open" ? "status-open" : room.status === "paused" ? "status-paused" : "status-closed"}">
+              <div class="status-badge ${room.status === "open" ? "status-open" : room.status === "paused" ? "status-paused" : "status-closed"}"
+                   data-help-title="房間狀態"
+                   data-help="${room.status === "open" ? "開放中：可以正常叫號。" : room.status === "paused" ? "暫停：房間暫時停止一般診症流程。" : "已關房：病人看板會隱藏此房。"}">
                 ${room.status === "open" ? "開放中" : room.status === "paused" ? "暫停" : "已關房"}
               </div>
-              <div class="status-badge ${room.acceptingNew ? "status-accepting" : "status-stop-assign"}">
+              <div class="status-badge ${room.acceptingNew ? "status-accepting" : "status-stop-assign"}"
+                   data-help-title="派症狀態"
+                   data-help="${room.acceptingNew ? "可派症：系統可將新病人派入呢間房。" : "已截籌：停止接收新派症，但仍可顯示及處理現有病人。"}">
                 ${room.acceptingNew ? "可派症" : "已截籌"}
               </div>
             </div>
           </div>
 
           <div class="room-card-body">
-            <div class="current-box">
+            <div class="current-box"
+                 data-help-title="現在診症"
+                 data-help="顯示而家正在診症中的病人。如果房間暫停，會顯示暫停原因。">
               <div class="current-label">現在診症</div>
               ${currentDisplay}
             </div>
 
             <div class="actions" style="margin-bottom:12px;">
-              <button class="btn-primary btn-small" data-action="callNext" data-room-id="${room.id}" type="button">叫下一位</button>
-              <button class="btn-success btn-small" data-action="finishCurrent" data-room-id="${room.id}" type="button">完成診症</button>
-              <button class="btn-warning btn-small" data-action="skipCurrent" data-room-id="${room.id}" type="button">過號</button>
-              <button class="btn-secondary btn-small" data-action="setOpen" data-room-id="${room.id}" type="button">開放</button>
-              <button class="btn-secondary btn-small" data-action="setPausedWithReason" data-room-id="${room.id}" type="button">暫停</button>
-              <button class="btn-danger btn-small" data-action="setClosed" data-room-id="${room.id}" type="button">關房</button>
-              <button class="${room.acceptingNew ? "btn-warning" : "btn-success"} btn-small" data-action="toggleAcceptingNew" data-room-id="${room.id}" type="button">
+              <button class="btn-primary btn-small"
+                      data-action="callNext"
+                      data-room-id="${room.id}"
+                      type="button"
+                      data-help-title="叫下一位"
+                      data-help="將呢間房候診名單最前的一位病人轉為『診症中』。如果仍有病人診症中，就要先完成或過號。">
+                叫下一位
+              </button>
+              <button class="btn-success btn-small"
+                      data-action="finishCurrent"
+                      data-room-id="${room.id}"
+                      type="button"
+                      data-help-title="完成診症"
+                      data-help="將目前診症中的病人標記為已完成。">
+                完成診症
+              </button>
+              <button class="btn-warning btn-small"
+                      data-action="skipCurrent"
+                      data-room-id="${room.id}"
+                      type="button"
+                      data-help-title="過號"
+                      data-help="將目前診症中的病人標記為過號。之後可重叫、回原房、轉房或取消。">
+                過號
+              </button>
+              <button class="btn-secondary btn-small"
+                      data-action="setOpen"
+                      data-room-id="${room.id}"
+                      type="button"
+                      data-help-title="開放"
+                      data-help="將房間狀態設為開放，恢復正常叫號流程。">
+                開放
+              </button>
+              <button class="btn-secondary btn-small"
+                      data-action="setPausedWithReason"
+                      data-room-id="${room.id}"
+                      type="button"
+                      data-help-title="暫停"
+                      data-help="將房間狀態設為暫停。你可以先選或輸入暫停原因，例如急救中、小手術、巡房。">
+                暫停
+              </button>
+              <button class="btn-danger btn-small"
+                      data-action="setClosed"
+                      data-room-id="${room.id}"
+                      type="button"
+                      data-help-title="關房"
+                      data-help="將房間設為關房。關房後病人看板會隱藏此房。此版本容許即使仍有 active patient 都可關房。">
+                關房
+              </button>
+              <button class="${room.acceptingNew ? "btn-warning" : "btn-success"} btn-small"
+                      data-action="toggleAcceptingNew"
+                      data-room-id="${room.id}"
+                      type="button"
+                      data-help-title="${room.acceptingNew ? "截籌" : "恢復派症"}"
+                      data-help="${room.acceptingNew ? "停止接收新派症，但房間仍可顯示並處理現有病人。" : "重新開放接受新派症。"}">
                 ${room.acceptingNew ? "截籌" : "恢復派症"}
               </button>
             </div>
@@ -2301,15 +2702,37 @@
                 data-doctor-input="${room.id}"
                 style="max-width:220px;"
                 placeholder="可選或自由輸入"
+                data-help-title="更新醫生名稱"
+                data-help="可直接修改呢間房顯示的醫生名稱，然後按『更新醫生』儲存。"
               />
-              <button class="btn-secondary btn-small" data-action="updateDoctor" data-room-id="${room.id}" type="button">更新醫生</button>
-              <button class="btn-danger btn-small" data-action="deleteRoom" data-room-id="${room.id}" type="button">刪除此房 / 醫生</button>
+              <button class="btn-secondary btn-small"
+                      data-action="updateDoctor"
+                      data-room-id="${room.id}"
+                      type="button"
+                      data-help-title="更新醫生"
+                      data-help="將上面輸入框內的醫生名稱套用到此房。">
+                更新醫生
+              </button>
+              <button class="btn-danger btn-small"
+                      data-action="deleteRoom"
+                      data-room-id="${room.id}"
+                      type="button"
+                      data-help-title="刪除此房 / 醫生"
+                      data-help="只適用於完全無候診、無過號、無診症中的房間。">
+                刪除此房 / 醫生
+              </button>
             </div>
 
             <div class="form-row" style="margin-bottom:14px;">
-              <label>暫停原因（可下拉選擇或自訂）</label>
+              <label data-help-title="暫停原因"
+                     data-help="可以揀預設原因，或者自己輸入原因。暫停時會顯示喺房卡及病人看板。">
+                暫停原因（可下拉選擇或自訂）
+              </label>
               <div class="actions">
-                <select data-pause-reason-select="${room.id}" style="max-width:220px;">
+                <select data-pause-reason-select="${room.id}"
+                        style="max-width:220px;"
+                        data-help-title="選擇暫停原因"
+                        data-help="可選預設原因，例如急救中、小手術、巡房。">
                   <option value="">自訂原因</option>
                   ${PAUSE_REASON_OPTIONS.map(reason => `
                     <option value="${escapeHtml(reason)}" ${room.pauseReason === reason ? "selected" : ""}>${escapeHtml(reason)}</option>
@@ -2321,11 +2744,17 @@
                   value="${PAUSE_REASON_OPTIONS.includes(room.pauseReason || "") ? "" : escapeHtml(room.pauseReason || "")}"
                   placeholder="可自訂原因"
                   style="max-width:260px;"
+                  data-help-title="自訂暫停原因"
+                  data-help="如果預設原因唔合適，可以直接輸入你想顯示的原因。"
                 />
               </div>
             </div>
 
-            <div class="section-title">候診名單</div>
+            <div class="section-title"
+                 data-help-title="候診名單"
+                 data-help="顯示呢間房而家排緊隊的病人。可以喺右邊做設優先、移到最前、指定位置、轉房或取消。">
+              候診名單
+            </div>
             <table>
               <thead>
                 <tr>
@@ -2339,7 +2768,11 @@
               <tbody>${queueRows}</tbody>
             </table>
 
-            <div class="section-title">過號名單</div>
+            <div class="section-title"
+                 data-help-title="過號名單"
+                 data-help="顯示之前被標記為過號的病人。你可以重叫、回原房、自動轉房、轉隊首、轉隊尾或者取消。">
+              過號名單
+            </div>
             <table>
               <thead>
                 <tr>
@@ -2422,22 +2855,24 @@
           const tpl = document.createElement("template");
           tpl.innerHTML = renderRoomCardHtml(room).trim();
           const newEl = tpl.content.firstElementChild;
-          container.appendChild(newEl);
           state.roomDomMap.set(room.id, newEl);
           state.roomRenderFingerprints.set(room.id, fingerprint);
           return;
         }
 
-        if (!force && prevFingerprint === fingerprint) {
-          return;
+        if (force || prevFingerprint !== fingerprint) {
+          const tpl = document.createElement("template");
+          tpl.innerHTML = renderRoomCardHtml(room).trim();
+          const newEl = tpl.content.firstElementChild;
+          replaceElementPreserveInteractiveState(existingEl, newEl);
+          state.roomDomMap.set(room.id, newEl);
+          state.roomRenderFingerprints.set(room.id, fingerprint);
         }
+      });
 
-        const tpl = document.createElement("template");
-        tpl.innerHTML = renderRoomCardHtml(room).trim();
-        const newEl = tpl.content.firstElementChild;
-        replaceElementPreserveInteractiveState(existingEl, newEl);
-        state.roomDomMap.set(room.id, newEl);
-        state.roomRenderFingerprints.set(room.id, fingerprint);
+      rooms.forEach(room => {
+        const el = state.roomDomMap.get(room.id);
+        if (el) container.appendChild(el);
       });
     }
 
@@ -2454,9 +2889,28 @@
       const newEl = tpl.content.firstElementChild;
 
       if (!existingEl) {
-        container.appendChild(newEl);
         state.roomDomMap.set(room.id, newEl);
         state.roomRenderFingerprints.set(room.id, fingerprint);
+
+        const rooms = sortedRooms();
+        let inserted = false;
+
+        for (const candidate of rooms) {
+          if (candidate.id === room.id) continue;
+          const candidateEl = state.roomDomMap.get(candidate.id);
+          if (candidateEl) {
+            const compare = room.roomNo.localeCompare(candidate.roomNo, "zh-HK", { numeric: true });
+            if (compare < 0) {
+              container.insertBefore(newEl, candidateEl);
+              inserted = true;
+              break;
+            }
+          }
+        }
+
+        if (!inserted) {
+          container.appendChild(newEl);
+        }
         return;
       }
 
@@ -2466,6 +2920,12 @@
       replaceElementPreserveInteractiveState(existingEl, newEl);
       state.roomDomMap.set(room.id, newEl);
       state.roomRenderFingerprints.set(room.id, fingerprint);
+
+      const rooms = sortedRooms();
+      rooms.forEach(r => {
+        const el = state.roomDomMap.get(r.id);
+        if (el) container.appendChild(el);
+      });
     }
 
     function renderLightForRoomChange(roomId) {
@@ -2586,8 +3046,7 @@
           acceptingNew: true,
           queuePatientIds: [],
           skippedPatientIds: [],
-          currentPatientId: null,
-          sortOrder: state.rooms.length
+          currentPatientId: null
         };
 
         state.rooms.push(room);
@@ -2666,7 +3125,7 @@
           return;
         }
 
-        const now = hktNowIso();
+        const now = nowIso();
         const registeredAt = useCustomRegisteredAt
           ? (hktLocalDateTimeToIso(registeredAtInput) || now)
           : now;
@@ -2770,7 +3229,7 @@
         nextPatient.queueOrder = null;
 
         if (!nextPatient.calledAt) {
-          nextPatient.calledAt = hktNowIso();
+          nextPatient.calledAt = nowIso();
           addPatientLog(nextPatient, "首次叫號", `${room.roomNo} / ${room.doctorName} 已首次叫號`);
         } else {
           addPatientLog(nextPatient, "再次叫號", `${room.roomNo} / ${room.doctorName} 已再次叫號`);
@@ -2808,7 +3267,7 @@
         const patient = getPatient(room.currentPatientId);
         if (patient) {
           patient.status = "done";
-          patient.doneAt = hktNowIso();
+          patient.doneAt = nowIso();
           patient.queueOrder = null;
           addPatientLog(patient, "完成", `${room.roomNo} / ${room.doctorName} 已完成診症`);
           await savePatientToSupabase(patient);
@@ -2845,7 +3304,7 @@
         const patient = getPatient(room.currentPatientId);
         if (patient) {
           patient.status = "skipped";
-          patient.skippedAt = hktNowIso();
+          patient.skippedAt = nowIso();
           patient.queueOrder = null;
           addPatientLog(patient, "過號", `${room.roomNo} / ${room.doctorName} 已標記為過號`);
           await savePatientToSupabase(patient);
@@ -2891,7 +3350,7 @@
         patient.status = "called";
         patient.skippedAt = null;
         patient.queueOrder = null;
-        if (!patient.calledAt) patient.calledAt = hktNowIso();
+        if (!patient.calledAt) patient.calledAt = nowIso();
         addPatientLog(patient, "重叫", `${room.roomNo} / ${room.doctorName} 已重叫（人工即時處理）`);
 
         renderRoomOnly(room.id, true);
@@ -2961,7 +3420,7 @@
         }
 
         patient.status = "cancelled";
-        patient.cancelledAt = hktNowIso();
+        patient.cancelledAt = nowIso();
         patient.queueOrder = null;
 
         addPatientLog(
@@ -2985,8 +3444,7 @@
             currentPatientId: room.currentPatientId,
             acceptingNew: room.acceptingNew,
             status: room.status,
-            pauseReason: room.pauseReason,
-            sortOrder: room.sortOrder
+            pauseReason: room.pauseReason
           });
           await updateRoomInSupabase(room);
 
@@ -3390,9 +3848,9 @@
 
         const movablePatientIdSet = new Set(movablePatients.map(p => p.id));
 
-        for (const room of eligibleRooms) {
+        state.rooms.forEach(room => {
           room.queuePatientIds = room.queuePatientIds.filter(id => !movablePatientIdSet.has(id));
-        }
+        });
 
         movablePatients.forEach((patient, index) => {
           const targetRoom = eligibleRooms[index % eligibleRooms.length];
@@ -3407,15 +3865,15 @@
           );
         });
 
-        for (const room of eligibleRooms) {
+        state.rooms.forEach(room => {
           sortRoomQueue(room);
-        }
+        });
 
         renderAll(true, { resortQueues: false });
 
         await savePatientsBatchToSupabase(movablePatients);
 
-        for (const room of eligibleRooms) {
+        for (const room of state.rooms) {
           await syncRoomQueuePatients(room);
         }
 
@@ -3466,6 +3924,145 @@
       }
 
       renderPatientSearchResult(matchedPatients);
+    }
+
+    function initTeachingMode() {
+      teachTooltip.el = document.getElementById("teachTooltip");
+      teachTooltip.titleEl = document.getElementById("teachTooltipTitle");
+      teachTooltip.bodyEl = document.getElementById("teachTooltipBody");
+      teachTooltip.tipEl = document.getElementById("teachTooltipTip");
+
+      const toggle = document.getElementById("teachModeToggle");
+      const badge = document.getElementById("teachModeBadge");
+
+      function syncTeachToggleUI() {
+        toggle.checked = !!state.teachMode;
+        badge.textContent = state.teachMode ? "已開啟" : "已關閉";
+        badge.style.background = state.teachMode ? "#eff6ff" : "#f3f4f6";
+        badge.style.color = state.teachMode ? "#1d4ed8" : "#6b7280";
+        badge.style.borderColor = state.teachMode ? "#93c5fd" : "#d1d5db";
+        if (!state.teachMode) hideTeachTooltip();
+      }
+
+      toggle.addEventListener("change", () => {
+        state.teachMode = !!toggle.checked;
+        syncTeachToggleUI();
+        notify(state.teachMode ? "教學模式已開啟" : "教學模式已關閉", "info");
+      });
+
+      syncTeachToggleUI();
+
+      document.addEventListener("mouseover", handleTeachPointerEnter, true);
+      document.addEventListener("focusin", handleTeachFocusEnter, true);
+      document.addEventListener("mouseout", handleTeachPointerLeave, true);
+      document.addEventListener("focusout", handleTeachFocusLeave, true);
+      document.addEventListener("mousemove", handleTeachMouseMove, true);
+      window.addEventListener("scroll", updateTeachTooltipPosition, true);
+      window.addEventListener("resize", updateTeachTooltipPosition, true);
+    }
+
+    function getTeachTarget(el) {
+      if (!state.teachMode || !el) return null;
+      return el.closest("[data-help], [data-help-title]");
+    }
+
+    function getTeachContent(target) {
+      if (!target) return null;
+      const title = target.getAttribute("data-help-title") || "功能說明";
+      const body = target.getAttribute("data-help") || "";
+      if (!body) return null;
+      return { title, body };
+    }
+
+    function showTeachTooltip(target) {
+      if (!state.teachMode || !target) return;
+      const content = getTeachContent(target);
+      if (!content) return;
+
+      teachTooltip.activeTarget = target;
+      teachTooltip.titleEl.textContent = content.title;
+      teachTooltip.bodyEl.textContent = content.body;
+      teachTooltip.el.classList.add("show");
+      teachTooltip.el.setAttribute("aria-hidden", "false");
+
+      document.querySelectorAll(".teach-highlight").forEach(el => el.classList.remove("teach-highlight"));
+      target.classList.add("teach-highlight");
+
+      updateTeachTooltipPosition();
+    }
+
+    function hideTeachTooltip() {
+      teachTooltip.activeTarget = null;
+      if (teachTooltip.el) {
+        teachTooltip.el.classList.remove("show");
+        teachTooltip.el.setAttribute("aria-hidden", "true");
+      }
+      document.querySelectorAll(".teach-highlight").forEach(el => el.classList.remove("teach-highlight"));
+    }
+
+    function handleTeachPointerEnter(event) {
+      const target = getTeachTarget(event.target);
+      if (!target) return;
+      showTeachTooltip(target);
+    }
+
+    function handleTeachFocusEnter(event) {
+      const target = getTeachTarget(event.target);
+      if (!target) return;
+      showTeachTooltip(target);
+    }
+
+    function handleTeachPointerLeave(event) {
+      if (!teachTooltip.activeTarget) return;
+      const related = event.relatedTarget;
+      if (related && teachTooltip.activeTarget.contains(related)) return;
+
+      const nextTarget = getTeachTarget(related);
+      if (nextTarget && nextTarget === teachTooltip.activeTarget) return;
+
+      if (teachTooltip.activeTarget && event.target && teachTooltip.activeTarget.contains(event.target)) {
+        if (!nextTarget) hideTeachTooltip();
+      }
+    }
+
+    function handleTeachFocusLeave(event) {
+      const nextTarget = getTeachTarget(event.relatedTarget);
+      if (nextTarget) {
+        showTeachTooltip(nextTarget);
+        return;
+      }
+      hideTeachTooltip();
+    }
+
+    function handleTeachMouseMove(event) {
+      teachTooltip.lastMouseX = event.clientX;
+      teachTooltip.lastMouseY = event.clientY;
+      if (teachTooltip.activeTarget) {
+        updateTeachTooltipPosition();
+      }
+    }
+
+    function updateTeachTooltipPosition() {
+      if (!teachTooltip.el || !teachTooltip.activeTarget || !state.teachMode) return;
+
+      const pad = 14;
+      const offset = 18;
+      const rect = teachTooltip.el.getBoundingClientRect();
+      let x = teachTooltip.lastMouseX + offset;
+      let y = teachTooltip.lastMouseY + offset;
+
+      const maxX = window.innerWidth - rect.width - pad;
+      const maxY = window.innerHeight - rect.height - pad;
+
+      if (x > maxX) x = teachTooltip.lastMouseX - rect.width - offset;
+      if (y > maxY) y = teachTooltip.lastMouseY - rect.height - offset;
+
+      if (x < pad) x = pad;
+      if (y < pad) y = pad;
+
+      teachTooltip.el.style.left = `${x}px`;
+      teachTooltip.el.style.top = `${y}px`;
+      teachTooltip.el.style.transform = "none";
     }
 
     document.addEventListener("click", (event) => {
@@ -3679,6 +4276,7 @@
     }
 
     async function initApp() {
+      initTeachingMode();
       state.currentTab = "staffPage";
       document.getElementById("registeredAt").value = toHktDateTimeLocalValue(new Date());
       refreshInsertModeFields();
