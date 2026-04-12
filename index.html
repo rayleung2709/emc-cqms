@@ -441,12 +441,14 @@
 
     .toast {
       min-width: 240px;
-      max-width: 420px;
+      max-width: 520px;
       padding: 12px 14px;
       border-radius: 14px;
       color: #fff;
       font-weight: 800;
       box-shadow: var(--shadow);
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
     .toast.success { background: #16a34a; }
@@ -1053,6 +1055,21 @@
     let queuedRefresh = false;
     let softRefreshTimer = null;
 
+    function debugLog(...args) {
+      console.log("[CQMS DEBUG]", ...args);
+    }
+
+    function formatSupabaseError(error) {
+      if (!error) return "unknown error";
+      if (typeof error === "string") return error;
+      const parts = [];
+      if (error.message) parts.push(`message: ${error.message}`);
+      if (error.code) parts.push(`code: ${error.code}`);
+      if (error.details) parts.push(`details: ${error.details}`);
+      if (error.hint) parts.push(`hint: ${error.hint}`);
+      return parts.join(" | ") || JSON.stringify(error);
+    }
+
     function markUiBusy(ms = 2200) {
       state.uiBusyUntil = Date.now() + ms;
     }
@@ -1164,7 +1181,7 @@
       el.className = "toast " + type;
       el.textContent = message;
       wrap.appendChild(el);
-      setTimeout(() => el.remove(), 2800);
+      setTimeout(() => el.remove(), 4200);
     }
 
     function setDisplayModeByTab(tabId) {
@@ -1607,7 +1624,7 @@
         return true;
       } catch (error) {
         console.error("Failed to load from Supabase:", error);
-        if (showErrorToast) notify("讀取雲端資料失敗", "error");
+        if (showErrorToast) notify("讀取雲端資料失敗\n" + formatSupabaseError(error), "error");
         return false;
       }
     }
@@ -1624,8 +1641,14 @@
         sort_order: room.sortOrder ?? 0
       };
 
-      const { error } = await sb.from("rooms").upsert(payload);
-      if (error) throw error;
+      const { data, error } = await sb.from("rooms").upsert(payload).select();
+      if (error) {
+        console.error("saveRoomToSupabase failed");
+        console.error("payload:", payload);
+        console.error("error:", error);
+        throw error;
+      }
+      return data;
     }
 
     async function updateRoomInSupabase(room) {
@@ -1639,8 +1662,17 @@
         sort_order: room.sortOrder ?? 0
       };
 
-      const { error } = await sb.from("rooms").update(payload).eq("id", room.id);
-      if (error) throw error;
+      const { data, error } = await sb.from("rooms").update(payload).eq("id", room.id).select();
+
+      if (error) {
+        console.error("updateRoomInSupabase failed");
+        console.error("room:", room);
+        console.error("payload:", payload);
+        console.error("error:", error);
+        throw error;
+      }
+
+      return data;
     }
 
     function toPatientPayload(patient) {
@@ -1668,15 +1700,31 @@
 
     async function savePatientToSupabase(patient) {
       const payload = toPatientPayload(patient);
-      const { error } = await sb.from("patients").upsert(payload);
-      if (error) throw error;
+      const { data, error } = await sb.from("patients").upsert(payload).select();
+
+      if (error) {
+        console.error("savePatientToSupabase failed");
+        console.error("payload:", payload);
+        console.error("error:", error);
+        throw error;
+      }
+
+      return data;
     }
 
     async function savePatientsBatchToSupabase(patients) {
       if (!patients || !patients.length) return;
       const payload = patients.map(toPatientPayload);
-      const { error } = await sb.from("patients").upsert(payload);
-      if (error) throw error;
+      const { data, error } = await sb.from("patients").upsert(payload).select();
+
+      if (error) {
+        console.error("savePatientsBatchToSupabase failed");
+        console.error("payload:", payload);
+        console.error("error:", error);
+        throw error;
+      }
+
+      return data;
     }
 
     async function deleteRoomFromSupabase(roomId) {
@@ -1686,6 +1734,11 @@
 
     async function syncRoomQueuePatients(room) {
       const waitingPatients = getOrderedWaitingPatients(room);
+      debugLog("syncRoomQueuePatients", room.roomNo, waitingPatients.map(p => ({
+        ticketNo: p.ticketNo,
+        status: p.status,
+        queueOrder: p.queueOrder
+      })));
       await savePatientsBatchToSupabase(waitingPatients);
     }
 
@@ -2550,7 +2603,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("新增診室失敗", "error");
+        notify("新增診室失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -2680,7 +2733,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("新增病人失敗", "error");
+        notify("新增病人失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -2737,7 +2790,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("叫號失敗", "error");
+        notify("叫號失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -2774,7 +2827,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("完成診症失敗", "error");
+        notify("完成診症失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -2810,7 +2863,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("過號失敗", "error");
+        notify("過號失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -2853,7 +2906,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("重叫失敗", "error");
+        notify("重叫失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -2884,7 +2937,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("回隊失敗", "error");
+        notify("回隊失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -2894,7 +2947,11 @@
         markUiBusy(2600);
 
         const patient = getPatient(patientId);
-        if (!patient) return;
+        if (!patient) {
+          notify("找不到病人", "error");
+          return;
+        }
+
         const room = getRoom(patient.roomId);
 
         if (room) {
@@ -2906,27 +2963,42 @@
         patient.status = "cancelled";
         patient.cancelledAt = hktNowIso();
         patient.queueOrder = null;
-        addPatientLog(patient, "取消", `病人已取消輪候${room ? `（原診室：${room.roomNo} / ${room.doctorName}）` : ""}`);
 
-        if (room) {
-          renderRoomOnly(room.id, true);
-        }
+        addPatientLog(
+          patient,
+          "取消",
+          `病人已取消輪候${room ? `（原診室：${room.roomNo} / ${room.doctorName}）` : ""}`
+        );
+
+        if (room) renderRoomOnly(room.id, true);
         renderDisplayBoard(true);
         populateRoomSelect();
         populateSearchRoomSelect();
 
+        debugLog("cancelPatient STEP 1 save patient", toPatientPayload(patient));
+        await savePatientToSupabase(patient);
+
         if (room) {
+          debugLog("cancelPatient STEP 2 update room", {
+            id: room.id,
+            roomNo: room.roomNo,
+            currentPatientId: room.currentPatientId,
+            acceptingNew: room.acceptingNew,
+            status: room.status,
+            pauseReason: room.pauseReason,
+            sortOrder: room.sortOrder
+          });
           await updateRoomInSupabase(room);
+
+          debugLog("cancelPatient STEP 3 sync room queue", room.roomNo);
           await syncRoomQueuePatients(room);
         }
-
-        await savePatientToSupabase(patient);
 
         notify(`${patient.ticketNo} 已取消`, "warning");
         scheduleSoftCloudRefresh();
       } catch (error) {
-        console.error(error);
-        notify("取消病人失敗", "error");
+        console.error("cancelPatient error:", error);
+        notify("取消病人失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -2974,7 +3046,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("更新醫療優先失敗", "error");
+        notify("更新醫療優先失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -3005,7 +3077,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("移到最前失敗", "error");
+        notify("移到最前失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -3038,7 +3110,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("指定位置失敗", "error");
+        notify("指定位置失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -3131,7 +3203,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("轉房失敗", "error");
+        notify("轉房失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -3161,7 +3233,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("更新房間狀態失敗", "error");
+        notify("更新房間狀態失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -3191,7 +3263,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("設定暫停失敗", "error");
+        notify("設定暫停失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -3217,7 +3289,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("更新截籌狀態失敗", "error");
+        notify("更新截籌狀態失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -3246,7 +3318,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("更新醫生名稱失敗", "error");
+        notify("更新醫生名稱失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -3276,7 +3348,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("刪除房間失敗", "error");
+        notify("刪除房間失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -3351,7 +3423,7 @@
         scheduleSoftCloudRefresh();
       } catch (error) {
         console.error(error);
-        notify("平均分流失敗", "error");
+        notify("平均分流失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
