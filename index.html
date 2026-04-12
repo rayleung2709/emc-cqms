@@ -2988,7 +2988,7 @@
                     <span class="pill ${patient.initialAssignmentMode === "manual" ? "pill-manual" : "pill-auto-assign"}">
                       ${patient.initialAssignmentMode === "manual" ? "手動派房" : "自動派房"}
                     </span>
-                    ${patient.manualLock ? `<span class="pill pill-locked">已鎖定</span>` : ``}
+                    ${patient.manualLock ? `<span class="pill pill-locked">指定轉房</span>` : ``}
                   </div>
                   <div class="queue-time">${escapeHtml(formatDateTime(patient.registeredAt))}</div>
                 </div>
@@ -3390,7 +3390,7 @@
               <thead>
                 <tr>
                   <th style="width:78px;">位置</th>
-                  <th>CUMC號碼 / 病人資訊</th>
+                  <th>CUMC號碼</th>
                   <th style="width:320px;">操作</th>
                 </tr>
               </thead>
