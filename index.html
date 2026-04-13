@@ -2924,7 +2924,7 @@ function renderRoomCardHtml(room) {
                 </div>
 
                 <div class="more-actions-line">
-                  <button class="btn-primary btn-small" type="button" data-action="transferFront" data-patient-id="${patient.id}">轉房</button>
+                  <button class="btn-primary btn-small" type="button" data-action="transferFront" data-patient-id="${patient.id}">轉房並排隊首</button>
                   <button class="btn-danger btn-small" type="button" data-action="cancelPatient" data-patient-id="${patient.id}">取消輪候</button>
                 </div>
               </div>
@@ -3049,9 +3049,9 @@ function renderRoomCardHtml(room) {
           <tbody>${queueRows}</tbody>
         </table>
 
-        <div class="section-title">回診等候</div>
+        <div class="section-title">回診名單</div>
         <div class="review-box">
-          <div class="review-box-title">已見醫生一次，完成檢查 / 處置後等候再次見醫生</div>
+          <div class="review-box-title">醫生已初診，等待完成檢查或處理，後再次見醫生</div>
           <table>
             <thead>
               <tr>
