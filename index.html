@@ -54,6 +54,9 @@ body.display-mode {
   background: var(--board-bg);
   overflow: auto;
 }
+body.modal-open {
+  overflow: hidden;
+}
 
 .app {
   max-width: 1680px;
@@ -1135,6 +1138,94 @@ body.display-mode .info-card {
   line-height: 1.5;
 }
 
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  z-index: 30000;
+}
+.modal-backdrop.show {
+  display: flex;
+}
+.modal-card {
+  width: min(760px, 100%);
+  max-height: min(90vh, 860px);
+  overflow: auto;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.28);
+  border: 1px solid #dbe3ee;
+}
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 18px 18px 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+.modal-subtitle {
+  margin-top: 6px;
+  color: #475569;
+  font-weight: 800;
+  line-height: 1.45;
+}
+.modal-close-btn {
+  background: #e2e8f0;
+  color: #0f172a;
+  border-radius: 999px;
+  min-width: 42px;
+  min-height: 42px;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.modal-body {
+  padding: 16px 18px 18px;
+}
+.activity-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.activity-chip {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #334155;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.86rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+.activity-chip:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+.modal-note {
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.45;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
 @media (max-width: 1600px) {
   .board-title { font-size: 2.15rem; }
   .board-time { font-size: 1.35rem; }
@@ -1194,6 +1285,7 @@ body.display-mode .info-card {
     border-top-right-radius: 0 !important;
   }
   .more-actions-line { grid-template-columns: 1fr; }
+  .modal-card { width: 100%; }
 }
 </style>
 </head>
@@ -1208,6 +1300,40 @@ body.display-mode .info-card {
 <div class="hover-log-tooltip" id="hoverLogTooltip" aria-hidden="true">
   <div class="hover-log-title" id="hoverLogTitle"></div>
   <div class="hover-log-list" id="hoverLogList"></div>
+</div>
+
+<div class="modal-backdrop" id="clinicalActivityModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="clinicalActivityModalTitle">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="clinicalActivityModalTitle">新增臨床活動</div>
+        <div class="modal-subtitle" id="clinicalActivityPatientInfo">—</div>
+      </div>
+      <button class="modal-close-btn" id="closeClinicalActivityModalBtn" type="button" aria-label="關閉">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label>常用臨床活動</label>
+        <div class="activity-chip-row" id="clinicalActivityPresetWrap"></div>
+        <div class="modal-note">可按常用選項快速填入，之後再自行修改。</div>
+      </div>
+
+      <div class="form-row" style="margin-top:14px;">
+        <label for="clinicalActivityInput">臨床活動</label>
+        <textarea id="clinicalActivityInput" placeholder="例如：去做檢查、去打針、安排入院"></textarea>
+      </div>
+
+      <div class="form-row" style="margin-top:14px;">
+        <label for="clinicalActivityDetails">補充說明（可留空）</label>
+        <input id="clinicalActivityDetails" type="text" placeholder="例如：已送往 X-ray、等候內科病房、等候抽血結果" />
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" id="cancelClinicalActivityBtn" type="button">取消</button>
+        <button class="btn-primary" id="saveClinicalActivityBtn" type="button">儲存臨床活動</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="app">
@@ -1463,6 +1589,19 @@ const DOCTOR_SUGGESTIONS = [
 ];
 
 const PAUSE_REASON_OPTIONS = ["急救中 Resus", "小手術 Procedure", "巡房 Ward"];
+const CLINICAL_ACTIVITY_PRESETS = [
+  "去做檢查",
+  "去打針",
+  "去抽血",
+  "去照 X-ray",
+  "去做 CT",
+  "去做 ECG",
+  "去做超聲波",
+  "去見專科",
+  "安排入院",
+  "等候報告",
+  "已返回診室"
+];
 const DEBUG = false;
 
 const state = {
@@ -1504,6 +1643,16 @@ const hoverLogTooltip = {
   activePatientId: null,
   lastMouseX: 0,
   lastMouseY: 0
+};
+
+const clinicalActivityModal = {
+  el: null,
+  patientInfoEl: null,
+  activityInputEl: null,
+  detailsInputEl: null,
+  presetWrapEl: null,
+  saveBtnEl: null,
+  patientId: null
 };
 
 function debugLog(...args) {
@@ -1637,6 +1786,22 @@ function addPatientLog(patient, action, details = "") {
     action,
     details
   });
+}
+function ensureClinicalLogs(patient) {
+  if (!Array.isArray(patient.clinicalLogs)) patient.clinicalLogs = [];
+}
+function addClinicalLog(patient, activity, details = "") {
+  if (!patient) return;
+  ensureClinicalLogs(patient);
+  patient.clinicalLogs.unshift({
+    time: nowIso(),
+    activity,
+    details
+  });
+}
+function getLatestClinicalLog(patient) {
+  const logs = Array.isArray(patient?.clinicalLogs) ? patient.clinicalLogs : [];
+  return logs.length ? logs[0] : null;
 }
 function getRoomDisplayShort(roomNo) {
   return String(roomNo || "").replace(/號房/g, "").trim() || String(roomNo || "");
@@ -2123,14 +2288,25 @@ function renderPatientSearchDetail(patient) {
     queuePosition = "回診區";
   }
 
-  const historyHtml = (patient.logs || []).length
+  const queueHistoryHtml = (patient.logs || []).length
     ? patient.logs.map(log => `
       <div class="history-item">
         <div class="history-time">${escapeHtml(formatDateTime(log.time))}</div>
         <div class="history-text">${escapeHtml(log.action)}${log.details ? `：${escapeHtml(log.details)}` : ""}</div>
       </div>
     `).join("")
-    : `<div class="muted">暫無操作紀錄</div>`;
+    : `<div class="muted">暫無排隊活動紀錄</div>`;
+
+  const clinicalHistoryHtml = (patient.clinicalLogs || []).length
+    ? patient.clinicalLogs.map(log => `
+      <div class="history-item">
+        <div class="history-time">${escapeHtml(formatDateTime(log.time))}</div>
+        <div class="history-text">${escapeHtml(log.activity)}${log.details ? `：${escapeHtml(log.details)}` : ""}</div>
+      </div>
+    `).join("")
+    : `<div class="muted">暫無臨床活動紀錄</div>`;
+
+  const latestClinical = getLatestClinicalLog(patient);
 
   const html = `
     ${renderSearchSummary(`已找到病人資料：${getPatientDisplayNo(patient)}`)}
@@ -2145,6 +2321,7 @@ function renderPatientSearchDetail(patient) {
         <div><strong>手動轉房鎖定：</strong>${patient.manualLock ? `是${patient.manualLockReason ? `（${escapeHtml(patient.manualLockReason)}）` : ""}` : "否"}</div>
         <div><strong>登記時間（HKT）：</strong>${escapeHtml(formatDateTime(patient.registeredAt))}</div>
         <div><strong>系統記錄建立時間：</strong>${escapeHtml(formatDateTime(patient.createdAt))}</div>
+        <div><strong>最近臨床活動：</strong>${latestClinical ? escapeHtml(`${formatDateTime(latestClinical.time)}｜${latestClinical.activity}${latestClinical.details ? `：${latestClinical.details}` : ""}`) : "—"}</div>
         <div><strong>首次叫號時間：</strong>${escapeHtml(formatDateTime(patient.calledAt))}</div>
         <div><strong>過號時間：</strong>${escapeHtml(formatDateTime(patient.skippedAt))}</div>
         <div><strong>完成時間：</strong>${escapeHtml(formatDateTime(patient.doneAt))}</div>
@@ -2153,8 +2330,13 @@ function renderPatientSearchDetail(patient) {
       </div>
 
       <div class="history-list">
-        <div class="section-title" style="margin-top:0;">操作紀錄</div>
-        ${historyHtml}
+        <div class="section-title" style="margin-top:0;">排隊活動紀錄</div>
+        ${queueHistoryHtml}
+      </div>
+
+      <div class="history-list">
+        <div class="section-title" style="margin-top:0;">臨床活動紀錄</div>
+        ${clinicalHistoryHtml}
       </div>
     </div>
   `;
@@ -2511,15 +2693,27 @@ function getRoomFingerprint(room) {
     acceptingNew: room.acceptingNew,
     currentPatientId: room.currentPatientId,
     currentPatientTicket: currentPatient ? getPatientDisplayNo(currentPatient) : null,
-    waiting: waitingPatients.map(p => ({
-      id: p.id, t: getPatientDisplayNo(p), q: p.queueOrder, pr: p.priority, s: p.status, src: p.sourceType, reg: p.registeredAt
-    })),
-    review: reviewPatients.map(p => ({
-      id: p.id, t: getPatientDisplayNo(p), pr: p.priority, s: p.status, src: p.sourceType, reg: p.registeredAt
-    })),
-    skipped: skippedPatients.map(p => ({
-      id: p.id, t: getPatientDisplayNo(p), pr: p.priority, s: p.status, sk: p.skippedAt
-    }))
+    waiting: waitingPatients.map(p => {
+      const latestClinical = getLatestClinicalLog(p);
+      return {
+        id: p.id, t: getPatientDisplayNo(p), q: p.queueOrder, pr: p.priority, s: p.status, src: p.sourceType, reg: p.registeredAt,
+        cla: latestClinical?.activity || null, cld: latestClinical?.details || null, clt: latestClinical?.time || null
+      };
+    }),
+    review: reviewPatients.map(p => {
+      const latestClinical = getLatestClinicalLog(p);
+      return {
+        id: p.id, t: getPatientDisplayNo(p), pr: p.priority, s: p.status, src: p.sourceType, reg: p.registeredAt,
+        cla: latestClinical?.activity || null, cld: latestClinical?.details || null, clt: latestClinical?.time || null
+      };
+    }),
+    skipped: skippedPatients.map(p => {
+      const latestClinical = getLatestClinicalLog(p);
+      return {
+        id: p.id, t: getPatientDisplayNo(p), pr: p.priority, s: p.status, sk: p.skippedAt,
+        cla: latestClinical?.activity || null, cld: latestClinical?.details || null, clt: latestClinical?.time || null
+      };
+    })
   });
 }
 function getTransferOptionsHtml(room) {
@@ -2541,6 +2735,7 @@ function renderPatientHoverLogAttrs(patient) {
   return `data-hover-log="${payload}"`;
 }
 function renderPatientInfoBlock(patient, extraPills = "") {
+  const latestClinical = getLatestClinicalLog(patient);
   return `
     <div class="ticket-block">
       <div class="queue-ticket-row">
@@ -2556,6 +2751,14 @@ function renderPatientInfoBlock(patient, extraPills = "") {
           ${extraPills}
         </div>
         <div class="queue-time">${escapeHtml(formatDateTime(patient.registeredAt))}</div>
+        ${
+          latestClinical
+            ? `
+              <div class="queue-time">${escapeHtml(formatDateTime(latestClinical.time))}</div>
+              <div class="queue-time">臨床活動：${escapeHtml(latestClinical.activity)}${latestClinical.details ? `：${escapeHtml(latestClinical.details)}` : ""}</div>
+            `
+            : ""
+        }
       </div>
     </div>
   `;
@@ -2586,6 +2789,7 @@ function renderRoomCardHtml(room) {
                 ${patient.priority ? "改為 Cat 3" : "改為 Cat 2"}
               </button>
               <button class="btn-secondary btn-small" type="button" data-action="moveWaitingToReview" data-patient-id="${patient.id}">轉回診</button>
+              <button class="btn-secondary btn-small" type="button" data-action="openClinicalActivity" data-patient-id="${patient.id}">臨床活動</button>
               <button class="btn-secondary btn-small more-toggle-btn" type="button" data-more-toggle="${patient.id}">更多操作</button>
             </div>
 
@@ -2636,6 +2840,7 @@ function renderRoomCardHtml(room) {
               <button class="btn-warning btn-small" type="button" data-action="togglePriority" data-patient-id="${patient.id}">
                 ${patient.priority ? "改為 Cat 3" : "改為 Cat 2"}
               </button>
+              <button class="btn-secondary btn-small" type="button" data-action="openClinicalActivity" data-patient-id="${patient.id}">臨床活動</button>
               <button class="btn-secondary btn-small more-toggle-btn" type="button" data-more-toggle="${patient.id}">更多操作</button>
             </div>
 
@@ -2669,6 +2874,7 @@ function renderRoomCardHtml(room) {
           <div class="main-actions">
             <button class="btn-primary btn-small" type="button" data-action="recallSkipped" data-patient-id="${patient.id}">重新叫號</button>
             <button class="btn-success btn-small" type="button" data-action="requeueSkipped" data-patient-id="${patient.id}">返回原房</button>
+            <button class="btn-secondary btn-small" type="button" data-action="openClinicalActivity" data-patient-id="${patient.id}">臨床活動</button>
             <button class="btn-secondary btn-small more-toggle-btn" type="button" data-more-toggle="${patient.id}">更多操作</button>
           </div>
 
@@ -2768,7 +2974,7 @@ function renderRoomCardHtml(room) {
             <tr>
               <th style="width:78px;">位置</th>
               <th>CUMC 號碼</th>
-              <th style="width:360px;">操作</th>
+              <th style="width:430px;">操作</th>
             </tr>
           </thead>
           <tbody>${queueRows}</tbody>
@@ -2781,7 +2987,7 @@ function renderRoomCardHtml(room) {
             <thead>
               <tr>
                 <th>CUMC 號碼 / 病人資訊</th>
-                <th style="width:360px;">操作</th>
+                <th style="width:430px;">操作</th>
               </tr>
             </thead>
             <tbody>${reviewRows}</tbody>
@@ -2793,7 +2999,7 @@ function renderRoomCardHtml(room) {
           <thead>
             <tr>
               <th>CUMC 號碼 / 病人資訊</th>
-              <th style="width:360px;">操作</th>
+              <th style="width:430px;">操作</th>
             </tr>
           </thead>
           <tbody>${skippedRows}</tbody>
@@ -3043,7 +3249,8 @@ async function loadStateFromSupabase(showErrorToast = true) {
       initialAssignmentMode: patient.initial_assignment_mode || "auto",
       manualLock: !!patient.manual_lock,
       manualLockReason: patient.manual_lock_reason || "",
-      logs: Array.isArray(patient.logs_json) ? patient.logs_json : []
+      logs: Array.isArray(patient.logs_json) ? patient.logs_json : [],
+      clinicalLogs: Array.isArray(patient.clinical_logs_json) ? patient.clinical_logs_json : []
     }));
 
     state.rooms.forEach(room => {
@@ -3115,7 +3322,8 @@ function toPatientPayload(patient) {
     initial_assignment_mode: patient.initialAssignmentMode || "auto",
     manual_lock: !!patient.manualLock,
     manual_lock_reason: patient.manualLockReason || null,
-    logs_json: Array.isArray(patient.logs) ? patient.logs : []
+    logs_json: Array.isArray(patient.logs) ? patient.logs : [],
+    clinical_logs_json: Array.isArray(patient.clinicalLogs) ? patient.clinicalLogs : []
   };
 }
 async function savePatientToSupabase(patient) {
@@ -3308,7 +3516,8 @@ async function addPatient() {
       initialAssignmentMode: assignMode === "manual" ? "manual" : "auto",
       manualLock: false,
       manualLockReason: "",
-      logs: []
+      logs: [],
+      clinicalLogs: []
     };
 
     addPatientLog(
@@ -3383,9 +3592,9 @@ async function callNextPatient(roomId) {
 
     if (!nextPatient.calledAt) {
       nextPatient.calledAt = nowIso();
-      addPatientLog(nextPatient, "首次叫號", `${room.roomNo} / ${room.doctorName} 已首次叫號`);
+      addPatientLog(nextPatient, "醫生叫號", `${room.roomNo} / ${room.doctorName} 首次叫號`);
     } else {
-      addPatientLog(nextPatient, "重新叫號", `${room.roomNo} / ${room.doctorName} 已重新叫號`);
+      addPatientLog(nextPatient, "醫生再次叫號", `${room.roomNo} / ${room.doctorName} 再次叫號`);
     }
 
     sortRoomQueue(room);
@@ -3569,7 +3778,7 @@ async function callReviewPatient(patientId) {
     patient.status = "called";
     patient.queueOrder = null;
     if (!patient.calledAt) patient.calledAt = nowIso();
-    addPatientLog(patient, "回診叫號", `${room.roomNo} / ${room.doctorName} 已由回診區叫號`);
+    addPatientLog(patient, "醫生回診叫號", `${room.roomNo} / ${room.doctorName} 已由回診等候叫號`);
 
     renderRoomOnly(room.id, true);
     renderDisplayBoard(true);
@@ -3669,7 +3878,7 @@ async function recallSkipped(patientId) {
     patient.skippedAt = null;
     patient.queueOrder = null;
     if (!patient.calledAt) patient.calledAt = nowIso();
-    addPatientLog(patient, "重新叫號", `${room.roomNo} / ${room.doctorName} 已重新叫號`);
+    addPatientLog(patient, "醫生重新叫號", `${room.roomNo} / ${room.doctorName} 已為過號病人重新叫號`);
 
     renderRoomOnly(room.id, true);
     renderDisplayBoard(true);
@@ -4357,7 +4566,7 @@ function showHoverLogTooltip(target) {
 
   hoverLogTooltip.activeTarget = target;
   hoverLogTooltip.activePatientId = data.patientId || null;
-  hoverLogTooltip.titleEl.textContent = `${data.ticketNo || "病人"} 最近 5 項操作紀錄`;
+  hoverLogTooltip.titleEl.textContent = `${data.ticketNo || "病人"} 最近 5 項排隊活動紀錄`;
 
   const logs = Array.isArray(data.logs) ? data.logs.slice(0, 5) : [];
   hoverLogTooltip.listEl.innerHTML = logs.length
@@ -4367,7 +4576,7 @@ function showHoverLogTooltip(target) {
         <div class="hover-log-text">${escapeHtml(log.action || "")}${log.details ? `：${escapeHtml(log.details)}` : ""}</div>
       </div>
     `).join("")
-    : `<div class="hover-log-empty">暫無操作紀錄</div>`;
+    : `<div class="hover-log-empty">暫無排隊活動紀錄</div>`;
 
   hoverLogTooltip.el.classList.add("show");
   hoverLogTooltip.el.setAttribute("aria-hidden", "false");
@@ -4413,7 +4622,102 @@ function updateHoverLogTooltipPosition() {
   hoverLogTooltip.el.style.top = `${y}px`;
 }
 
+function initClinicalActivityModal() {
+  clinicalActivityModal.el = document.getElementById("clinicalActivityModal");
+  clinicalActivityModal.patientInfoEl = document.getElementById("clinicalActivityPatientInfo");
+  clinicalActivityModal.activityInputEl = document.getElementById("clinicalActivityInput");
+  clinicalActivityModal.detailsInputEl = document.getElementById("clinicalActivityDetails");
+  clinicalActivityModal.presetWrapEl = document.getElementById("clinicalActivityPresetWrap");
+  clinicalActivityModal.saveBtnEl = document.getElementById("saveClinicalActivityBtn");
+
+  clinicalActivityModal.presetWrapEl.innerHTML = CLINICAL_ACTIVITY_PRESETS.map(item => `
+    <button class="activity-chip" type="button" data-clinical-preset="${escapeHtml(item)}">${escapeHtml(item)}</button>
+  `).join("");
+
+  document.getElementById("closeClinicalActivityModalBtn").addEventListener("click", closeClinicalActivityModal);
+  document.getElementById("cancelClinicalActivityBtn").addEventListener("click", closeClinicalActivityModal);
+  clinicalActivityModal.el.addEventListener("click", (event) => {
+    if (event.target === clinicalActivityModal.el) closeClinicalActivityModal();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && clinicalActivityModal.el.classList.contains("show")) {
+      closeClinicalActivityModal();
+    }
+  });
+  clinicalActivityModal.saveBtnEl.addEventListener("click", (event) => withButtonLoading(event.currentTarget, saveClinicalActivityFromModal));
+}
+function openClinicalActivityModal(patientId) {
+  const patient = getPatient(patientId);
+  if (!patient) {
+    notify("找不到病人", "error");
+    return;
+  }
+
+  clinicalActivityModal.patientId = patientId;
+  const room = getRoom(patient.roomId);
+  clinicalActivityModal.patientInfoEl.textContent = `${getPatientDisplayNo(patient)}${room ? `｜${room.roomNo} / ${room.doctorName}` : ""}`;
+  clinicalActivityModal.activityInputEl.value = "";
+  clinicalActivityModal.detailsInputEl.value = "";
+  clinicalActivityModal.el.classList.add("show");
+  clinicalActivityModal.el.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+  setTimeout(() => {
+    clinicalActivityModal.activityInputEl.focus();
+  }, 0);
+}
+function closeClinicalActivityModal() {
+  clinicalActivityModal.patientId = null;
+  clinicalActivityModal.el.classList.remove("show");
+  clinicalActivityModal.el.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
+}
+async function saveClinicalActivityFromModal() {
+  try {
+    markUiBusy(2600);
+    const patient = getPatient(clinicalActivityModal.patientId);
+    if (!patient) {
+      notify("找不到病人", "error");
+      return;
+    }
+
+    const activity = String(clinicalActivityModal.activityInputEl.value || "").trim();
+    const details = String(clinicalActivityModal.detailsInputEl.value || "").trim();
+
+    if (!activity) {
+      notify("請輸入臨床活動", "warning");
+      clinicalActivityModal.activityInputEl.focus();
+      return;
+    }
+
+    addClinicalLog(patient, activity, details);
+    const room = getRoom(patient.roomId);
+
+    if (room) renderRoomOnly(room.id, true);
+    renderDisplayBoard(true);
+
+    await savePatientToSupabase(patient);
+
+    closeClinicalActivityModal();
+    notify(`已新增臨床活動：${activity}`, "success");
+    await refreshFromCloudAndRender(false);
+  } catch (error) {
+    console.error(error);
+    notify("新增臨床活動失敗\n" + formatSupabaseError(error), "error");
+    refreshFromCloudAndRender(false);
+  }
+}
+
 document.addEventListener("click", (event) => {
+  const presetBtn = event.target.closest("[data-clinical-preset]");
+  if (presetBtn) {
+    const value = presetBtn.getAttribute("data-clinical-preset") || "";
+    if (clinicalActivityModal.activityInputEl) {
+      clinicalActivityModal.activityInputEl.value = value;
+      clinicalActivityModal.activityInputEl.focus();
+    }
+    return;
+  }
+
   const moreToggle = event.target.closest("[data-more-toggle]");
   if (moreToggle) {
     const key = moreToggle.getAttribute("data-more-toggle");
@@ -4488,6 +4792,7 @@ document.addEventListener("click", (event) => {
   if (action === "moveToFront") return withButtonLoading(btn, () => moveToFront(patientId));
   if (action === "insertAtPosition") return withButtonLoading(btn, () => insertWaitingPatientAtPosition(patientId));
   if (action === "moveWaitingToReview") return withButtonLoading(btn, () => moveWaitingToReview(patientId));
+  if (action === "openClinicalActivity") return openClinicalActivityModal(patientId);
   if (action === "callReviewPatient") return withButtonLoading(btn, () => callReviewPatient(patientId));
   if (action === "returnReviewToWaiting") return withButtonLoading(btn, () => returnReviewToWaiting(patientId));
   if (action === "finishReviewPatient") return withButtonLoading(btn, () => finishReviewPatient(patientId));
@@ -4681,6 +4986,7 @@ async function setupRealtimeAndPolling() {
 async function initApp() {
   initTeachingMode();
   initHoverLogTooltip();
+  initClinicalActivityModal();
   state.currentTab = "staffPage";
   document.getElementById("registeredAt").value = toHktDateTimeLocalValue(new Date());
   refreshInsertModeFields();
