@@ -3007,14 +3007,14 @@ function renderRoomCardHtml(room) {
 
         <div class="actions" style="margin-bottom:12px;">
           <button class="btn-primary btn-small" data-action="callNext" data-room-id="${room.id}" type="button">叫號</button>
+          <button class="btn-secondary btn-small" data-action="moveCurrentToReview" data-room-id="${room.id}" type="button">轉回診</button>
           <button class="btn-success btn-small" data-action="finishCurrent" data-room-id="${room.id}" type="button">完成</button>
           <button class="btn-warning btn-small" data-action="skipCurrent" data-room-id="${room.id}" type="button">過號</button>
-          <button class="btn-secondary btn-small" data-action="moveCurrentToReview" data-room-id="${room.id}" type="button">轉回診</button>
           <button class="btn-secondary btn-small" data-action="setOpen" data-room-id="${room.id}" type="button">開放</button>
           <button class="btn-secondary btn-small" data-action="setPausedWithReason" data-room-id="${room.id}" type="button">暫停</button>
-          <button class="btn-danger btn-small" data-action="setClosed" data-room-id="${room.id}" type="button">關閉</button>
           <button class="${room.acceptingNew ? "btn-warning" : "btn-success"} btn-small" data-action="toggleAcceptingNew" data-room-id="${room.id}" type="button">
             ${room.acceptingNew ? "停止收新症" : "恢復收新症"}
+          <button class="btn-danger btn-small" data-action="setClosed" data-room-id="${room.id}" type="button">關閉</button>
           </button>
         </div>
 
