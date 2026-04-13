@@ -1441,12 +1441,12 @@ body.display-mode .info-card {
 
     <div id="loggedOutView">
       <div class="form-row" style="margin-bottom:8px;">
-        <label for="loginEmail">Email</label>
+        <label for="loginEmail">CUMC 電郵</label>
         <input id="loginEmail" type="email" placeholder="試玩: petertmchan@cuhkmc.hk" autocomplete="username" />
       </div>
 
       <div class="form-row" style="margin-bottom:10px;">
-        <label for="loginPassword">Password</label>
+        <label for="loginPassword">密碼</label>
         <input id="loginPassword" type="password" placeholder="試玩: 123456" autocomplete="current-password" />
       </div>
 
@@ -1948,11 +1948,7 @@ function formatSupabaseError(error) {
 function formatLogActor(log) {
   if (!log) return "";
   const name = String(log.staffDisplayName || "").trim();
-  const email = String(log.staffEmail || "").trim();
-
-  if (name && email) return `${name}（${email}）`;
   if (name) return name;
-  if (email) return email;
   return "未記錄操作者";
 }
   
