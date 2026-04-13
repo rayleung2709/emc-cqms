@@ -1499,64 +1499,129 @@ data-help="勾選後，系統會使用你手動輸入的香港時間作為登記
 </label>
 </div>
 
-          <div class="form-row">
-            <label for="insertMode">排位方式</label>
-            <select id="insertMode">
-              <option value="auto" selected>自動安排</option>
-              <option value="tail">排隊尾</option>
-              <option value="front">排隊首</option>
-              <option value="position">指定位置</option>
-            </select>
-          </div>
+<div class="form-row">
+<label for="insertMode"
+data-help-title="排位方式"
+data-help="病人派往診室後，仍需決定在候診隊列中的位置。你可以交由系統自動安排，或直接排隊首、排隊尾，或指定位置。">
+排位方式
+</label>
+<select id="insertMode"
+data-help-title="排位方式"
+data-help="自動安排：按系統規則排序。排隊尾：排在最後。排隊首：排在最前。指定位置：由你輸入第幾位。">
+<option value="auto" selected>自動安排</option>
+<option value="tail">排隊尾</option>
+<option value="front">排隊首</option>
+<option value="position">指定位置</option>
+</select>
+</div>
 
-          <div class="form-row">
-            <label for="insertPosition">指定位置</label>
-            <input id="insertPosition" type="number" min="1" placeholder="例如：2" />
-          </div>
-        </div>
+<div class="form-row">
+<label for="insertPosition"
+data-help-title="指定位置"
+data-help="當排位方式選擇「指定位置」時，請在此輸入想排在第幾位。">
+指定位置
+</label>
+<input id="insertPosition" type="number" min="1" placeholder="例如：2"
+data-help-title="輸入指定位置"
+data-help="例如輸入 2，代表病人會被插入至第 2 位；若超出實際長度，系統會自動調整。" />
+</div>
+</div>
 
-        <div class="actions" style="margin-top:14px; justify-content:flex-end;">
-          <button class="btn-primary" id="addPatientBtn" type="button">加入輪候</button>
-        </div>
-      </div>
+<div class="actions" style="margin-top:14px; justify-content:flex-end;">
+<button class="btn-primary"
+id="addPatientBtn"
+type="button"
+data-help-title="加入輪候"
+data-help="確認以上資料後，按此將病人正式加入輪候系統。">
+加入輪候
+</button>
+</div>
+</div>
 
-      <div class="panel">
-        <div class="panel-title">新增診室</div>
-        <div class="grid-3">
-          <div class="form-row">
-            <label for="newRoomNo">診室</label>
-            <input id="newRoomNo" list="roomNoOptions" type="text" placeholder="可選或自由輸入" />
-            <datalist id="roomNoOptions">
-              <option value="1號房"></option>
-              <option value="2號房"></option>
-              <option value="3號房"></option>
-              <option value="5號房"></option>
-              <option value="7號房"></option>
-              <option value="8號房"></option>
-              <option value="9號房"></option>
-              <option value="10號房"></option>
-            </datalist>
-          </div>
-          <div class="form-row">
-            <label for="newDoctorName">醫生名稱</label>
-            <input id="newDoctorName" list="doctorOptions" type="text" placeholder="可選或自由輸入" />
-            <datalist id="doctorOptions"></datalist>
-          </div>
-          <div class="form-row">
-            <label>&nbsp;</label>
-            <button class="btn-success" id="addRoomBtn" type="button">建立診室</button>
-          </div>
-        </div>
-      </div>
-    </div>
+<div class="panel teach-anchor"
+data-help-title="新增診室"
+data-help="當有新診室需要啟用，或需新增顯示醫生時，可於此區建立。">
+<div class="panel-title">新增診室</div>
+<div class="grid-3">
+<div class="form-row">
+<label for="newRoomNo"
+data-help-title="診室"
+data-help="輸入診室名稱，例如 1號房、2號房。你可選用建議選項，亦可自由輸入。">
+診室
+</label>
+<input id="newRoomNo" list="roomNoOptions" type="text" placeholder="可選或自由輸入"
+data-help-title="診室輸入欄"
+data-help="可輸入新的診室名稱，系統不會容許相同名稱重複建立。" />
+<datalist id="roomNoOptions">
+<option value="1號房"></option>
+<option value="2號房"></option>
+<option value="3號房"></option>
+<option value="5號房"></option>
+<option value="7號房"></option>
+<option value="8號房"></option>
+<option value="9號房"></option>
+<option value="10號房"></option>
+</datalist>
+</div>
+<div class="form-row">
+<label for="newDoctorName"
+data-help-title="醫生名稱"
+data-help="輸入醫生名稱。可以使用建議選項，亦可自由輸入。">
+醫生名稱
+</label>
+<input id="newDoctorName" list="doctorOptions" type="text" placeholder="可選或自由輸入"
+data-help-title="醫生名稱輸入欄"
+data-help="新增或輸入醫生名稱，將顯示於診室卡及候診看板。"/>
+<datalist id="doctorOptions">
+<option value="林家強醫生 Dr. LAM Ka Keung"></option>
+<option value="麥應良醫生 Dr. MAK Ying Leung Elvis"></option>
+<option value="楊聿川醫生 Dr. YANG Li Chuan Marc"></option>
+<option value="鄧志安醫生 Dr. TANG Chi On"></option>
+<option value="戴俊權醫生 Dr. TAI Chun Kuen Marcus"></option>
+<option value="羅國強醫生 Dr. LAW Kwok Keung Alex"></option>
+<option value="黃展鵬醫生 Dr. WONG Chin Pang Ben"></option>
+<option value="梁子恒醫生 Dr. LEUNG Tsz Hang Ray"></option>
+<option value="謝昭倫醫生 Dr. TSE Chiu Lun Joseph"></option>
+</datalist>
+</div>
+<div class="form-row">
+<label>&nbsp;</label>
+<button class="btn-success"
+id="addRoomBtn"
+type="button"
+data-help-title="建立診室"
+data-help="建立新的診室後，系統方可派病人前往該診室。">
+建立診室
+</button>
+</div>
+</div>
+<div class="muted" style="margin-top:12px;"
+data-help-title="診室補充說明"
+data-help="診室可以新增、修改及刪除。停止收新症後會暫停接收新派症，但候診看板仍會顯示；關閉後則會於候診看板隱藏。">
+候診看板會將「1號房」簡化顯示為「1」。
+</div>
+</div>
+</div>
 
-    <div class="panel">
-      <div class="toolbar-row">
-        <div class="panel-title" style="margin-bottom:0;">各診室輪候概況</div>
-        <div class="actions">
-          <button class="btn-primary" id="rebalanceWaitingBtn" type="button">一鍵智能平均分流候診病人</button>
-        </div>
-      </div>
+<div class="panel teach-anchor"
+data-help-title="各診室輪候概況"
+data-help="此區會顯示每間診室目前狀態、現正診症病人、候診名單及過號名單，並可直接進行叫號、完成、設為過號、轉往診室等操作。">
+<div class="toolbar-row">
+<div class="panel-title" style="margin-bottom:0;">各診室輪候概況</div>
+<div class="actions">
+<button class="btn-primary"
+id="rebalanceWaitingBtn"
+type="button"
+data-help-title="一鍵智能平均分流候診病人"
+data-help="系統會將可重新分配的候診病人，按各診室目前智能負荷分數動態平均分流。會考慮現正診症病人、一般候診人數及醫療優先病人數。只處理候診中、非預約、非手動派房或轉房病人。">
+一鍵智能平均分流候診病人
+</button>
+</div>
+</div>
+
+<div id="roomsContainer" class="room-list" style="margin-top:14px;"></div>
+</div>
+</div>
 
       <div id="staffRoomFilterWrap" class="staff-room-filter-wrap"></div>
       <div class="search-help-note">可剔選只顯示指定診室；只影響職員頁面顯示，不影響資料。</div>
