@@ -1945,6 +1945,17 @@ function formatSupabaseError(error) {
   return parts.join(" | ") || JSON.stringify(error);
 }
 
+function formatLogActor(log) {
+  if (!log) return "";
+  const name = String(log.staffDisplayName || "").trim();
+  const email = String(log.staffEmail || "").trim();
+
+  if (name && email) return `${name}（${email}）`;
+  if (name) return name;
+  if (email) return email;
+  return "未記錄操作者";
+}
+
 function markUiBusy(ms = 2200) {
   state.uiBusyUntil = Date.now() + ms;
 }
@@ -2173,9 +2184,13 @@ function addPatientLog(patient, action, details = "") {
   patient.logs.unshift({
     time: nowIso(),
     action,
-    details
+    details,
+    staffUserId: authState.user?.id || null,
+    staffDisplayName: authState.profile?.display_name || null,
+    staffEmail: authState.profile?.email || authState.user?.email || null
   });
 }
+  
 function ensureClinicalLogs(patient) {
   if (!Array.isArray(patient.clinicalLogs)) patient.clinicalLogs = [];
 }
@@ -2185,9 +2200,13 @@ function addClinicalLog(patient, activity, details = "") {
   patient.clinicalLogs.unshift({
     time: nowIso(),
     activity,
-    details
+    details,
+    staffUserId: authState.user?.id || null,
+    staffDisplayName: authState.profile?.display_name || null,
+    staffEmail: authState.profile?.email || authState.user?.email || null
   });
 }
+  
 function getLatestClinicalLog(patient) {
   const logs = Array.isArray(patient?.clinicalLogs) ? patient.clinicalLogs : [];
   return logs.length ? logs[0] : null;
@@ -2734,23 +2753,27 @@ function renderPatientSearchDetail(patient) {
     queuePosition = "回診區";
   }
 
-  const queueHistoryHtml = (patient.logs || []).length
-    ? patient.logs.map(log => `
-      <div class="history-item">
-        <div class="history-time">${escapeHtml(formatDateTime(log.time))}</div>
-        <div class="history-text">${escapeHtml(log.action)}${log.details ? `：${escapeHtml(log.details)}` : ""}</div>
+const queueHistoryHtml = (patient.logs || []).length
+  ? patient.logs.map(log => `
+    <div class="history-item">
+      <div class="history-time">
+        ${escapeHtml(formatDateTime(log.time))}｜操作者：${escapeHtml(formatLogActor(log))}
       </div>
-    `).join("")
-    : `<div class="muted">暫無排隊活動紀錄</div>`;
+      <div class="history-text">${escapeHtml(log.action)}${log.details ? `：${escapeHtml(log.details)}` : ""}</div>
+    </div>
+  `).join("")
+  : `<div class="muted">暫無排隊活動紀錄</div>`;
 
-  const clinicalHistoryHtml = (patient.clinicalLogs || []).length
-    ? patient.clinicalLogs.map(log => `
-      <div class="history-item">
-        <div class="history-time">${escapeHtml(formatDateTime(log.time))}</div>
-        <div class="history-text">${escapeHtml(log.activity)}${log.details ? `：${escapeHtml(log.details)}` : ""}</div>
+const clinicalHistoryHtml = (patient.clinicalLogs || []).length
+  ? patient.clinicalLogs.map(log => `
+    <div class="history-item">
+      <div class="history-time">
+        ${escapeHtml(formatDateTime(log.time))}｜操作者：${escapeHtml(formatLogActor(log))}
       </div>
-    `).join("")
-    : `<div class="muted">暫無臨床活動紀錄</div>`;
+      <div class="history-text">${escapeHtml(log.activity)}${log.details ? `：${escapeHtml(log.details)}` : ""}</div>
+    </div>
+  `).join("")
+  : `<div class="muted">暫無臨床活動紀錄</div>`;
 
   const latestClinical = getLatestClinicalLog(patient);
 
