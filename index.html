@@ -1424,7 +1424,7 @@ body.display-mode .info-card {
 
         <div class="grid-3" style="margin-top:14px;">
           <div class="form-row">
-            <label for="registeredAt">登記時間（HKT）</label>
+            <label for="registeredAt">登記時間</label>
             <input id="registeredAt" type="datetime-local" disabled />
             <label style="display:flex;gap:8px;align-items:center;">
               <input id="useCustomRegisteredAt" type="checkbox" style="width:auto;" />
@@ -1783,7 +1783,7 @@ function formatBoardNow(date = new Date()) {
 }
 function formatRegisteredInline(iso) {
   const text = formatDateTime(iso);
-  return text === "—" ? "—" : `${text} 登記`;
+  return text === "—" ? "—" : `${text}｜登記`;
 }
 
 function notify(message, type = "info") {
@@ -2393,7 +2393,7 @@ function renderPatientSearchDetail(patient) {
         <div><strong>分流級別：</strong>${escapeHtml(getPriorityLabel(patient))}</div>
         <div><strong>首次派往診室方式：</strong>${patient.initialAssignmentMode === "manual" ? "手動派房（不可自動分流）" : "自動派房"}</div>
         <div><strong>手動轉房鎖定：</strong>${patient.manualLock ? `是${patient.manualLockReason ? `（${escapeHtml(patient.manualLockReason)}）` : ""}` : "否"}</div>
-        <div><strong>登記時間（HKT）：</strong>${escapeHtml(formatDateTime(patient.registeredAt))}</div>
+        <div><strong>登記時間：</strong>${escapeHtml(formatDateTime(patient.registeredAt))}</div>
         <div><strong>系統記錄建立時間：</strong>${escapeHtml(formatDateTime(patient.createdAt))}</div>
         <div><strong>最近臨床活動：</strong>${latestClinical ? escapeHtml(`${formatDateTime(latestClinical.time)}｜${latestClinical.activity}${latestClinical.details ? `：${latestClinical.details}` : ""}`) : "—"}</div>
         <div><strong>首次叫號時間：</strong>${escapeHtml(formatDateTime(patient.calledAt))}</div>
@@ -2435,7 +2435,7 @@ function renderPatientSearchList(patients, title = "找到多項結果") {
             <th>類型</th>
             <th>分流級別</th>
             <th>目前輪候位置</th>
-            <th>登記時間（HKT）</th>
+            <th>登記時間</th>
             <th>操作</th>
           </tr>
         </thead>
@@ -2463,7 +2463,7 @@ function renderRoomSearchSection(title, patients, includeRoom = false) {
                   <th>類型</th>
                   <th>分流級別</th>
                   <th>目前輪候位置</th>
-                  <th>登記時間（HKT）</th>
+                  <th>登記時間</th>
                   <th>操作</th>
                 </tr>
               </thead>
