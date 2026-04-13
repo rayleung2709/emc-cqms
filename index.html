@@ -1359,78 +1359,145 @@ body.display-mode .info-card {
   </div>
 </div>
 
+
 <div class="app">
-  <div class="topbar">
-    <div class="title">
-      香港中文大學醫院急症醫學中心輪候系統<br>CUHKMC Emergency Medicine Centre Queue Management System
-    </div>
+<div class="topbar">
+<div class="title teach-anchor"
+data-help-title="系統標題"
+data-help="此頁面為急症醫學中心輪候系統。職員可於此新增輪候病人、管理診室、查詢病人狀態，以及顯示候診看板。">
+香港中文大學醫院急症醫學中心輪候系統<br>CUHKMC Emergency Medicine Centre Queue Management System
+</div>
 
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="staffPage" type="button">職員管理</button>
-      <button class="tab-btn" data-tab="patientPage" type="button">病人狀態查詢</button>
-      <button class="tab-btn" data-tab="displayPage" type="button">候診看板</button>
+<div class="tabs">
+<button class="tab-btn active"
+data-tab="staffPage"
+type="button"
+data-help-title="職員管理"
+data-help="可於此頁進行日常操作，例如新增輪候病人、新增診室、叫號、設為過號、轉往診室、停止收新症及智能平均分流。">
+職員管理
+</button>
 
-      <label class="teach-toggle">
-        <input id="teachModeToggle" type="checkbox" />
-        <span>操作教學模式（暫停中）</span>
-        <span class="teach-badge" id="teachModeBadge">關閉中</span>
-      </label>
-    </div>
-  </div>
+<button class="tab-btn"
+data-tab="patientPage"
+type="button"
+data-help-title="病人狀態查詢"
+data-help="可使用 CUMC 號碼或診室查詢病人狀態，包括候診中、現正診症、過號、已完成、已取消及操作紀錄。">
+病人狀態查詢
+</button>
 
-  <div class="page active" id="staffPage">
-    <div class="grid-2">
-      <div class="panel">
-        <div class="panel-title">新增輪候病人</div>
+<button class="tab-btn"
+data-tab="displayPage"
+type="button"
+data-help-title="候診看板"
+data-help="候診看板會顯示每間診室現正診症號碼、候診名單及過號名單，供病人及在場人士參考。">
+候診看板
+</button>
 
-        <div class="grid-5">
-          <div class="form-row">
-            <label for="patientCumcNo">CUMC 號碼</label>
-            <input id="patientCumcNo" type="text" placeholder="例如：ABC1234" />
-          </div>
+<label class="teach-toggle"
+data-help-title="操作教學模式開關"
+data-help="開啟後，滑鼠移至欄位或按鈕會顯示操作說明；關閉後，畫面會接近正式版。">
+<input id="teachModeToggle" type="checkbox" />
+<span>操作教學模式</span>
+<span class="teach-badge" id="teachModeBadge">關閉中</span>
+</label>
+</div>
+</div>
 
-          <div class="form-row">
-            <label for="patientType">病人類型</label>
-            <select id="patientType">
-              <option value="walkin">即場</option>
-              <option value="onlineTicket">網上取票</option>
-              <option value="appointment">預約</option>
-            </select>
-          </div>
+<div class="page active" id="staffPage">
+<div class="grid-2">
+<div class="panel teach-anchor"
+data-help-title="新增輪候病人"
+data-help="此區用於將新症或已預先安排的病人加入輪候。請先輸入 CUMC 號碼，再選擇病人類型、派往診室方式、是否列為醫療優先，以及排位方式。">
+<div class="panel-title">新增輪候病人</div>
 
-          <div class="form-row">
-            <label for="assignMode">派往診室</label>
-            <select id="assignMode">
-              <option value="smart" selected>自動分派：智能分派</option>
-              <option value="shortest">自動分派：最短隊伍優先</option>
-              <option value="roundRobin">自動分派：輪流分派</option>
-              <option value="manual">手動選擇診室</option>
-            </select>
-          </div>
+<div class="grid-5">
+<div class="form-row">
+<label for="patientCumcNo"
+data-help-title="CUMC 號碼"
+data-help="輸入病人的 CUMC 號碼。系統會避免同一位未完成個案病人重複加入輪候。">
+CUMC 號碼
+</label>
+<input id="patientCumcNo" type="text" placeholder="例如：ABC1234"
+data-help-title="CUMC 號碼輸入欄"
+data-help="請於此輸入病人 CUMC 號碼。系統會自動轉為大楷，例如：ABC1234。" />
+</div>
 
-          <div class="form-row">
-            <label for="assignRoom">指定診室</label>
-            <select id="assignRoom"></select>
-          </div>
+<div class="form-row">
+<label for="patientType"
+data-help-title="病人類型"
+data-help="病人類型包括即場、網上取票及預約。不同類型會影響可派往的診室，以及排序時的先後規則。">
+病人類型
+</label>
+<select id="patientType"
+data-help-title="病人類型選擇"
+data-help="即場：現場登記。網上取票：預先取票但未正式完成就診。預約：已有預約安排，系統會按規則容許派往開放或暫停中但可接收預約的診室。">
+<option value="walkin">即場</option>
+<option value="onlineTicket">網上取票</option>
+<option value="appointment">預約</option>
+</select>
+</div>
 
-          <div class="form-row">
-            <label for="isPriority">醫療優先</label>
-            <select id="isPriority">
-              <option value="false">否</option>
-              <option value="true">是</option>
-            </select>
-          </div>
-        </div>
+<div class="form-row">
+<label for="assignMode"
+data-help-title="派往診室"
+data-help="你可以交由系統自動分派，或手動指定診室。一般日常操作建議使用智能分派。">
+派往診室
+</label>
+<select id="assignMode"
+data-help-title="派往診室方式"
+data-help="智能分派：比較各診室目前負荷。最短隊伍優先：選擇人數最少的診室。輪流分派：輪流派往各診室。手動選擇診室：由職員自行決定。">
+<option value="smart" selected>自動分派：智能分派</option>
+<option value="shortest">自動分派：最短隊伍優先</option>
+<option value="roundRobin">自動分派：輪流分派</option>
+<option value="manual">手動選擇診室</option>
+</select>
+</div>
 
-        <div class="grid-3" style="margin-top:14px;">
-          <div class="form-row">
-            <label for="registeredAt">登記時間（HKT）</label>
-            <input id="registeredAt" type="datetime-local" disabled />
-            <label style="display:flex;gap:8px;align-items:center;">
-              <input id="useCustomRegisteredAt" type="checkbox" style="width:auto;" />
-              使用手動登記時間（適用於補錄、預約或網上取票）
-            </label>
-          </div>
+<div class="form-row">
+<label for="assignRoom"
+data-help-title="指定診室"
+data-help="只有當你選擇「手動選擇診室」時，才需要在此指定診室。">
+指定診室
+</label>
+<select id="assignRoom"
+data-help-title="手動指定診室"
+data-help="如果你已知病人應前往某位醫生或某間診室，可於此手動指定。"></select>
+</div>
+
+<div class="form-row">
+<label for="isPriority"
+data-help-title="醫療優先"
+data-help="如果病人有較高臨床優先需要，可列為醫療優先。排序時，系統會優先處理此類病人。">
+醫療優先
+</label>
+<select id="isPriority"
+data-help-title="是否列為醫療優先"
+data-help="選擇「是」代表病人屬較高優先級別，加入輪候後通常會排得較前。">
+<option value="false">否</option>
+<option value="true">是</option>
+</select>
+</div>
+</div>
+
+<div class="grid-3" style="margin-top:14px;">
+<div class="form-row">
+<label for="registeredAt"
+data-help-title="登記時間（HKT）"
+data-help="一般情況下無需手動修改，系統會自動使用當前香港時間。只於補錄或特殊情況下才需要勾選使用手動登記時間。">
+登記時間（HKT）
+</label>
+<input id="registeredAt" type="datetime-local" disabled
+data-help-title="手動登記時間輸入"
+data-help="如需補錄較早前的登記資料，可手動輸入時間；否則系統會自動使用現在香港時間。" />
+<label class="sub-option"
+for="useCustomRegisteredAt"
+style="display:flex;gap:8px;align-items:center;"
+data-help-title="使用手動登記時間"
+data-help="勾選後，系統會使用你手動輸入的香港時間作為登記時間；未勾選則直接使用系統即時時間。">
+<input id="useCustomRegisteredAt" type="checkbox" style="width:auto;" />
+使用手動登記時間（適用於補錄、預約或網上取票）
+</label>
+</div>
 
           <div class="form-row">
             <label for="insertMode">排位方式</label>
