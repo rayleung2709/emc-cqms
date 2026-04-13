@@ -2151,12 +2151,12 @@ async function logoutStaff() {
 
 function requireStaffLogin() {
   if (!authState.user || !authState.profile) {
-    notify("請先以 staff 帳戶登入", "warning");
+    notify("請先以職員帳戶登入", "warning");
     return false;
   }
 
   if (authState.profile.is_active === false) {
-    notify("此 staff 帳戶已停用", "error");
+    notify("此職員帳戶已停用", "error");
     return false;
   }
 
