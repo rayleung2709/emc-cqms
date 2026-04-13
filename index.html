@@ -2904,13 +2904,12 @@ function renderRoomCardHtml(room) {
           <div class="more-actions-wrap">
             <div class="main-actions">
               <button class="btn-primary btn-small" type="button" data-action="callReviewPatient" data-patient-id="${patient.id}">叫號</button>
-              <button class="btn-secondary btn-small" type="button" data-action="returnReviewToWaiting" data-patient-id="${patient.id}">返回候診</button>
-              <button class="btn-success btn-small" type="button" data-action="finishReviewPatient" data-patient-id="${patient.id}">完成</button>
               <button class="btn-warning btn-small" type="button" data-action="togglePriority" data-patient-id="${patient.id}">
-                ${patient.priority ? "改為 Cat THREE" : "改為 Cat TWO"}
-              </button>
+                ${patient.priority ? "改為 Cat THREE" : "改為 Cat TWO"}</button>
+              <button class="btn-success btn-small" type="button" data-action="finishReviewPatient" data-patient-id="${patient.id}">完成</button>
               <button class="btn-secondary btn-small" type="button" data-action="openClinicalActivity" data-patient-id="${patient.id}">臨床活動</button>
               <button class="btn-secondary btn-small more-toggle-btn" type="button" data-more-toggle="${patient.id}">更多操作</button>
+              <button class="btn-secondary btn-small" type="button" data-action="returnReviewToWaiting" data-patient-id="${patient.id}">返回候診</button>
             </div>
 
             <div class="more-actions-panel" data-more-panel="${patient.id}">
