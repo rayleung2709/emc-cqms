@@ -804,9 +804,24 @@ body.display-mode .info-card {
   line-height: 1.04;
   letter-spacing: 0.03em;
 }
-.board-current-priority-ticket { color: #fca5a5; }
-.board-current-normal-ticket { color: #4ade80; }
+.board-current-ticket {
+  font-size: 2.1rem;
+  font-weight: 900;
+  line-height: 1.04;
+  letter-spacing: 0.03em;
+}
 
+.board-current-ticket-red {
+  color: #fca5a5;
+}
+
+.board-current-ticket-yellow {
+  color: #fde68a;
+}
+
+.board-current-ticket-green {
+  color: #4ade80;
+}
 .board-meta {
   font-size: 1rem;
   color: var(--board-sub);
@@ -1258,8 +1273,6 @@ body.display-mode .info-card {
   .board-room { font-size: 3rem; }
   .board-doctor-zh { font-size: 1.25rem; }
   .board-doctor-en { font-size: 0.9rem; }
-  .board-current-priority-ticket,
-  .board-current-normal-ticket { font-size: 1.8rem; }
   .board-tag { font-size: 1.02rem; min-width: 96px; }
   .board-row { min-height: 126px; }
 }
@@ -2953,23 +2966,33 @@ function splitDoctorName(fullName) {
   if (match) return { zh: match[1].trim(), en: match[2].trim() };
   return { zh: text, en: "" };
 }
-function isYellowBoardBubble(patient) {
-  return !patient.priority && (patient.sourceType === "appointment" || patient.sourceType === "onlineTicket");
+
+function getBoardPatientColorClass(patient) {
+  if (!patient) return "";
+
+  // Cat 2 -> 紅
+  if (patient.priority) return "tag-priority";
+
+  // Cat 3 + appointment / onlineTicket -> 黃
+  if (patient.sourceType === "appointment" || patient.sourceType === "onlineTicket") {
+    return "tag-yellow";
+  }
+
+  // Cat 3 + walkin -> 綠（用各區 base 樣式，現正診症會另外指定綠色 class）
+  return "";
 }
+
 function renderBoardTag(patient, type = "wait") {
   let baseClass = "tag-wait";
   if (type === "skip") baseClass = "tag-skip";
   if (type === "review") baseClass = "tag-review";
 
-  let extraClass = "";
-  if (patient.priority) {
-    extraClass = "tag-priority";
-  } else if (isYellowBoardBubble(patient)) {
-    extraClass = "tag-yellow";
-  }
+  const extraClass = getBoardPatientColorClass(patient);
 
   return `<span class="board-tag ${baseClass} ${extraClass}">${escapeHtml(getPatientDisplayNo(patient))}</span>`;
 }
+
+  
 
 function getVisibleBoardRooms() {
   return sortedRooms().filter(room => room.status !== "closed");
@@ -3054,10 +3077,28 @@ function renderDisplayBoard(force = false) {
         ${
           currentPatient
             ? `
-              <div class="${currentPatient.priority ? "board-current-priority-ticket" : "board-current-normal-ticket"}">
-                ${escapeHtml(getPatientDisplayNo(currentPatient))}
-              </div>
-              <div class="board-meta">${escapeHtml(formatRegisteredInline(currentPatient.registeredAt))}</div>
+             
+${
+  (() => {
+    let currentTicketColorClass = "board-current-ticket-green";
+
+    if (currentPatient.priority) {
+      // Cat 2 -> 紅
+      currentTicketColorClass = "board-current-ticket-red";
+    } else if (currentPatient.sourceType === "appointment" || currentPatient.sourceType === "onlineTicket") {
+      // Cat 3 + appointment / onlineTicket -> 黃
+      currentTicketColorClass = "board-current-ticket-yellow";
+    }
+
+    return `
+      <div class="board-current-ticket ${currentTicketColorClass}">
+        ${escapeHtml(getPatientDisplayNo(currentPatient))}
+      </div>
+      <div class="board-meta">${escapeHtml(formatRegisteredInline(currentPatient.registeredAt))}</div>
+    `;
+  })()
+}
+              
             `
             : `<div class="board-current-normal-ticket">—</div>`
         }
