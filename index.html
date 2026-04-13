@@ -2053,6 +2053,7 @@ function notify(message, type = "info") {
   setTimeout(() => el.remove(), 4200);
 }
 function updateAuthUi() {
+  console.log("updateAuthUi authState =", authState);
   const loggedOutView = document.getElementById("loggedOutView");
   const loggedInView = document.getElementById("loggedInView");
   const currentStaffName = document.getElementById("currentStaffName");
@@ -2078,6 +2079,9 @@ function updateAuthUi() {
 async function loadCurrentStaffProfile() {
   const { data: userData, error: userError } = await sb.auth.getUser();
 
+  console.log("getUser userData =", userData);
+  console.log("getUser error =", userError);
+
   if (userError) {
     console.error("getUser failed:", userError);
     authState.user = null;
@@ -2088,6 +2092,8 @@ async function loadCurrentStaffProfile() {
 
   const user = userData?.user || null;
   authState.user = user;
+
+  console.log("authState.user =", user);
 
   if (!user) {
     authState.profile = null;
@@ -2100,6 +2106,9 @@ async function loadCurrentStaffProfile() {
     .select("id, email, display_name, role, is_active")
     .eq("id", user.id)
     .single();
+
+  console.log("staff profile =", profile);
+  console.log("staff profile error =", profileError);
 
   if (profileError) {
     console.error("load staff profile failed:", profileError);
