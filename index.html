@@ -1955,7 +1955,13 @@ function formatLogActor(log) {
   if (email) return email;
   return "未記錄操作者";
 }
-
+  
+function formatLogMeta(log) {
+  const timeText = formatDateTime(log?.time);
+  const actorText = formatLogActor(log);
+  return `${timeText}｜操作者：${actorText}`;
+}
+  
 function markUiBusy(ms = 2200) {
   state.uiBusyUntil = Date.now() + ms;
 }
@@ -2790,7 +2796,7 @@ const clinicalHistoryHtml = (patient.clinicalLogs || []).length
         <div><strong>手動轉房鎖定：</strong>${patient.manualLock ? `是${patient.manualLockReason ? `（${escapeHtml(patient.manualLockReason)}）` : ""}` : "否"}</div>
         <div><strong>登記時間：</strong>${escapeHtml(formatDateTime(patient.registeredAt))}</div>
         <div><strong>系統記錄建立時間：</strong>${escapeHtml(formatDateTime(patient.createdAt))}</div>
-        <div><strong>最近臨床活動：</strong>${latestClinical ? escapeHtml(`${formatDateTime(latestClinical.time)}｜${latestClinical.activity}${latestClinical.details ? `：${latestClinical.details}` : ""}`) : "—"}</div>
+        <div><strong>最近臨床活動：</strong>${latestClinical ? escapeHtml(`${formatLogMeta(latestClinical)}｜${latestClinical.activity}${latestClinical.details ? `：${latestClinical.details}` : ""}`) : "—"}</div>
         <div><strong>首次叫號時間：</strong>${escapeHtml(formatDateTime(patient.calledAt))}</div>
         <div><strong>過號時間：</strong>${escapeHtml(formatDateTime(patient.skippedAt))}</div>
         <div><strong>完成時間：</strong>${escapeHtml(formatDateTime(patient.doneAt))}</div>
@@ -3201,9 +3207,8 @@ function renderPatientClinicalPreview(patient) {
   const logs = getPreviewClinicalLogs(patient, 10);
   if (!logs.length) return "";
   return logs.map(log => `
-    <div class="queue-time">
-      ${escapeHtml(formatDateTime(log.time))}｜${escapeHtml(log.activity || "")}${log.details ? `：${escapeHtml(log.details)}` : ""}
-    </div>
+    <div class="queue-time">${escapeHtml(formatLogMeta(log))}</div>
+    <div class="queue-time">${escapeHtml(log.activity || "")}${log.details ? `：${escapeHtml(log.details)}` : ""}</div>
   `).join("");
 }
 function renderPatientInfoBlock(patient, extraPills = "") {
@@ -5058,7 +5063,7 @@ function showHoverLogTooltip(target) {
   hoverLogTooltip.listEl.innerHTML = logs.length
     ? logs.map(log => `
       <div class="hover-log-item">
-        <div class="hover-log-time">${escapeHtml(formatDateTime(log.time))}</div>
+        <div class="hover-log-time">${escapeHtml(formatLogMeta(log))}</div>
         <div class="hover-log-text">${escapeHtml(log.action || "")}${log.details ? `：${escapeHtml(log.details)}` : ""}</div>
       </div>
     `).join("")
