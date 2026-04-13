@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title> 急症醫學中心輪候系統 EMC-CQMS  </title>
+  <title>EMC-CQMS 急症醫學中心輪候系統</title>
   <link rel="icon" href="data:," />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -1004,7 +1004,7 @@
       white-space: nowrap;
       text-transform: uppercase;
     }
-    
+
     .board-footer-tip {
       margin-top: 8px;
       color: #93c5fd;
@@ -1435,8 +1435,8 @@
     <div class="topbar">
       <div class="title teach-anchor"
            data-help-title="系統標題"
-           data-help="呢個頁面係急症醫學中心輪候系統。職員可喺呢度新增病人、管理房間、查詢狀態，同顯示病人看板。">
-        香港中文大學醫院急症醫學中心輪候系統<br> CUHKMC Emergency Medicine Centre Queue Management System
+           data-help="此頁面為急症醫學中心輪候系統。職員可於此新增輪候病人、管理診室、查詢病人狀態，以及顯示候診看板。">
+        香港中文大學醫院急症醫學中心輪候系統<br>CUHKMC Emergency Medicine Centre Queue Management System
       </div>
 
       <div class="tabs">
@@ -1444,32 +1444,32 @@
                 data-tab="staffPage"
                 type="button"
                 data-help-title="職員管理"
-                data-help="喺呢頁做日常操作，例如新增病人、新增房間、叫號、過號、轉房、截籌同智能平衡分流。">
+                data-help="可於此頁進行日常操作，例如新增輪候病人、新增診室、叫號、設為過號、轉往診室、停止收新症及智能平均分流。">
           職員管理
         </button>
 
         <button class="tab-btn"
                 data-tab="patientPage"
                 type="button"
-                data-help-title="狀態查詢"
-                data-help="用 CUMC 號碼或者房號查病人狀態，包括候診中、診症中、過號、完成、取消及活動紀錄。">
-          狀態查詢
+                data-help-title="病人狀態查詢"
+                data-help="可使用 CUMC 號碼或診室查詢病人狀態，包括候診中、現正診症、過號、已完成、已取消及操作紀錄。">
+          病人狀態查詢
         </button>
 
         <button class="tab-btn"
                 data-tab="displayPage"
                 type="button"
-                data-help-title="病人看板"
-                data-help="病人看板會顯示每間房而家睇到邊個號碼、候診名單同過號名單，俾病人或現場人士參考。">
-          病人看板
+                data-help-title="候診看板"
+                data-help="候診看板會顯示每間診室現正診症號碼、候診名單及過號名單，供病人及在場人士參考。">
+          候診看板
         </button>
 
         <label class="teach-toggle"
-               data-help-title="教學模式開關"
-               data-help="開啟後，滑鼠移到欄位或按鈕會顯示操作說明。關閉後，畫面會接近正式版。">
+               data-help-title="操作教學模式開關"
+               data-help="開啟後，滑鼠移至欄位或按鈕會顯示操作說明；關閉後，畫面會接近正式版。">
           <input id="teachModeToggle" type="checkbox" />
-          <span>教學模式</span>
-          <span class="teach-badge" id="teachModeBadge">已關閉</span>
+          <span>操作教學模式</span>
+          <span class="teach-badge" id="teachModeBadge">關閉中</span>
         </label>
       </div>
     </div>
@@ -1477,31 +1477,31 @@
     <div class="page active" id="staffPage">
       <div class="grid-2">
         <div class="panel teach-anchor"
-             data-help-title="新增病人區"
-             data-help="呢區用嚟將新症或已預先安排嘅病人加入系統。先輸入 CUMC 號碼，再揀病人類型、派房方式、是否優先，以及排位方式。">
-          <div class="panel-title">新增病人</div>
+             data-help-title="新增輪候病人"
+             data-help="此區用於將新症或已預先安排的病人加入輪候。請先輸入 CUMC 號碼，再選擇病人類型、派往診室方式、是否列為醫療優先，以及排位方式。">
+          <div class="panel-title">新增輪候病人</div>
 
           <div class="grid-5">
             <div class="form-row">
               <label for="patientCumcNo"
-                     data-help-title="CUMC號碼"
-                     data-help="輸入病人的 CUMC 號碼。系統會避免同一位未完成病人重複入隊。">
-                CUMC號碼
+                     data-help-title="CUMC 號碼"
+                     data-help="輸入病人的 CUMC 號碼。系統會避免同一位未完成個案病人重複加入輪候。">
+                CUMC 號碼
               </label>
               <input id="patientCumcNo" type="text" placeholder="例如：ABC1234"
-                     data-help-title="CUMC號碼輸入框"
-                     data-help="喺呢度輸入病人號碼。系統會自動轉做大楷。例子：ABC1234。" />
+                     data-help-title="CUMC 號碼輸入欄"
+                     data-help="請於此輸入病人 CUMC 號碼。系統會自動轉為大楷，例如：ABC1234。" />
             </div>
 
             <div class="form-row">
               <label for="patientType"
                      data-help-title="病人類型"
-                     data-help="病人類型包括即場、網上取票及預約。。唔同類型會影響可派去邊類房，以及排序時嘅先後規則。">
+                     data-help="病人類型包括即場、網上取票及預約。不同類型會影響可派往的診室，以及排序時的先後規則。">
                 病人類型
               </label>
               <select id="patientType"
                       data-help-title="病人類型選擇"
-                      data-help="即場：現場登記。網上取票：預先拎號但未正式完成就診。預約：有預約安排，系統會按規則容許派去開放或暫停中但可收預約的房。">
+                      data-help="即場：現場登記。網上取票：預先取票但未正式完成就診。預約：已有預約安排，系統會按規則容許派往開放或暫停中但可接收預約的診室。">
                 <option value="walkin">即場</option>
                 <option value="onlineTicket">網上取票</option>
                 <option value="appointment">預約</option>
@@ -1510,13 +1510,13 @@
 
             <div class="form-row">
               <label for="assignMode"
-                     data-help-title="派去診室"
-                     data-help="你可以交俾系統自動分派，或者手動揀一間房。一般日常建議用智能分派。">
-                派去診室
+                     data-help-title="派往診室"
+                     data-help="你可以交由系統自動分派，或手動指定診室。一般日常操作建議使用智能分派。">
+                派往診室
               </label>
               <select id="assignMode"
-                      data-help-title="派房方式"
-                      data-help="智能分派：比較各房目前負荷。最短隊伍優先：揀人數最少房。輪流分派：輪住派去各房。手動選擇診室：由職員自己決定。">
+                      data-help-title="派往診室方式"
+                      data-help="智能分派：比較各診室目前負荷。最短隊伍優先：選擇人數最少的診室。輪流分派：輪流派往各診室。手動選擇診室：由職員自行決定。">
                 <option value="smart" selected>自動分派：智能分派</option>
                 <option value="shortest">自動分派：最短隊伍優先</option>
                 <option value="roundRobin">自動分派：輪流分派</option>
@@ -1526,24 +1526,24 @@
 
             <div class="form-row">
               <label for="assignRoom"
-                     data-help-title="選擇診室"
-                     data-help="只有當你選擇『手動選擇診室』時，先需要喺呢度揀房。">
-                選擇診室
+                     data-help-title="指定診室"
+                     data-help="只有當你選擇「手動選擇診室」時，才需要在此指定診室。">
+                指定診室
               </label>
               <select id="assignRoom"
-                      data-help-title="手動派房"
-                      data-help="如果你已知病人應該去某位醫生或某間房，就喺呢度手動指定。"></select>
+                      data-help-title="手動指定診室"
+                      data-help="如果你已知病人應前往某位醫生或某間診室，可於此手動指定。"></select>
             </div>
 
             <div class="form-row">
               <label for="isPriority"
                      data-help-title="醫療優先"
-                     data-help="如果病人有較高臨床優先需要，可設為醫療優先。排序時，系統會優先處理呢類病人。">
+                     data-help="如果病人有較高臨床優先需要，可列為醫療優先。排序時，系統會優先處理此類病人。">
                 醫療優先
               </label>
               <select id="isPriority"
-                      data-help-title="是否醫療優先"
-                      data-help="選『是』代表病人屬較高優先級別，入隊後通常會排得較前。">
+                      data-help-title="是否列為醫療優先"
+                      data-help="選擇「是」代表病人屬較高優先級別，加入輪候後通常會排得較前。">
                 <option value="false">否</option>
                 <option value="true">是</option>
               </select>
@@ -1553,32 +1553,32 @@
           <div class="grid-3" style="margin-top:14px;">
             <div class="form-row">
               <label for="registeredAt"
-                     data-help-title="手動登記時間"
-                     data-help="通常唔需要手動改，系統會自動用當刻香港時間。只喺補錄或特殊情況先勾選使用後備時間。">
-                登記時間
+                     data-help-title="登記時間（HKT）"
+                     data-help="一般情況下無需手動修改，系統會自動使用當前香港時間。只於補錄或特殊情況下才需要勾選使用手動登記時間。">
+                登記時間（HKT）
               </label>
               <input id="registeredAt" type="datetime-local" disabled
                      data-help-title="手動登記時間輸入"
-                     data-help="如果有需要補回較早前的登記資料，可以手動輸入時間。否則系統會自動使用現在香港時間。" />
+                     data-help="如需補錄較早前的登記資料，可手動輸入時間；否則系統會自動使用現在香港時間。" />
               <label class="sub-option"
                      for="useCustomRegisteredAt"
                      style="display:flex;gap:8px;align-items:center;"
                      data-help-title="使用手動登記時間"
-                     data-help="勾選後，系統會用你手動輸入的香港時間作登記時間。未勾選就會直接用系統即時時間。">
+                     data-help="勾選後，系統會使用你手動輸入的香港時間作為登記時間；未勾選則直接使用系統即時時間。">
                 <input id="useCustomRegisteredAt" type="checkbox" style="width:auto;" />
-                使用手動登記時間（預約或網上取票用）
+                使用手動登記時間（適用於補錄、預約或網上取票）
               </label>
             </div>
 
             <div class="form-row">
               <label for="insertMode"
                      data-help-title="排位方式"
-                     data-help="病人分派入房之後，仲要決定喺隊列中排第幾位。你可以交俾系統自動安排，或者直接放最前、最後，或指定位置。">
+                     data-help="病人派往診室後，仍需決定在候診隊列中的位置。你可以交由系統自動安排，或直接排隊首、排隊尾，或指定位置。">
                 排位方式
               </label>
               <select id="insertMode"
                       data-help-title="排位方式"
-                      data-help="自動安排：按系統規則排序。排隊尾：放最後。排隊首：放最前。指定位置：由你輸入第幾位。">
+                      data-help="自動安排：按系統規則排序。排隊尾：排在最後。排隊首：排在最前。指定位置：由你輸入第幾位。">
                 <option value="auto" selected>自動安排</option>
                 <option value="tail">排隊尾</option>
                 <option value="front">排隊首</option>
@@ -1589,12 +1589,12 @@
             <div class="form-row">
               <label for="insertPosition"
                      data-help-title="指定位置"
-                     data-help="當排位方式選擇『指定位置』時，喺呢度輸入想放喺第幾位。">
-                指定位置（第幾位）
+                     data-help="當排位方式選擇「指定位置」時，請在此輸入想排在第幾位。">
+                指定位置
               </label>
               <input id="insertPosition" type="number" min="1" placeholder="例如：2"
-                     data-help-title="輸入指定排位"
-                     data-help="例如輸入 2，代表病人會被插入去第 2 位。若超出實際長度，系統會自動調整。">
+                     data-help-title="輸入指定位置"
+                     data-help="例如輸入 2，代表病人會被插入至第 2 位；若超出實際長度，系統會自動調整。" />
             </div>
           </div>
 
@@ -1602,27 +1602,27 @@
             <button class="btn-primary"
                     id="addPatientBtn"
                     type="button"
-                    data-help-title="加入系統"
-                    data-help="確認以上資料後，按呢度將病人正式加入輪候系統。">
-              加入系統
+                    data-help-title="加入輪候"
+                    data-help="確認以上資料後，按此將病人正式加入輪候系統。">
+              加入輪候
             </button>
           </div>
         </div>
 
         <div class="panel teach-anchor"
-             data-help-title="新增診室 / 醫生"
-             data-help="當有新房要用，或者要加一位新的醫生顯示，就喺呢區新增。">
-          <div class="panel-title">新增診室 / 醫生</div>
+             data-help-title="新增診室"
+             data-help="當有新診室需要啟用，或需新增顯示醫生時，可於此區建立。">
+          <div class="panel-title">新增診室</div>
           <div class="grid-3">
             <div class="form-row">
               <label for="newRoomNo"
-                     data-help-title="房號"
-                     data-help="輸入房號，例如 1號房、2號房。你可揀建議選項，亦可以自由輸入。">
-                房號
+                     data-help-title="診室"
+                     data-help="輸入診室名稱，例如 1號房、2號房。你可選用建議選項，亦可自由輸入。">
+                診室
               </label>
               <input id="newRoomNo" list="roomNoOptions" type="text" placeholder="可選或自由輸入"
-                     data-help-title="房號輸入框"
-                     data-help="可輸入新房號。系統唔會容許同名房號重複建立。" />
+                     data-help-title="診室輸入欄"
+                     data-help="可輸入新的診室名稱，系統不會容許相同名稱重複建立。" />
               <datalist id="roomNoOptions">
                 <option value="1號房"></option>
                 <option value="2號房"></option>
@@ -1637,12 +1637,12 @@
             <div class="form-row">
               <label for="newDoctorName"
                      data-help-title="醫生名稱"
-                     data-help="輸入醫生名稱。可以用建議選項，亦可以自由輸入。">
-                醫生
+                     data-help="輸入醫生名稱。可以使用建議選項，亦可自由輸入。">
+                醫生名稱
               </label>
               <input id="newDoctorName" list="doctorOptions" type="text" placeholder="可選或自由輸入"
-                     data-help-title="醫生輸入框"
-                     data-help="新增或輸入一位醫生名稱，會顯示喺該房卡片及病人看板。"/>
+                     data-help-title="醫生名稱輸入欄"
+                     data-help="新增或輸入醫生名稱，將顯示於診室卡及候診看板。"/>
               <datalist id="doctorOptions">
                 <option value="林家強醫生 Dr. LAM Ka Keung"></option>
                 <option value="麥應良醫生 Dr. MAK Ying Leung Elvis"></option>
@@ -1660,32 +1660,32 @@
               <button class="btn-success"
                       id="addRoomBtn"
                       type="button"
-                      data-help-title="新增診室"
-                      data-help="建立一個新房，之後系統先可以派病人去呢間房。">
-                新增診室
+                      data-help-title="建立診室"
+                      data-help="建立新的診室後，系統方可派病人前往該診室。">
+                建立診室
               </button>
             </div>
           </div>
           <div class="muted" style="margin-top:12px;"
-               data-help-title="房間補充說明"
-               data-help="房間可以新增、修改、刪除。截籌後會停止接收新派症，但病人看板仍會顯示；關房則會喺病人看板隱藏。">
-            看板會將「1號房」顯示為「1」。
+               data-help-title="診室補充說明"
+               data-help="診室可以新增、修改及刪除。停止收新症後會暫停接收新派症，但候診看板仍會顯示；關閉後則會於候診看板隱藏。">
+            候診看板會將「1號房」簡化顯示為「1」。
           </div>
         </div>
       </div>
 
       <div class="panel teach-anchor"
-           data-help-title="各診室輪候情況"
-           data-help="呢區會顯示每間房目前狀態、現在診症中病人、候診名單同過號名單，並可直接做叫號、完成、過號、轉房等操作。">
+           data-help-title="各診室輪候概況"
+           data-help="此區會顯示每間診室目前狀態、現正診症病人、候診名單及過號名單，並可直接進行叫號、完成、設為過號、轉往診室等操作。">
         <div class="toolbar-row">
-          <div class="panel-title" style="margin-bottom:0;">各診室輪候情況</div>
+          <div class="panel-title" style="margin-bottom:0;">各診室輪候概況</div>
           <div class="actions">
             <button class="btn-primary"
                     id="rebalanceWaitingBtn"
                     type="button"
-                    data-help-title="一鍵平均分流候診病人"
-                    data-help="系統會將可重新分配的候診病人，按各房目前智能負荷分數動態平衡分流。會考慮診症中病人、一般候診人數及醫療優先病人數。只處理候診中、非預約、非手動或轉房病人。">
-              平均分流候診病人
+                    data-help-title="一鍵智能平均分流候診病人"
+                    data-help="系統會將可重新分配的候診病人，按各診室目前智能負荷分數動態平均分流。會考慮現正診症病人、一般候診人數及醫療優先病人數。只處理候診中、非預約、非手動派房或轉房病人。">
+              一鍵智能平均分流候診病人
             </button>
           </div>
         </div>
@@ -1696,50 +1696,50 @@
 
     <div class="page" id="patientPage">
       <div class="panel teach-anchor"
-           data-help-title="狀態查詢"
-           data-help="可按 CUMC 號碼、房號、狀態、病人類型查詢。預設只顯示未完成個案；亦可改為包含已完成或已取消。">
-        <div class="panel-title">狀態查詢</div>
+           data-help-title="病人狀態查詢"
+           data-help="可按 CUMC 號碼、診室、病人狀態及病人類型查詢。預設只顯示未完成個案；亦可改為包括已完成或已取消個案。">
+        <div class="panel-title">病人狀態查詢</div>
 
         <div class="search-toolbar-grid">
           <div class="form-row">
             <label for="searchTicket"
-                   data-help-title="查詢 CUMC號碼"
-                   data-help="可輸入完整號碼，亦可只輸入開頭幾個字。系統會提供建議清單，並按現有篩選條件收窄建議結果。">
-              CUMC號碼
+                   data-help-title="查詢 CUMC 號碼"
+                   data-help="可輸入完整號碼，亦可只輸入開首幾個字。系統會提供建議清單，並按現有篩選條件收窄建議結果。">
+              CUMC 號碼
             </label>
             <input id="searchTicket"
                    list="searchTicketOptions"
                    type="text"
-                   placeholder="輸入頭幾個字都可以，例如：ABC"
+                   placeholder="可輸入開首幾個字，例如：ABC"
                    autocomplete="off"
-                   data-help-title="輸入病人號碼作搜尋"
-                   data-help="可輸入完整號碼或開頭字串。按 Enter 可直接查詢。" />
+                   data-help-title="輸入 CUMC 號碼作搜尋"
+                   data-help="可輸入完整號碼或開首字串，按 Enter 可直接搜尋。" />
             <datalist id="searchTicketOptions"></datalist>
           </div>
 
           <div class="form-row">
             <label for="searchRoom"
-                   data-help-title="房號篩選"
-                   data-help="如果你想查某一間房的全部或部分病人，可喺呢度選擇房號。只選房號時，系統會改用房間視圖顯示結果。">
-              房號（可選）
+                   data-help-title="診室篩選"
+                   data-help="如需查詢某一診室的全部或部分病人，可在此選擇診室。只選擇診室時，系統會以診室視圖顯示結果。">
+              診室（可選）
             </label>
             <select id="searchRoom"
-                    data-help-title="選擇房號"
-                    data-help="選擇房號後，可直接查看該房現在診症、候診、過號及其他符合篩選條件的病人。"></select>
+                    data-help-title="選擇診室"
+                    data-help="選擇診室後，可直接查看該診室現正診症、候診、過號及其他符合篩選條件的病人。"></select>
           </div>
 
           <div class="form-row">
             <label for="searchStatus"
-                   data-help-title="狀態篩選"
-                   data-help="可選擇只看候診中、診症中、過號、已完成或已取消病人。">
-              狀態
+                   data-help-title="病人狀態篩選"
+                   data-help="可選擇只查看候診中、現正診症、過號、已完成或已取消病人。">
+              病人狀態
             </label>
             <select id="searchStatus"
-                    data-help-title="狀態篩選選擇"
-                    data-help="配合 CUMC 或房號使用，可更快找出你想要的病人狀態。">
+                    data-help-title="病人狀態篩選選擇"
+                    data-help="配合 CUMC 號碼或診室使用，可更快找出所需病人狀態。">
               <option value="all">全部狀態</option>
               <option value="waiting">候診中</option>
-              <option value="called">診症中</option>
+              <option value="called">現正診症</option>
               <option value="skipped">過號</option>
               <option value="done">已完成</option>
               <option value="cancelled">已取消</option>
@@ -1767,9 +1767,9 @@
             <button class="btn-primary"
                     id="searchPatientBtn"
                     type="button"
-                    data-help-title="查詢"
-                    data-help="按呢度開始搜尋病人資料。按 Enter 亦可直接查詢。">
-              查詢
+                    data-help-title="搜尋"
+                    data-help="按此開始搜尋病人資料；按 Enter 亦可直接搜尋。">
+              搜尋
             </button>
           </div>
 
@@ -1778,34 +1778,34 @@
             <button class="btn-secondary"
                     id="clearSearchBtn"
                     type="button"
-                    data-help-title="清除"
-                    data-help="清除所有查詢條件及結果，回復預設查詢模式。">
-              清除
+                    data-help-title="清除條件"
+                    data-help="清除所有搜尋條件及結果，回復預設搜尋模式。">
+              清除條件
             </button>
           </div>
         </div>
 
         <div class="search-active-row">
           <label class="search-checkbox"
-                 data-help-title="只顯示未完成"
-                 data-help="預設只顯示候診中、診症中及過號病人。取消勾選後，搜尋結果亦會包括已完成及已取消。">
+                 data-help-title="只顯示未完成個案"
+                 data-help="預設只顯示候診中、現正診症及過號病人。取消勾選後，搜尋結果亦會包括已完成及已取消個案。">
             <input id="searchActiveOnly" type="checkbox" checked />
-            <span>只顯示未完成</span>
+            <span>只顯示未完成個案</span>
           </label>
 
           <div class="search-help-note"
-               data-help-title="查詢說明"
-               data-help="房號單獨查詢會以『房間視圖』顯示。若輸入 CUMC 不夠完整，系統會列出符合條件的病人，並將未完成個案排前。">
-            提示：房號單獨查詢會顯示整間房目前情況；輸入 CUMC 時，未完成個案會排前。
+               data-help-title="搜尋說明"
+               data-help="只選擇診室時，系統會以「診室視圖」顯示；若輸入 CUMC 號碼未夠完整，系統會列出符合條件的病人，並將未完成個案優先顯示。">
+            提示：只選擇診室時，系統會顯示該診室目前情況；輸入 CUMC 號碼時，未完成個案會優先顯示。
           </div>
         </div>
 
         <div class="search-chip-row"
              data-help-title="快速狀態切換"
-             data-help="可快速切換查詢狀態。按下後會即時套用狀態篩選。">
-          <button class="search-chip active" type="button" data-search-chip="all">全部</button>
+             data-help="可快速切換搜尋狀態。按下後會即時套用病人狀態篩選。">
+          <button class="search-chip active" type="button" data-search-chip="all">全部狀態</button>
           <button class="search-chip" type="button" data-search-chip="waiting">候診中</button>
-          <button class="search-chip" type="button" data-search-chip="called">診症中</button>
+          <button class="search-chip" type="button" data-search-chip="called">現正診症</button>
           <button class="search-chip" type="button" data-search-chip="skipped">過號</button>
           <button class="search-chip" type="button" data-search-chip="done">已完成</button>
           <button class="search-chip" type="button" data-search-chip="cancelled">已取消</button>
@@ -1818,9 +1818,9 @@
     <div class="page" id="displayPage">
       <div class="board-toolbar">
         <div class="board-title"
-             data-help-title="候診情況看板"
-             data-help="呢個係俾病人睇的大看板，會顯示每間房的現在看號、候診及過號情況。">
-          候診情況 Queue Status
+             data-help-title="候診情況"
+             data-help="此為供病人參閱的候診看板，顯示每間診室的現正診症號碼、候診及過號情況。">
+          候診情況<br>Queue Status
         </div>
         <div class="board-time"
              id="boardTime"
@@ -1830,7 +1830,7 @@
 
       <div class="info-card board-disclaimer"
            data-help-title="看板提示"
-           data-help="看板資料只供參考。實際輪候可能會因病人臨床情況及現場運作需要而調整。">
+           data-help="看板資料只供參考，實際輪候可能會因病人臨床需要及現場實際運作而調整。">
         <div class="inline-note">
           輪候情況只供參考，會因應病人臨床需要及現場實際運作而作出調整，敬請見諒。<br>
           This queue is for reference only and may be adjusted at any time according to patients' clinical needs and operational requirements. Thank you for your understanding.
@@ -1838,7 +1838,7 @@
       </div>
 
       <div id="displayBoard"></div>
-      <div class="board-footer-tip">香港中文大學醫院急症醫學中心 CUHKMC Emergency Medicine Centre</div>
+      <div class="board-footer-tip">香港中文大學醫院急症醫學中心<br>CUHKMC Emergency Medicine Centre</div>
     </div>
   </div>
 
@@ -2091,13 +2091,13 @@
     }
 
     function getPriorityLabel(patient) {
-      return patient.priority ? "Cat 2" : "Cat 3";
+      return patient.priority ? "Cat 2（優先）" : "Cat 3（一般）";
     }
 
     function getStatusLabel(status) {
       const statusMap = {
         waiting: "候診中",
-        called: "診症中",
+        called: "現正診症",
         skipped: "過號",
         done: "已完成",
         cancelled: "已取消"
@@ -2305,11 +2305,11 @@
       const rooms = getAssignableRooms(patientType);
 
       if (!rooms.length) {
-        select.innerHTML = `<option value="">暫無可派症診室</option>`;
+        select.innerHTML = `<option value="">暫無可派往的診室</option>`;
       } else {
         select.innerHTML = rooms.map(room => `
           <option value="${room.id}">
-            ${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}${room.status === "paused" && patientType === "appointment" ? "（暫停中，可收預約）" : ""}
+            ${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}${room.status === "paused" && patientType === "appointment" ? "（暫停中，可接收預約）" : ""}
           </option>
         `).join("");
       }
@@ -2329,7 +2329,7 @@
       const rooms = sortedRooms();
 
       select.innerHTML = `
-        <option value="">全部房號</option>
+        <option value="">全部診室</option>
         ${rooms.map(room => `
           <option value="${escapeHtml(room.roomNo)}">${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}</option>
         `).join("")}
@@ -2520,7 +2520,7 @@
       syncSearchStatusChipUi();
       updateSearchTicketSuggestions("");
       clearSearchResult();
-      notify("已清除查詢條件", "info");
+      notify("已清除搜尋條件", "info");
     }
 
     function getSearchPatientMatches(filters, options = {}) {
@@ -2631,30 +2631,30 @@
             </div>
           </div>
         `).join("")
-        : `<div class="muted">暫無活動紀錄</div>`;
+        : `<div class="muted">暫無操作紀錄</div>`;
 
       const html = `
-        ${renderSearchSummary(`已找到病人：${getPatientDisplayNo(patient)}`)}
-        <div class="patient-search-result teach-anchor" data-help-title="病人詳細結果" data-help="呢度會顯示病人的最新狀態、所屬房間、時間紀錄，以及輪候位置。活動紀錄可幫你追蹤病人曾經做過咩操作。">
+        ${renderSearchSummary(`已找到病人資料：${getPatientDisplayNo(patient)}`)}
+        <div class="patient-search-result teach-anchor" data-help-title="病人詳細結果" data-help="此處會顯示病人的最新狀態、所屬診室、時間紀錄及目前輪候位置。操作紀錄可協助追蹤病人曾進行的操作。">
           <div class="grid-2">
-            <div><strong>CUMC號碼：</strong>${escapeHtml(getPatientDisplayNo(patient))}</div>
-            <div><strong>診室：</strong>${room ? `${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}` : "—"}</div>
-            <div><strong>狀態：</strong>${escapeHtml(getStatusLabel(patient.status))}</div>
+            <div><strong>CUMC 號碼：</strong>${escapeHtml(getPatientDisplayNo(patient))}</div>
+            <div><strong>所屬診室：</strong>${room ? `${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}` : "—"}</div>
+            <div><strong>病人狀態：</strong>${escapeHtml(getStatusLabel(patient.status))}</div>
             <div><strong>病人類型：</strong>${escapeHtml(getPatientTypeLabel(patient.sourceType))}</div>
-            <div><strong>級別：</strong>${escapeHtml(getPriorityLabel(patient))}</div>
-            <div><strong>首次派房：</strong>${patient.initialAssignmentMode === "manual" ? "手動派房（不可自動分流）" : "自動派房"}</div>
-            <div><strong>人工轉房鎖定：</strong>${patient.manualLock ? `是${patient.manualLockReason ? `（${escapeHtml(patient.manualLockReason)}）` : ""}` : "否"}</div>
-            <div><strong>登記時間：</strong>${escapeHtml(formatDateTime(patient.registeredAt))}</div>
-            <div><strong>系統建立時間：</strong>${escapeHtml(formatDateTime(patient.createdAt))}</div>
+            <div><strong>分流級別：</strong>${escapeHtml(getPriorityLabel(patient))}</div>
+            <div><strong>首次派往診室方式：</strong>${patient.initialAssignmentMode === "manual" ? "手動派房（不可自動分流）" : "自動派房"}</div>
+            <div><strong>手動轉房鎖定：</strong>${patient.manualLock ? `是${patient.manualLockReason ? `（${escapeHtml(patient.manualLockReason)}）` : ""}` : "否"}</div>
+            <div><strong>登記時間（HKT）：</strong>${escapeHtml(formatDateTime(patient.registeredAt))}</div>
+            <div><strong>系統記錄建立時間：</strong>${escapeHtml(formatDateTime(patient.createdAt))}</div>
             <div><strong>首次叫號時間：</strong>${escapeHtml(formatDateTime(patient.calledAt))}</div>
             <div><strong>過號時間：</strong>${escapeHtml(formatDateTime(patient.skippedAt))}</div>
             <div><strong>完成時間：</strong>${escapeHtml(formatDateTime(patient.doneAt))}</div>
             <div><strong>取消時間：</strong>${escapeHtml(formatDateTime(patient.cancelledAt))}</div>
-            <div><strong>輪候位置：</strong>${queuePosition || "—"}</div>
+            <div><strong>目前輪候位置：</strong>${queuePosition || "—"}</div>
           </div>
 
           <div class="history-list">
-            <div class="section-title" style="margin-top:0;">活動紀錄</div>
+            <div class="section-title" style="margin-top:0;">操作紀錄</div>
             ${historyHtml}
           </div>
         </div>
@@ -2666,22 +2666,22 @@
       }
     }
 
-    function renderPatientSearchList(patients, title = "找到多個結果") {
+    function renderPatientSearchList(patients, title = "找到多項結果") {
       const container = document.getElementById("patientSearchResult");
 
       const html = `
-        ${renderSearchSummary(`共找到 ${patients.length} 個符合結果，未完成個案已優先排列。`)}
-        <div class="patient-search-result teach-anchor" data-help-title="多個查詢結果" data-help="當輸入條件未足夠精確，系統會列出所有符合結果，並將未完成個案優先顯示。你可按『查看詳情』查看單一病人。">
+        ${renderSearchSummary(`共找到 ${patients.length} 項符合結果，未完成個案已優先顯示。`)}
+        <div class="patient-search-result teach-anchor" data-help-title="多項搜尋結果" data-help="當輸入條件未夠精確時，系統會列出所有符合結果，並將未完成個案優先顯示。你可按「查看詳情」查看單一病人資料。">
           <div class="section-title" style="margin-top:0;">${escapeHtml(title)}</div>
           <table>
             <thead>
               <tr>
-                <th>CUMC號碼</th>
-                <th>診室</th>
-                <th>狀態</th>
+                <th>CUMC 號碼</th>
+                <th>所屬診室</th>
+                <th>病人狀態</th>
                 <th>類型</th>
-                <th>級別</th>
-                <th>輪候位置</th>
+                <th>分流級別</th>
+                <th>目前輪候位置</th>
                 <th>登記時間（HKT）</th>
                 <th>操作</th>
               </tr>
@@ -2709,12 +2709,12 @@
                 <table>
                   <thead>
                     <tr>
-                      <th>CUMC號碼</th>
-                      ${includeRoom ? "<th>診室</th>" : ""}
-                      <th>狀態</th>
+                      <th>CUMC 號碼</th>
+                      ${includeRoom ? "<th>所屬診室</th>" : ""}
+                      <th>病人狀態</th>
                       <th>類型</th>
-                      <th>級別</th>
-                      <th>輪候位置</th>
+                      <th>分流級別</th>
+                      <th>目前輪候位置</th>
                       <th>登記時間（HKT）</th>
                       <th>操作</th>
                     </tr>
@@ -2754,11 +2754,11 @@
       const donePatients = roomPatients.filter(patient => patient.status === "done").sort(compareSearchPatients);
       const cancelledPatients = roomPatients.filter(patient => patient.status === "cancelled").sort(compareSearchPatients);
 
-      const summaryText = `房間 ${room.roomNo} / ${room.doctorName}：共找到 ${roomPatients.length} 位病人`;
+      const summaryText = `診室 ${room.roomNo} / 醫生 ${room.doctorName}：共找到 ${roomPatients.length} 位病人`;
 
       const html = `
         ${renderSearchSummary(summaryText)}
-        <div class="search-room-hero teach-anchor" data-help-title="房間查詢結果" data-help="當只選房號查詢時，系統會用房間視圖顯示該房目前情況，包括診症中、候診、過號及其他符合篩選條件的病人。">
+        <div class="search-room-hero teach-anchor" data-help-title="診室查詢結果" data-help="當只選擇診室進行查詢時，系統會以診室視圖顯示該診室目前情況，包括現正診症、候診、過號及其他符合篩選條件的病人。">
           <div class="search-room-hero-top">
             <div>
               <div class="search-room-title">${escapeHtml(room.roomNo)}</div>
@@ -2766,17 +2766,17 @@
             </div>
             <div class="status-stack" style="align-items:flex-end;">
               <div class="status-badge ${room.status === "open" ? "status-open" : room.status === "paused" ? "status-paused" : "status-closed"}">
-                ${room.status === "open" ? "開放中" : room.status === "paused" ? "暫停" : "已關房"}
+                ${room.status === "open" ? "開放" : room.status === "paused" ? "暫停" : "關閉"}
               </div>
               <div class="status-badge ${room.acceptingNew ? "status-accepting" : "status-stop-assign"}">
-                ${room.acceptingNew ? "可派症" : "已截籌"}
+                ${room.acceptingNew ? "接受新症" : "停收新症"}
               </div>
             </div>
           </div>
 
           <div class="search-mini-grid">
             <div class="search-mini-card">
-              <div class="search-mini-label">現在診症</div>
+              <div class="search-mini-label">現正診症</div>
               <div class="search-mini-value">${currentPatient ? escapeHtml(getPatientDisplayNo(currentPatient)) : "—"}</div>
             </div>
             <div class="search-mini-card">
@@ -2788,13 +2788,13 @@
               <div class="search-mini-value">${skippedPatients.length}</div>
             </div>
             <div class="search-mini-card">
-              <div class="search-mini-label">總數</div>
+              <div class="search-mini-label">符合條件總數</div>
               <div class="search-mini-value">${roomPatients.length}</div>
             </div>
           </div>
         </div>
 
-        ${renderRoomSearchSection("診症中", calledPatients, false)}
+        ${renderRoomSearchSection("現正診症", calledPatients, false)}
         ${renderRoomSearchSection("候診中", waitingPatients, false)}
         ${renderRoomSearchSection("過號", skippedPatients, false)}
         ${!filters.activeOnly ? renderRoomSearchSection("已完成", donePatients, false) : ""}
@@ -2807,10 +2807,10 @@
       }
     }
 
-    function renderNoSearchResult(message = "找不到病人資料") {
+    function renderNoSearchResult(message = "找不到符合條件的病人資料") {
       const container = document.getElementById("patientSearchResult");
       const html = `
-        <div class="patient-search-result teach-anchor" data-help-title="查詢結果" data-help="系統目前找不到符合條件的病人資料。請檢查 CUMC 號碼、房號或篩選條件是否正確。">
+        <div class="patient-search-result teach-anchor" data-help-title="搜尋結果" data-help="系統目前找不到符合條件的病人資料。請檢查 CUMC 號碼、診室或篩選條件是否正確。">
           <div class="muted">${escapeHtml(message)}</div>
         </div>
       `;
@@ -2893,7 +2893,7 @@
 
       if (!visibleRooms.length) {
         const html = `
-          <div class="board-wrap teach-anchor" data-help-title="沒有顯示中的診室" data-help="代表目前所有房間都已關房，或者暫時未建立任何房間。">
+          <div class="board-wrap teach-anchor" data-help-title="沒有顯示中的診室" data-help="代表目前所有診室均已關閉，或暫時未建立任何診室。">
             <div class="board-body">
               <div class="board-row">
                 <div class="board-cell" style="grid-column: 1 / -1; min-height: 320px;">
@@ -2950,8 +2950,8 @@
 
         return `
           <div class="board-row teach-anchor"
-               data-help-title="看板上的一間房"
-               data-help="依行代表一間診室。由左到右依次顯示：房號、醫生、現在看號、候診名單、過號名單。">
+               data-help-title="看板中的一間診室"
+               data-help="此行代表一間診室。由左至右依次顯示：診室、醫生、現正診症、候診名單及過號名單。">
             <div class="board-cell board-room">${escapeHtml(getRoomDisplayShort(room.roomNo))}</div>
             <div class="board-cell board-doctor">
               <div class="board-doctor-zh">${escapeHtml(doctorParts.zh)}</div>
@@ -2960,7 +2960,7 @@
             <div class="board-cell board-current">
               ${currentBoardContent}
             </div>
-<div class="board-cell">
+            <div class="board-cell">
               <div class="board-queue">
                 ${
                   (() => {
@@ -2972,8 +2972,8 @@
                     const cutoffHtml = (room.status === "open" && room.acceptingNew === false)
                       ? `
                         <span class="board-cutoff-tag">
-                          <span class="board-cutoff-zh">停收新症</span>
-                          <span class="board-cutoff-en">No New Patients</span>
+                          <span class="board-cutoff-zh">暫停接收新症</span>
+                          <span class="board-cutoff-en">Not Accepting New Patients</span>
                         </span>
                       `
                       : "";
@@ -2983,11 +2983,6 @@
                 }
               </div>
             </div>
-
-
-
-
-            
             <div class="board-cell">
               <div class="board-skip">
                 ${
@@ -3003,16 +2998,16 @@
       }).join("");
 
       const html = `
-        <div class="board-pagination-bar teach-anchor" data-help-title="看板分頁" data-help="如果房間太多，看板會自動分頁輪流顯示。呢度會顯示目前第幾頁。">
+        <div class="board-pagination-bar teach-anchor" data-help-title="看板分頁" data-help="若診室數量太多，看板會自動分頁輪流顯示。此處會顯示目前頁數。">
           <div class="board-page-indicator">第 ${state.displayPageIndex + 1} 頁 / 共 ${totalPages} 頁</div>
           <div class="board-page-dots">${dotsHtml}</div>
         </div>
 
         <div class="board-wrap">
-          <div class="board-head teach-anchor" data-help-title="看板欄位標題" data-help="ROOM 係房號，DOCTOR 係醫生，NOW SERVING 係現在看號，WAITING 係候診，SKIPPED 係過號。">
-            <div><span class="board-head-zh">房號</span><span class="board-head-en">ROOM</span></div>
+          <div class="board-head teach-anchor" data-help-title="看板欄位標題" data-help="ROOM 代表診室，DOCTOR 代表醫生，NOW SERVING 代表現正診症，WAITING 代表候診，MISSED 代表過號。">
+            <div><span class="board-head-zh">診室</span><span class="board-head-en">ROOM</span></div>
             <div><span class="board-head-zh">醫生</span><span class="board-head-en">DOCTOR</span></div>
-            <div><span class="board-head-zh">現在看號</span><span class="board-head-en">NOW SERVING</span></div>
+            <div><span class="board-head-zh">現正診症</span><span class="board-head-en">NOW SERVING</span></div>
             <div><span class="board-head-zh">候診</span><span class="board-head-en">WAITING</span></div>
             <div><span class="board-head-zh">過號</span><span class="board-head-en">MISSED</span></div>
           </div>
@@ -3101,8 +3096,8 @@
                 <div class="queue-ticket-row">
                   <div class="hover-log-anchor"
                        ${renderPatientHoverLogAttrs(patient)}
-                       data-help-title="病人活動紀錄"
-                       data-help="將滑鼠移到 CUMC號碼，會喺游標旁邊顯示最近 5 個活動記錄。">
+                       data-help-title="病人操作紀錄"
+                       data-help="將滑鼠移至 CUMC 號碼，會於游標旁顯示最近 5 項操作紀錄。">
                     <div class="queue-ticket-text">${escapeHtml(getPatientDisplayNo(patient))}</div>
                     <div class="hover-log-hint">i</div>
                   </div>
@@ -3112,12 +3107,12 @@
                   <div class="queue-badges-row">
                     <span class="pill ${getPatientTypePill(patient.sourceType)}">${getPatientTypeLabel(patient.sourceType)}</span>
                     <span class="pill ${patient.priority ? "pill-priority" : "pill-normal"}">
-                      ${patient.priority ? "Cat 2" : "Cat 3"}
+                      ${patient.priority ? "Cat 2（優先）" : "Cat 3（一般）"}
                     </span>
                     <span class="pill ${patient.initialAssignmentMode === "manual" ? "pill-manual" : "pill-auto-assign"}">
                       ${patient.initialAssignmentMode === "manual" ? "手動派房" : "自動派房"}
                     </span>
-                    ${patient.manualLock ? `<span class="pill pill-locked">指定轉房</span>` : ``}
+                    ${patient.manualLock ? `<span class="pill pill-locked">手動轉房鎖定</span>` : ``}
                   </div>
                   <div class="queue-time">${escapeHtml(formatDateTime(patient.registeredAt))}</div>
                 </div>
@@ -3130,17 +3125,17 @@
                           type="button"
                           data-action="togglePriority"
                           data-patient-id="${patient.id}"
-                          data-help-title="轉Cat 2 / 轉Cat 3"
-                          data-help="切換病人級別。候診中病人改完後，系統會重新調整佢喺隊中的位置。">
-                    ${patient.priority ? "轉Cat 3" : "轉Cat 2"}
+                          data-help-title="改為 Cat 2 / 改為 Cat 3"
+                          data-help="切換病人級別。候診中病人更改後，系統會重新調整其候診位置。">
+                    ${patient.priority ? "改為 Cat 3" : "改為 Cat 2"}
                   </button>
 
                   <button class="btn-secondary btn-small more-toggle-btn"
                           type="button"
                           data-more-toggle="${patient.id}"
                           data-help-title="更多操作"
-                          data-help="一按即展開更多操作，包括移到最前、指定位置、轉房、轉隊首、轉隊尾及刪除。">
-                    更多
+                          data-help="按此展開更多操作，包括移至隊首、移至指定位置、轉往診室、轉房並排隊首、轉房並排隊尾及取消輪候。">
+                    更多操作
                   </button>
                 </div>
 
@@ -3151,35 +3146,35 @@
                               type="button"
                               data-action="moveToFront"
                               data-patient-id="${patient.id}"
-                              data-help-title="移到最前"
-                              data-help="直接將呢位候診病人搬到該房候診名單最前。">
-                        移到最前
+                              data-help-title="移至隊首"
+                              data-help="直接將此候診病人移至該診室候診名單最前。">
+                        移至隊首
                       </button>
 
                       <div class="actions" style="margin:0;">
                         <input class="insert-pos-input"
                                type="number"
                                min="1"
-                               placeholder="第幾位"
+                               placeholder="輸入位置"
                                data-insert-position="${patient.id}"
                                data-help-title="輸入指定位置"
-                               data-help="先輸入第幾位，再按『指定位置』將病人插入到指定位置。"/>
+                               data-help="先輸入第幾位，再按「移至指定位置」將病人插入指定位置。"/>
                         <button class="btn-secondary btn-small"
                                 type="button"
                                 data-action="insertAtPosition"
                                 data-patient-id="${patient.id}"
-                                data-help-title="指定位置"
-                                data-help="將病人插入去你輸入的排位，例如第 2 位。">
-                          指定位置
+                                data-help-title="移至指定位置"
+                                data-help="將病人移至你輸入的指定位置，例如第 2 位。">
+                          移至指定位置
                         </button>
                       </div>
                     </div>
 
                     <div class="more-actions-line">
                       <select class="transfer-room-select"
-                              data-help-title="選擇轉去房間"
-                              data-help="先喺呢度揀一個目標房間，之後再按右邊按鈕。">
-                        <option value="">轉去房間</option>
+                              data-help-title="選擇目標診室"
+                              data-help="請先於此選擇目標診室，然後再按右邊按鈕。">
+                        <option value="">選擇目標診室</option>
                         ${transferOptions}
                       </select>
 
@@ -3187,9 +3182,9 @@
                               type="button"
                               data-action="transferAuto"
                               data-patient-id="${patient.id}"
-                              data-help-title="轉房"
-                              data-help="將病人轉去所選房間，並由系統按規則自動安排新位置。病人之後會被鎖定，不再參與一鍵平均分流。">
-                        轉房
+                              data-help-title="轉往診室"
+                              data-help="將病人轉往所選診室，並由系統按規則自動安排新位置。病人之後會被鎖定，不再參與一鍵智能平均分流。">
+                        轉往診室
                       </button>
                     </div>
 
@@ -3198,18 +3193,18 @@
                               type="button"
                               data-action="transferFront"
                               data-patient-id="${patient.id}"
-                              data-help-title="轉房隊頭"
-                              data-help="將病人轉去另一間房，並直接放到該房隊首。">
-                        轉房隊頭
+                              data-help-title="轉房並排隊首"
+                              data-help="將病人轉往另一診室，並直接排到該診室隊首。">
+                        轉房並排隊首
                       </button>
 
                       <button class="btn-primary btn-small"
                               type="button"
                               data-action="transferTail"
                               data-patient-id="${patient.id}"
-                              data-help-title="轉房隊尾"
-                              data-help="將病人轉去另一間房，並直接放到該房最後。">
-                        轉房隊尾
+                              data-help-title="轉房並排隊尾"
+                              data-help="將病人轉往另一診室，並直接排到該診室隊尾。">
+                        轉房並排隊尾
                       </button>
                     </div>
 
@@ -3218,9 +3213,9 @@
                               type="button"
                               data-action="cancelPatient"
                               data-patient-id="${patient.id}"
-                              data-help-title="刪除"
-                              data-help="將病人標記為已取消，並由現有候診或診症流程移除。">
-                        刪除
+                              data-help-title="取消輪候"
+                              data-help="將病人標記為已取消輪候，並由現有候診或診症流程移除。">
+                        取消輪候
                       </button>
                     </div>
                   </div>
@@ -3239,8 +3234,8 @@
                 <div class="queue-ticket-row">
                   <div class="hover-log-anchor"
                        ${renderPatientHoverLogAttrs(patient)}
-                       data-help-title="病人活動紀錄"
-                       data-help="將滑鼠移到 CUMC號碼，會喺游標旁邊顯示最近 5 個 activity log。">
+                       data-help-title="病人操作紀錄"
+                       data-help="將滑鼠移至 CUMC 號碼，會於游標旁顯示最近 5 項操作紀錄。">
                     <div class="queue-ticket-text">${escapeHtml(getPatientDisplayNo(patient))}</div>
                     <div class="hover-log-hint">i</div>
                   </div>
@@ -3250,7 +3245,7 @@
                   <div class="queue-badges-row">
                     <span class="pill ${getPatientTypePill(patient.sourceType)}">${getPatientTypeLabel(patient.sourceType)}</span>
                     <span class="pill ${patient.priority ? "pill-priority" : "pill-normal"}">
-                      ${patient.priority ? "Cat 2" : "Cat 3"}
+                      ${patient.priority ? "Cat 2（優先）" : "Cat 3（一般）"}
                     </span>
                   </div>
                   <div class="queue-time">${escapeHtml(formatDateTime(patient.registeredAt))}</div>
@@ -3264,41 +3259,41 @@
                           type="button"
                           data-action="recallSkipped"
                           data-patient-id="${patient.id}"
-                          data-help-title="重叫"
-                          data-help="如果該房目前無人診症中，可將過號病人即時重新叫入去。">
-                    重叫
+                          data-help-title="重新叫號"
+                          data-help="如果該診室目前沒有病人診症中，可將過號病人即時重新叫入診症。">
+                    重新叫號
                   </button>
 
                   <button class="btn-success btn-small"
                           type="button"
                           data-action="requeueSkipped"
                           data-patient-id="${patient.id}"
-                          data-help-title="回原房（自動排位）"
-                          data-help="將過號病人放回原本房間的候診隊列，並由系統按規則自動排位。">
-                    回原房
+                          data-help-title="返回原房（自動排位）"
+                          data-help="將過號病人放回原本診室的候診隊列，並由系統按規則自動排位。">
+                    返回原房（自動排位）
                   </button>
 
                   <button class="btn-secondary btn-small more-toggle-btn"
                           type="button"
                           data-more-toggle="${patient.id}"
                           data-help-title="更多操作"
-                          data-help="一按即展開更多操作，包括轉房、轉房隊頭、轉房隊尾及刪除。">
-                    更多
+                          data-help="按此展開更多操作，包括轉往診室、轉房並排隊首、轉房並排隊尾及取消輪候。">
+                    更多操作
                   </button>
                 </div>
 
                 <div class="more-actions-panel" data-more-panel="${patient.id}">
                   <div class="more-actions-grid">
                     <div class="more-actions-line">
-                      <div class="muted" style="font-weight:800;">過號病人不適用</div>
-                      <div class="muted" style="font-weight:800;">指定位置只適用候診中</div>
+                      <div class="muted" style="font-weight:800;">此功能不適用於過號病人</div>
+                      <div class="muted" style="font-weight:800;">指定位置只適用於候診中的病人</div>
                     </div>
 
                     <div class="more-actions-line">
                       <select class="transfer-room-select"
-                              data-help-title="選擇轉去房間"
-                              data-help="先揀目標房，再用右邊按鈕將病人轉去另一間房。">
-                        <option value="">轉去房間</option>
+                              data-help-title="選擇目標診室"
+                              data-help="請先選擇目標診室，再用右邊按鈕將病人轉往另一診室。">
+                        <option value="">選擇目標診室</option>
                         ${transferOptions}
                       </select>
 
@@ -3306,9 +3301,9 @@
                               type="button"
                               data-action="transferAuto"
                               data-patient-id="${patient.id}"
-                              data-help-title="轉房"
-                              data-help="將過號病人轉去另一房，並重新回到候診中，由系統自動排位。">
-                        轉房
+                              data-help-title="轉往診室"
+                              data-help="將過號病人轉往另一診室，並重新返回候診中，由系統自動排位。">
+                        轉往診室
                       </button>
                     </div>
 
@@ -3317,18 +3312,18 @@
                               type="button"
                               data-action="transferFront"
                               data-patient-id="${patient.id}"
-                              data-help-title="轉房隊頭"
-                              data-help="將過號病人轉去另一房，並直接放到新房隊首。">
-                        轉房隊頭
+                              data-help-title="轉房並排隊首"
+                              data-help="將過號病人轉往另一診室，並直接排到新診室隊首。">
+                        轉房並排隊首
                       </button>
 
                       <button class="btn-primary btn-small"
                               type="button"
                               data-action="transferTail"
                               data-patient-id="${patient.id}"
-                              data-help-title="轉房隊尾"
-                              data-help="將過號病人轉去另一房，並直接放到新房最後。">
-                        轉房隊尾
+                              data-help-title="轉房並排隊尾"
+                              data-help="將過號病人轉往另一診室，並直接排到新診室隊尾。">
+                        轉房並排隊尾
                       </button>
                     </div>
 
@@ -3337,9 +3332,9 @@
                               type="button"
                               data-action="cancelPatient"
                               data-patient-id="${patient.id}"
-                              data-help-title="刪除"
-                              data-help="將過號病人取消並移出後續流程。">
-                        刪除
+                              data-help-title="取消輪候"
+                              data-help="將過號病人取消輪候並移出後續流程。">
+                        取消輪候
                       </button>
                     </div>
                   </div>
@@ -3353,7 +3348,7 @@
       const currentDisplay = room.status === "paused"
         ? `
           <div class="current-ticket" style="color:#b45309;">${escapeHtml(room.pauseReason || "暫停")}</div>
-          <div class="current-subtext">此房目前暫停</div>
+          <div class="current-subtext">此診室目前暫停</div>
         `
         : `
           <div class="current-ticket">${currentPatient ? escapeHtml(getPatientDisplayNo(currentPatient)) : "—"}</div>
@@ -3362,36 +3357,36 @@
 
       return `
         <div class="room-card teach-anchor" data-room-id="${room.id}"
-             data-help-title="診室卡片"
-             data-help="呢張卡代表一間房。可喺呢度睇房間狀態、現在診症中病人、候診名單、過號名單，以及直接進行管理操作。">
+             data-help-title="診室卡"
+             data-help="此卡代表一間診室。可於此查看診室狀態、現正診症病人、候診名單、過號名單，以及直接進行管理操作。">
           <div class="room-card-header">
             <div>
               <div class="room-no"
-                   data-help-title="房號"
-                   data-help="呢個係診室名稱或房號。">${escapeHtml(room.roomNo)}</div>
+                   data-help-title="診室"
+                   data-help="此為診室名稱。">${escapeHtml(room.roomNo)}</div>
               <div class="doctor-name"
                    data-help-title="醫生名稱"
-                   data-help="顯示目前該房負責醫生。">${escapeHtml(room.doctorName)}</div>
+                   data-help="顯示目前該診室負責醫生。">${escapeHtml(room.doctorName)}</div>
             </div>
             <div class="status-stack">
               <div class="status-badge ${room.status === "open" ? "status-open" : room.status === "paused" ? "status-paused" : "status-closed"}"
-                   data-help-title="房間狀態"
-                   data-help="${room.status === "open" ? "開放中：可以正常叫號。" : room.status === "paused" ? "暫停：房間暫時停止一般診症流程。" : "已關房：病人看板會隱藏此房。"}">
-                ${room.status === "open" ? "開放中" : room.status === "paused" ? "暫停" : "已關房"}
+                   data-help-title="診室狀態"
+                   data-help="${room.status === "open" ? "開放：可正常叫號。" : room.status === "paused" ? "暫停：診室暫時停止一般診症流程。" : "關閉：候診看板會隱藏此診室。"}">
+                ${room.status === "open" ? "開放" : room.status === "paused" ? "暫停" : "關閉"}
               </div>
               <div class="status-badge ${room.acceptingNew ? "status-accepting" : "status-stop-assign"}"
-                   data-help-title="派症狀態"
-                   data-help="${room.acceptingNew ? "可派症：系統可將新病人派入呢間房。" : "已截籌：停止接收新派症，但仍可顯示及處理現有病人。"}">
-                ${room.acceptingNew ? "可派症" : "已截籌"}
+                   data-help-title="新症狀態"
+                   data-help="${room.acceptingNew ? "接受新症：系統可將新病人派往此診室。" : "停收新症：暫停接收新派症，但仍可顯示及處理現有病人。"}">
+                ${room.acceptingNew ? "接受新症" : "停收新症"}
               </div>
             </div>
           </div>
 
           <div class="room-card-body">
             <div class="current-box"
-                 data-help-title="現在診症"
-                 data-help="顯示而家正在診症中的病人。如果房間暫停，會顯示暫停原因。">
-              <div class="current-label">現在診症</div>
+                 data-help-title="現正診症"
+                 data-help="顯示目前正在診症中的病人；若診室暫停，則會顯示暫停原因。">
+              <div class="current-label">現正診症</div>
               ${currentDisplay}
             </div>
 
@@ -3400,24 +3395,24 @@
                       data-action="callNext"
                       data-room-id="${room.id}"
                       type="button"
-                      data-help-title="叫下一位"
-                      data-help="將呢間房候診名單最前的一位病人轉為『診症中』。如果仍有病人診症中，就要先完成或過號。">
-                叫下一位
+                      data-help-title="叫號"
+                      data-help="將此診室候診名單最前的一位病人轉為「現正診症」。如仍有病人診症中，需先完成或設為過號。">
+                叫號
               </button>
               <button class="btn-success btn-small"
                       data-action="finishCurrent"
                       data-room-id="${room.id}"
                       type="button"
-                      data-help-title="完成診症"
+                      data-help-title="完成"
                       data-help="將目前診症中的病人標記為已完成。">
-                完成診症
+                完成
               </button>
               <button class="btn-warning btn-small"
                       data-action="skipCurrent"
                       data-room-id="${room.id}"
                       type="button"
                       data-help-title="過號"
-                      data-help="將目前診症中的病人標記為過號。之後可重叫、回原房、轉房或取消。">
+                      data-help="將目前診症中的病人標記為過號，之後可重新叫號、返回原房、轉往診室或取消輪候。">
                 過號
               </button>
               <button class="btn-secondary btn-small"
@@ -3425,7 +3420,7 @@
                       data-room-id="${room.id}"
                       type="button"
                       data-help-title="開放"
-                      data-help="將房間狀態設為開放，恢復正常叫號流程。">
+                      data-help="將診室狀態設為開放，恢復正常叫號流程。">
                 開放
               </button>
               <button class="btn-secondary btn-small"
@@ -3433,24 +3428,24 @@
                       data-room-id="${room.id}"
                       type="button"
                       data-help-title="暫停"
-                      data-help="將房間狀態設為暫停。你可以先選或輸入暫停原因，例如急救中、小手術、巡房。">
+                      data-help="將診室狀態設為暫停。你可先選擇或輸入暫停原因，例如急救中、小手術、巡房。">
                 暫停
               </button>
               <button class="btn-danger btn-small"
                       data-action="setClosed"
                       data-room-id="${room.id}"
                       type="button"
-                      data-help-title="關房"
-                      data-help="將房間設為關房。關房後病人看板會隱藏此房。此版本容許即使仍有 active patient 都可關房。">
-                關房
+                      data-help-title="關閉"
+                      data-help="將診室設為關閉。關閉後候診看板會隱藏此診室。此版本容許即使仍有未完成病人亦可關閉。">
+                關閉
               </button>
               <button class="${room.acceptingNew ? "btn-warning" : "btn-success"} btn-small"
                       data-action="toggleAcceptingNew"
                       data-room-id="${room.id}"
                       type="button"
-                      data-help-title="${room.acceptingNew ? "截籌" : "恢復派症"}"
-                      data-help="${room.acceptingNew ? "停止接收新派症，但房間仍可顯示並處理現有病人。" : "重新開放接受新派症。"}">
-                ${room.acceptingNew ? "截籌" : "恢復派症"}
+                      data-help-title="${room.acceptingNew ? "停止收新症" : "恢復收新症"}"
+                      data-help="${room.acceptingNew ? "暫停接收新派症，但診室仍可顯示並處理現有病人。" : "重新恢復接收新派症。"}">
+                ${room.acceptingNew ? "停止收新症" : "恢復收新症"}
               </button>
             </div>
 
@@ -3463,37 +3458,37 @@
                 style="max-width:220px;"
                 placeholder="可選或自由輸入"
                 data-help-title="更新醫生名稱"
-                data-help="可直接修改呢間房顯示的醫生名稱，然後按『更新醫生』儲存。"
+                data-help="可直接修改此診室顯示的醫生名稱，然後按「更新醫生名稱」儲存。"
               />
               <button class="btn-secondary btn-small"
                       data-action="updateDoctor"
                       data-room-id="${room.id}"
                       type="button"
-                      data-help-title="更新醫生"
-                      data-help="將上面輸入框內的醫生名稱套用到此房。">
-                更新醫生
+                      data-help-title="更新醫生名稱"
+                      data-help="將上方輸入欄內的醫生名稱套用至此診室。">
+                更新醫生名稱
               </button>
               <button class="btn-danger btn-small"
                       data-action="deleteRoom"
                       data-room-id="${room.id}"
                       type="button"
-                      data-help-title="刪除此房 / 醫生"
-                      data-help="只適用於完全無候診、無過號、無診症中的房間。">
-                刪除此房 / 醫生
+                      data-help-title="刪除診室"
+                      data-help="只適用於完全沒有候診、過號或現正診症病人的診室。">
+                刪除診室
               </button>
             </div>
 
             <div class="form-row" style="margin-bottom:14px;">
               <label data-help-title="暫停原因"
-                     data-help="可以揀預設原因，或者自己輸入原因。暫停時會顯示喺房卡及病人看板。">
-                暫停原因（可下拉選擇或自訂）
+                     data-help="可選擇預設原因，或自行輸入原因。暫停時會顯示於診室卡及候診看板。">
+                暫停原因（可選擇或自訂）
               </label>
               <div class="actions">
                 <select data-pause-reason-select="${room.id}"
                         style="max-width:220px;"
                         data-help-title="選擇暫停原因"
-                        data-help="可選預設原因，例如急救中、小手術、巡房。">
-                  <option value="">自訂原因</option>
+                        data-help="可選擇預設原因，例如急救中、小手術、巡房。">
+                  <option value="">輸入自訂原因</option>
                   ${PAUSE_REASON_OPTIONS.map(reason => `
                     <option value="${escapeHtml(reason)}" ${room.pauseReason === reason ? "selected" : ""}>${escapeHtml(reason)}</option>
                   `).join("")}
@@ -3502,24 +3497,24 @@
                   type="text"
                   data-pause-reason="${room.id}"
                   value="${PAUSE_REASON_OPTIONS.includes(room.pauseReason || "") ? "" : escapeHtml(room.pauseReason || "")}"
-                  placeholder="可自訂原因"
+                  placeholder="輸入自訂原因"
                   style="max-width:260px;"
                   data-help-title="自訂暫停原因"
-                  data-help="如果預設原因唔合適，可以直接輸入你想顯示的原因。"
+                  data-help="如預設原因不合適，可直接輸入你希望顯示的原因。"
                 />
               </div>
             </div>
 
             <div class="section-title"
                  data-help-title="候診名單"
-                 data-help="顯示呢間房而家排緊隊的病人。保留 table 邏輯，但每行視覺上會似 compact card。">
+                 data-help="顯示此診室目前正在候診的病人。保留 table 邏輯，但每行視覺上會較似 compact card。">
               候診名單
             </div>
             <table>
               <thead>
                 <tr>
                   <th style="width:78px;">位置</th>
-                  <th>CUMC號碼</th>
+                  <th>CUMC 號碼</th>
                   <th style="width:320px;">操作</th>
                 </tr>
               </thead>
@@ -3528,13 +3523,13 @@
 
             <div class="section-title"
                  data-help-title="過號名單"
-                 data-help="顯示之前被標記為過號的病人。你可以重叫、回原房、轉房、轉隊首、轉隊尾或取消。">
+                 data-help="顯示之前被標記為過號的病人。你可以重新叫號、返回原房、轉往診室、轉房並排隊首、轉房並排隊尾或取消輪候。">
               過號名單
             </div>
             <table>
               <thead>
                 <tr>
-                  <th>CUMC號碼 / 病人資訊</th>
+                  <th>CUMC 號碼 / 病人資訊</th>
                   <th style="width:320px;">操作</th>
                 </tr>
               </thead>
@@ -4022,13 +4017,13 @@
         const doctorName = doctorInput.value.trim();
 
         if (!roomNo || !doctorName) {
-          notify("請輸入房號及醫生名稱", "warning");
+          notify("請輸入診室及醫生名稱", "warning");
           return;
         }
 
         const exists = state.rooms.some(room => room.roomNo === roomNo);
         if (exists) {
-          notify("房號已存在", "warning");
+          notify("診室已存在", "warning");
           return;
         }
 
@@ -4052,12 +4047,12 @@
         roomNoInput.value = "";
         doctorInput.value = "";
         renderAll(true, { resortQueues: false });
-        notify("已新增診室", "success");
+        notify("已建立診室", "success");
 
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
-        notify("新增診室失敗\n" + formatSupabaseError(error), "error");
+        notify("建立診室失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -4078,7 +4073,7 @@
         const insertPosition = document.getElementById("insertPosition").value;
 
         if (!cumcNo) {
-          notify("請輸入 CUMC號碼", "warning");
+          notify("請輸入 CUMC 號碼", "warning");
           return;
         }
 
@@ -4088,7 +4083,7 @@
         );
 
         if (activeExists) {
-          notify("此病人目前已有未完成就診記錄", "warning");
+          notify("此病人目前已有未完成個案記錄", "warning");
           return;
         }
 
@@ -4096,7 +4091,7 @@
 
         if (assignMode === "manual") {
           if (!manualRoomId) {
-            notify("請選擇診室", "warning");
+            notify("請指定診室", "warning");
             return;
           }
           room = getRoom(manualRoomId);
@@ -4105,15 +4100,15 @@
         }
 
         if (!room) {
-          notify("找不到可派症診室", "warning");
+          notify("找不到可派往的診室", "warning");
           return;
         }
 
         if (!canAssignPatientToRoom(room, patientType)) {
           if (!room.acceptingNew) {
-            notify("此醫生已截籌，暫停派症", "warning");
+            notify("此診室已停收新症，暫停派症", "warning");
           } else if (patientType === "appointment") {
-            notify("此診室目前不可接收預約派症", "warning");
+            notify("此診室目前不可接收預約病人", "warning");
           } else {
             notify("此診室未開放，不能派症", "warning");
           }
@@ -4149,7 +4144,7 @@
         addPatientLog(
           patient,
           "首次登記",
-          `已登記到 ${room.roomNo} / ${room.doctorName}；類型：${getPatientTypeLabel(patientType)}；首次派房：${patient.initialAssignmentMode === "manual" ? "手動派房" : "自動派房"}；登記時間：${formatDateTime(registeredAt)}${useCustomRegisteredAt ? "（手動時間）" : "（系統時間）"}；級別：${getPriorityLabel(patient)}`
+          `已登記至 ${room.roomNo} / ${room.doctorName}；類型：${getPatientTypeLabel(patientType)}；首次派往診室方式：${patient.initialAssignmentMode === "manual" ? "手動派房" : "自動派房"}；登記時間：${formatDateTime(registeredAt)}${useCustomRegisteredAt ? "（手動時間）" : "（系統時間）"}；分流級別：${getPriorityLabel(patient)}`
         );
 
         state.patients.push(patient);
@@ -4158,7 +4153,7 @@
         const actualPosition = insertPatientIntoQueue(room, patient, insertMode, insertPosition);
         addPatientLog(
           patient,
-          "排隊位置",
+          "排位",
           `加入 ${room.roomNo} / ${room.doctorName}；${getInsertModeText(insertMode, Math.max(1, parseInt(insertPosition, 10) || 1), actualPosition)}`
         );
 
@@ -4183,11 +4178,11 @@
         refreshRegisteredAtField();
         populateRoomSelect();
 
-        notify(`已加入系統：${patient.ticketNo} → ${room.roomNo}`, "success");
+        notify(`已加入輪候：${patient.ticketNo} → ${room.roomNo}`, "success");
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
-        notify("新增病人失敗\n" + formatSupabaseError(error), "error");
+        notify("新增輪候病人失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -4205,7 +4200,7 @@
         }
 
         if (room.currentPatientId) {
-          notify("請先完成或過號目前病人", "warning");
+          notify("請先完成或設為過號目前病人", "warning");
           return;
         }
 
@@ -4227,7 +4222,7 @@
           nextPatient.calledAt = nowIso();
           addPatientLog(nextPatient, "首次叫號", `${room.roomNo} / ${room.doctorName} 已首次叫號`);
         } else {
-          addPatientLog(nextPatient, "再次叫號", `${room.roomNo} / ${room.doctorName} 已再次叫號`);
+          addPatientLog(nextPatient, "重新叫號", `${room.roomNo} / ${room.doctorName} 已重新叫號`);
         }
 
         sortRoomQueue(room);
@@ -4240,7 +4235,7 @@
         await updateRoomInSupabase(room);
         await syncRoomQueuePatients(room);
 
-        notify(`${room.roomNo} 現在叫號：${getPatientDisplayNo(nextPatient)}`, "info");
+        notify(`${room.roomNo} 現正診症：${getPatientDisplayNo(nextPatient)}`, "info");
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
@@ -4277,11 +4272,11 @@
         await updateRoomInSupabase(room);
         await syncRoomQueuePatients(room);
 
-        notify("已完成診症", "success");
+        notify("已完成", "success");
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
-        notify("完成診症失敗\n" + formatSupabaseError(error), "error");
+        notify("完成失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -4301,7 +4296,7 @@
           patient.status = "skipped";
           patient.skippedAt = nowIso();
           patient.queueOrder = null;
-          addPatientLog(patient, "過號", `${room.roomNo} / ${room.doctorName} 已標記為過號`);
+          addPatientLog(patient, "過號", `${room.roomNo} / ${room.doctorName} 已設為過號`);
           await savePatientToSupabase(patient);
         }
 
@@ -4313,11 +4308,11 @@
 
         await updateRoomInSupabase(room);
 
-        notify("已標記為過號", "warning");
+        notify("已設為過號", "warning");
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
-        notify("過號失敗\n" + formatSupabaseError(error), "error");
+        notify("設定過號失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -4332,7 +4327,7 @@
         if (!room) return;
 
         if (room.status !== "open") {
-          notify("房間未開放，不能重叫", "warning");
+          notify("診室未開放，不能重新叫號", "warning");
           return;
         }
 
@@ -4346,7 +4341,7 @@
         patient.skippedAt = null;
         patient.queueOrder = null;
         if (!patient.calledAt) patient.calledAt = nowIso();
-        addPatientLog(patient, "重叫", `${room.roomNo} / ${room.doctorName} 已重叫`);
+        addPatientLog(patient, "重新叫號", `${room.roomNo} / ${room.doctorName} 已重新叫號`);
 
         renderRoomOnly(room.id, true);
         renderDisplayBoard(true);
@@ -4356,11 +4351,11 @@
         await savePatientToSupabase(patient);
         await updateRoomInSupabase(room);
 
-        notify(`重叫 ${getPatientDisplayNo(patient)}`, "info");
+        notify(`已重新叫號 ${getPatientDisplayNo(patient)}`, "info");
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
-        notify("重叫失敗\n" + formatSupabaseError(error), "error");
+        notify("重新叫號失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -4377,7 +4372,7 @@
         patient.status = "waiting";
         patient.skippedAt = null;
         const actualPosition = insertPatientIntoQueue(room, patient, "auto");
-        addPatientLog(patient, "回原房隊列", `${room.roomNo} / ${room.doctorName} 已按登記時間自動排到第 ${actualPosition} 位`);
+        addPatientLog(patient, "返回原房隊列", `${room.roomNo} / ${room.doctorName} 已按登記時間自動排到第 ${actualPosition} 位`);
 
         renderRoomOnly(room.id, true);
         renderDisplayBoard(true);
@@ -4387,11 +4382,11 @@
         await savePatientToSupabase(patient);
         await syncRoomQueuePatients(room);
 
-        notify(`${getPatientDisplayNo(patient)} 已按登記時間回隊`, "success");
+        notify(`${getPatientDisplayNo(patient)} 已按登記時間重新排隊`, "success");
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
-        notify("回隊失敗\n" + formatSupabaseError(error), "error");
+        notify("返回隊列失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -4420,7 +4415,7 @@
 
         addPatientLog(
           patient,
-          "刪除",
+          "取消輪候",
           `病人已取消輪候${room ? `（原診室：${room.roomNo} / ${room.doctorName}）` : ""}`
         );
 
@@ -4436,11 +4431,11 @@
           await syncRoomQueuePatients(room);
         }
 
-        notify(`${getPatientDisplayNo(patient)} 已刪除`, "warning");
+        notify(`${getPatientDisplayNo(patient)} 已取消輪候`, "warning");
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error("cancelPatient error:", error);
-        notify("刪除病人失敗\n" + formatSupabaseError(error), "error");
+        notify("取消輪候失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -4453,7 +4448,7 @@
         if (!patient) return;
 
         if (!["waiting", "skipped"].includes(patient.status)) {
-          notify("只有候診中或過號病人可轉級別", "warning");
+          notify("只有候診中或過號病人可更改級別", "warning");
           return;
         }
 
@@ -4464,8 +4459,8 @@
           const actualPosition = insertPatientIntoQueue(room, patient, "auto");
           addPatientLog(
             patient,
-            patient.priority ? "轉Cat 2" : "轉Cat 3",
-            `${room.roomNo} / ${room.doctorName} 已轉為 ${patient.priority ? "Cat 2" : "Cat 3"}；現排第 ${actualPosition} 位`
+            patient.priority ? "改為 Cat 2" : "改為 Cat 3",
+            `${room.roomNo} / ${room.doctorName} 已改為 ${patient.priority ? "Cat 2（優先）" : "Cat 3（一般）"}；現排第 ${actualPosition} 位`
           );
 
           renderRoomOnly(room.id, true);
@@ -4476,15 +4471,15 @@
         } else {
           addPatientLog(
             patient,
-            patient.priority ? "轉Cat 2" : "轉Cat 3",
-            `${room ? room.roomNo + " / " + room.doctorName : "診室"} 已轉為 ${patient.priority ? "Cat 2" : "Cat 3"}`
+            patient.priority ? "改為 Cat 2" : "改為 Cat 3",
+            `${room ? room.roomNo + " / " + room.doctorName : "診室"} 已改為 ${patient.priority ? "Cat 2（優先）" : "Cat 3（一般）"}`
           );
 
           renderDisplayBoard(true);
           await savePatientToSupabase(patient);
         }
 
-        notify(patient.priority ? "已轉Cat 2" : "已轉Cat 3", "success");
+        notify(patient.priority ? "已改為 Cat 2" : "已改為 Cat 3", "success");
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
@@ -4499,7 +4494,7 @@
 
         const patient = getPatient(patientId);
         if (!patient || patient.status !== "waiting") {
-          notify("只有候診中病人可移到最前", "warning");
+          notify("只有候診中病人可移至隊首", "warning");
           return;
         }
 
@@ -4507,7 +4502,7 @@
         if (!room) return;
 
         const actualPosition = insertPatientIntoQueue(room, patient, "front");
-        addPatientLog(patient, "移到隊首", `${room.roomNo} / ${room.doctorName} 已移到第 ${actualPosition} 位`);
+        addPatientLog(patient, "移至隊首", `${room.roomNo} / ${room.doctorName} 已移至第 ${actualPosition} 位`);
 
         renderRoomOnly(room.id, true);
         renderDisplayBoard(true);
@@ -4515,11 +4510,11 @@
         await savePatientToSupabase(patient);
         await syncRoomQueuePatients(room);
 
-        notify(`${getPatientDisplayNo(patient)} 已移到最前`, "success");
+        notify(`${getPatientDisplayNo(patient)} 已移至隊首`, "success");
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
-        notify("移到最前失敗\n" + formatSupabaseError(error), "error");
+        notify("移至隊首失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -4530,7 +4525,7 @@
 
         const patient = getPatient(patientId);
         if (!patient || patient.status !== "waiting") {
-          notify("只有候診中病人可指定位置", "warning");
+          notify("只有候診中病人可移至指定位置", "warning");
           return;
         }
 
@@ -4541,18 +4536,18 @@
         const pos = Math.max(1, parseInt(input ? input.value : "", 10) || 1);
         const actualPosition = insertPatientIntoQueue(room, patient, "position", pos);
 
-        addPatientLog(patient, "指定位置", `${room.roomNo} / ${room.doctorName} 已插入第 ${actualPosition} 位`);
+        addPatientLog(patient, "移至指定位置", `${room.roomNo} / ${room.doctorName} 已移至第 ${actualPosition} 位`);
         renderRoomOnly(room.id, true);
         renderDisplayBoard(true);
 
         await savePatientToSupabase(patient);
         await syncRoomQueuePatients(room);
 
-        notify(`${getPatientDisplayNo(patient)} 已插入第 ${actualPosition} 位`, "success");
+        notify(`${getPatientDisplayNo(patient)} 已移至第 ${actualPosition} 位`, "success");
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
-        notify("指定位置失敗\n" + formatSupabaseError(error), "error");
+        notify("移至指定位置失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -4568,12 +4563,12 @@
         }
 
         if (!["waiting", "skipped"].includes(patient.status)) {
-          notify("只有候診中或過號病人可以轉隊", "warning");
+          notify("只有候診中或過號病人可轉往其他診室", "warning");
           return;
         }
 
         if (!targetRoomId) {
-          notify("請先選擇目標房間", "warning");
+          notify("請先選擇目標診室", "warning");
           return;
         }
 
@@ -4581,22 +4576,22 @@
         const newRoom = getRoom(targetRoomId);
 
         if (!newRoom) {
-          notify("找不到目標房間", "error");
+          notify("找不到目標診室", "error");
           return;
         }
 
         if (newRoom.status !== "open") {
-          notify("目標房間未開放", "warning");
+          notify("目標診室未開放", "warning");
           return;
         }
 
         if (!newRoom.acceptingNew) {
-          notify("目標房間已截籌，不能轉入", "warning");
+          notify("目標診室已停收新症，不能轉入", "warning");
           return;
         }
 
         if (oldRoom && oldRoom.id === newRoom.id) {
-          notify("病人已在同一房間", "warning");
+          notify("病人已在同一診室", "warning");
           return;
         }
 
@@ -4627,25 +4622,25 @@
         const actualPosition = insertPatientIntoQueue(newRoom, patient, mode);
 
         const modeText =
-          mode === "front" ? "轉房隊頭" :
-          mode === "tail" ? "轉房隊尾" :
-          "轉房";
+          mode === "front" ? "轉房並排隊首" :
+          mode === "tail" ? "轉房並排隊尾" :
+          "轉往診室";
 
         addPatientLog(
           patient,
-          "轉房間",
-          `${fromText} → ${newRoom.roomNo} / ${newRoom.doctorName}（${modeText}；現排第 ${actualPosition} 位；已鎖定不再參與平均分流）`
+          "轉往診室",
+          `${fromText} → ${newRoom.roomNo} / ${newRoom.doctorName}（${modeText}；現排第 ${actualPosition} 位；已鎖定，不再參與智能平均分流）`
         );
 
         renderRoomsPair(oldRoomId, newRoomId);
 
         await persistTransferChanges(oldRoom, newRoom, patient);
 
-        notify(`${getPatientDisplayNo(patient)} 已轉去 ${newRoom.roomNo}，並鎖定不再自動分流`, "success");
+        notify(`${getPatientDisplayNo(patient)} 已轉往 ${newRoom.roomNo}，並鎖定不再自動分流`, "success");
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
-        notify("轉房失敗\n" + formatSupabaseError(error), "error");
+        notify("轉往診室失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -4665,7 +4660,7 @@
         await updateRoomInSupabase(room);
 
         if (status === "closed") {
-          notify(`${room.roomNo} 已關房，病人看板會隱藏此房`, "info");
+          notify(`${room.roomNo} 已關閉，候診看板會隱藏此診室`, "info");
         } else if (status === "paused") {
           notify(`${room.roomNo} 已設為暫停`, "info");
         } else {
@@ -4675,7 +4670,7 @@
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
-        notify("更新房間狀態失敗\n" + formatSupabaseError(error), "error");
+        notify("更新診室狀態失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -4724,14 +4719,14 @@
         await updateRoomInSupabase(room);
 
         notify(
-          room.acceptingNew ? `${room.roomNo} 已恢復派症` : `${room.roomNo} 已截籌，病人看板仍然顯示`,
+          room.acceptingNew ? `${room.roomNo} 已恢復收新症` : `${room.roomNo} 已停收新症，候診看板仍會顯示`,
           room.acceptingNew ? "success" : "warning"
         );
 
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
-        notify("更新截籌狀態失敗\n" + formatSupabaseError(error), "error");
+        notify("更新新症接收狀態失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -4777,7 +4772,7 @@
           state.patients.some(p => p.roomId === room.id && ["waiting", "skipped", "called"].includes(p.status));
 
         if (hasActivePatients) {
-          notify("此房仍有候診 / 過號 / 診症中病人，不能刪除", "warning");
+          notify("此診室仍有候診 / 過號 / 診症中病人，不能刪除", "warning");
           return;
         }
 
@@ -4790,7 +4785,7 @@
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
-        notify("刪除房間失敗\n" + formatSupabaseError(error), "error");
+        notify("刪除診室失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -4819,8 +4814,8 @@
         }
 
         const confirmText =
-          `將重新智能平衡分流 ${movablePatients.length} 位候診病人。\n\n` +
-          `只會處理：等候中、非預約、非手動派房或轉房病人。\n` +
+          `將重新智能平均分流 ${movablePatients.length} 位候診病人。\n\n` +
+          `只會處理：候診中、非預約、非手動派房或轉房病人。\n` +
           `不會處理：預約、診症中、過號、已完成、已取消、手動派房或轉房病人。\n\n` +
           `是否繼續？`;
 
@@ -4854,8 +4849,8 @@
 
           addPatientLog(
             patient,
-            "重新智能平衡分流",
-            `已重新分派到 ${targetRoom.roomNo} / ${targetRoom.doctorName}`
+            "重新智能平均分流",
+            `已重新派往 ${targetRoom.roomNo} / ${targetRoom.doctorName}`
           );
         });
 
@@ -4871,11 +4866,11 @@
           await syncRoomQueuePatients(room);
         }
 
-        notify(`已重新智能平衡分流 ${movablePatients.length} 位候診病人`, "success");
+        notify(`已重新智能平均分流 ${movablePatients.length} 位候診病人`, "success");
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
-        notify("平均分流失敗\n" + formatSupabaseError(error), "error");
+        notify("智能平均分流失敗\n" + formatSupabaseError(error), "error");
         refreshFromCloudAndRender(false);
       }
     }
@@ -4914,7 +4909,7 @@
       }
 
       if (exactMatches.length > 1) {
-        renderPatientSearchList(exactMatches, "找到多個完全符合 CUMC 號碼的結果");
+        renderPatientSearchList(exactMatches, "找到多項完全符合 CUMC 號碼的結果");
         return;
       }
 
@@ -4924,11 +4919,11 @@
       }
 
       if (!hasMeaningfulFilter && !filters.ticket && !filters.roomNo) {
-        renderPatientSearchList(matchedPatients, "全部病人列表");
+        renderPatientSearchList(matchedPatients, "全部病人名單");
         return;
       }
 
-      renderPatientSearchList(matchedPatients, filters.ticket ? "找到多個符合條件結果" : "符合條件的病人列表");
+      renderPatientSearchList(matchedPatients, filters.ticket ? "找到多項符合條件結果" : "符合條件的病人名單");
     }
 
     function submitAddPatientByEnter() {
@@ -4948,7 +4943,7 @@
 
       function syncTeachToggleUI() {
         toggle.checked = !!state.teachMode;
-        badge.textContent = state.teachMode ? "已開啟" : "已關閉";
+        badge.textContent = state.teachMode ? "開啟中" : "關閉中";
         badge.style.background = state.teachMode ? "#eff6ff" : "#f3f4f6";
         badge.style.color = state.teachMode ? "#1d4ed8" : "#6b7280";
         badge.style.borderColor = state.teachMode ? "#93c5fd" : "#d1d5db";
@@ -4958,7 +4953,7 @@
       toggle.addEventListener("change", () => {
         state.teachMode = !!toggle.checked;
         syncTeachToggleUI();
-        notify(state.teachMode ? "教學模式已開啟" : "教學模式已關閉", "info");
+        notify(state.teachMode ? "操作教學模式已開啟" : "操作教學模式已關閉", "info");
       });
 
       syncTeachToggleUI();
@@ -5112,7 +5107,7 @@
 
       hoverLogTooltip.activeTarget = target;
       hoverLogTooltip.activePatientId = data.patientId || null;
-      hoverLogTooltip.titleEl.textContent = `${data.ticketNo || "病人"} 最近 5 個活動紀錄`;
+      hoverLogTooltip.titleEl.textContent = `${data.ticketNo || "病人"} 最近 5 項操作紀錄`;
 
       const logs = Array.isArray(data.logs) ? data.logs.slice(0, 5) : [];
       hoverLogTooltip.listEl.innerHTML = logs.length
@@ -5124,7 +5119,7 @@
               </div>
             </div>
           `).join("")
-        : `<div class="hover-log-empty">暫無 activity log</div>`;
+        : `<div class="hover-log-empty">暫無操作紀錄</div>`;
 
       hoverLogTooltip.el.classList.add("show");
       hoverLogTooltip.el.setAttribute("aria-hidden", "false");
