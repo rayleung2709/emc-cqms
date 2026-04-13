@@ -47,6 +47,30 @@
       --logtip-title: #dbeafe;
       --logtip-text: #f8fafc;
       --logtip-time: #93c5fd;
+
+      --journey-queue-bg: #eff6ff;
+      --journey-queue-text: #1d4ed8;
+      --journey-queue-border: #93c5fd;
+
+      --journey-investigation-bg: #f5f3ff;
+      --journey-investigation-text: #6d28d9;
+      --journey-investigation-border: #c4b5fd;
+
+      --journey-treatment-bg: #ecfdf5;
+      --journey-treatment-text: #047857;
+      --journey-treatment-border: #86efac;
+
+      --journey-observation-bg: #fff7ed;
+      --journey-observation-text: #c2410c;
+      --journey-observation-border: #fdba74;
+
+      --journey-disposition-bg: #fef2f2;
+      --journey-disposition-text: #b91c1c;
+      --journey-disposition-border: #fca5a5;
+
+      --journey-admin-bg: #f1f5f9;
+      --journey-admin-text: #334155;
+      --journey-admin-border: #cbd5e1;
     }
 
     * { box-sizing: border-box; }
@@ -602,6 +626,42 @@
       border-color: #374151;
     }
 
+    .pill-journey-queue {
+      background: var(--journey-queue-bg);
+      color: var(--journey-queue-text);
+      border-color: var(--journey-queue-border);
+    }
+
+    .pill-journey-investigation {
+      background: var(--journey-investigation-bg);
+      color: var(--journey-investigation-text);
+      border-color: var(--journey-investigation-border);
+    }
+
+    .pill-journey-treatment {
+      background: var(--journey-treatment-bg);
+      color: var(--journey-treatment-text);
+      border-color: var(--journey-treatment-border);
+    }
+
+    .pill-journey-observation {
+      background: var(--journey-observation-bg);
+      color: var(--journey-observation-text);
+      border-color: var(--journey-observation-border);
+    }
+
+    .pill-journey-disposition {
+      background: var(--journey-disposition-bg);
+      color: var(--journey-disposition-text);
+      border-color: var(--journey-disposition-border);
+    }
+
+    .pill-journey-admin {
+      background: var(--journey-admin-bg);
+      color: var(--journey-admin-text);
+      border-color: var(--journey-admin-border);
+    }
+
     .transfer-room-select,
     .insert-pos-input {
       min-width: 110px;
@@ -645,6 +705,154 @@
       color: #0f172a;
       font-weight: 700;
       line-height: 1.45;
+    }
+
+    .journey-tools-box {
+      margin-top: 12px;
+      border: 1px solid #dbe3ee;
+      border-radius: 14px;
+      padding: 12px;
+      background: #f8fafc;
+    }
+
+    .journey-tools-title {
+      font-size: 0.92rem;
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 10px;
+    }
+
+    .journey-quick-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .journey-quick-btn {
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #334155;
+      padding: 7px 10px;
+      font-size: 0.8rem;
+      border-radius: 999px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .journey-custom-row {
+      display: grid;
+      grid-template-columns: 1.2fr 2fr auto;
+      gap: 8px;
+      margin-top: 10px;
+      align-items: center;
+    }
+
+    .journey-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .journey-summary-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .journey-summary-label {
+      font-size: 0.82rem;
+      color: #64748b;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .journey-summary-value {
+      font-size: 1rem;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+
+    .timeline-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 10px 0;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .timeline-item:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .timeline-time {
+      color: #475569;
+      font-size: 0.86rem;
+      font-weight: 900;
+      line-height: 1.4;
+    }
+
+    .timeline-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    .timeline-top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .timeline-title {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+
+    .timeline-details {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #475569;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .room-journey-section {
+      margin-top: 12px;
+      border: 1px solid #dbe3ee;
+      border-radius: 12px;
+      background: #f8fafc;
+      padding: 10px;
+    }
+
+    .room-journey-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .room-journey-title {
+      font-size: 0.86rem;
+      font-weight: 900;
+      color: #0f172a;
     }
 
     .toast-wrap {
@@ -972,7 +1180,8 @@
       font-size: 1.2rem;
       font-weight: 800;
     }
-.board-cutoff-tag {
+
+    .board-cutoff-tag {
       display: inline-flex;
       flex-direction: column;
       align-items: center;
@@ -1330,8 +1539,12 @@
       .search-toolbar-grid {
         grid-template-columns: 1fr 1fr 1fr;
       }
-      .search-mini-grid {
+      .search-mini-grid,
+      .journey-summary-grid {
         grid-template-columns: 1fr 1fr;
+      }
+      .journey-custom-row {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -1352,6 +1565,10 @@
       .board-title { font-size: 1.6rem; }
       .board-time { font-size: 1.05rem; }
       .inline-note { font-size: 0.9rem; }
+      .timeline-item {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
     }
 
     @media (max-width: 900px) {
@@ -1366,7 +1583,8 @@
         width: min(320px, calc(100vw - 18px));
       }
       .search-toolbar-grid,
-      .search-mini-grid {
+      .search-mini-grid,
+      .journey-summary-grid {
         grid-template-columns: 1fr;
       }
 
@@ -1483,25 +1701,13 @@
 
           <div class="grid-5">
             <div class="form-row">
-              <label for="patientCumcNo"
-                     data-help-title="CUMC 號碼"
-                     data-help="輸入病人的 CUMC 號碼。系統會避免同一位未完成個案病人重複加入輪候。">
-                CUMC 號碼
-              </label>
-              <input id="patientCumcNo" type="text" placeholder="例如：ABC1234"
-                     data-help-title="CUMC 號碼輸入欄"
-                     data-help="請於此輸入病人 CUMC 號碼。系統會自動轉為大楷，例如：ABC1234。" />
+              <label for="patientCumcNo">CUMC 號碼</label>
+              <input id="patientCumcNo" type="text" placeholder="例如：ABC1234" />
             </div>
 
             <div class="form-row">
-              <label for="patientType"
-                     data-help-title="病人類型"
-                     data-help="病人類型包括即場、網上取票及預約。不同類型會影響可派往的診室，以及排序時的先後規則。">
-                病人類型
-              </label>
-              <select id="patientType"
-                      data-help-title="病人類型選擇"
-                      data-help="即場：現場登記。網上取票：預先取票但未正式完成就診。預約：已有預約安排，系統會按規則容許派往開放或暫停中但可接收預約的診室。">
+              <label for="patientType">病人類型</label>
+              <select id="patientType">
                 <option value="walkin">即場</option>
                 <option value="onlineTicket">網上取票</option>
                 <option value="appointment">預約</option>
@@ -1509,14 +1715,8 @@
             </div>
 
             <div class="form-row">
-              <label for="assignMode"
-                     data-help-title="派往診室"
-                     data-help="你可以交由系統自動分派，或手動指定診室。一般日常操作建議使用智能分派。">
-                派往診室
-              </label>
-              <select id="assignMode"
-                      data-help-title="派往診室方式"
-                      data-help="智能分派：比較各診室目前負荷。最短隊伍優先：選擇人數最少的診室。輪流分派：輪流派往各診室。手動選擇診室：由職員自行決定。">
+              <label for="assignMode">派往診室</label>
+              <select id="assignMode">
                 <option value="smart" selected>自動分派：智能分派</option>
                 <option value="shortest">自動分派：最短隊伍優先</option>
                 <option value="roundRobin">自動分派：輪流分派</option>
@@ -1525,25 +1725,13 @@
             </div>
 
             <div class="form-row">
-              <label for="assignRoom"
-                     data-help-title="指定診室"
-                     data-help="只有當你選擇「手動選擇診室」時，才需要在此指定診室。">
-                指定診室
-              </label>
-              <select id="assignRoom"
-                      data-help-title="手動指定診室"
-                      data-help="如果你已知病人應前往某位醫生或某間診室，可於此手動指定。"></select>
+              <label for="assignRoom">指定診室</label>
+              <select id="assignRoom"></select>
             </div>
 
             <div class="form-row">
-              <label for="isPriority"
-                     data-help-title="醫療優先"
-                     data-help="如果病人有較高臨床優先需要，可列為醫療優先。排序時，系統會優先處理此類病人。">
-                醫療優先
-              </label>
-              <select id="isPriority"
-                      data-help-title="是否列為醫療優先"
-                      data-help="選擇「是」代表病人屬較高優先級別，加入輪候後通常會排得較前。">
+              <label for="isPriority">醫療優先</label>
+              <select id="isPriority">
                 <option value="false">否</option>
                 <option value="true">是</option>
               </select>
@@ -1552,33 +1740,17 @@
 
           <div class="grid-3" style="margin-top:14px;">
             <div class="form-row">
-              <label for="registeredAt"
-                     data-help-title="登記時間（HKT）"
-                     data-help="一般情況下無需手動修改，系統會自動使用當前香港時間。只於補錄或特殊情況下才需要勾選使用手動登記時間。">
-                登記時間（HKT）
-              </label>
-              <input id="registeredAt" type="datetime-local" disabled
-                     data-help-title="手動登記時間輸入"
-                     data-help="如需補錄較早前的登記資料，可手動輸入時間；否則系統會自動使用現在香港時間。" />
-              <label class="sub-option"
-                     for="useCustomRegisteredAt"
-                     style="display:flex;gap:8px;align-items:center;"
-                     data-help-title="使用手動登記時間"
-                     data-help="勾選後，系統會使用你手動輸入的香港時間作為登記時間；未勾選則直接使用系統即時時間。">
+              <label for="registeredAt">登記時間（HKT）</label>
+              <input id="registeredAt" type="datetime-local" disabled />
+              <label class="sub-option" for="useCustomRegisteredAt" style="display:flex;gap:8px;align-items:center;">
                 <input id="useCustomRegisteredAt" type="checkbox" style="width:auto;" />
                 使用手動登記時間（適用於補錄、預約或網上取票）
               </label>
             </div>
 
             <div class="form-row">
-              <label for="insertMode"
-                     data-help-title="排位方式"
-                     data-help="病人派往診室後，仍需決定在候診隊列中的位置。你可以交由系統自動安排，或直接排隊首、排隊尾，或指定位置。">
-                排位方式
-              </label>
-              <select id="insertMode"
-                      data-help-title="排位方式"
-                      data-help="自動安排：按系統規則排序。排隊尾：排在最後。排隊首：排在最前。指定位置：由你輸入第幾位。">
+              <label for="insertMode">排位方式</label>
+              <select id="insertMode">
                 <option value="auto" selected>自動安排</option>
                 <option value="tail">排隊尾</option>
                 <option value="front">排隊首</option>
@@ -1587,25 +1759,13 @@
             </div>
 
             <div class="form-row">
-              <label for="insertPosition"
-                     data-help-title="指定位置"
-                     data-help="當排位方式選擇「指定位置」時，請在此輸入想排在第幾位。">
-                指定位置
-              </label>
-              <input id="insertPosition" type="number" min="1" placeholder="例如：2"
-                     data-help-title="輸入指定位置"
-                     data-help="例如輸入 2，代表病人會被插入至第 2 位；若超出實際長度，系統會自動調整。" />
+              <label for="insertPosition">指定位置</label>
+              <input id="insertPosition" type="number" min="1" placeholder="例如：2" />
             </div>
           </div>
 
           <div class="actions" style="margin-top:14px; justify-content:flex-end;">
-            <button class="btn-primary"
-                    id="addPatientBtn"
-                    type="button"
-                    data-help-title="加入輪候"
-                    data-help="確認以上資料後，按此將病人正式加入輪候系統。">
-              加入輪候
-            </button>
+            <button class="btn-primary" id="addPatientBtn" type="button">加入輪候</button>
           </div>
         </div>
 
@@ -1615,14 +1775,8 @@
           <div class="panel-title">新增診室</div>
           <div class="grid-3">
             <div class="form-row">
-              <label for="newRoomNo"
-                     data-help-title="診室"
-                     data-help="輸入診室名稱，例如 1號房、2號房。你可選用建議選項，亦可自由輸入。">
-                診室
-              </label>
-              <input id="newRoomNo" list="roomNoOptions" type="text" placeholder="可選或自由輸入"
-                     data-help-title="診室輸入欄"
-                     data-help="可輸入新的診室名稱，系統不會容許相同名稱重複建立。" />
+              <label for="newRoomNo">診室</label>
+              <input id="newRoomNo" list="roomNoOptions" type="text" placeholder="可選或自由輸入" />
               <datalist id="roomNoOptions">
                 <option value="1號房"></option>
                 <option value="2號房"></option>
@@ -1635,14 +1789,8 @@
               </datalist>
             </div>
             <div class="form-row">
-              <label for="newDoctorName"
-                     data-help-title="醫生名稱"
-                     data-help="輸入醫生名稱。可以使用建議選項，亦可自由輸入。">
-                醫生名稱
-              </label>
-              <input id="newDoctorName" list="doctorOptions" type="text" placeholder="可選或自由輸入"
-                     data-help-title="醫生名稱輸入欄"
-                     data-help="新增或輸入醫生名稱，將顯示於診室卡及候診看板。"/>
+              <label for="newDoctorName">醫生名稱</label>
+              <input id="newDoctorName" list="doctorOptions" type="text" placeholder="可選或自由輸入" />
               <datalist id="doctorOptions">
                 <option value="林家強醫生 Dr. LAM Ka Keung"></option>
                 <option value="麥應良醫生 Dr. MAK Ying Leung Elvis"></option>
@@ -1657,36 +1805,20 @@
             </div>
             <div class="form-row">
               <label>&nbsp;</label>
-              <button class="btn-success"
-                      id="addRoomBtn"
-                      type="button"
-                      data-help-title="建立診室"
-                      data-help="建立新的診室後，系統方可派病人前往該診室。">
-                建立診室
-              </button>
+              <button class="btn-success" id="addRoomBtn" type="button">建立診室</button>
             </div>
           </div>
-          <div class="muted" style="margin-top:12px;"
-               data-help-title="診室補充說明"
-               data-help="診室可以新增、修改及刪除。停止收新症後會暫停接收新派症，但候診看板仍會顯示；關閉後則會於候診看板隱藏。">
+          <div class="muted" style="margin-top:12px;">
             候診看板會將「1號房」簡化顯示為「1」。
           </div>
         </div>
       </div>
 
-      <div class="panel teach-anchor"
-           data-help-title="各診室輪候概況"
-           data-help="此區會顯示每間診室目前狀態、現正診症病人、候診名單及過號名單，並可直接進行叫號、完成、設為過號、轉往診室等操作。">
+      <div class="panel teach-anchor">
         <div class="toolbar-row">
           <div class="panel-title" style="margin-bottom:0;">各診室輪候概況</div>
           <div class="actions">
-            <button class="btn-primary"
-                    id="rebalanceWaitingBtn"
-                    type="button"
-                    data-help-title="一鍵智能平均分流候診病人"
-                    data-help="系統會將可重新分配的候診病人，按各診室目前智能負荷分數動態平均分流。會考慮現正診症病人、一般候診人數及醫療優先病人數。只處理候診中、非預約、非手動派房或轉房病人。">
-              一鍵智能平均分流候診病人
-            </button>
+            <button class="btn-primary" id="rebalanceWaitingBtn" type="button">一鍵智能平均分流候診病人</button>
           </div>
         </div>
 
@@ -1695,48 +1827,24 @@
     </div>
 
     <div class="page" id="patientPage">
-      <div class="panel teach-anchor"
-           data-help-title="病人狀態查詢"
-           data-help="可按 CUMC 號碼、診室、病人狀態及病人類型查詢。預設只顯示未完成個案；亦可改為包括已完成或已取消個案。">
+      <div class="panel teach-anchor">
         <div class="panel-title">病人狀態查詢</div>
 
         <div class="search-toolbar-grid">
           <div class="form-row">
-            <label for="searchTicket"
-                   data-help-title="查詢 CUMC 號碼"
-                   data-help="可輸入完整號碼，亦可只輸入開首幾個字。系統會提供建議清單，並按現有篩選條件收窄建議結果。">
-              CUMC 號碼
-            </label>
-            <input id="searchTicket"
-                   list="searchTicketOptions"
-                   type="text"
-                   placeholder="可輸入開首幾個字，例如：ABC"
-                   autocomplete="off"
-                   data-help-title="輸入 CUMC 號碼作搜尋"
-                   data-help="可輸入完整號碼或開首字串，按 Enter 可直接搜尋。" />
+            <label for="searchTicket">CUMC 號碼</label>
+            <input id="searchTicket" list="searchTicketOptions" type="text" placeholder="可輸入開首幾個字，例如：ABC" autocomplete="off" />
             <datalist id="searchTicketOptions"></datalist>
           </div>
 
           <div class="form-row">
-            <label for="searchRoom"
-                   data-help-title="診室篩選"
-                   data-help="如需查詢某一診室的全部或部分病人，可在此選擇診室。只選擇診室時，系統會以診室視圖顯示結果。">
-              診室（可選）
-            </label>
-            <select id="searchRoom"
-                    data-help-title="選擇診室"
-                    data-help="選擇診室後，可直接查看該診室現正診症、候診、過號及其他符合篩選條件的病人。"></select>
+            <label for="searchRoom">診室（可選）</label>
+            <select id="searchRoom"></select>
           </div>
 
           <div class="form-row">
-            <label for="searchStatus"
-                   data-help-title="病人狀態篩選"
-                   data-help="可選擇只查看候診中、現正診症、過號、已完成或已取消病人。">
-              病人狀態
-            </label>
-            <select id="searchStatus"
-                    data-help-title="病人狀態篩選選擇"
-                    data-help="配合 CUMC 號碼或診室使用，可更快找出所需病人狀態。">
+            <label for="searchStatus">病人狀態</label>
+            <select id="searchStatus">
               <option value="all">全部狀態</option>
               <option value="waiting">候診中</option>
               <option value="called">現正診症</option>
@@ -1747,14 +1855,8 @@
           </div>
 
           <div class="form-row">
-            <label for="searchPatientType"
-                   data-help-title="病人類型篩選"
-                   data-help="可按即場、網上取票或預約進一步篩選。">
-              病人類型
-            </label>
-            <select id="searchPatientType"
-                    data-help-title="病人類型篩選選擇"
-                    data-help="只顯示指定類型病人。">
+            <label for="searchPatientType">病人類型</label>
+            <select id="searchPatientType">
               <option value="all">全部類型</option>
               <option value="walkin">即場</option>
               <option value="onlineTicket">網上取票</option>
@@ -1764,45 +1866,27 @@
 
           <div class="form-row">
             <label>&nbsp;</label>
-            <button class="btn-primary"
-                    id="searchPatientBtn"
-                    type="button"
-                    data-help-title="搜尋"
-                    data-help="按此開始搜尋病人資料；按 Enter 亦可直接搜尋。">
-              搜尋
-            </button>
+            <button class="btn-primary" id="searchPatientBtn" type="button">搜尋</button>
           </div>
 
           <div class="form-row">
             <label>&nbsp;</label>
-            <button class="btn-secondary"
-                    id="clearSearchBtn"
-                    type="button"
-                    data-help-title="清除條件"
-                    data-help="清除所有搜尋條件及結果，回復預設搜尋模式。">
-              清除條件
-            </button>
+            <button class="btn-secondary" id="clearSearchBtn" type="button">清除條件</button>
           </div>
         </div>
 
         <div class="search-active-row">
-          <label class="search-checkbox"
-                 data-help-title="只顯示未完成個案"
-                 data-help="預設只顯示候診中、現正診症及過號病人。取消勾選後，搜尋結果亦會包括已完成及已取消個案。">
+          <label class="search-checkbox">
             <input id="searchActiveOnly" type="checkbox" checked />
             <span>只顯示未完成個案</span>
           </label>
 
-          <div class="search-help-note"
-               data-help-title="搜尋說明"
-               data-help="只選擇診室時，系統會以「診室視圖」顯示；若輸入 CUMC 號碼未夠完整，系統會列出符合條件的病人，並將未完成個案優先顯示。">
+          <div class="search-help-note">
             提示：只選擇診室時，系統會顯示該診室目前情況；輸入 CUMC 號碼時，未完成個案會優先顯示。
           </div>
         </div>
 
-        <div class="search-chip-row"
-             data-help-title="快速狀態切換"
-             data-help="可快速切換搜尋狀態。按下後會即時套用病人狀態篩選。">
+        <div class="search-chip-row">
           <button class="search-chip active" type="button" data-search-chip="all">全部狀態</button>
           <button class="search-chip" type="button" data-search-chip="waiting">候診中</button>
           <button class="search-chip" type="button" data-search-chip="called">現正診症</button>
@@ -1817,20 +1901,11 @@
 
     <div class="page" id="displayPage">
       <div class="board-toolbar">
-        <div class="board-title"
-             data-help-title="候診情況"
-             data-help="此為供病人參閱的候診看板，顯示每間診室的現正診症號碼、候診及過號情況。">
-          候診情況<br>Queue Status
-        </div>
-        <div class="board-time"
-             id="boardTime"
-             data-help-title="看板時間"
-             data-help="顯示現在香港時間。"></div>
+        <div class="board-title">候診情況<br>Queue Status</div>
+        <div class="board-time" id="boardTime"></div>
       </div>
 
-      <div class="info-card board-disclaimer"
-           data-help-title="看板提示"
-           data-help="看板資料只供參考，實際輪候可能會因病人臨床需要及現場實際運作而調整。">
+      <div class="info-card board-disclaimer">
         <div class="inline-note">
           輪候情況只供參考，會因應病人臨床需要及現場實際運作而作出調整，敬請見諒。<br>
           This queue is for reference only and may be adjusted at any time according to patients' clinical needs and operational requirements. Thank you for your understanding.
@@ -1844,7 +1919,7 @@
 
   <script>
     const SUPABASE_URL = "https://dvyberdrmmfgutjqnpjr.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const HKT_TIMEZONE = "Asia/Hong_Kong";
@@ -1868,6 +1943,69 @@
     ];
 
     const PAUSE_REASON_OPTIONS = ["急救中 Resus", "小手術 Procedure", "巡房 Ward"];
+
+    const JOURNEY_EVENT_DEFS = {
+      registered: { label: "已登記", type: "queue" },
+      assigned_room: { label: "已派往診室", type: "queue" },
+      waiting: { label: "候診中", type: "queue" },
+      called: { label: "已叫號", type: "queue" },
+      in_consultation: { label: "現正診症", type: "queue" },
+      skipped: { label: "已設為過號", type: "queue" },
+      requeued: { label: "已返回候診", type: "queue" },
+      transferred_room: { label: "已轉往診室", type: "queue" },
+      completed: { label: "已完成", type: "queue" },
+      cancelled: { label: "已取消", type: "queue" },
+
+      blood_test_ordered: { label: "已安排抽血", type: "investigation" },
+      blood_test_done: { label: "已完成抽血", type: "investigation" },
+      xray_ordered: { label: "已安排 X 光", type: "investigation" },
+      xray_done: { label: "已完成 X 光", type: "investigation" },
+      ecg_ordered: { label: "已安排心電圖", type: "investigation" },
+      ecg_done: { label: "已完成心電圖", type: "investigation" },
+      ct_ordered: { label: "已安排 CT", type: "investigation" },
+      ultrasound_ordered: { label: "已安排超聲波", type: "investigation" },
+
+      injection_given: { label: "已打針", type: "treatment" },
+      medication_given: { label: "已給藥", type: "treatment" },
+
+      observation_started: { label: "已開始觀察", type: "observation" },
+      observation_completed: { label: "已完成觀察", type: "observation" },
+
+      admission_considered: { label: "考慮入院", type: "disposition" },
+      bed_inquiry_sent: { label: "已查詢病床", type: "disposition" },
+      bed_confirmed: { label: "已確認病床", type: "disposition" },
+      no_bed_available: { label: "暫無病床", type: "disposition" },
+      ward_notified: { label: "已通知病房", type: "disposition" },
+      discharge_planned: { label: "已決定出院", type: "disposition" },
+      specialist_referred: { label: "已轉介專科", type: "disposition" },
+
+      manual_note_added: { label: "自訂事件", type: "admin" }
+    };
+
+    const JOURNEY_QUICK_ACTIONS_PHASE1 = [
+      "blood_test_ordered",
+      "blood_test_done",
+      "xray_ordered",
+      "xray_done",
+      "ecg_ordered",
+      "ecg_done",
+      "injection_given",
+      "medication_given",
+      "observation_started",
+      "observation_completed",
+      "admission_considered",
+      "bed_inquiry_sent"
+    ];
+
+    const JOURNEY_QUICK_ACTIONS_PHASE2 = [
+      "bed_confirmed",
+      "no_bed_available",
+      "ward_notified",
+      "discharge_planned",
+      "specialist_referred",
+      "ct_ordered",
+      "ultrasound_ordered"
+    ];
 
     const DEBUG = false;
 
@@ -2058,14 +2196,82 @@
       return state.patients.find(patient => patient.id === patientId) || null;
     }
 
-    function addPatientLog(patient, action, details = "") {
-      if (!patient) return;
+    function normalizePatientLogs(patient) {
+      if (!patient) return [];
       if (!Array.isArray(patient.logs)) patient.logs = [];
-      patient.logs.unshift({
-        time: nowIso(),
-        action,
-        details
+      patient.logs = patient.logs.map(log => {
+        if (!log || typeof log !== "object") {
+          return {
+            time: nowIso(),
+            action: String(log || ""),
+            details: "",
+            type: "admin",
+            eventCode: "manual_note_added"
+          };
+        }
+        return {
+          time: log.time || nowIso(),
+          action: log.action || "",
+          details: log.details || "",
+          type: log.type || getJourneyTypeFromEventCode(log.eventCode) || "admin",
+          eventCode: log.eventCode || "manual_note_added"
+        };
       });
+      return patient.logs;
+    }
+
+    function getJourneyTypeFromEventCode(eventCode) {
+      return JOURNEY_EVENT_DEFS[eventCode]?.type || "admin";
+    }
+
+    function getJourneyLabelFromEventCode(eventCode) {
+      return JOURNEY_EVENT_DEFS[eventCode]?.label || "自訂事件";
+    }
+
+    function addPatientLog(patient, action, details = "", meta = {}) {
+      if (!patient) return;
+      normalizePatientLogs(patient);
+      patient.logs.unshift({
+        time: meta.time || nowIso(),
+        action,
+        details,
+        type: meta.type || "admin",
+        eventCode: meta.eventCode || "manual_note_added"
+      });
+    }
+
+    function addJourneyEvent(patient, eventCode, details = "", explicitTime = null) {
+      if (!patient) return;
+      const def = JOURNEY_EVENT_DEFS[eventCode] || { label: eventCode, type: "admin" };
+      addPatientLog(patient, def.label, details, {
+        time: explicitTime || nowIso(),
+        type: def.type,
+        eventCode
+      });
+    }
+
+    function getJourneyTypeLabel(type) {
+      const map = {
+        queue: "流程",
+        investigation: "檢查",
+        treatment: "治療",
+        observation: "觀察",
+        disposition: "處置",
+        admin: "備註"
+      };
+      return map[type] || "備註";
+    }
+
+    function getJourneyPillClass(type) {
+      const map = {
+        queue: "pill-journey-queue",
+        investigation: "pill-journey-investigation",
+        treatment: "pill-journey-treatment",
+        observation: "pill-journey-observation",
+        disposition: "pill-journey-disposition",
+        admin: "pill-journey-admin"
+      };
+      return map[type] || "pill-journey-admin";
     }
 
     function getRoomDisplayShort(roomNo) {
@@ -2394,6 +2600,16 @@
       return String(select?.value || "").trim();
     }
 
+    function getJourneyCustomPayloadFromButton(button) {
+      const wrap = button.closest("[data-journey-tools]");
+      if (!wrap) return null;
+      return {
+        code: String(wrap.querySelector("[data-custom-event-code]")?.value || "").trim(),
+        note: String(wrap.querySelector("[data-custom-event-note]")?.value || "").trim(),
+        wrap
+      };
+    }
+
     function isPatientLockedFromRebalance(patient) {
       return patient.initialAssignmentMode === "manual" || patient.manualLock === true;
     }
@@ -2533,25 +2749,15 @@
           const room = getRoom(patient.roomId);
           const code = getPatientDisplayNo(patient).toLowerCase();
 
-          const ticketMatch = skipTicket || !ticketQuery
-            ? true
-            : code.startsWith(ticketQuery);
+          const ticketMatch = skipTicket || !ticketQuery ? true : code.startsWith(ticketQuery);
 
-          const roomMatch = roomNoQuery
-            ? !!room && room.roomNo === roomNoQuery
-            : true;
+          const roomMatch = roomNoQuery ? !!room && room.roomNo === roomNoQuery : true;
 
-          const statusMatch = filters.status === "all"
-            ? true
-            : patient.status === filters.status;
+          const statusMatch = filters.status === "all" ? true : patient.status === filters.status;
 
-          const typeMatch = filters.patientType === "all"
-            ? true
-            : patient.sourceType === filters.patientType;
+          const typeMatch = filters.patientType === "all" ? true : patient.sourceType === filters.patientType;
 
-          const activeMatch = filters.activeOnly
-            ? isActivePatientStatus(patient.status)
-            : true;
+          const activeMatch = filters.activeOnly ? isActivePatientStatus(patient.status) : true;
 
           return ticketMatch && roomMatch && statusMatch && typeMatch && activeMatch;
         })
@@ -2571,13 +2777,9 @@
           return getPatientDisplayNo(patient).toLowerCase().startsWith(query);
         });
 
-      const uniqueTicketNos = Array.from(
-        new Set(matchedPatients.map(patient => getPatientDisplayNo(patient)).filter(Boolean))
-      ).slice(0, 20);
+      const uniqueTicketNos = Array.from(new Set(matchedPatients.map(patient => getPatientDisplayNo(patient)).filter(Boolean))).slice(0, 20);
 
-      datalist.innerHTML = uniqueTicketNos.map(ticketNo => `
-        <option value="${escapeHtml(ticketNo)}"></option>
-      `).join("");
+      datalist.innerHTML = uniqueTicketNos.map(ticketNo => `<option value="${escapeHtml(ticketNo)}"></option>`).join("");
     }
 
     function renderSearchSummary(text) {
@@ -2612,6 +2814,108 @@
       }).join("");
     }
 
+    function getPatientJourneyStage(patient) {
+      if (!patient) return { current: "—", previous: "—", next: "—" };
+
+      if (patient.status === "cancelled") {
+        return { current: "已取消", previous: "曾於流程中", next: "流程結束" };
+      }
+      if (patient.status === "done") {
+        return { current: "已完成", previous: "現正診症", next: "流程結束" };
+      }
+      if (patient.status === "skipped") {
+        return { current: "過號", previous: "已叫號", next: "重新叫號 / 返回候診 / 轉往診室" };
+      }
+      if (patient.status === "called") {
+        return { current: "現正診症", previous: "已叫號", next: "完成 / 檢查 / 觀察 / 處置" };
+      }
+      if (patient.status === "waiting") {
+        return { current: "候診中", previous: "已派往診室", next: "等候叫號" };
+      }
+      return { current: "—", previous: "—", next: "—" };
+    }
+
+    function getJourneyCounts(patient) {
+      normalizePatientLogs(patient);
+      const logs = patient.logs || [];
+      return {
+        investigations: logs.filter(l => l.type === "investigation").length,
+        treatments: logs.filter(l => l.type === "treatment").length,
+        observations: logs.filter(l => l.type === "observation").length,
+        dispositions: logs.filter(l => l.type === "disposition").length
+      };
+    }
+
+    function renderJourneyQuickButtons(patientId, compact = false) {
+      const phase1 = JOURNEY_QUICK_ACTIONS_PHASE1.map(code => `
+        <button class="journey-quick-btn ${compact ? "btn-small" : ""}" type="button"
+                data-action="addJourneyQuick"
+                data-patient-id="${patientId}"
+                data-journey-code="${code}">
+          ${escapeHtml(getJourneyLabelFromEventCode(code))}
+        </button>
+      `).join("");
+
+      const phase2 = JOURNEY_QUICK_ACTIONS_PHASE2.map(code => `
+        <button class="journey-quick-btn ${compact ? "btn-small" : ""}" type="button"
+                data-action="addJourneyQuick"
+                data-patient-id="${patientId}"
+                data-journey-code="${code}">
+          ${escapeHtml(getJourneyLabelFromEventCode(code))}
+        </button>
+      `).join("");
+
+      return `
+        <div class="journey-tools-box" data-journey-tools="${patientId}">
+          <div class="journey-tools-title">Patient Journey Tracker｜Phase 1 常用事件</div>
+          <div class="journey-quick-grid">${phase1}</div>
+
+          <div class="journey-tools-title" style="margin-top:12px;">Phase 2 進階事件</div>
+          <div class="journey-quick-grid">${phase2}</div>
+
+          <div class="journey-tools-title" style="margin-top:12px;">自訂事件</div>
+          <div class="journey-custom-row">
+            <select data-custom-event-code="${patientId}">
+              <option value="manual_note_added">自訂事件 / 備註</option>
+              ${Object.entries(JOURNEY_EVENT_DEFS).map(([code, def]) => `
+                <option value="${escapeHtml(code)}">${escapeHtml(def.label)}｜${escapeHtml(getJourneyTypeLabel(def.type))}</option>
+              `).join("")}
+            </select>
+            <input type="text" data-custom-event-note="${patientId}" placeholder="例如：已聯絡內科病房，等候回覆" />
+            <button class="btn-secondary btn-small" type="button" data-action="addJourneyCustom" data-patient-id="${patientId}">
+              加入事件
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderJourneyTimeline(patient) {
+      normalizePatientLogs(patient);
+      const logs = [...(patient.logs || [])].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+
+      if (!logs.length) {
+        return `<div class="muted">暫無病人旅程紀錄</div>`;
+      }
+
+      return `
+        <div class="timeline-list">
+          ${logs.map(log => `
+            <div class="timeline-item">
+              <div class="timeline-time">${escapeHtml(formatDateTime(log.time))}</div>
+              <div class="timeline-card">
+                <div class="timeline-top">
+                  <span class="pill ${getJourneyPillClass(log.type)}">${escapeHtml(getJourneyTypeLabel(log.type))}</span>
+                  <div class="timeline-title">${escapeHtml(log.action || getJourneyLabelFromEventCode(log.eventCode))}</div>
+                </div>
+                ${log.details ? `<div class="timeline-details">${escapeHtml(log.details)}</div>` : ``}
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
     function renderPatientSearchDetail(patient) {
       const container = document.getElementById("patientSearchResult");
       const room = getRoom(patient.roomId);
@@ -2622,20 +2926,12 @@
         queuePosition = waitingIds.indexOf(patient.id) + 1;
       }
 
-      const historyHtml = (patient.logs || []).length
-        ? patient.logs.map(log => `
-          <div class="history-item">
-            <div class="history-time">${escapeHtml(formatDateTime(log.time))}</div>
-            <div class="history-text">
-              ${escapeHtml(log.action)}${log.details ? `：${escapeHtml(log.details)}` : ""}
-            </div>
-          </div>
-        `).join("")
-        : `<div class="muted">暫無操作紀錄</div>`;
+      const stage = getPatientJourneyStage(patient);
+      const counts = getJourneyCounts(patient);
 
       const html = `
         ${renderSearchSummary(`已找到病人資料：${getPatientDisplayNo(patient)}`)}
-        <div class="patient-search-result teach-anchor" data-help-title="病人詳細結果" data-help="此處會顯示病人的最新狀態、所屬診室、時間紀錄及目前輪候位置。操作紀錄可協助追蹤病人曾進行的操作。">
+        <div class="patient-search-result teach-anchor">
           <div class="grid-2">
             <div><strong>CUMC 號碼：</strong>${escapeHtml(getPatientDisplayNo(patient))}</div>
             <div><strong>所屬診室：</strong>${room ? `${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}` : "—"}</div>
@@ -2653,9 +2949,41 @@
             <div><strong>目前輪候位置：</strong>${queuePosition || "—"}</div>
           </div>
 
+          <div class="journey-summary-grid">
+            <div class="journey-summary-card">
+              <div class="journey-summary-label">目前旅程階段</div>
+              <div class="journey-summary-value">${escapeHtml(stage.current)}</div>
+            </div>
+            <div class="journey-summary-card">
+              <div class="journey-summary-label">上一個步驟</div>
+              <div class="journey-summary-value">${escapeHtml(stage.previous)}</div>
+            </div>
+            <div class="journey-summary-card">
+              <div class="journey-summary-label">下一個預期步驟</div>
+              <div class="journey-summary-value">${escapeHtml(stage.next)}</div>
+            </div>
+          </div>
+
+          <div class="journey-summary-grid">
+            <div class="journey-summary-card">
+              <div class="journey-summary-label">檢查事件數</div>
+              <div class="journey-summary-value">${counts.investigations}</div>
+            </div>
+            <div class="journey-summary-card">
+              <div class="journey-summary-label">治療事件數</div>
+              <div class="journey-summary-value">${counts.treatments}</div>
+            </div>
+            <div class="journey-summary-card">
+              <div class="journey-summary-label">觀察 / 處置事件數</div>
+              <div class="journey-summary-value">${counts.observations + counts.dispositions}</div>
+            </div>
+          </div>
+
+          ${renderJourneyQuickButtons(patient.id, false)}
+
           <div class="history-list">
-            <div class="section-title" style="margin-top:0;">操作紀錄</div>
-            ${historyHtml}
+            <div class="section-title" style="margin-top:0;">病人旅程時間線</div>
+            ${renderJourneyTimeline(patient)}
           </div>
         </div>
       `;
@@ -2671,7 +2999,7 @@
 
       const html = `
         ${renderSearchSummary(`共找到 ${patients.length} 項符合結果，未完成個案已優先顯示。`)}
-        <div class="patient-search-result teach-anchor" data-help-title="多項搜尋結果" data-help="當輸入條件未夠精確時，系統會列出所有符合結果，並將未完成個案優先顯示。你可按「查看詳情」查看單一病人資料。">
+        <div class="patient-search-result teach-anchor">
           <div class="section-title" style="margin-top:0;">${escapeHtml(title)}</div>
           <table>
             <thead>
@@ -2733,20 +3061,11 @@
       if (!container || !room) return;
 
       const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
-
       let roomPatients = state.patients.filter(patient => patient.roomId === room.id);
 
-      if (filters.status !== "all") {
-        roomPatients = roomPatients.filter(patient => patient.status === filters.status);
-      }
-
-      if (filters.patientType !== "all") {
-        roomPatients = roomPatients.filter(patient => patient.sourceType === filters.patientType);
-      }
-
-      if (filters.activeOnly) {
-        roomPatients = roomPatients.filter(patient => isActivePatientStatus(patient.status));
-      }
+      if (filters.status !== "all") roomPatients = roomPatients.filter(patient => patient.status === filters.status);
+      if (filters.patientType !== "all") roomPatients = roomPatients.filter(patient => patient.sourceType === filters.patientType);
+      if (filters.activeOnly) roomPatients = roomPatients.filter(patient => isActivePatientStatus(patient.status));
 
       const waitingPatients = getOrderedWaitingPatients(room).filter(patient => roomPatients.some(p => p.id === patient.id));
       const skippedPatients = getSkippedPatients(room).filter(patient => roomPatients.some(p => p.id === patient.id));
@@ -2758,7 +3077,7 @@
 
       const html = `
         ${renderSearchSummary(summaryText)}
-        <div class="search-room-hero teach-anchor" data-help-title="診室查詢結果" data-help="當只選擇診室進行查詢時，系統會以診室視圖顯示該診室目前情況，包括現正診症、候診、過號及其他符合篩選條件的病人。">
+        <div class="search-room-hero teach-anchor">
           <div class="search-room-hero-top">
             <div>
               <div class="search-room-title">${escapeHtml(room.roomNo)}</div>
@@ -2810,7 +3129,7 @@
     function renderNoSearchResult(message = "找不到符合條件的病人資料") {
       const container = document.getElementById("patientSearchResult");
       const html = `
-        <div class="patient-search-result teach-anchor" data-help-title="搜尋結果" data-help="系統目前找不到符合條件的病人資料。請檢查 CUMC 號碼、診室或篩選條件是否正確。">
+        <div class="patient-search-result teach-anchor">
           <div class="muted">${escapeHtml(message)}</div>
         </div>
       `;
@@ -2825,16 +3144,10 @@
       const match = text.match(/^(.*?醫生)\s*(Dr\..*)$/i);
 
       if (match) {
-        return {
-          zh: match[1].trim(),
-          en: match[2].trim()
-        };
+        return { zh: match[1].trim(), en: match[2].trim() };
       }
 
-      return {
-        zh: text,
-        en: ""
-      };
+      return { zh: text, en: "" };
     }
 
     function renderBoardTag(patient, type = "wait") {
@@ -2856,12 +3169,8 @@
         state.displayPageIndex = 0;
         return;
       }
-      if (state.displayPageIndex >= totalPages) {
-        state.displayPageIndex = 0;
-      }
-      if (state.displayPageIndex < 0) {
-        state.displayPageIndex = 0;
-      }
+      if (state.displayPageIndex >= totalPages) state.displayPageIndex = 0;
+      if (state.displayPageIndex < 0) state.displayPageIndex = 0;
     }
 
     function getBoardRenderModel() {
@@ -2872,11 +3181,7 @@
       const startIndex = state.displayPageIndex * BOARD_ROOMS_PER_PAGE;
       const pageRooms = visibleRooms.slice(startIndex, startIndex + BOARD_ROOMS_PER_PAGE);
 
-      return {
-        visibleRooms,
-        totalPages,
-        pageRooms
-      };
+      return { visibleRooms, totalPages, pageRooms };
     }
 
     function renderDisplayBoard(force = false) {
@@ -2885,15 +3190,13 @@
       if (!container || !timeEl) return;
 
       const nextTimeText = formatBoardNow(new Date());
-      if (timeEl.textContent !== nextTimeText) {
-        timeEl.textContent = nextTimeText;
-      }
+      if (timeEl.textContent !== nextTimeText) timeEl.textContent = nextTimeText;
 
       const { visibleRooms, totalPages, pageRooms } = getBoardRenderModel();
 
       if (!visibleRooms.length) {
         const html = `
-          <div class="board-wrap teach-anchor" data-help-title="沒有顯示中的診室" data-help="代表目前所有診室均已關閉，或暫時未建立任何診室。">
+          <div class="board-wrap">
             <div class="board-body">
               <div class="board-row">
                 <div class="board-cell" style="grid-column: 1 / -1; min-height: 320px;">
@@ -2949,17 +3252,13 @@
           `;
 
         return `
-          <div class="board-row teach-anchor"
-               data-help-title="看板中的一間診室"
-               data-help="此行代表一間診室。由左至右依次顯示：診室、醫生、現正診症、候診名單及過號名單。">
+          <div class="board-row">
             <div class="board-cell board-room">${escapeHtml(getRoomDisplayShort(room.roomNo))}</div>
             <div class="board-cell board-doctor">
               <div class="board-doctor-zh">${escapeHtml(doctorParts.zh)}</div>
               ${doctorParts.en ? `<div class="board-doctor-en">${escapeHtml(doctorParts.en)}</div>` : ""}
             </div>
-            <div class="board-cell board-current">
-              ${currentBoardContent}
-            </div>
+            <div class="board-cell board-current">${currentBoardContent}</div>
             <div class="board-cell">
               <div class="board-queue">
                 ${
@@ -2998,13 +3297,13 @@
       }).join("");
 
       const html = `
-        <div class="board-pagination-bar teach-anchor" data-help-title="看板分頁" data-help="若診室數量太多，看板會自動分頁輪流顯示。此處會顯示目前頁數。">
+        <div class="board-pagination-bar">
           <div class="board-page-indicator">第 ${state.displayPageIndex + 1} 頁 / 共 ${totalPages} 頁</div>
           <div class="board-page-dots">${dotsHtml}</div>
         </div>
 
         <div class="board-wrap">
-          <div class="board-head teach-anchor" data-help-title="看板欄位標題" data-help="ROOM 代表診室，DOCTOR 代表醫生，NOW SERVING 代表現正診症，WAITING 代表候診，MISSED 代表過號。">
+          <div class="board-head">
             <div><span class="board-head-zh">診室</span><span class="board-head-en">ROOM</span></div>
             <div><span class="board-head-zh">醫生</span><span class="board-head-en">DOCTOR</span></div>
             <div><span class="board-head-zh">現正診症</span><span class="board-head-en">NOW SERVING</span></div>
@@ -3045,7 +3344,7 @@
           init: p.initialAssignmentMode,
           lock: p.manualLock,
           reg: p.registeredAt,
-          logs: (p.logs || []).slice(0, 5)
+          logs: (p.logs || []).slice(0, 8)
         })),
         skipped: skippedPatients.map(p => ({
           id: p.id,
@@ -3053,7 +3352,7 @@
           pr: p.priority,
           s: p.status,
           sk: p.skippedAt,
-          logs: (p.logs || []).slice(0, 5)
+          logs: (p.logs || []).slice(0, 8)
         }))
       });
     }
@@ -3069,6 +3368,7 @@
     }
 
     function renderPatientHoverLogAttrs(patient) {
+      normalizePatientLogs(patient);
       const latestLogs = Array.isArray(patient.logs) ? patient.logs.slice(0, 5) : [];
       const payload = encodeURIComponent(JSON.stringify({
         patientId: patient.id,
@@ -3078,11 +3378,50 @@
       return `data-hover-log="${payload}"`;
     }
 
+    function renderRoomPatientJourneySection(patient) {
+      return `
+        <div class="room-journey-section" data-journey-tools="${patient.id}">
+          <div class="room-journey-head">
+            <div class="room-journey-title">Journey Events</div>
+          </div>
+          <div class="journey-quick-grid">
+            ${JOURNEY_QUICK_ACTIONS_PHASE1.map(code => `
+              <button class="journey-quick-btn" type="button"
+                      data-action="addJourneyQuick"
+                      data-patient-id="${patient.id}"
+                      data-journey-code="${code}">
+                ${escapeHtml(getJourneyLabelFromEventCode(code))}
+              </button>
+            `).join("")}
+            ${JOURNEY_QUICK_ACTIONS_PHASE2.map(code => `
+              <button class="journey-quick-btn" type="button"
+                      data-action="addJourneyQuick"
+                      data-patient-id="${patient.id}"
+                      data-journey-code="${code}">
+                ${escapeHtml(getJourneyLabelFromEventCode(code))}
+              </button>
+            `).join("")}
+          </div>
+          <div class="journey-custom-row">
+            <select data-custom-event-code="${patient.id}">
+              <option value="manual_note_added">自訂事件 / 備註</option>
+              ${Object.entries(JOURNEY_EVENT_DEFS).map(([code, def]) => `
+                <option value="${escapeHtml(code)}">${escapeHtml(def.label)}｜${escapeHtml(getJourneyTypeLabel(def.type))}</option>
+              `).join("")}
+            </select>
+            <input type="text" data-custom-event-note="${patient.id}" placeholder="輸入補充說明，例如：已聯絡病房等候回覆" />
+            <button class="btn-secondary btn-small" type="button" data-action="addJourneyCustom" data-patient-id="${patient.id}">
+              加入事件
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
     function renderRoomCardHtml(room) {
       const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
       const waitingPatients = getOrderedWaitingPatients(room);
       const skippedPatients = getSkippedPatients(room);
-
       const transferOptions = getTransferOptionsHtml(room);
 
       const queueRows = waitingPatients.length
@@ -3094,10 +3433,7 @@
             <td>
               <div class="ticket-block">
                 <div class="queue-ticket-row">
-                  <div class="hover-log-anchor"
-                       ${renderPatientHoverLogAttrs(patient)}
-                       data-help-title="病人操作紀錄"
-                       data-help="將滑鼠移至 CUMC 號碼，會於游標旁顯示最近 5 項操作紀錄。">
+                  <div class="hover-log-anchor" ${renderPatientHoverLogAttrs(patient)}>
                     <div class="queue-ticket-text">${escapeHtml(getPatientDisplayNo(patient))}</div>
                     <div class="hover-log-hint">i</div>
                   </div>
@@ -3116,25 +3452,18 @@
                   </div>
                   <div class="queue-time">${escapeHtml(formatDateTime(patient.registeredAt))}</div>
                 </div>
+
+                ${renderRoomPatientJourneySection(patient)}
               </div>
             </td>
             <td>
               <div class="more-actions-wrap">
                 <div class="main-actions">
-                  <button class="btn-warning btn-small"
-                          type="button"
-                          data-action="togglePriority"
-                          data-patient-id="${patient.id}"
-                          data-help-title="改為 Cat 2 / 改為 Cat 3"
-                          data-help="切換病人級別。候診中病人更改後，系統會重新調整其候診位置。">
+                  <button class="btn-warning btn-small" type="button" data-action="togglePriority" data-patient-id="${patient.id}">
                     ${patient.priority ? "改為 Cat 3" : "改為 Cat 2"}
                   </button>
 
-                  <button class="btn-secondary btn-small more-toggle-btn"
-                          type="button"
-                          data-more-toggle="${patient.id}"
-                          data-help-title="更多操作"
-                          data-help="按此展開更多操作，包括移至隊首、移至指定位置、轉往診室、轉房並排隊首、轉房並排隊尾及取消輪候。">
+                  <button class="btn-secondary btn-small more-toggle-btn" type="button" data-more-toggle="${patient.id}">
                     更多操作
                   </button>
                 </div>
@@ -3142,79 +3471,41 @@
                 <div class="more-actions-panel" data-more-panel="${patient.id}">
                   <div class="more-actions-grid">
                     <div class="more-actions-line">
-                      <button class="btn-secondary btn-small"
-                              type="button"
-                              data-action="moveToFront"
-                              data-patient-id="${patient.id}"
-                              data-help-title="移至隊首"
-                              data-help="直接將此候診病人移至該診室候診名單最前。">
+                      <button class="btn-secondary btn-small" type="button" data-action="moveToFront" data-patient-id="${patient.id}">
                         移至隊首
                       </button>
 
                       <div class="actions" style="margin:0;">
-                        <input class="insert-pos-input"
-                               type="number"
-                               min="1"
-                               placeholder="輸入位置"
-                               data-insert-position="${patient.id}"
-                               data-help-title="輸入指定位置"
-                               data-help="先輸入第幾位，再按「移至指定位置」將病人插入指定位置。"/>
-                        <button class="btn-secondary btn-small"
-                                type="button"
-                                data-action="insertAtPosition"
-                                data-patient-id="${patient.id}"
-                                data-help-title="移至指定位置"
-                                data-help="將病人移至你輸入的指定位置，例如第 2 位。">
+                        <input class="insert-pos-input" type="number" min="1" placeholder="輸入位置" data-insert-position="${patient.id}" />
+                        <button class="btn-secondary btn-small" type="button" data-action="insertAtPosition" data-patient-id="${patient.id}">
                           移至指定位置
                         </button>
                       </div>
                     </div>
 
                     <div class="more-actions-line">
-                      <select class="transfer-room-select"
-                              data-help-title="選擇目標診室"
-                              data-help="請先於此選擇目標診室，然後再按右邊按鈕。">
+                      <select class="transfer-room-select">
                         <option value="">選擇目標診室</option>
                         ${transferOptions}
                       </select>
 
-                      <button class="btn-success btn-small"
-                              type="button"
-                              data-action="transferAuto"
-                              data-patient-id="${patient.id}"
-                              data-help-title="轉往診室"
-                              data-help="將病人轉往所選診室，並由系統按規則自動安排新位置。病人之後會被鎖定，不再參與一鍵智能平均分流。">
+                      <button class="btn-success btn-small" type="button" data-action="transferAuto" data-patient-id="${patient.id}">
                         轉往診室
                       </button>
                     </div>
 
                     <div class="more-actions-line">
-                      <button class="btn-primary btn-small"
-                              type="button"
-                              data-action="transferFront"
-                              data-patient-id="${patient.id}"
-                              data-help-title="轉房並排隊首"
-                              data-help="將病人轉往另一診室，並直接排到該診室隊首。">
+                      <button class="btn-primary btn-small" type="button" data-action="transferFront" data-patient-id="${patient.id}">
                         轉房並排隊首
                       </button>
 
-                      <button class="btn-primary btn-small"
-                              type="button"
-                              data-action="transferTail"
-                              data-patient-id="${patient.id}"
-                              data-help-title="轉房並排隊尾"
-                              data-help="將病人轉往另一診室，並直接排到該診室隊尾。">
+                      <button class="btn-primary btn-small" type="button" data-action="transferTail" data-patient-id="${patient.id}">
                         轉房並排隊尾
                       </button>
                     </div>
 
                     <div class="more-actions-line single">
-                      <button class="btn-danger btn-small"
-                              type="button"
-                              data-action="cancelPatient"
-                              data-patient-id="${patient.id}"
-                              data-help-title="取消輪候"
-                              data-help="將病人標記為已取消輪候，並由現有候診或診症流程移除。">
+                      <button class="btn-danger btn-small" type="button" data-action="cancelPatient" data-patient-id="${patient.id}">
                         取消輪候
                       </button>
                     </div>
@@ -3232,10 +3523,7 @@
             <td>
               <div class="ticket-block">
                 <div class="queue-ticket-row">
-                  <div class="hover-log-anchor"
-                       ${renderPatientHoverLogAttrs(patient)}
-                       data-help-title="病人操作紀錄"
-                       data-help="將滑鼠移至 CUMC 號碼，會於游標旁顯示最近 5 項操作紀錄。">
+                  <div class="hover-log-anchor" ${renderPatientHoverLogAttrs(patient)}>
                     <div class="queue-ticket-text">${escapeHtml(getPatientDisplayNo(patient))}</div>
                     <div class="hover-log-hint">i</div>
                   </div>
@@ -3250,34 +3538,22 @@
                   </div>
                   <div class="queue-time">${escapeHtml(formatDateTime(patient.registeredAt))}</div>
                 </div>
+
+                ${renderRoomPatientJourneySection(patient)}
               </div>
             </td>
             <td>
               <div class="more-actions-wrap">
                 <div class="main-actions">
-                  <button class="btn-primary btn-small"
-                          type="button"
-                          data-action="recallSkipped"
-                          data-patient-id="${patient.id}"
-                          data-help-title="重新叫號"
-                          data-help="如果該診室目前沒有病人診症中，可將過號病人即時重新叫入診症。">
+                  <button class="btn-primary btn-small" type="button" data-action="recallSkipped" data-patient-id="${patient.id}">
                     重新叫號
                   </button>
 
-                  <button class="btn-success btn-small"
-                          type="button"
-                          data-action="requeueSkipped"
-                          data-patient-id="${patient.id}"
-                          data-help-title="返回原房（自動排位）"
-                          data-help="將過號病人放回原本診室的候診隊列，並由系統按規則自動排位。">
+                  <button class="btn-success btn-small" type="button" data-action="requeueSkipped" data-patient-id="${patient.id}">
                     返回原房（自動排位）
                   </button>
 
-                  <button class="btn-secondary btn-small more-toggle-btn"
-                          type="button"
-                          data-more-toggle="${patient.id}"
-                          data-help-title="更多操作"
-                          data-help="按此展開更多操作，包括轉往診室、轉房並排隊首、轉房並排隊尾及取消輪候。">
+                  <button class="btn-secondary btn-small more-toggle-btn" type="button" data-more-toggle="${patient.id}">
                     更多操作
                   </button>
                 </div>
@@ -3290,50 +3566,28 @@
                     </div>
 
                     <div class="more-actions-line">
-                      <select class="transfer-room-select"
-                              data-help-title="選擇目標診室"
-                              data-help="請先選擇目標診室，再用右邊按鈕將病人轉往另一診室。">
+                      <select class="transfer-room-select">
                         <option value="">選擇目標診室</option>
                         ${transferOptions}
                       </select>
 
-                      <button class="btn-success btn-small"
-                              type="button"
-                              data-action="transferAuto"
-                              data-patient-id="${patient.id}"
-                              data-help-title="轉往診室"
-                              data-help="將過號病人轉往另一診室，並重新返回候診中，由系統自動排位。">
+                      <button class="btn-success btn-small" type="button" data-action="transferAuto" data-patient-id="${patient.id}">
                         轉往診室
                       </button>
                     </div>
 
                     <div class="more-actions-line">
-                      <button class="btn-primary btn-small"
-                              type="button"
-                              data-action="transferFront"
-                              data-patient-id="${patient.id}"
-                              data-help-title="轉房並排隊首"
-                              data-help="將過號病人轉往另一診室，並直接排到新診室隊首。">
+                      <button class="btn-primary btn-small" type="button" data-action="transferFront" data-patient-id="${patient.id}">
                         轉房並排隊首
                       </button>
 
-                      <button class="btn-primary btn-small"
-                              type="button"
-                              data-action="transferTail"
-                              data-patient-id="${patient.id}"
-                              data-help-title="轉房並排隊尾"
-                              data-help="將過號病人轉往另一診室，並直接排到新診室隊尾。">
+                      <button class="btn-primary btn-small" type="button" data-action="transferTail" data-patient-id="${patient.id}">
                         轉房並排隊尾
                       </button>
                     </div>
 
                     <div class="more-actions-line single">
-                      <button class="btn-danger btn-small"
-                              type="button"
-                              data-action="cancelPatient"
-                              data-patient-id="${patient.id}"
-                              data-help-title="取消輪候"
-                              data-help="將過號病人取消輪候並移出後續流程。">
+                      <button class="btn-danger btn-small" type="button" data-action="cancelPatient" data-patient-id="${patient.id}">
                         取消輪候
                       </button>
                     </div>
@@ -3356,160 +3610,60 @@
         `;
 
       return `
-        <div class="room-card teach-anchor" data-room-id="${room.id}"
-             data-help-title="診室卡"
-             data-help="此卡代表一間診室。可於此查看診室狀態、現正診症病人、候診名單、過號名單，以及直接進行管理操作。">
+        <div class="room-card" data-room-id="${room.id}">
           <div class="room-card-header">
             <div>
-              <div class="room-no"
-                   data-help-title="診室"
-                   data-help="此為診室名稱。">${escapeHtml(room.roomNo)}</div>
-              <div class="doctor-name"
-                   data-help-title="醫生名稱"
-                   data-help="顯示目前該診室負責醫生。">${escapeHtml(room.doctorName)}</div>
+              <div class="room-no">${escapeHtml(room.roomNo)}</div>
+              <div class="doctor-name">${escapeHtml(room.doctorName)}</div>
             </div>
             <div class="status-stack">
-              <div class="status-badge ${room.status === "open" ? "status-open" : room.status === "paused" ? "status-paused" : "status-closed"}"
-                   data-help-title="診室狀態"
-                   data-help="${room.status === "open" ? "開放：可正常叫號。" : room.status === "paused" ? "暫停：診室暫時停止一般診症流程。" : "關閉：候診看板會隱藏此診室。"}">
+              <div class="status-badge ${room.status === "open" ? "status-open" : room.status === "paused" ? "status-paused" : "status-closed"}">
                 ${room.status === "open" ? "開放" : room.status === "paused" ? "暫停" : "關閉"}
               </div>
-              <div class="status-badge ${room.acceptingNew ? "status-accepting" : "status-stop-assign"}"
-                   data-help-title="新症狀態"
-                   data-help="${room.acceptingNew ? "接受新症：系統可將新病人派往此診室。" : "停收新症：暫停接收新派症，但仍可顯示及處理現有病人。"}">
+              <div class="status-badge ${room.acceptingNew ? "status-accepting" : "status-stop-assign"}">
                 ${room.acceptingNew ? "接受新症" : "停收新症"}
               </div>
             </div>
           </div>
 
           <div class="room-card-body">
-            <div class="current-box"
-                 data-help-title="現正診症"
-                 data-help="顯示目前正在診症中的病人；若診室暫停，則會顯示暫停原因。">
+            <div class="current-box">
               <div class="current-label">現正診症</div>
               ${currentDisplay}
             </div>
 
             <div class="actions" style="margin-bottom:12px;">
-              <button class="btn-primary btn-small"
-                      data-action="callNext"
-                      data-room-id="${room.id}"
-                      type="button"
-                      data-help-title="叫號"
-                      data-help="將此診室候診名單最前的一位病人轉為「現正診症」。如仍有病人診症中，需先完成或設為過號。">
-                叫號
-              </button>
-              <button class="btn-success btn-small"
-                      data-action="finishCurrent"
-                      data-room-id="${room.id}"
-                      type="button"
-                      data-help-title="完成"
-                      data-help="將目前診症中的病人標記為已完成。">
-                完成
-              </button>
-              <button class="btn-warning btn-small"
-                      data-action="skipCurrent"
-                      data-room-id="${room.id}"
-                      type="button"
-                      data-help-title="過號"
-                      data-help="將目前診症中的病人標記為過號，之後可重新叫號、返回原房、轉往診室或取消輪候。">
-                過號
-              </button>
-              <button class="btn-secondary btn-small"
-                      data-action="setOpen"
-                      data-room-id="${room.id}"
-                      type="button"
-                      data-help-title="開放"
-                      data-help="將診室狀態設為開放，恢復正常叫號流程。">
-                開放
-              </button>
-              <button class="btn-secondary btn-small"
-                      data-action="setPausedWithReason"
-                      data-room-id="${room.id}"
-                      type="button"
-                      data-help-title="暫停"
-                      data-help="將診室狀態設為暫停。你可先選擇或輸入暫停原因，例如急救中、小手術、巡房。">
-                暫停
-              </button>
-              <button class="btn-danger btn-small"
-                      data-action="setClosed"
-                      data-room-id="${room.id}"
-                      type="button"
-                      data-help-title="關閉"
-                      data-help="將診室設為關閉。關閉後候診看板會隱藏此診室。此版本容許即使仍有未完成病人亦可關閉。">
-                關閉
-              </button>
-              <button class="${room.acceptingNew ? "btn-warning" : "btn-success"} btn-small"
-                      data-action="toggleAcceptingNew"
-                      data-room-id="${room.id}"
-                      type="button"
-                      data-help-title="${room.acceptingNew ? "停止收新症" : "恢復收新症"}"
-                      data-help="${room.acceptingNew ? "暫停接收新派症，但診室仍可顯示並處理現有病人。" : "重新恢復接收新派症。"}">
+              <button class="btn-primary btn-small" data-action="callNext" data-room-id="${room.id}" type="button">叫號</button>
+              <button class="btn-success btn-small" data-action="finishCurrent" data-room-id="${room.id}" type="button">完成</button>
+              <button class="btn-warning btn-small" data-action="skipCurrent" data-room-id="${room.id}" type="button">過號</button>
+              <button class="btn-secondary btn-small" data-action="setOpen" data-room-id="${room.id}" type="button">開放</button>
+              <button class="btn-secondary btn-small" data-action="setPausedWithReason" data-room-id="${room.id}" type="button">暫停</button>
+              <button class="btn-danger btn-small" data-action="setClosed" data-room-id="${room.id}" type="button">關閉</button>
+              <button class="${room.acceptingNew ? "btn-warning" : "btn-success"} btn-small" data-action="toggleAcceptingNew" data-room-id="${room.id}" type="button">
                 ${room.acceptingNew ? "停止收新症" : "恢復收新症"}
               </button>
             </div>
 
             <div class="actions" style="margin-bottom:14px;">
-              <input
-                type="text"
-                list="doctorOptions"
-                value="${escapeHtml(room.doctorName)}"
-                data-doctor-input="${room.id}"
-                style="max-width:220px;"
-                placeholder="可選或自由輸入"
-                data-help-title="更新醫生名稱"
-                data-help="可直接修改此診室顯示的醫生名稱，然後按「更新醫生名稱」儲存。"
-              />
-              <button class="btn-secondary btn-small"
-                      data-action="updateDoctor"
-                      data-room-id="${room.id}"
-                      type="button"
-                      data-help-title="更新醫生名稱"
-                      data-help="將上方輸入欄內的醫生名稱套用至此診室。">
-                更新醫生名稱
-              </button>
-              <button class="btn-danger btn-small"
-                      data-action="deleteRoom"
-                      data-room-id="${room.id}"
-                      type="button"
-                      data-help-title="刪除診室"
-                      data-help="只適用於完全沒有候診、過號或現正診症病人的診室。">
-                刪除診室
-              </button>
+              <input type="text" list="doctorOptions" value="${escapeHtml(room.doctorName)}" data-doctor-input="${room.id}" style="max-width:220px;" placeholder="可選或自由輸入" />
+              <button class="btn-secondary btn-small" data-action="updateDoctor" data-room-id="${room.id}" type="button">更新醫生名稱</button>
+              <button class="btn-danger btn-small" data-action="deleteRoom" data-room-id="${room.id}" type="button">刪除診室</button>
             </div>
 
             <div class="form-row" style="margin-bottom:14px;">
-              <label data-help-title="暫停原因"
-                     data-help="可選擇預設原因，或自行輸入原因。暫停時會顯示於診室卡及候診看板。">
-                暫停原因（可選擇或自訂）
-              </label>
+              <label>暫停原因（可選擇或自訂）</label>
               <div class="actions">
-                <select data-pause-reason-select="${room.id}"
-                        style="max-width:220px;"
-                        data-help-title="選擇暫停原因"
-                        data-help="可選擇預設原因，例如急救中、小手術、巡房。">
+                <select data-pause-reason-select="${room.id}" style="max-width:220px;">
                   <option value="">輸入自訂原因</option>
                   ${PAUSE_REASON_OPTIONS.map(reason => `
                     <option value="${escapeHtml(reason)}" ${room.pauseReason === reason ? "selected" : ""}>${escapeHtml(reason)}</option>
                   `).join("")}
                 </select>
-                <input
-                  type="text"
-                  data-pause-reason="${room.id}"
-                  value="${PAUSE_REASON_OPTIONS.includes(room.pauseReason || "") ? "" : escapeHtml(room.pauseReason || "")}"
-                  placeholder="輸入自訂原因"
-                  style="max-width:260px;"
-                  data-help-title="自訂暫停原因"
-                  data-help="如預設原因不合適，可直接輸入你希望顯示的原因。"
-                />
+                <input type="text" data-pause-reason="${room.id}" value="${PAUSE_REASON_OPTIONS.includes(room.pauseReason || "") ? "" : escapeHtml(room.pauseReason || "")}" placeholder="輸入自訂原因" style="max-width:260px;" />
               </div>
             </div>
 
-            <div class="section-title"
-                 data-help-title="候診名單"
-                 data-help="顯示此診室目前正在候診的病人。保留 table 邏輯，但每行視覺上會較似 compact card。">
-              候診名單
-            </div>
+            <div class="section-title">候診名單</div>
             <table>
               <thead>
                 <tr>
@@ -3521,11 +3675,7 @@
               <tbody>${queueRows}</tbody>
             </table>
 
-            <div class="section-title"
-                 data-help-title="過號名單"
-                 data-help="顯示之前被標記為過號的病人。你可以重新叫號、返回原房、轉往診室、轉房並排隊首、轉房並排隊尾或取消輪候。">
-              過號名單
-            </div>
+            <div class="section-title">過號名單</div>
             <table>
               <thead>
                 <tr>
@@ -3560,6 +3710,10 @@
           const row = active.closest("tr");
           const patientId = row?.getAttribute("data-row-patient-id");
           if (patientId) focusSelector = `tr[data-row-patient-id="${patientId}"] .transfer-room-select`;
+        } else if (active.matches("[data-custom-event-code]")) {
+          focusSelector = `[data-custom-event-code="${active.getAttribute("data-custom-event-code")}"]`;
+        } else if (active.matches("[data-custom-event-note]")) {
+          focusSelector = `[data-custom-event-note="${active.getAttribute("data-custom-event-note")}"]`;
         }
 
         selectedValue = active.value;
@@ -3660,9 +3814,7 @@
           }
         }
 
-        if (!inserted) {
-          container.appendChild(newEl);
-        }
+        if (!inserted) container.appendChild(newEl);
         return;
       }
 
@@ -3700,9 +3852,7 @@
     function renderAll(force = false, options = {}) {
       const { resortQueues = false } = options;
 
-      if (resortQueues) {
-        state.rooms.forEach(sortRoomQueue);
-      }
+      if (resortQueues) state.rooms.forEach(sortRoomQueue);
 
       populateRoomSelect();
       populateSearchRoomSelect();
@@ -3772,18 +3922,10 @@
 
     async function loadStateFromSupabase(showErrorToast = true) {
       try {
-        const { data: roomsData, error: roomsError } = await sb
-          .from("rooms")
-          .select("*")
-          .order("room_no", { ascending: true });
-
+        const { data: roomsData, error: roomsError } = await sb.from("rooms").select("*").order("room_no", { ascending: true });
         if (roomsError) throw roomsError;
 
-        const { data: patientsData, error: patientsError } = await sb
-          .from("patients")
-          .select("*")
-          .order("created_at", { ascending: true });
-
+        const { data: patientsData, error: patientsError } = await sb.from("patients").select("*").order("created_at", { ascending: true });
         if (patientsError) throw patientsError;
 
         state.rooms = (roomsData || []).map(room => ({
@@ -3798,26 +3940,30 @@
           currentPatientId: room.current_patient_id || null
         }));
 
-        state.patients = (patientsData || []).map(patient => ({
-          id: patient.id,
-          ticketNo: patient.ticket_no,
-          cumcNo: patient.cumc_no,
-          roomId: patient.room_id || "",
-          sourceType: patient.source_type || "walkin",
-          priority: !!patient.priority,
-          registeredAt: patient.registered_at || nowIso(),
-          status: patient.status || "waiting",
-          createdAt: patient.created_at || nowIso(),
-          queueOrder: Number.isFinite(patient.queue_order) ? patient.queue_order : null,
-          skippedAt: patient.skipped_at || null,
-          calledAt: patient.called_at || null,
-          doneAt: patient.done_at || null,
-          cancelledAt: patient.cancelled_at || null,
-          initialAssignmentMode: patient.initial_assignment_mode || "auto",
-          manualLock: !!patient.manual_lock,
-          manualLockReason: patient.manual_lock_reason || "",
-          logs: Array.isArray(patient.logs_json) ? patient.logs_json : []
-        }));
+        state.patients = (patientsData || []).map(patient => {
+          const p = {
+            id: patient.id,
+            ticketNo: patient.ticket_no,
+            cumcNo: patient.cumc_no,
+            roomId: patient.room_id || "",
+            sourceType: patient.source_type || "walkin",
+            priority: !!patient.priority,
+            registeredAt: patient.registered_at || nowIso(),
+            status: patient.status || "waiting",
+            createdAt: patient.created_at || nowIso(),
+            queueOrder: Number.isFinite(patient.queue_order) ? patient.queue_order : null,
+            skippedAt: patient.skipped_at || null,
+            calledAt: patient.called_at || null,
+            doneAt: patient.done_at || null,
+            cancelledAt: patient.cancelled_at || null,
+            initialAssignmentMode: patient.initial_assignment_mode || "auto",
+            manualLock: !!patient.manual_lock,
+            manualLockReason: patient.manual_lock_reason || "",
+            logs: Array.isArray(patient.logs_json) ? patient.logs_json : []
+          };
+          normalizePatientLogs(p);
+          return p;
+        });
 
         state.rooms.forEach(room => {
           room.queuePatientIds = state.patients
@@ -3854,12 +4000,7 @@
       };
 
       const { data, error } = await sb.from("rooms").upsert(payload).select();
-      if (error) {
-        console.error("saveRoomToSupabase failed");
-        console.error("payload:", payload);
-        console.error("error:", error);
-        throw error;
-      }
+      if (error) throw error;
       return data;
     }
 
@@ -3874,15 +4015,7 @@
       };
 
       const { data, error } = await sb.from("rooms").update(payload).eq("id", room.id).select();
-
-      if (error) {
-        console.error("updateRoomInSupabase failed");
-        console.error("room:", room);
-        console.error("payload:", payload);
-        console.error("error:", error);
-        throw error;
-      }
-
+      if (error) throw error;
       return data;
     }
 
@@ -3912,14 +4045,7 @@
     async function savePatientToSupabase(patient) {
       const payload = toPatientPayload(patient);
       const { data, error } = await sb.from("patients").upsert(payload).select();
-
-      if (error) {
-        console.error("savePatientToSupabase failed");
-        console.error("payload:", payload);
-        console.error("error:", error);
-        throw error;
-      }
-
+      if (error) throw error;
       return data;
     }
 
@@ -3927,14 +4053,7 @@
       if (!patients || !patients.length) return;
       const payload = patients.map(toPatientPayload);
       const { data, error } = await sb.from("patients").upsert(payload).select();
-
-      if (error) {
-        console.error("savePatientsBatchToSupabase failed");
-        console.error("payload:", payload);
-        console.error("error:", error);
-        throw error;
-      }
-
+      if (error) throw error;
       return data;
     }
 
@@ -3945,21 +4064,12 @@
 
     async function syncRoomQueuePatients(room) {
       const waitingPatients = getOrderedWaitingPatients(room);
-      debugLog("syncRoomQueuePatients", room.roomNo, waitingPatients.map(p => ({
-        ticketNo: getPatientDisplayNo(p),
-        status: p.status,
-        queueOrder: p.queueOrder
-      })));
       await savePatientsBatchToSupabase(waitingPatients);
     }
 
     function renderDoctorOptionsHtml() {
-      const uniqueNames = Array.from(
-        new Set([
-          ...DOCTOR_SUGGESTIONS,
-          ...state.rooms.map(room => room.doctorName).filter(Boolean)
-        ])
-      ).sort((a, b) => a.localeCompare(b, "zh-HK"));
+      const uniqueNames = Array.from(new Set([...DOCTOR_SUGGESTIONS, ...state.rooms.map(room => room.doctorName).filter(Boolean)]))
+        .sort((a, b) => a.localeCompare(b, "zh-HK"));
 
       return uniqueNames.map(name => `<option value="${escapeHtml(name)}"></option>`).join("");
     }
@@ -3968,16 +4078,12 @@
       const datalist = document.getElementById("doctorOptions");
       if (!datalist) return;
       const nextHtml = renderDoctorOptionsHtml();
-      if (datalist.innerHTML !== nextHtml) {
-        datalist.innerHTML = nextHtml;
-      }
+      if (datalist.innerHTML !== nextHtml) datalist.innerHTML = nextHtml;
     }
 
     function scheduleRenderAll(delay = RENDER_DEBOUNCE_MS, force = false, options = {}) {
       if (renderTimer) clearTimeout(renderTimer);
-      renderTimer = setTimeout(() => {
-        renderAll(force, options);
-      }, delay);
+      renderTimer = setTimeout(() => renderAll(force, options), delay);
     }
 
     async function refreshFromCloudAndRender(showErrorToast = false) {
@@ -4041,14 +4147,12 @@
 
         state.rooms.push(room);
         renderAll(true, { resortQueues: false });
-
         await saveRoomToSupabase(room);
 
         roomNoInput.value = "";
         doctorInput.value = "";
         renderAll(true, { resortQueues: false });
         notify("已建立診室", "success");
-
         await refreshFromCloudAndRender(false);
       } catch (error) {
         console.error(error);
@@ -4116,9 +4220,7 @@
         }
 
         const now = nowIso();
-        const registeredAt = useCustomRegisteredAt
-          ? (hktLocalDateTimeToIso(registeredAtInput) || now)
-          : now;
+        const registeredAt = useCustomRegisteredAt ? (hktLocalDateTimeToIso(registeredAtInput) || now) : now;
 
         const patient = {
           id: crypto.randomUUID(),
@@ -4141,20 +4243,26 @@
           logs: []
         };
 
-        addPatientLog(
+        addJourneyEvent(
           patient,
-          "首次登記",
-          `已登記至 ${room.roomNo} / ${room.doctorName}；類型：${getPatientTypeLabel(patientType)}；首次派往診室方式：${patient.initialAssignmentMode === "manual" ? "手動派房" : "自動派房"}；登記時間：${formatDateTime(registeredAt)}${useCustomRegisteredAt ? "（手動時間）" : "（系統時間）"}；分流級別：${getPriorityLabel(patient)}`
+          "registered",
+          `登記時間：${formatDateTime(registeredAt)}${useCustomRegisteredAt ? "（手動時間）" : "（系統時間）"}；病人類型：${getPatientTypeLabel(patientType)}；分流級別：${getPriorityLabel(patient)}`
+        );
+        addJourneyEvent(
+          patient,
+          "assigned_room",
+          `已派往 ${room.roomNo} / ${room.doctorName}；首次派往診室方式：${patient.initialAssignmentMode === "manual" ? "手動派房" : "自動派房"}`
         );
 
         state.patients.push(patient);
         room.queuePatientIds.push(patient.id);
 
         const actualPosition = insertPatientIntoQueue(room, patient, insertMode, insertPosition);
-        addPatientLog(
+
+        addJourneyEvent(
           patient,
-          "排位",
-          `加入 ${room.roomNo} / ${room.doctorName}；${getInsertModeText(insertMode, Math.max(1, parseInt(insertPosition, 10) || 1), actualPosition)}`
+          "waiting",
+          `加入候診隊列；${getInsertModeText(insertMode, Math.max(1, parseInt(insertPosition, 10) || 1), actualPosition)}`
         );
 
         renderRoomOnly(room.id, true);
@@ -4220,10 +4328,11 @@
 
         if (!nextPatient.calledAt) {
           nextPatient.calledAt = nowIso();
-          addPatientLog(nextPatient, "首次叫號", `${room.roomNo} / ${room.doctorName} 已首次叫號`);
+          addJourneyEvent(nextPatient, "called", `${room.roomNo} / ${room.doctorName} 已首次叫號`, nextPatient.calledAt);
         } else {
-          addPatientLog(nextPatient, "重新叫號", `${room.roomNo} / ${room.doctorName} 已重新叫號`);
+          addJourneyEvent(nextPatient, "called", `${room.roomNo} / ${room.doctorName} 已重新叫號`);
         }
+        addJourneyEvent(nextPatient, "in_consultation", `${room.roomNo} / ${room.doctorName} 現正診症`);
 
         sortRoomQueue(room);
         renderRoomOnly(roomId, true);
@@ -4259,7 +4368,7 @@
           patient.status = "done";
           patient.doneAt = nowIso();
           patient.queueOrder = null;
-          addPatientLog(patient, "完成", `${room.roomNo} / ${room.doctorName} 已完成診症`);
+          addJourneyEvent(patient, "completed", `${room.roomNo} / ${room.doctorName} 已完成診症`, patient.doneAt);
           await savePatientToSupabase(patient);
         }
 
@@ -4296,7 +4405,7 @@
           patient.status = "skipped";
           patient.skippedAt = nowIso();
           patient.queueOrder = null;
-          addPatientLog(patient, "過號", `${room.roomNo} / ${room.doctorName} 已設為過號`);
+          addJourneyEvent(patient, "skipped", `${room.roomNo} / ${room.doctorName} 已設為過號`, patient.skippedAt);
           await savePatientToSupabase(patient);
         }
 
@@ -4341,7 +4450,8 @@
         patient.skippedAt = null;
         patient.queueOrder = null;
         if (!patient.calledAt) patient.calledAt = nowIso();
-        addPatientLog(patient, "重新叫號", `${room.roomNo} / ${room.doctorName} 已重新叫號`);
+        addJourneyEvent(patient, "called", `${room.roomNo} / ${room.doctorName} 已重新叫號`);
+        addJourneyEvent(patient, "in_consultation", `${room.roomNo} / ${room.doctorName} 現正診症`);
 
         renderRoomOnly(room.id, true);
         renderDisplayBoard(true);
@@ -4372,7 +4482,7 @@
         patient.status = "waiting";
         patient.skippedAt = null;
         const actualPosition = insertPatientIntoQueue(room, patient, "auto");
-        addPatientLog(patient, "返回原房隊列", `${room.roomNo} / ${room.doctorName} 已按登記時間自動排到第 ${actualPosition} 位`);
+        addJourneyEvent(patient, "requeued", `${room.roomNo} / ${room.doctorName} 已返回候診，現排第 ${actualPosition} 位`);
 
         renderRoomOnly(room.id, true);
         renderDisplayBoard(true);
@@ -4413,10 +4523,11 @@
         patient.cancelledAt = nowIso();
         patient.queueOrder = null;
 
-        addPatientLog(
+        addJourneyEvent(
           patient,
-          "取消輪候",
-          `病人已取消輪候${room ? `（原診室：${room.roomNo} / ${room.doctorName}）` : ""}`
+          "cancelled",
+          `病人已取消輪候${room ? `（原診室：${room.roomNo} / ${room.doctorName}）` : ""}`,
+          patient.cancelledAt
         );
 
         if (room) renderRoomOnly(room.id, true);
@@ -4460,7 +4571,8 @@
           addPatientLog(
             patient,
             patient.priority ? "改為 Cat 2" : "改為 Cat 3",
-            `${room.roomNo} / ${room.doctorName} 已改為 ${patient.priority ? "Cat 2（優先）" : "Cat 3（一般）"}；現排第 ${actualPosition} 位`
+            `${room.roomNo} / ${room.doctorName} 已改為 ${patient.priority ? "Cat 2（優先）" : "Cat 3（一般）"}；現排第 ${actualPosition} 位`,
+            { type: "admin", eventCode: "manual_note_added" }
           );
 
           renderRoomOnly(room.id, true);
@@ -4472,7 +4584,8 @@
           addPatientLog(
             patient,
             patient.priority ? "改為 Cat 2" : "改為 Cat 3",
-            `${room ? room.roomNo + " / " + room.doctorName : "診室"} 已改為 ${patient.priority ? "Cat 2（優先）" : "Cat 3（一般）"}`
+            `${room ? room.roomNo + " / " + room.doctorName : "診室"} 已改為 ${patient.priority ? "Cat 2（優先）" : "Cat 3（一般）"}`,
+            { type: "admin", eventCode: "manual_note_added" }
           );
 
           renderDisplayBoard(true);
@@ -4502,7 +4615,10 @@
         if (!room) return;
 
         const actualPosition = insertPatientIntoQueue(room, patient, "front");
-        addPatientLog(patient, "移至隊首", `${room.roomNo} / ${room.doctorName} 已移至第 ${actualPosition} 位`);
+        addPatientLog(patient, "移至隊首", `${room.roomNo} / ${room.doctorName} 已移至第 ${actualPosition} 位`, {
+          type: "queue",
+          eventCode: "waiting"
+        });
 
         renderRoomOnly(room.id, true);
         renderDisplayBoard(true);
@@ -4536,7 +4652,11 @@
         const pos = Math.max(1, parseInt(input ? input.value : "", 10) || 1);
         const actualPosition = insertPatientIntoQueue(room, patient, "position", pos);
 
-        addPatientLog(patient, "移至指定位置", `${room.roomNo} / ${room.doctorName} 已移至第 ${actualPosition} 位`);
+        addPatientLog(patient, "移至指定位置", `${room.roomNo} / ${room.doctorName} 已移至第 ${actualPosition} 位`, {
+          type: "queue",
+          eventCode: "waiting"
+        });
+
         renderRoomOnly(room.id, true);
         renderDisplayBoard(true);
 
@@ -4621,14 +4741,11 @@
 
         const actualPosition = insertPatientIntoQueue(newRoom, patient, mode);
 
-        const modeText =
-          mode === "front" ? "轉房並排隊首" :
-          mode === "tail" ? "轉房並排隊尾" :
-          "轉往診室";
+        const modeText = mode === "front" ? "轉房並排隊首" : mode === "tail" ? "轉房並排隊尾" : "轉往診室";
 
-        addPatientLog(
+        addJourneyEvent(
           patient,
-          "轉往診室",
+          "transferred_room",
           `${fromText} → ${newRoom.roomNo} / ${newRoom.doctorName}（${modeText}；現排第 ${actualPosition} 位；已鎖定，不再參與智能平均分流）`
         );
 
@@ -4645,6 +4762,64 @@
       }
     }
 
+    async function addPatientJourneyQuickEvent(patientId, eventCode) {
+      try {
+        markUiBusy(2200);
+
+        const patient = getPatient(patientId);
+        if (!patient) {
+          notify("找不到病人", "warning");
+          return;
+        }
+
+        const room = getRoom(patient.roomId);
+        const roomText = room ? `${room.roomNo} / ${room.doctorName}` : "未指定診室";
+        addJourneyEvent(patient, eventCode, `記錄位置：${roomText}`);
+
+        if (room) renderRoomOnly(room.id, true);
+        if (state.currentTab === "patientPage") renderPatientSearchDetail(patient);
+        renderDisplayBoard(false);
+
+        await savePatientToSupabase(patient);
+
+        notify(`已加入事件：${getJourneyLabelFromEventCode(eventCode)}`, "success");
+        await refreshFromCloudAndRender(false);
+      } catch (error) {
+        console.error(error);
+        notify("加入旅程事件失敗\n" + formatSupabaseError(error), "error");
+        refreshFromCloudAndRender(false);
+      }
+    }
+
+    async function addPatientJourneyCustomEvent(patientId, eventCode, note = "") {
+      try {
+        markUiBusy(2200);
+
+        const patient = getPatient(patientId);
+        if (!patient) {
+          notify("找不到病人", "warning");
+          return;
+        }
+
+        const code = JOURNEY_EVENT_DEFS[eventCode] ? eventCode : "manual_note_added";
+        addJourneyEvent(patient, code, note || "—");
+
+        const room = getRoom(patient.roomId);
+        if (room) renderRoomOnly(room.id, true);
+        if (state.currentTab === "patientPage") renderPatientSearchDetail(patient);
+        renderDisplayBoard(false);
+
+        await savePatientToSupabase(patient);
+
+        notify(`已加入事件：${getJourneyLabelFromEventCode(code)}`, "success");
+        await refreshFromCloudAndRender(false);
+      } catch (error) {
+        console.error(error);
+        notify("加入自訂事件失敗\n" + formatSupabaseError(error), "error");
+        refreshFromCloudAndRender(false);
+      }
+    }
+
     async function changeRoomStatus(roomId, status) {
       try {
         markUiBusy(2200);
@@ -4656,7 +4831,6 @@
         if (status !== "paused") room.pauseReason = "";
 
         renderLightForRoomChange(roomId);
-
         await updateRoomInSupabase(room);
 
         if (status === "closed") {
@@ -4693,7 +4867,6 @@
         room.pauseReason = reason;
 
         renderLightForRoomChange(roomId);
-
         await updateRoomInSupabase(room);
 
         notify(reason ? `${room.roomNo} 已暫停：${reason}` : `${room.roomNo} 已暫停`, "warning");
@@ -4715,7 +4888,6 @@
         room.acceptingNew = !room.acceptingNew;
 
         renderLightForRoomChange(roomId);
-
         await updateRoomInSupabase(room);
 
         notify(
@@ -4747,7 +4919,6 @@
         room.doctorName = value;
 
         renderLightForRoomChange(roomId);
-
         await updateRoomInSupabase(room);
 
         renderDoctorOptionsDatalist();
@@ -4794,10 +4965,7 @@
       try {
         markUiBusy(5000);
 
-        const eligibleRooms = sortedRooms().filter(room =>
-          room.status === "open" && room.acceptingNew
-        );
-
+        const eligibleRooms = sortedRooms().filter(room => room.status === "open" && room.acceptingNew);
         if (eligibleRooms.length < 2) {
           notify("可分流的開放診室不足兩間", "warning");
           return;
@@ -4819,12 +4987,9 @@
           `不會處理：預約、診症中、過號、已完成、已取消、手動派房或轉房病人。\n\n` +
           `是否繼續？`;
 
-        if (!window.confirm(confirmText)) {
-          return;
-        }
+        if (!window.confirm(confirmText)) return;
 
         movablePatients.sort(compareWaitingBase);
-
         const movablePatientIdSet = new Set(movablePatients.map(p => p.id));
 
         state.rooms.forEach(room => {
@@ -4835,9 +5000,7 @@
           patient.queueOrder = null;
         });
 
-        state.rooms.forEach(room => {
-          sortRoomQueue(room);
-        });
+        state.rooms.forEach(room => sortRoomQueue(room));
 
         movablePatients.forEach(patient => {
           const targetRoom = getDynamicRebalanceTargetRoom(eligibleRooms);
@@ -4847,17 +5010,13 @@
           targetRoom.queuePatientIds.push(patient.id);
           insertPatientIntoQueue(targetRoom, patient, "auto");
 
-          addPatientLog(
-            patient,
-            "重新智能平均分流",
-            `已重新派往 ${targetRoom.roomNo} / ${targetRoom.doctorName}`
-          );
+          addPatientLog(patient, "重新智能平均分流", `已重新派往 ${targetRoom.roomNo} / ${targetRoom.doctorName}`, {
+            type: "queue",
+            eventCode: "transferred_room"
+          });
         });
 
-        state.rooms.forEach(room => {
-          sortRoomQueue(room);
-        });
-
+        state.rooms.forEach(room => sortRoomQueue(room));
         renderAll(true, { resortQueues: false });
 
         await savePatientsBatchToSupabase(movablePatients);
@@ -4936,7 +5095,6 @@
       teachTooltip.el = document.getElementById("teachTooltip");
       teachTooltip.titleEl = document.getElementById("teachTooltipTitle");
       teachTooltip.bodyEl = document.getElementById("teachTooltipBody");
-      teachTooltip.tipEl = document.getElementById("teachTooltipTip");
 
       const toggle = document.getElementById("teachModeToggle");
       const badge = document.getElementById("teachModeBadge");
@@ -4957,7 +5115,6 @@
       });
 
       syncTeachToggleUI();
-
       document.addEventListener("mouseover", handleTeachPointerEnter, true);
       document.addEventListener("focusin", handleTeachFocusEnter, true);
       document.addEventListener("mouseout", handleTeachPointerLeave, true);
@@ -5043,15 +5200,11 @@
     function handleTeachMouseMove(event) {
       teachTooltip.lastMouseX = event.clientX;
       teachTooltip.lastMouseY = event.clientY;
-      if (teachTooltip.activeTarget) {
-        updateTeachTooltipPosition();
-      }
+      if (teachTooltip.activeTarget) updateTeachTooltipPosition();
 
       hoverLogTooltip.lastMouseX = event.clientX;
       hoverLogTooltip.lastMouseY = event.clientY;
-      if (hoverLogTooltip.activeTarget) {
-        updateHoverLogTooltipPosition();
-      }
+      if (hoverLogTooltip.activeTarget) updateHoverLogTooltipPosition();
     }
 
     function updateTeachTooltipPosition() {
@@ -5107,7 +5260,7 @@
 
       hoverLogTooltip.activeTarget = target;
       hoverLogTooltip.activePatientId = data.patientId || null;
-      hoverLogTooltip.titleEl.textContent = `${data.ticketNo || "病人"} 最近 5 項操作紀錄`;
+      hoverLogTooltip.titleEl.textContent = `${data.ticketNo || "病人"} 最近 5 項旅程紀錄`;
 
       const logs = Array.isArray(data.logs) ? data.logs.slice(0, 5) : [];
       hoverLogTooltip.listEl.innerHTML = logs.length
@@ -5119,7 +5272,7 @@
               </div>
             </div>
           `).join("")
-        : `<div class="hover-log-empty">暫無操作紀錄</div>`;
+        : `<div class="hover-log-empty">暫無旅程紀錄</div>`;
 
       hoverLogTooltip.el.classList.add("show");
       hoverLogTooltip.el.setAttribute("aria-hidden", "false");
@@ -5180,21 +5333,13 @@
         if (!panel) return;
 
         const isOpen = panel.classList.contains("open");
-
-        document.querySelectorAll(".more-actions-panel.open").forEach(el => {
-          el.classList.remove("open");
-        });
-
-        if (!isOpen) {
-          panel.classList.add("open");
-        }
+        document.querySelectorAll(".more-actions-panel.open").forEach(el => el.classList.remove("open"));
+        if (!isOpen) panel.classList.add("open");
         return;
       }
 
       if (!event.target.closest(".more-actions-panel")) {
-        document.querySelectorAll(".more-actions-panel.open").forEach(el => {
-          el.classList.remove("open");
-        });
+        document.querySelectorAll(".more-actions-panel.open").forEach(el => el.classList.remove("open"));
       }
 
       const tabBtn = event.target.closest("[data-tab]");
@@ -5268,6 +5413,23 @@
       if (action === "transferFront") {
         const targetRoomId = getTransferTargetRoomIdFromButton(btn);
         return withButtonLoading(btn, () => transferPatient(patientId, "front", targetRoomId));
+      }
+
+      if (action === "addJourneyQuick") {
+        const journeyCode = btn.getAttribute("data-journey-code");
+        return withButtonLoading(btn, () => addPatientJourneyQuickEvent(patientId, journeyCode));
+      }
+
+      if (action === "addJourneyCustom") {
+        const payload = getJourneyCustomPayloadFromButton(btn);
+        if (!payload) return;
+        return withButtonLoading(btn, async () => {
+          await addPatientJourneyCustomEvent(patientId, payload.code, payload.note);
+          if (payload.wrap) {
+            const noteInput = payload.wrap.querySelector(`[data-custom-event-note="${patientId}"]`);
+            if (noteInput) noteInput.value = "";
+          }
+        });
       }
     });
 
@@ -5414,11 +5576,7 @@
       const el = event.target;
       if (!el) return;
 
-      if (
-        el.matches("select") ||
-        el.matches("input") ||
-        el.matches("textarea")
-      ) {
+      if (el.matches("select") || el.matches("input") || el.matches("textarea")) {
         markUiBusy(1200);
       }
 
@@ -5429,9 +5587,7 @@
       const input = document.querySelector(`[data-pause-reason="${roomId}"]`);
       if (!input) return;
 
-      if (select.value.trim()) {
-        input.value = "";
-      }
+      if (select.value.trim()) input.value = "";
     });
 
     function startBoardPageRotation() {
@@ -5486,9 +5642,7 @@
         const timeEl = document.getElementById("boardTime");
         if (timeEl) {
           const nextTimeText = formatBoardNow(new Date());
-          if (timeEl.textContent !== nextTimeText) {
-            timeEl.textContent = nextTimeText;
-          }
+          if (timeEl.textContent !== nextTimeText) timeEl.textContent = nextTimeText;
         }
       }, 1000);
 
