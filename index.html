@@ -439,7 +439,7 @@ tbody tr td:last-child {
   color: #64748b;
   font-size: 0.8rem;
   font-weight: 800;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 .main-actions {
   display: flex;
@@ -1028,24 +1028,6 @@ body.display-mode .info-card {
   width: auto;
   accent-color: var(--primary);
 }
-
-.staff-room-filter-wrap {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  margin-top: 8px;
-}
-.staff-room-filter-empty {
-  grid-column: 1 / -1;
-  border: 1px dashed #cbd5e1;
-  border-radius: 16px;
-  padding: 22px;
-  background: #f8fafc;
-  color: #64748b;
-  font-weight: 900;
-}
-
 .search-chip-row {
   display: flex;
   flex-wrap: wrap;
@@ -1229,11 +1211,6 @@ body.display-mode .info-card {
   border-color: #93c5fd;
   color: #1d4ed8;
 }
-.activity-chip.active {
-  background: #2563eb;
-  border-color: #2563eb;
-  color: #fff;
-}
 .modal-note {
   margin-top: 8px;
   color: #64748b;
@@ -1338,12 +1315,12 @@ body.display-mode .info-card {
       <div class="form-row">
         <label>常用臨床活動</label>
         <div class="activity-chip-row" id="clinicalActivityPresetWrap"></div>
-        <div class="modal-note">可一次選擇多個活動，系統會自動放入下面「臨床活動」欄位；再自行修改亦可以。</div>
+        <div class="modal-note">可按常用選項快速填入，之後再自行修改。</div>
       </div>
 
       <div class="form-row" style="margin-top:14px;">
         <label for="clinicalActivityInput">臨床活動</label>
-        <textarea id="clinicalActivityInput" placeholder="例如：去做檢查、去抽血、安排入院"></textarea>
+        <textarea id="clinicalActivityInput" placeholder="例如：去做檢查、去打針、安排入院"></textarea>
       </div>
 
       <div class="form-row" style="margin-top:14px;">
@@ -1359,273 +1336,137 @@ body.display-mode .info-card {
   </div>
 </div>
 
-
 <div class="app">
-<div class="topbar">
-<div class="title teach-anchor"
-data-help-title="系統標題"
-data-help="此頁面為急症醫學中心輪候系統。職員可於此新增輪候病人、管理診室、查詢病人狀態，以及顯示候診看板。">
-香港中文大學醫院急症醫學中心輪候系統<br>CUHKMC Emergency Medicine Centre Queue Management System
-</div>
+  <div class="topbar">
+    <div class="title">
+      香港中文大學醫院急症醫學中心輪候系統<br>CUHKMC Emergency Medicine Centre Queue Management System
+    </div>
 
-<div class="tabs">
-<button class="tab-btn active"
-data-tab="staffPage"
-type="button"
-data-help-title="職員管理"
-data-help="可於此頁進行日常操作，例如新增輪候病人、新增診室、叫號、設為過號、轉往診室、停止收新症及智能平均分流。">
-職員管理
-</button>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="staffPage" type="button">職員管理</button>
+      <button class="tab-btn" data-tab="patientPage" type="button">病人狀態查詢</button>
+      <button class="tab-btn" data-tab="displayPage" type="button">候診看板</button>
 
-<button class="tab-btn"
-data-tab="patientPage"
-type="button"
-data-help-title="病人狀態查詢"
-data-help="可使用 CUMC 號碼或診室查詢病人狀態，包括候診中、現正診症、過號、已完成、已取消及操作紀錄。">
-病人狀態查詢
-</button>
+      <label class="teach-toggle">
+        <input id="teachModeToggle" type="checkbox" />
+        <span>操作教學模式</span>
+        <span class="teach-badge" id="teachModeBadge">關閉中</span>
+      </label>
+    </div>
+  </div>
 
-<button class="tab-btn"
-data-tab="displayPage"
-type="button"
-data-help-title="候診看板"
-data-help="候診看板會顯示每間診室現正診症號碼、候診名單及過號名單，供病人及在場人士參考。">
-候診看板
-</button>
+  <div class="page active" id="staffPage">
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title">新增輪候病人</div>
 
-<label class="teach-toggle"
-data-help-title="操作教學模式開關"
-data-help="開啟後，滑鼠移至欄位或按鈕會顯示操作說明；關閉後，畫面會接近正式版。">
-<input id="teachModeToggle" type="checkbox" />
-<span>操作教學模式</span>
-<span class="teach-badge" id="teachModeBadge">關閉中</span>
-</label>
-</div>
-</div>
+        <div class="grid-5">
+          <div class="form-row">
+            <label for="patientCumcNo">CUMC 號碼</label>
+            <input id="patientCumcNo" type="text" placeholder="例如：ABC1234" />
+          </div>
 
-<div class="page active" id="staffPage">
-<div class="grid-2">
-<div class="panel teach-anchor"
-data-help-title="新增輪候病人"
-data-help="此區用於將新症或已預先安排的病人加入輪候。請先輸入 CUMC 號碼，再選擇病人類型、派往診室方式、是否列為醫療優先，以及排位方式。">
-<div class="panel-title">新增輪候病人</div>
+          <div class="form-row">
+            <label for="patientType">病人類型</label>
+            <select id="patientType">
+              <option value="walkin">即場</option>
+              <option value="onlineTicket">網上取票</option>
+              <option value="appointment">預約</option>
+            </select>
+          </div>
 
-<div class="grid-5">
-<div class="form-row">
-<label for="patientCumcNo"
-data-help-title="CUMC 號碼"
-data-help="輸入病人的 CUMC 號碼。系統會避免同一位未完成個案病人重複加入輪候。">
-CUMC 號碼
-</label>
-<input id="patientCumcNo" type="text" placeholder="例如：ABC1234"
-data-help-title="CUMC 號碼輸入欄"
-data-help="請於此輸入病人 CUMC 號碼。系統會自動轉為大楷，例如：ABC1234。" />
-</div>
+          <div class="form-row">
+            <label for="assignMode">派往診室</label>
+            <select id="assignMode">
+              <option value="smart" selected>自動分派：智能分派</option>
+              <option value="shortest">自動分派：最短隊伍優先</option>
+              <option value="roundRobin">自動分派：輪流分派</option>
+              <option value="manual">手動選擇診室</option>
+            </select>
+          </div>
 
-<div class="form-row">
-<label for="patientType"
-data-help-title="病人類型"
-data-help="病人類型包括即場、網上取票及預約。不同類型會影響可派往的診室，以及排序時的先後規則。">
-病人類型
-</label>
-<select id="patientType"
-data-help-title="病人類型選擇"
-data-help="即場：現場登記。網上取票：預先取票但未正式完成就診。預約：已有預約安排，系統會按規則容許派往開放或暫停中但可接收預約的診室。">
-<option value="walkin">即場</option>
-<option value="onlineTicket">網上取票</option>
-<option value="appointment">預約</option>
-</select>
-</div>
+          <div class="form-row">
+            <label for="assignRoom">指定診室</label>
+            <select id="assignRoom"></select>
+          </div>
 
-<div class="form-row">
-<label for="assignMode"
-data-help-title="派往診室"
-data-help="你可以交由系統自動分派，或手動指定診室。一般日常操作建議使用智能分派。">
-派往診室
-</label>
-<select id="assignMode"
-data-help-title="派往診室方式"
-data-help="智能分派：比較各診室目前負荷。最短隊伍優先：選擇人數最少的診室。輪流分派：輪流派往各診室。手動選擇診室：由職員自行決定。">
-<option value="smart" selected>自動分派：智能分派</option>
-<option value="shortest">自動分派：最短隊伍優先</option>
-<option value="roundRobin">自動分派：輪流分派</option>
-<option value="manual">手動選擇診室</option>
-</select>
-</div>
+          <div class="form-row">
+            <label for="isPriority">醫療優先</label>
+            <select id="isPriority">
+              <option value="false">否</option>
+              <option value="true">是</option>
+            </select>
+          </div>
+        </div>
 
-<div class="form-row">
-<label for="assignRoom"
-data-help-title="指定診室"
-data-help="只有當你選擇「手動選擇診室」時，才需要在此指定診室。">
-指定診室
-</label>
-<select id="assignRoom"
-data-help-title="手動指定診室"
-data-help="如果你已知病人應前往某位醫生或某間診室，可於此手動指定。"></select>
-</div>
+        <div class="grid-3" style="margin-top:14px;">
+          <div class="form-row">
+            <label for="registeredAt">登記時間（HKT）</label>
+            <input id="registeredAt" type="datetime-local" disabled />
+            <label style="display:flex;gap:8px;align-items:center;">
+              <input id="useCustomRegisteredAt" type="checkbox" style="width:auto;" />
+              使用手動登記時間（適用於補錄、預約或網上取票）
+            </label>
+          </div>
 
-<div class="form-row">
-<label for="isPriority"
-data-help-title="醫療優先"
-data-help="如果病人有較高臨床優先需要，可列為醫療優先。排序時，系統會優先處理此類病人。">
-醫療優先
-</label>
-<select id="isPriority"
-data-help-title="是否列為醫療優先"
-data-help="選擇「是」代表病人屬較高優先級別，加入輪候後通常會排得較前。">
-<option value="false">否</option>
-<option value="true">是</option>
-</select>
-</div>
-</div>
+          <div class="form-row">
+            <label for="insertMode">排位方式</label>
+            <select id="insertMode">
+              <option value="auto" selected>自動安排</option>
+              <option value="tail">排隊尾</option>
+              <option value="front">排隊首</option>
+              <option value="position">指定位置</option>
+            </select>
+          </div>
 
-<div class="grid-3" style="margin-top:14px;">
-<div class="form-row">
-<label for="registeredAt"
-data-help-title="登記時間"
-data-help="一般情況下無需手動修改，系統會自動使用當前香港時間。只於補錄或特殊情況下才需要勾選使用手動登記時間。">
-登記時間
-</label>
-<input id="registeredAt" type="datetime-local" disabled
-data-help-title="手動登記時間輸入"
-data-help="如需補錄較早前的登記資料，可手動輸入時間；否則系統會自動使用現在香港時間。" />
-<label class="sub-option"
-for="useCustomRegisteredAt"
-style="display:flex;gap:8px;align-items:center;"
-data-help-title="使用手動登記時間"
-data-help="勾選後，系統會使用你手動輸入的香港時間作為登記時間；未勾選則直接使用系統即時時間。">
-<input id="useCustomRegisteredAt" type="checkbox" style="width:auto;" />
-使用手動登記時間（適用於補錄、預約或網上取票）
-</label>
-</div>
+          <div class="form-row">
+            <label for="insertPosition">指定位置</label>
+            <input id="insertPosition" type="number" min="1" placeholder="例如：2" />
+          </div>
+        </div>
 
-<div class="form-row">
-<label for="insertMode"
-data-help-title="排位方式"
-data-help="病人派往診室後，仍需決定在候診隊列中的位置。你可以交由系統自動安排，或直接排隊首、排隊尾，或指定位置。">
-排位方式
-</label>
-<select id="insertMode"
-data-help-title="排位方式"
-data-help="自動安排：按系統規則排序。排隊尾：排在最後。排隊首：排在最前。指定位置：由你輸入第幾位。">
-<option value="auto" selected>自動安排</option>
-<option value="tail">排隊尾</option>
-<option value="front">排隊首</option>
-<option value="position">指定位置</option>
-</select>
-</div>
+        <div class="actions" style="margin-top:14px; justify-content:flex-end;">
+          <button class="btn-primary" id="addPatientBtn" type="button">加入輪候</button>
+        </div>
+      </div>
 
-<div class="form-row">
-<label for="insertPosition"
-data-help-title="指定位置"
-data-help="當排位方式選擇「指定位置」時，請在此輸入想排在第幾位。">
-指定位置
-</label>
-<input id="insertPosition" type="number" min="1" placeholder="例如：2"
-data-help-title="輸入指定位置"
-data-help="例如輸入 2，代表病人會被插入至第 2 位；若超出實際長度，系統會自動調整。" />
-</div>
-</div>
+      <div class="panel">
+        <div class="panel-title">新增診室</div>
+        <div class="grid-3">
+          <div class="form-row">
+            <label for="newRoomNo">診室</label>
+            <input id="newRoomNo" list="roomNoOptions" type="text" placeholder="可選或自由輸入" />
+            <datalist id="roomNoOptions">
+              <option value="1號房"></option>
+              <option value="2號房"></option>
+              <option value="3號房"></option>
+              <option value="5號房"></option>
+              <option value="7號房"></option>
+              <option value="8號房"></option>
+              <option value="9號房"></option>
+              <option value="10號房"></option>
+            </datalist>
+          </div>
+          <div class="form-row">
+            <label for="newDoctorName">醫生名稱</label>
+            <input id="newDoctorName" list="doctorOptions" type="text" placeholder="可選或自由輸入" />
+            <datalist id="doctorOptions"></datalist>
+          </div>
+          <div class="form-row">
+            <label>&nbsp;</label>
+            <button class="btn-success" id="addRoomBtn" type="button">建立診室</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<div class="actions" style="margin-top:14px; justify-content:flex-end;">
-<button class="btn-primary"
-id="addPatientBtn"
-type="button"
-data-help-title="加入輪候"
-data-help="確認以上資料後，按此將病人正式加入輪候系統。">
-加入輪候
-</button>
-</div>
-</div>
-
-<div class="panel teach-anchor"
-data-help-title="新增診室"
-data-help="當有新診室需要啟用，或需新增顯示醫生時，可於此區建立。">
-<div class="panel-title">新增診室</div>
-<div class="grid-3">
-<div class="form-row">
-<label for="newRoomNo"
-data-help-title="診室"
-data-help="輸入診室名稱，例如 1號房、2號房。你可選用建議選項，亦可自由輸入。">
-診室
-</label>
-<input id="newRoomNo" list="roomNoOptions" type="text" placeholder="可選或自由輸入"
-data-help-title="診室輸入欄"
-data-help="可輸入新的診室名稱，系統不會容許相同名稱重複建立。" />
-<datalist id="roomNoOptions">
-<option value="1號房"></option>
-<option value="2號房"></option>
-<option value="3號房"></option>
-<option value="5號房"></option>
-<option value="7號房"></option>
-<option value="8號房"></option>
-<option value="9號房"></option>
-<option value="10號房"></option>
-</datalist>
-</div>
-<div class="form-row">
-<label for="newDoctorName"
-data-help-title="醫生名稱"
-data-help="輸入醫生名稱。可以使用建議選項，亦可自由輸入。">
-醫生名稱
-</label>
-<input id="newDoctorName" list="doctorOptions" type="text" placeholder="可選或自由輸入"
-data-help-title="醫生名稱輸入欄"
-data-help="新增或輸入醫生名稱，將顯示於診室卡及候診看板。"/>
-<datalist id="doctorOptions">
-<option value="林家強醫生 Dr. LAM Ka Keung"></option>
-<option value="麥應良醫生 Dr. MAK Ying Leung Elvis"></option>
-<option value="楊聿川醫生 Dr. YANG Li Chuan Marc"></option>
-<option value="鄧志安醫生 Dr. TANG Chi On"></option>
-<option value="戴俊權醫生 Dr. TAI Chun Kuen Marcus"></option>
-<option value="羅國強醫生 Dr. LAW Kwok Keung Alex"></option>
-<option value="黃展鵬醫生 Dr. WONG Chin Pang Ben"></option>
-<option value="梁子恒醫生 Dr. LEUNG Tsz Hang Ray"></option>
-<option value="謝昭倫醫生 Dr. TSE Chiu Lun Joseph"></option>
-</datalist>
-</div>
-<div class="form-row">
-<label>&nbsp;</label>
-<button class="btn-success"
-id="addRoomBtn"
-type="button"
-data-help-title="建立診室"
-data-help="建立新的診室後，系統方可派病人前往該診室。">
-建立診室
-</button>
-</div>
-</div>
-<div class="muted" style="margin-top:12px;"
-data-help-title="診室補充說明"
-data-help="診室可以新增、修改及刪除。停止收新症後會暫停接收新派症，但候診看板仍會顯示；關閉後則會於候診看板隱藏。">
-候診看板會將「1號房」簡化顯示為「1」。
-</div>
-</div>
-</div>
-
-<div class="panel teach-anchor"
-data-help-title="各診室輪候概況"
-data-help="此區會顯示每間診室目前狀態、現正診症病人、候診名單及過號名單，並可直接進行叫號、完成、設為過號、轉往診室等操作。">
-<div class="toolbar-row">
-<div class="panel-title" style="margin-bottom:0;">各診室輪候概況</div>
-<div class="actions">
-<button class="btn-primary"
-id="rebalanceWaitingBtn"
-type="button"
-data-help-title="一鍵智能平均分流候診病人"
-data-help="系統會將可重新分配的候診病人，按各診室目前智能負荷分數動態平均分流。會考慮現正診症病人、一般候診人數及醫療優先病人數。只處理候診中、非預約、非手動派房或轉房病人。">
-一鍵智能平均分流候診病人
-</button>
-</div>
-</div>
-
-<div id="roomsContainer" class="room-list" style="margin-top:14px;"></div>
-</div>
-</div>
-
-      <div id="staffRoomFilterWrap" class="staff-room-filter-wrap"></div>
-      <div class="search-help-note">可剔選只顯示指定診室；只影響職員頁面顯示，不影響資料。</div>
-
+    <div class="panel">
+      <div class="toolbar-row">
+        <div class="panel-title" style="margin-bottom:0;">各診室輪候概況</div>
+        <div class="actions">
+          <button class="btn-primary" id="rebalanceWaitingBtn" type="button">一鍵智能平均分流候診病人</button>
+        </div>
+      </div>
       <div id="roomsContainer" class="room-list" style="margin-top:14px;"></div>
     </div>
   </div>
@@ -1774,9 +1615,7 @@ const state = {
   roomRenderFingerprints: new Map(),
   roomDomMap: new Map(),
   nextRoundRobinIndex: 0,
-  teachMode: false,
-  staffRoomFilterRoomIds: [],
-  staffRoomFilterInitialized: false
+  teachMode: false
 };
 
 let liveRefreshTimer = null;
@@ -1913,10 +1752,6 @@ function formatBoardNow(date = new Date()) {
   const p = getHktDateParts(date);
   return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second}`;
 }
-function formatRegisteredInline(iso) {
-  const text = formatDateTime(iso);
-  return text === "—" ? "—" : `${text}｜登記`;
-}
 
 function notify(message, type = "info") {
   const wrap = document.getElementById("toastWrap");
@@ -1967,9 +1802,6 @@ function addClinicalLog(patient, activity, details = "") {
 function getLatestClinicalLog(patient) {
   const logs = Array.isArray(patient?.clinicalLogs) ? patient.clinicalLogs : [];
   return logs.length ? logs[0] : null;
-}
-function getPreviewClinicalLogs(patient, limit = 10) {
-  return Array.isArray(patient?.clinicalLogs) ? patient.clinicalLogs.slice(0, limit) : [];
 }
 function getRoomDisplayShort(roomNo) {
   return String(roomNo || "").replace(/號房/g, "").trim() || String(roomNo || "");
@@ -2024,44 +1856,6 @@ function compareWaitingBase(a, b) {
   if (aCreated !== bCreated) return aCreated - bCreated;
 
   return getPatientDisplayNo(a).localeCompare(getPatientDisplayNo(b), "zh-HK");
-}
-
-function syncStaffRoomFilterSelection() {
-  const roomIds = sortedRooms().map(room => room.id);
-  if (!state.staffRoomFilterInitialized) {
-    state.staffRoomFilterRoomIds = roomIds.slice();
-    state.staffRoomFilterInitialized = true;
-    return;
-  }
-  state.staffRoomFilterRoomIds = (state.staffRoomFilterRoomIds || []).filter(id => roomIds.includes(id));
-}
-function ensureNewRoomInStaffFilter(roomId) {
-  if (!state.staffRoomFilterInitialized) return;
-  if (!state.staffRoomFilterRoomIds.includes(roomId)) {
-    state.staffRoomFilterRoomIds.push(roomId);
-  }
-}
-function getVisibleStaffRooms() {
-  const selectedSet = new Set(state.staffRoomFilterRoomIds || []);
-  return sortedRooms().filter(room => selectedSet.has(room.id));
-}
-function renderStaffRoomFilterControls() {
-  const wrap = document.getElementById("staffRoomFilterWrap");
-  if (!wrap) return;
-
-  const rooms = sortedRooms();
-  const selected = new Set(state.staffRoomFilterRoomIds || []);
-
-  wrap.innerHTML = `
-    <button class="search-chip" type="button" data-staff-room-filter-all="1">全選</button>
-    <button class="search-chip" type="button" data-staff-room-filter-none="1">清除</button>
-    ${rooms.map(room => `
-      <label class="search-checkbox">
-        <input type="checkbox" data-staff-room-filter-id="${room.id}" ${selected.has(room.id) ? "checked" : ""} />
-        <span>${escapeHtml(room.roomNo)}</span>
-      </label>
-    `).join("")}
-  `;
 }
 
 function getWaitingPatientsArray(room, excludePatientId = null) {
@@ -2525,7 +2319,7 @@ function renderPatientSearchDetail(patient) {
         <div><strong>分流級別：</strong>${escapeHtml(getPriorityLabel(patient))}</div>
         <div><strong>首次派往診室方式：</strong>${patient.initialAssignmentMode === "manual" ? "手動派房（不可自動分流）" : "自動派房"}</div>
         <div><strong>手動轉房鎖定：</strong>${patient.manualLock ? `是${patient.manualLockReason ? `（${escapeHtml(patient.manualLockReason)}）` : ""}` : "否"}</div>
-        <div><strong>登記時間：</strong>${escapeHtml(formatDateTime(patient.registeredAt))}</div>
+        <div><strong>登記時間（HKT）：</strong>${escapeHtml(formatDateTime(patient.registeredAt))}</div>
         <div><strong>系統記錄建立時間：</strong>${escapeHtml(formatDateTime(patient.createdAt))}</div>
         <div><strong>最近臨床活動：</strong>${latestClinical ? escapeHtml(`${formatDateTime(latestClinical.time)}｜${latestClinical.activity}${latestClinical.details ? `：${latestClinical.details}` : ""}`) : "—"}</div>
         <div><strong>首次叫號時間：</strong>${escapeHtml(formatDateTime(patient.calledAt))}</div>
@@ -2567,7 +2361,7 @@ function renderPatientSearchList(patients, title = "找到多項結果") {
             <th>類型</th>
             <th>分流級別</th>
             <th>目前輪候位置</th>
-            <th>登記時間</th>
+            <th>登記時間（HKT）</th>
             <th>操作</th>
           </tr>
         </thead>
@@ -2595,7 +2389,7 @@ function renderRoomSearchSection(title, patients, includeRoom = false) {
                   <th>類型</th>
                   <th>分流級別</th>
                   <th>目前輪候位置</th>
-                  <th>登記時間</th>
+                  <th>登記時間（HKT）</th>
                   <th>操作</th>
                 </tr>
               </thead>
@@ -2798,7 +2592,7 @@ function renderDisplayBoard(force = false) {
               <div class="${currentPatient.priority ? "board-current-priority-ticket" : "board-current-normal-ticket"}">
                 ${escapeHtml(getPatientDisplayNo(currentPatient))}
               </div>
-              <div class="board-meta">${escapeHtml(formatRegisteredInline(currentPatient.registeredAt))}</div>
+              <div class="board-meta">${escapeHtml(formatBoardDateTime(currentPatient.registeredAt))}</div>
             `
             : `<div class="board-current-normal-ticket">—</div>`
         }
@@ -2890,12 +2684,6 @@ function getRoomFingerprint(room) {
   const reviewPatients = getReviewWaitingPatients(room);
   const skippedPatients = getSkippedPatients(room);
 
-  const clinicalPreview = patient => getPreviewClinicalLogs(patient, 10).map(log => ({
-    t: log.time || null,
-    a: log.activity || null,
-    d: log.details || null
-  }));
-
   return JSON.stringify({
     roomId: room.id,
     roomNo: room.roomNo,
@@ -2905,15 +2693,27 @@ function getRoomFingerprint(room) {
     acceptingNew: room.acceptingNew,
     currentPatientId: room.currentPatientId,
     currentPatientTicket: currentPatient ? getPatientDisplayNo(currentPatient) : null,
-    waiting: waitingPatients.map(p => ({
-      id: p.id, t: getPatientDisplayNo(p), q: p.queueOrder, pr: p.priority, s: p.status, src: p.sourceType, reg: p.registeredAt, cl: clinicalPreview(p)
-    })),
-    review: reviewPatients.map(p => ({
-      id: p.id, t: getPatientDisplayNo(p), pr: p.priority, s: p.status, src: p.sourceType, reg: p.registeredAt, cl: clinicalPreview(p)
-    })),
-    skipped: skippedPatients.map(p => ({
-      id: p.id, t: getPatientDisplayNo(p), pr: p.priority, s: p.status, sk: p.skippedAt, cl: clinicalPreview(p)
-    }))
+    waiting: waitingPatients.map(p => {
+      const latestClinical = getLatestClinicalLog(p);
+      return {
+        id: p.id, t: getPatientDisplayNo(p), q: p.queueOrder, pr: p.priority, s: p.status, src: p.sourceType, reg: p.registeredAt,
+        cla: latestClinical?.activity || null, cld: latestClinical?.details || null, clt: latestClinical?.time || null
+      };
+    }),
+    review: reviewPatients.map(p => {
+      const latestClinical = getLatestClinicalLog(p);
+      return {
+        id: p.id, t: getPatientDisplayNo(p), pr: p.priority, s: p.status, src: p.sourceType, reg: p.registeredAt,
+        cla: latestClinical?.activity || null, cld: latestClinical?.details || null, clt: latestClinical?.time || null
+      };
+    }),
+    skipped: skippedPatients.map(p => {
+      const latestClinical = getLatestClinicalLog(p);
+      return {
+        id: p.id, t: getPatientDisplayNo(p), pr: p.priority, s: p.status, sk: p.skippedAt,
+        cla: latestClinical?.activity || null, cld: latestClinical?.details || null, clt: latestClinical?.time || null
+      };
+    })
   });
 }
 function getTransferOptionsHtml(room) {
@@ -2934,16 +2734,8 @@ function renderPatientHoverLogAttrs(patient) {
   }));
   return `data-hover-log="${payload}"`;
 }
-function renderPatientClinicalPreview(patient) {
-  const logs = getPreviewClinicalLogs(patient, 10);
-  if (!logs.length) return "";
-  return logs.map(log => `
-    <div class="queue-time">
-      ${escapeHtml(formatDateTime(log.time))}｜${escapeHtml(log.activity || "")}${log.details ? `：${escapeHtml(log.details)}` : ""}
-    </div>
-  `).join("");
-}
 function renderPatientInfoBlock(patient, extraPills = "") {
+  const latestClinical = getLatestClinicalLog(patient);
   return `
     <div class="ticket-block">
       <div class="queue-ticket-row">
@@ -2958,8 +2750,15 @@ function renderPatientInfoBlock(patient, extraPills = "") {
           <span class="pill ${patient.priority ? "pill-priority" : "pill-normal"}">${patient.priority ? "Cat 2（優先）" : "Cat 3（一般）"}</span>
           ${extraPills}
         </div>
-        <div class="queue-time">${escapeHtml(formatRegisteredInline(patient.registeredAt))}</div>
-        ${renderPatientClinicalPreview(patient)}
+        <div class="queue-time">${escapeHtml(formatDateTime(patient.registeredAt))}</div>
+        ${
+          latestClinical
+            ? `
+              <div class="queue-time">${escapeHtml(formatDateTime(latestClinical.time))}</div>
+              <div class="queue-time">臨床活動：${escapeHtml(latestClinical.activity)}${latestClinical.details ? `：${escapeHtml(latestClinical.details)}` : ""}</div>
+            `
+            : ""
+        }
       </div>
     </div>
   `;
@@ -2987,7 +2786,7 @@ function renderRoomCardHtml(room) {
           <div class="more-actions-wrap">
             <div class="main-actions">
               <button class="btn-warning btn-small" type="button" data-action="togglePriority" data-patient-id="${patient.id}">
-                ${patient.priority ? "改為 Cat 3（一般）" : "改為 Cat 2（優先）"}
+                ${patient.priority ? "改為 Cat 3" : "改為 Cat 2"}
               </button>
               <button class="btn-secondary btn-small" type="button" data-action="moveWaitingToReview" data-patient-id="${patient.id}">轉回診</button>
               <button class="btn-secondary btn-small" type="button" data-action="openClinicalActivity" data-patient-id="${patient.id}">臨床活動</button>
@@ -3039,7 +2838,7 @@ function renderRoomCardHtml(room) {
               <button class="btn-secondary btn-small" type="button" data-action="returnReviewToWaiting" data-patient-id="${patient.id}">返回候診</button>
               <button class="btn-success btn-small" type="button" data-action="finishReviewPatient" data-patient-id="${patient.id}">完成</button>
               <button class="btn-warning btn-small" type="button" data-action="togglePriority" data-patient-id="${patient.id}">
-                ${patient.priority ? "改為 Cat 3（一舨）" : "改為 Cat 2（優先）"}
+                ${patient.priority ? "改為 Cat 3" : "改為 Cat 2"}
               </button>
               <button class="btn-secondary btn-small" type="button" data-action="openClinicalActivity" data-patient-id="${patient.id}">臨床活動</button>
               <button class="btn-secondary btn-small more-toggle-btn" type="button" data-more-toggle="${patient.id}">更多操作</button>
@@ -3111,7 +2910,7 @@ function renderRoomCardHtml(room) {
     `
     : `
       <div class="current-ticket">${currentPatient ? escapeHtml(getPatientDisplayNo(currentPatient)) : "—"}</div>
-      ${currentPatient ? `<div class="current-subtext">${escapeHtml(formatRegisteredInline(currentPatient.registeredAt))}</div>` : ""}
+      ${currentPatient ? `<div class="current-subtext">${escapeHtml(formatDateTime(currentPatient.registeredAt))}</div>` : ""}
     `;
 
   return `
@@ -3257,31 +3056,15 @@ function replaceElementPreserveInteractiveState(oldEl, newEl) {
 
 function renderRoomsPartial(force = false) {
   const container = document.getElementById("roomsContainer");
-  const allRooms = sortedRooms();
-  const rooms = getVisibleStaffRooms();
-  const selectedIds = new Set(rooms.map(r => r.id));
-  const allIds = new Set(allRooms.map(r => r.id));
+  const rooms = sortedRooms();
+  const nextIds = new Set(rooms.map(r => r.id));
 
   for (const [roomId, el] of state.roomDomMap.entries()) {
-    if (!allIds.has(roomId)) {
+    if (!nextIds.has(roomId)) {
       el.remove();
       state.roomDomMap.delete(roomId);
       state.roomRenderFingerprints.delete(roomId);
-      continue;
     }
-    if (!selectedIds.has(roomId) && el.parentElement === container) {
-      el.remove();
-    }
-  }
-
-  const prevEmpty = container.querySelector(".staff-room-filter-empty");
-  if (prevEmpty) prevEmpty.remove();
-
-  if (!rooms.length) {
-    container.innerHTML = `<div class="staff-room-filter-empty">請先剔選要顯示的診室。</div>`;
-    return;
-  } else if (container.children.length === 1 && container.querySelector(".staff-room-filter-empty")) {
-    container.innerHTML = "";
   }
 
   rooms.forEach(room => {
@@ -3318,9 +3101,6 @@ function renderRoomOnly(roomId, force = true) {
   const container = document.getElementById("roomsContainer");
   if (!room || !container) return;
 
-  const visibleIds = new Set((state.staffRoomFilterRoomIds || []));
-  if (!visibleIds.has(room.id)) return;
-
   const existingEl = state.roomDomMap.get(room.id);
   const fingerprint = getRoomFingerprint(room);
 
@@ -3342,7 +3122,7 @@ function renderRoomOnly(roomId, force = true) {
   state.roomDomMap.set(room.id, newEl);
   state.roomRenderFingerprints.set(room.id, fingerprint);
 
-  const rooms = getVisibleStaffRooms();
+  const rooms = sortedRooms();
   rooms.forEach(r => {
     const el = state.roomDomMap.get(r.id);
     if (el) container.appendChild(el);
@@ -3367,8 +3147,6 @@ function renderAll(force = false, options = {}) {
   const { resortQueues = false } = options;
   if (resortQueues) state.rooms.forEach(sortRoomQueue);
 
-  syncStaffRoomFilterSelection();
-  renderStaffRoomFilterControls();
   populateRoomSelect();
   populateSearchRoomSelect();
   updateSearchTicketSuggestions(document.getElementById("searchTicket")?.value || "");
@@ -3647,7 +3425,6 @@ async function addRoom() {
     };
 
     state.rooms.push(room);
-    ensureNewRoomInStaffFilter(room.id);
     renderAll(true, { resortQueues: false });
     await saveRoomToSupabase(room);
 
@@ -4209,7 +3986,7 @@ async function togglePriority(patientId) {
       const actualPosition = insertPatientIntoQueue(room, patient, "auto");
       addPatientLog(
         patient,
-        patient.priority ? "改為 Cat 2（優先）" : "改為 Cat 3（一般）",
+        patient.priority ? "改為 Cat 2" : "改為 Cat 3",
         `${room.roomNo} / ${room.doctorName} 已改為 ${patient.priority ? "Cat 2（優先）" : "Cat 3（一般）"}；現排第 ${actualPosition} 位`
       );
 
@@ -4221,7 +3998,7 @@ async function togglePriority(patientId) {
     } else {
       addPatientLog(
         patient,
-        patient.priority ? "改為 Cat 2（優先）" : "改為 Cat 3（一般）",
+        patient.priority ? "改為 Cat 2" : "改為 Cat 3",
         `${room ? room.roomNo + " / " + room.doctorName : "診室"} 已改為 ${patient.priority ? "Cat 2（優先）" : "Cat 3（一般）"}`
       );
 
@@ -4230,7 +4007,7 @@ async function togglePriority(patientId) {
       await savePatientToSupabase(patient);
     }
 
-    notify(patient.priority ? "已改為 Cat 2（優先）" : "已改為 Cat 3（一般）", "success");
+    notify(patient.priority ? "已改為 Cat 2" : "已改為 Cat 3", "success");
     await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
@@ -4505,7 +4282,6 @@ async function deleteRoom(roomId) {
     }
 
     state.rooms = state.rooms.filter(r => r.id !== roomId);
-    state.staffRoomFilterRoomIds = (state.staffRoomFilterRoomIds || []).filter(id => id !== roomId);
     renderAll(true, { resortQueues: false });
 
     await deleteRoomFromSupabase(roomId);
@@ -4846,31 +4622,6 @@ function updateHoverLogTooltipPosition() {
   hoverLogTooltip.el.style.top = `${y}px`;
 }
 
-function getClinicalActivityTokens(text) {
-  return Array.from(new Set(
-    String(text || "")
-      .split(/[、，,\n]+/)
-      .map(part => part.trim())
-      .filter(Boolean)
-  ));
-}
-function syncClinicalPresetChipStates() {
-  if (!clinicalActivityModal.presetWrapEl || !clinicalActivityModal.activityInputEl) return;
-  const tokens = new Set(getClinicalActivityTokens(clinicalActivityModal.activityInputEl.value));
-  clinicalActivityModal.presetWrapEl.querySelectorAll("[data-clinical-preset]").forEach(btn => {
-    const value = btn.getAttribute("data-clinical-preset") || "";
-    btn.classList.toggle("active", tokens.has(value));
-  });
-}
-function toggleClinicalPresetValue(value) {
-  const tokens = getClinicalActivityTokens(clinicalActivityModal.activityInputEl.value);
-  const hasValue = tokens.includes(value);
-  const nextTokens = hasValue ? tokens.filter(item => item !== value) : [...tokens, value];
-  clinicalActivityModal.activityInputEl.value = nextTokens.join("、");
-  syncClinicalPresetChipStates();
-  clinicalActivityModal.activityInputEl.focus();
-}
-
 function initClinicalActivityModal() {
   clinicalActivityModal.el = document.getElementById("clinicalActivityModal");
   clinicalActivityModal.patientInfoEl = document.getElementById("clinicalActivityPatientInfo");
@@ -4894,7 +4645,6 @@ function initClinicalActivityModal() {
     }
   });
   clinicalActivityModal.saveBtnEl.addEventListener("click", (event) => withButtonLoading(event.currentTarget, saveClinicalActivityFromModal));
-  clinicalActivityModal.activityInputEl.addEventListener("input", syncClinicalPresetChipStates);
 }
 function openClinicalActivityModal(patientId) {
   const patient = getPatient(patientId);
@@ -4908,7 +4658,6 @@ function openClinicalActivityModal(patientId) {
   clinicalActivityModal.patientInfoEl.textContent = `${getPatientDisplayNo(patient)}${room ? `｜${room.roomNo} / ${room.doctorName}` : ""}`;
   clinicalActivityModal.activityInputEl.value = "";
   clinicalActivityModal.detailsInputEl.value = "";
-  syncClinicalPresetChipStates();
   clinicalActivityModal.el.classList.add("show");
   clinicalActivityModal.el.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
@@ -4962,23 +4711,10 @@ document.addEventListener("click", (event) => {
   const presetBtn = event.target.closest("[data-clinical-preset]");
   if (presetBtn) {
     const value = presetBtn.getAttribute("data-clinical-preset") || "";
-    toggleClinicalPresetValue(value);
-    return;
-  }
-
-  const allRoomBtn = event.target.closest("[data-staff-room-filter-all]");
-  if (allRoomBtn) {
-    state.staffRoomFilterRoomIds = sortedRooms().map(room => room.id);
-    renderStaffRoomFilterControls();
-    renderRoomsPartial(true);
-    return;
-  }
-
-  const noneRoomBtn = event.target.closest("[data-staff-room-filter-none]");
-  if (noneRoomBtn) {
-    state.staffRoomFilterRoomIds = [];
-    renderStaffRoomFilterControls();
-    renderRoomsPartial(true);
+    if (clinicalActivityModal.activityInputEl) {
+      clinicalActivityModal.activityInputEl.value = value;
+      clinicalActivityModal.activityInputEl.focus();
+    }
     return;
   }
 
@@ -5076,34 +4812,6 @@ document.addEventListener("click", (event) => {
     const targetRoomId = getTransferTargetRoomIdFromButton(btn);
     return withButtonLoading(btn, () => transferPatient(patientId, "front", targetRoomId));
   }
-});
-
-document.addEventListener("change", (event) => {
-  const roomFilterCheckbox = event.target.closest("[data-staff-room-filter-id]");
-  if (roomFilterCheckbox) {
-    const roomId = roomFilterCheckbox.getAttribute("data-staff-room-filter-id");
-    const set = new Set(state.staffRoomFilterRoomIds || []);
-    if (roomFilterCheckbox.checked) set.add(roomId);
-    else set.delete(roomId);
-    state.staffRoomFilterRoomIds = Array.from(set);
-    renderStaffRoomFilterControls();
-    renderRoomsPartial(true);
-    return;
-  }
-
-  const el = event.target;
-  if (!el) return;
-
-  if (el.matches("select") || el.matches("input") || el.matches("textarea")) {
-    markUiBusy(1200);
-  }
-
-  const select = event.target.closest("[data-pause-reason-select]");
-  if (!select) return;
-  const roomId = select.dataset.pauseReasonSelect;
-  const input = document.querySelector(`[data-pause-reason="${roomId}"]`);
-  if (!input) return;
-  if (select.value.trim()) input.value = "";
 });
 
 document.getElementById("addPatientBtn").addEventListener("click", (e) => withButtonLoading(e.currentTarget, addPatient));
@@ -5207,6 +4915,21 @@ document.addEventListener("pointerdown", (event) => {
   if (el.closest("select") || el.closest("input") || el.closest("textarea") || el.closest("button")) {
     markUiBusy(1800);
   }
+});
+document.addEventListener("change", (event) => {
+  const el = event.target;
+  if (!el) return;
+
+  if (el.matches("select") || el.matches("input") || el.matches("textarea")) {
+    markUiBusy(1200);
+  }
+
+  const select = event.target.closest("[data-pause-reason-select]");
+  if (!select) return;
+  const roomId = select.dataset.pauseReasonSelect;
+  const input = document.querySelector(`[data-pause-reason="${roomId}"]`);
+  if (!input) return;
+  if (select.value.trim()) input.value = "";
 });
 
 function startBoardPageRotation() {
