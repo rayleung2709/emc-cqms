@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>香港中文大學醫院急症醫學中心輪候系統 CUHKMC Emergency Medicine Centre Queue Management System </title>
+  <title> 急症醫學中心輪候系統 EMC-CQMS  </title>
   <link rel="icon" href="data:," />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -1436,7 +1436,7 @@
       <div class="title teach-anchor"
            data-help-title="系統標題"
            data-help="呢個頁面係急症醫學中心輪候系統。職員可喺呢度新增病人、管理房間、查詢狀態，同顯示病人看板。">
-        香港中文大學醫院急症醫學中心輪候系統 CUHKMC Emergency Medicine Centre Queue Management System
+        香港中文大學醫院急症醫學中心輪候系統<br> CUHKMC Emergency Medicine Centre Queue Management System
       </div>
 
       <div class="tabs">
@@ -1496,14 +1496,14 @@
             <div class="form-row">
               <label for="patientType"
                      data-help-title="病人類型"
-                     data-help="病人類型包括即場、網上拎籌、預約。唔同類型會影響可派去邊類房，以及排序時嘅先後規則。">
+                     data-help="病人類型包括即場、網上取票及預約。。唔同類型會影響可派去邊類房，以及排序時嘅先後規則。">
                 病人類型
               </label>
               <select id="patientType"
                       data-help-title="病人類型選擇"
-                      data-help="即場：現場登記。網上拎籌：預先拎號但未正式完成就診。預約：有預約安排，系統會按規則容許派去開放或暫停中但可收預約的房。">
+                      data-help="即場：現場登記。網上取票：預先拎號但未正式完成就診。預約：有預約安排，系統會按規則容許派去開放或暫停中但可收預約的房。">
                 <option value="walkin">即場</option>
-                <option value="onlineTicket">網上拎籌</option>
+                <option value="onlineTicket">網上取票</option>
                 <option value="appointment">預約</option>
               </select>
             </div>
@@ -1537,9 +1537,9 @@
 
             <div class="form-row">
               <label for="isPriority"
-                     data-help-title="醫療優先症"
+                     data-help-title="醫療優先"
                      data-help="如果病人有較高臨床優先需要，可設為醫療優先。排序時，系統會優先處理呢類病人。">
-                醫療優先症
+                醫療優先
               </label>
               <select id="isPriority"
                       data-help-title="是否醫療優先"
@@ -1553,17 +1553,17 @@
           <div class="grid-3" style="margin-top:14px;">
             <div class="form-row">
               <label for="registeredAt"
-                     data-help-title="後備登記時間"
+                     data-help-title="手動登記時間"
                      data-help="通常唔需要手動改，系統會自動用當刻香港時間。只喺補錄或特殊情況先勾選使用後備時間。">
                 登記時間
               </label>
               <input id="registeredAt" type="datetime-local" disabled
-                     data-help-title="後備登記時間輸入"
+                     data-help-title="手動登記時間輸入"
                      data-help="如果有需要補回較早前的登記資料，可以手動輸入時間。否則系統會自動使用現在香港時間。" />
               <label class="sub-option"
                      for="useCustomRegisteredAt"
                      style="display:flex;gap:8px;align-items:center;"
-                     data-help-title="使用後備登記時間"
+                     data-help-title="使用手動登記時間"
                      data-help="勾選後，系統會用你手動輸入的香港時間作登記時間。未勾選就會直接用系統即時時間。">
                 <input id="useCustomRegisteredAt" type="checkbox" style="width:auto;" />
                 使用手動登記時間（預約或網上取票用）
@@ -1572,9 +1572,9 @@
 
             <div class="form-row">
               <label for="insertMode"
-                     data-help-title="插入方式"
+                     data-help-title="排位方式"
                      data-help="病人分派入房之後，仲要決定喺隊列中排第幾位。你可以交俾系統自動安排，或者直接放最前、最後，或指定位置。">
-                插入方式
+                排位方式
               </label>
               <select id="insertMode"
                       data-help-title="排位方式"
@@ -1589,7 +1589,7 @@
             <div class="form-row">
               <label for="insertPosition"
                      data-help-title="指定位置"
-                     data-help="當插入方式選擇『指定位置』時，喺呢度輸入想放喺第幾位。">
+                     data-help="當排位方式選擇『指定位置』時，喺呢度輸入想放喺第幾位。">
                 指定位置（第幾位）
               </label>
               <input id="insertPosition" type="number" min="1" placeholder="例如：2"
@@ -1749,7 +1749,7 @@
           <div class="form-row">
             <label for="searchPatientType"
                    data-help-title="病人類型篩選"
-                   data-help="可按即場、網上拎籌或預約進一步篩選。">
+                   data-help="可按即場、網上取票或預約進一步篩選。">
               病人類型
             </label>
             <select id="searchPatientType"
@@ -1757,7 +1757,7 @@
                     data-help="只顯示指定類型病人。">
               <option value="all">全部類型</option>
               <option value="walkin">即場</option>
-              <option value="onlineTicket">網上拎籌</option>
+              <option value="onlineTicket">網上取票</option>
               <option value="appointment">預約</option>
             </select>
           </div>
@@ -1832,8 +1832,8 @@
            data-help-title="看板提示"
            data-help="看板資料只供參考。實際輪候可能會因病人臨床情況及現場運作需要而調整。">
         <div class="inline-note">
-          此輪候隊列只供參考，會因應病人臨床情況及實際運作而隨時調整，敬請見諒。<br>
-          This queue is for reference only and may change at any time due to patients' clinical condition and actual operational needs. Thank you for your understanding.
+          輪候情況只供參考，會因應病人臨床需要及現場實際運作而作出調整，敬請見諒。<br>
+          This queue is for reference only and may be adjusted at any time according to patients' clinical needs and operational requirements. Thank you for your understanding.
         </div>
       </div>
 
@@ -2078,7 +2078,7 @@
 
     function getPatientTypeLabel(type) {
       if (type === "walkin") return "即場";
-      if (type === "onlineTicket") return "網上拎籌";
+      if (type === "onlineTicket") return "網上取票";
       if (type === "appointment") return "預約";
       return "—";
     }
@@ -3013,8 +3013,8 @@
             <div><span class="board-head-zh">房號</span><span class="board-head-en">ROOM</span></div>
             <div><span class="board-head-zh">醫生</span><span class="board-head-en">DOCTOR</span></div>
             <div><span class="board-head-zh">現在看號</span><span class="board-head-en">NOW SERVING</span></div>
-            <div><span class="board-head-zh">隊列</span><span class="board-head-en">WAITING</span></div>
-            <div><span class="board-head-zh">過號</span><span class="board-head-en">SKIPPED</span></div>
+            <div><span class="board-head-zh">候診</span><span class="board-head-en">WAITING</span></div>
+            <div><span class="board-head-zh">過號</span><span class="board-head-en">MISSED</span></div>
           </div>
           <div class="board-body">${rows}</div>
         </div>
