@@ -972,8 +972,7 @@
       font-size: 1.2rem;
       font-weight: 800;
     }
-
-    .board-cutoff-tag {
+.board-cutoff-tag {
       display: inline-flex;
       flex-direction: column;
       align-items: center;
@@ -1305,168 +1304,6 @@
       line-height: 1.5;
     }
 
-    .journey-wrap {
-      margin-top: 10px;
-      border: 1px solid #dbeafe;
-      background: #f8fbff;
-      border-radius: 14px;
-      padding: 10px;
-    }
-
-    .journey-toggle-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .journey-last-event {
-      font-size: 0.82rem;
-      font-weight: 800;
-      color: #334155;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .journey-last-event-text {
-      color: #0f172a;
-      font-weight: 900;
-    }
-
-    .journey-panel {
-      display: none;
-      margin-top: 10px;
-      border-top: 1px dashed #bfdbfe;
-      padding-top: 10px;
-    }
-
-    .journey-panel.open {
-      display: block;
-    }
-
-    .journey-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 10px;
-    }
-
-    .journey-tab {
-      border: 1px solid #cbd5e1;
-      background: #fff;
-      color: #334155;
-      border-radius: 999px;
-      padding: 7px 10px;
-      font-size: 0.8rem;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
-    .journey-tab.active {
-      background: #2563eb;
-      color: #fff;
-      border-color: #2563eb;
-    }
-
-    .journey-grid {
-      display: grid;
-      grid-template-columns: 1.15fr 1.45fr 1.4fr auto;
-      gap: 8px;
-      align-items: end;
-    }
-
-    .journey-feedback {
-      display: none;
-      margin-top: 8px;
-      padding: 8px 10px;
-      border-radius: 10px;
-      font-size: 0.82rem;
-      font-weight: 900;
-    }
-
-    .journey-feedback.show {
-      display: block;
-    }
-
-    .journey-feedback.success {
-      background: #ecfdf5;
-      color: #047857;
-      border: 1px solid #86efac;
-    }
-
-    .journey-feedback.warning {
-      background: #fff7ed;
-      color: #b45309;
-      border: 1px solid #fdba74;
-    }
-
-    .history-item.journey-item {
-      background: #f8fbff;
-      border-color: #dbeafe;
-    }
-
-    .history-item.journey-item.voided {
-      background: #f8fafc;
-      border-color: #e2e8f0;
-      opacity: 0.78;
-    }
-
-    .history-item.journey-item.voided .history-text-main {
-      text-decoration: line-through;
-      color: #64748b;
-    }
-
-    .history-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 6px;
-    }
-
-    .history-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      font-weight: 900;
-      border: 1px solid transparent;
-    }
-
-    .history-badge.journey {
-      background: #eff6ff;
-      color: #1d4ed8;
-      border-color: #93c5fd;
-    }
-
-    .history-badge.voided {
-      background: #f3f4f6;
-      color: #6b7280;
-      border-color: #d1d5db;
-    }
-
-    .toast-actions {
-      margin-top: 8px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .toast-action-btn {
-      border: 1px solid rgba(255,255,255,0.45);
-      background: rgba(255,255,255,0.18);
-      color: #fff;
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 0.78rem;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
     @media (max-width: 1600px) {
       .board-title { font-size: 2.15rem; }
       .board-time { font-size: 1.35rem; }
@@ -1529,8 +1366,7 @@
         width: min(320px, calc(100vw - 18px));
       }
       .search-toolbar-grid,
-      .search-mini-grid,
-      .journey-grid {
+      .search-mini-grid {
         grid-template-columns: 1fr;
       }
 
@@ -2033,40 +1869,6 @@
 
     const PAUSE_REASON_OPTIONS = ["急救中 Resus", "小手術 Procedure", "巡房 Ward"];
 
-    const JOURNEY_EVENT_DEFS = {
-      investigation: [
-        { code: "blood_test_ordered", label: "已安排抽血" },
-        { code: "blood_test_done", label: "已完成抽血" },
-        { code: "xray_ordered", label: "已安排 X 光" },
-        { code: "xray_done", label: "已完成 X 光" },
-        { code: "ecg_ordered", label: "已安排 ECG" },
-        { code: "ecg_done", label: "已完成 ECG" }
-      ],
-      treatment: [
-        { code: "medication_given", label: "已給藥" },
-        { code: "iv_started", label: "已開始吊鹽水" },
-        { code: "procedure_started", label: "已開始處置" },
-        { code: "procedure_done", label: "已完成處置" }
-      ],
-      observation: [
-        { code: "obs_started", label: "開始觀察" },
-        { code: "obs_stable", label: "情況穩定" },
-        { code: "obs_reviewed", label: "已覆診觀察" },
-        { code: "obs_completed", label: "完成觀察" }
-      ],
-      disposition: [
-        { code: "admission_considered", label: "考慮入院" },
-        { code: "bed_requested", label: "已查詢病床" },
-        { code: "bed_confirmed", label: "已確認病床" },
-        { code: "bed_unavailable", label: "暫無病床" },
-        { code: "ward_informed", label: "已通知病房" },
-        { code: "discharge_planned", label: "計劃出院" }
-      ],
-      admin: [
-        { code: "custom_note", label: "自訂 Journey 記錄" }
-      ]
-    };
-
     const DEBUG = false;
 
     const state = {
@@ -2080,9 +1882,7 @@
       roomRenderFingerprints: new Map(),
       roomDomMap: new Map(),
       nextRoundRobinIndex: 0,
-      teachMode: false,
-      journeyUi: {},
-      lastJourneyActionByPatient: {}
+      teachMode: false
     };
 
     let liveRefreshTimer = null;
@@ -2233,36 +2033,13 @@
       return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second}`;
     }
 
-    function notify(message, type = "info", options = {}) {
+    function notify(message, type = "info") {
       const wrap = document.getElementById("toastWrap");
       const el = document.createElement("div");
       el.className = "toast " + type;
-
-      const text = document.createElement("div");
-      text.textContent = message;
-      el.appendChild(text);
-
-      if (Array.isArray(options.actions) && options.actions.length) {
-        const actionsWrap = document.createElement("div");
-        actionsWrap.className = "toast-actions";
-
-        options.actions.forEach(action => {
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.className = "toast-action-btn";
-          btn.textContent = action.label || "操作";
-          btn.addEventListener("click", () => {
-            try { action.onClick && action.onClick(); } catch (e) { console.error(e); }
-            el.remove();
-          });
-          actionsWrap.appendChild(btn);
-        });
-
-        el.appendChild(actionsWrap);
-      }
-
+      el.textContent = message;
       wrap.appendChild(el);
-      setTimeout(() => el.remove(), options.duration || 5000);
+      setTimeout(() => el.remove(), 4200);
     }
 
     function setDisplayModeByTab(tabId) {
@@ -2285,105 +2062,10 @@
       if (!patient) return;
       if (!Array.isArray(patient.logs)) patient.logs = [];
       patient.logs.unshift({
-        id: crypto.randomUUID(),
         time: nowIso(),
         action,
-        details,
-        type: "system",
-        status: "active",
-        voidedAt: null,
-        voidReason: "",
-        targetLogId: null
+        details
       });
-    }
-
-    function ensurePatientLogs(patient) {
-      if (!patient) return;
-      if (!Array.isArray(patient.logs)) patient.logs = [];
-    }
-
-    function makeJourneyEvent(category, eventCode, eventLabel, note = "") {
-      return {
-        id: crypto.randomUUID(),
-        time: nowIso(),
-        action: eventLabel,
-        details: note || "",
-        type: "journey",
-        journeyCategory: category,
-        eventCode,
-        status: "active",
-        voidedAt: null,
-        voidReason: "",
-        targetLogId: null
-      };
-    }
-
-    function makeJourneyVoidLog(targetLog, reason = "操作更正") {
-      return {
-        id: crypto.randomUUID(),
-        time: nowIso(),
-        action: "已撤銷事件",
-        details: `已撤銷：${targetLog?.action || "Journey event"}${reason ? `（${reason}）` : ""}`,
-        type: "journey_void",
-        journeyCategory: targetLog?.journeyCategory || "admin",
-        eventCode: "event_voided",
-        status: "active",
-        voidedAt: null,
-        voidReason: "",
-        targetLogId: targetLog?.id || null
-      };
-    }
-
-    function getJourneyEvents(patient) {
-      ensurePatientLogs(patient);
-      return patient.logs.filter(log => log && log.type === "journey");
-    }
-
-    function getLatestActiveJourneyEvent(patient) {
-      const events = getJourneyEvents(patient).filter(log => log.status !== "voided");
-      return events.length ? events[0] : null;
-    }
-
-    function getJourneyUiState(patientId) {
-      if (!state.journeyUi[patientId]) {
-        state.journeyUi[patientId] = {
-          open: false,
-          category: "investigation",
-          selectedCode: "",
-          note: "",
-          feedback: null
-        };
-      }
-      return state.journeyUi[patientId];
-    }
-
-    function getJourneyOptions(category) {
-      return JOURNEY_EVENT_DEFS[category] || [];
-    }
-
-    function getJourneyLabel(category, code) {
-      const found = getJourneyOptions(category).find(item => item.code === code);
-      return found ? found.label : "";
-    }
-
-    function renderJourneyEventSummary(log) {
-      if (!log) return "—";
-      return `${formatDateTime(log.time)} ${log.action}${log.details ? `（${log.details}）` : ""}`;
-    }
-
-    function setJourneyFeedback(patientId, message, type = "success") {
-      const ui = getJourneyUiState(patientId);
-      const ts = Date.now();
-      ui.feedback = { message, type, ts };
-      renderAll(true, { resortQueues: false });
-
-      setTimeout(() => {
-        const current = getJourneyUiState(patientId);
-        if (current.feedback && current.feedback.ts === ts) {
-          current.feedback = null;
-          renderAll(true, { resortQueues: false });
-        }
-      }, 2800);
     }
 
     function getRoomDisplayShort(roomNo) {
@@ -2941,44 +2623,14 @@
       }
 
       const historyHtml = (patient.logs || []).length
-        ? patient.logs.map(log => {
-            const isJourney = log.type === "journey";
-            const isVoided = log.status === "voided";
-
-            return `
-              <div class="history-item ${isJourney ? "journey-item" : ""} ${isVoided ? "voided" : ""}">
-                <div class="history-badges">
-                  ${isJourney ? `<span class="history-badge journey">Journey Event</span>` : ``}
-                  ${isVoided ? `<span class="history-badge voided">已作廢</span>` : ``}
-                  ${log.type === "journey_void" ? `<span class="history-badge voided">撤銷紀錄</span>` : ``}
-                </div>
-
-                <div class="history-time">${escapeHtml(formatDateTime(log.time))}</div>
-
-                <div class="history-text">
-                  <span class="history-text-main">
-                    ${escapeHtml(log.action)}${log.details ? `：${escapeHtml(log.details)}` : ""}
-                  </span>
-                </div>
-
-                ${
-                  isJourney && !isVoided
-                    ? `
-                      <div class="actions" style="margin-top:8px;">
-                        <button class="btn-warning btn-small"
-                                type="button"
-                                data-action="voidJourneyEvent"
-                                data-patient-id="${patient.id}"
-                                data-log-id="${log.id}">
-                          作廢
-                        </button>
-                      </div>
-                    `
-                    : ""
-                }
-              </div>
-            `;
-          }).join("")
+        ? patient.logs.map(log => `
+          <div class="history-item">
+            <div class="history-time">${escapeHtml(formatDateTime(log.time))}</div>
+            <div class="history-text">
+              ${escapeHtml(log.action)}${log.details ? `：${escapeHtml(log.details)}` : ""}
+            </div>
+          </div>
+        `).join("")
         : `<div class="muted">暫無操作紀錄</div>`;
 
       const html = `
@@ -3002,7 +2654,7 @@
           </div>
 
           <div class="history-list">
-            <div class="section-title" style="margin-top:0;">操作紀錄 / Journey Timeline</div>
+            <div class="section-title" style="margin-top:0;">操作紀錄</div>
             ${historyHtml}
           </div>
         </div>
@@ -3393,7 +3045,7 @@
           init: p.initialAssignmentMode,
           lock: p.manualLock,
           reg: p.registeredAt,
-          logs: (p.logs || []).slice(0, 8)
+          logs: (p.logs || []).slice(0, 5)
         })),
         skipped: skippedPatients.map(p => ({
           id: p.id,
@@ -3401,7 +3053,7 @@
           pr: p.priority,
           s: p.status,
           sk: p.skippedAt,
-          logs: (p.logs || []).slice(0, 8)
+          logs: (p.logs || []).slice(0, 5)
         }))
       });
     }
@@ -3424,96 +3076,6 @@
         logs: latestLogs
       }));
       return `data-hover-log="${payload}"`;
-    }
-
-    function renderJourneyPanel(patient) {
-      const ui = getJourneyUiState(patient.id);
-      const category = ui.category || "investigation";
-      const options = getJourneyOptions(category);
-      const currentCode = ui.selectedCode && options.some(o => o.code === ui.selectedCode)
-        ? ui.selectedCode
-        : (options[0]?.code || "");
-
-      ui.selectedCode = currentCode;
-
-      const latest = getLatestActiveJourneyEvent(patient);
-      const feedbackHtml = ui.feedback
-        ? `<div class="journey-feedback ${ui.feedback.type} show">✓ ${escapeHtml(ui.feedback.message)}</div>`
-        : "";
-
-      return `
-        <div class="journey-wrap">
-          <div class="journey-toggle-row">
-            <button class="btn-secondary btn-small"
-                    type="button"
-                    data-action="toggleJourneyPanel"
-                    data-patient-id="${patient.id}">
-              ${ui.open ? "收起 Journey Event" : "加入 Journey Event"}
-            </button>
-
-            <div class="journey-last-event">
-              <span>最近事件：</span>
-              <span class="journey-last-event-text">${latest ? escapeHtml(renderJourneyEventSummary(latest)) : "暫無"}</span>
-              ${
-                latest
-                  ? `<button class="btn-warning btn-small" type="button" data-action="undoLastJourney" data-patient-id="${patient.id}">撤回</button>`
-                  : ""
-              }
-            </div>
-          </div>
-
-          <div class="journey-panel ${ui.open ? "open" : ""}">
-            <div class="journey-tabs">
-              <button type="button" class="journey-tab ${category === "investigation" ? "active" : ""}" data-action="setJourneyCategory" data-patient-id="${patient.id}" data-journey-category="investigation">檢查</button>
-              <button type="button" class="journey-tab ${category === "treatment" ? "active" : ""}" data-action="setJourneyCategory" data-patient-id="${patient.id}" data-journey-category="treatment">治療</button>
-              <button type="button" class="journey-tab ${category === "observation" ? "active" : ""}" data-action="setJourneyCategory" data-patient-id="${patient.id}" data-journey-category="observation">觀察</button>
-              <button type="button" class="journey-tab ${category === "disposition" ? "active" : ""}" data-action="setJourneyCategory" data-patient-id="${patient.id}" data-journey-category="disposition">Disposition</button>
-              <button type="button" class="journey-tab ${category === "admin" ? "active" : ""}" data-action="setJourneyCategory" data-patient-id="${patient.id}" data-journey-category="admin">更多</button>
-            </div>
-
-            <div class="journey-grid">
-              <div class="form-row">
-                <label>事件類別</label>
-                <input value="${
-                  category === "investigation" ? "檢查" :
-                  category === "treatment" ? "治療" :
-                  category === "observation" ? "觀察" :
-                  category === "disposition" ? "Disposition" : "更多"
-                }" disabled />
-              </div>
-
-              <div class="form-row">
-                <label>事件內容</label>
-                <select data-journey-event-select="${patient.id}">
-                  ${options.map(item => `
-                    <option value="${item.code}" ${item.code === currentCode ? "selected" : ""}>${escapeHtml(item.label)}</option>
-                  `).join("")}
-                </select>
-              </div>
-
-              <div class="form-row">
-                <label>備註</label>
-                <input type="text"
-                       placeholder="補充備註（可選）"
-                       value="${escapeHtml(ui.note || "")}"
-                       data-journey-note="${patient.id}" />
-              </div>
-
-              <div class="form-row">
-                <label>&nbsp;</label>
-                <button class="btn-primary"
-                        type="button"
-                        data-action="addJourneyEvent"
-                        data-patient-id="${patient.id}">
-                  加入事件
-                </button>
-              </div>
-            </div>
-
-            ${feedbackHtml}
-          </div>
-        </div>
-      `;
     }
 
     function renderRoomCardHtml(room) {
@@ -3554,8 +3116,6 @@
                   </div>
                   <div class="queue-time">${escapeHtml(formatDateTime(patient.registeredAt))}</div>
                 </div>
-
-                ${renderJourneyPanel(patient)}
               </div>
             </td>
             <td>
@@ -3690,8 +3250,6 @@
                   </div>
                   <div class="queue-time">${escapeHtml(formatDateTime(patient.registeredAt))}</div>
                 </div>
-
-                ${renderJourneyPanel(patient)}
               </div>
             </td>
             <td>
@@ -4002,10 +3560,6 @@
           const row = active.closest("tr");
           const patientId = row?.getAttribute("data-row-patient-id");
           if (patientId) focusSelector = `tr[data-row-patient-id="${patientId}"] .transfer-room-select`;
-        } else if (active.matches("[data-journey-event-select]")) {
-          focusSelector = `[data-journey-event-select="${active.getAttribute("data-journey-event-select")}"]`;
-        } else if (active.matches("[data-journey-note]")) {
-          focusSelector = `[data-journey-note="${active.getAttribute("data-journey-note")}"]`;
         }
 
         selectedValue = active.value;
@@ -5321,140 +4875,6 @@
       }
     }
 
-    async function addJourneyEvent(patientId) {
-      try {
-        markUiBusy(2600);
-
-        const patient = getPatient(patientId);
-        if (!patient) return;
-
-        const ui = getJourneyUiState(patientId);
-        const category = ui.category || "investigation";
-
-        const select = document.querySelector(`[data-journey-event-select="${patientId}"]`);
-        const noteInput = document.querySelector(`[data-journey-note="${patientId}"]`);
-
-        const eventCode = String(select?.value || "").trim();
-        const note = String(noteInput?.value || "").trim();
-        const eventLabel = getJourneyLabel(category, eventCode);
-
-        if (!eventCode || !eventLabel) {
-          notify("請先選擇 Journey event", "warning");
-          return;
-        }
-
-        ensurePatientLogs(patient);
-
-        const log = makeJourneyEvent(category, eventCode, eventLabel, note);
-        patient.logs.unshift(log);
-
-        ui.note = "";
-        state.lastJourneyActionByPatient[patientId] = {
-          logId: log.id,
-          createdAt: Date.now()
-        };
-
-        await savePatientToSupabase(patient);
-
-        setJourneyFeedback(patientId, `已記錄：${eventLabel}${note ? `（${note}）` : ""}`, "success");
-        renderAll(true, { resortQueues: false });
-
-        notify(
-          `${getPatientDisplayNo(patient)} 已記錄：${eventLabel}`,
-          "success",
-          {
-            duration: 8000,
-            actions: [
-              {
-                label: "撤回",
-                onClick: () => {
-                  undoLastJourney(patientId);
-                }
-              }
-            ]
-          }
-        );
-
-        await refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("加入 Journey event 失敗\n" + formatSupabaseError(error), "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function undoLastJourney(patientId) {
-      try {
-        markUiBusy(2600);
-
-        const patient = getPatient(patientId);
-        if (!patient) return;
-
-        const latest = getLatestActiveJourneyEvent(patient);
-        if (!latest) {
-          notify("沒有可撤回的 Journey event", "warning");
-          return;
-        }
-
-        latest.status = "voided";
-        latest.voidedAt = nowIso();
-        latest.voidReason = "即時撤回";
-
-        patient.logs.unshift(makeJourneyVoidLog(latest, "即時撤回"));
-
-        await savePatientToSupabase(patient);
-
-        setJourneyFeedback(patientId, `已撤回：${latest.action}`, "warning");
-        notify(`${getPatientDisplayNo(patient)} 已撤回：${latest.action}`, "warning");
-
-        renderAll(true, { resortQueues: false });
-        await refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("撤回 Journey event 失敗\n" + formatSupabaseError(error), "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
-    async function voidJourneyEvent(patientId, logId) {
-      try {
-        markUiBusy(2600);
-
-        const patient = getPatient(patientId);
-        if (!patient) return;
-
-        ensurePatientLogs(patient);
-        const targetLog = patient.logs.find(log => log.id === logId);
-
-        if (!targetLog || targetLog.type !== "journey") {
-          notify("找不到可作廢的 Journey event", "warning");
-          return;
-        }
-
-        if (targetLog.status === "voided") {
-          notify("此 Journey event 已作廢", "warning");
-          return;
-        }
-
-        targetLog.status = "voided";
-        targetLog.voidedAt = nowIso();
-        targetLog.voidReason = "操作更正";
-
-        patient.logs.unshift(makeJourneyVoidLog(targetLog, "操作更正"));
-
-        await savePatientToSupabase(patient);
-
-        notify(`${getPatientDisplayNo(patient)} 已作廢：${targetLog.action}`, "warning");
-        renderAll(true, { resortQueues: false });
-        searchPatient();
-        await refreshFromCloudAndRender(false);
-      } catch (error) {
-        console.error(error);
-        notify("作廢 Journey event 失敗\n" + formatSupabaseError(error), "error");
-        refreshFromCloudAndRender(false);
-      }
-    }
-
     function searchPatient() {
       const filters = getSearchFiltersFromUi();
 
@@ -5817,28 +5237,6 @@
       const roomId = btn.dataset.roomId;
       const patientId = btn.dataset.patientId;
 
-      if (action === "toggleJourneyPanel") {
-        const ui = getJourneyUiState(patientId);
-        ui.open = !ui.open;
-        renderAll(true, { resortQueues: false });
-        return;
-      }
-
-      if (action === "setJourneyCategory") {
-        const ui = getJourneyUiState(patientId);
-        ui.category = btn.getAttribute("data-journey-category") || "investigation";
-        ui.selectedCode = "";
-        renderAll(true, { resortQueues: false });
-        return;
-      }
-
-      if (action === "addJourneyEvent") return withButtonLoading(btn, () => addJourneyEvent(patientId));
-      if (action === "undoLastJourney") return withButtonLoading(btn, () => undoLastJourney(patientId));
-      if (action === "voidJourneyEvent") {
-        const logId = btn.getAttribute("data-log-id");
-        return withButtonLoading(btn, () => voidJourneyEvent(patientId, logId));
-      }
-
       if (action === "callNext") return withButtonLoading(btn, () => callNextPatient(roomId));
       if (action === "finishCurrent") return withButtonLoading(btn, () => finishCurrent(roomId));
       if (action === "skipCurrent") return withButtonLoading(btn, () => skipCurrent(roomId));
@@ -6012,15 +5410,6 @@
       }
     });
 
-    document.addEventListener("input", (event) => {
-      const noteInput = event.target.closest("[data-journey-note]");
-      if (noteInput) {
-        const patientId = noteInput.getAttribute("data-journey-note");
-        const ui = getJourneyUiState(patientId);
-        ui.note = noteInput.value || "";
-      }
-    });
-
     document.addEventListener("change", (event) => {
       const el = event.target;
       if (!el) return;
@@ -6034,19 +5423,14 @@
       }
 
       const select = event.target.closest("[data-pause-reason-select]");
-      if (select) {
-        const roomId = select.dataset.pauseReasonSelect;
-        const input = document.querySelector(`[data-pause-reason="${roomId}"]`);
-        if (input && select.value.trim()) {
-          input.value = "";
-        }
-      }
+      if (!select) return;
 
-      const eventSelect = event.target.closest("[data-journey-event-select]");
-      if (eventSelect) {
-        const patientId = eventSelect.getAttribute("data-journey-event-select");
-        const ui = getJourneyUiState(patientId);
-        ui.selectedCode = eventSelect.value || "";
+      const roomId = select.dataset.pauseReasonSelect;
+      const input = document.querySelector(`[data-pause-reason="${roomId}"]`);
+      if (!input) return;
+
+      if (select.value.trim()) {
+        input.value = "";
       }
     });
 
