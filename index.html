@@ -1332,28 +1332,61 @@ body.display-mode .info-card {
         <div class="modal-title" id="clinicalActivityModalTitle">新增臨床活動</div>
         <div class="modal-subtitle" id="clinicalActivityPatientInfo">—</div>
       </div>
-      <button class="modal-close-btn" id="closeClinicalActivityModalBtn" type="button" aria-label="關閉">×</button>
+      <button
+        class="modal-close-btn"
+        id="closeClinicalActivityModalBtn"
+        type="button"
+        aria-label="關閉"
+        data-help-title="關閉視窗"
+        data-help="按呢個掣會關閉「新增臨床活動」視窗，而家未儲存嘅內容亦會一齊取消。"
+      >×</button>
     </div>
     <div class="modal-body">
-      <div class="form-row">
+      <div
+        class="form-row"
+        data-help-title="常用臨床活動"
+        data-help="呢度可以快速揀常用活動，例如去抽血、照 X-ray 或安排入院。你可以一次揀多個，系統會自動放入下面嘅「臨床活動」欄位。"
+      >
         <label>常用臨床活動</label>
         <div class="activity-chip-row" id="clinicalActivityPresetWrap"></div>
         <div class="modal-note">可一次選擇多個活動，系統會自動放入下面「臨床活動」欄位；再自行修改亦可以。</div>
       </div>
 
-      <div class="form-row" style="margin-top:14px;">
+      <div
+        class="form-row"
+        style="margin-top:14px;"
+        data-help-title="臨床活動內容"
+        data-help="呢個欄位用嚟寫今次病人嘅臨床活動。你可以手動輸入，亦可以由上面按常用活動自動帶入。"
+      >
         <label for="clinicalActivityInput">臨床活動</label>
         <textarea id="clinicalActivityInput" placeholder="例如：去做檢查、去抽血、安排入院"></textarea>
       </div>
 
-      <div class="form-row" style="margin-top:14px;">
+      <div
+        class="form-row"
+        style="margin-top:14px;"
+        data-help-title="補充說明"
+        data-help="如果想補充更多情況，例如等緊報告、送咗去邊度做檢查，可以喺呢度填寫；留空都可以。"
+      >
         <label for="clinicalActivityDetails">補充說明（可留空）</label>
         <input id="clinicalActivityDetails" type="text" placeholder="例如：已送往 X-ray、等候內科病房、等候抽血結果" />
       </div>
 
       <div class="modal-actions">
-        <button class="btn-secondary" id="cancelClinicalActivityBtn" type="button">取消</button>
-        <button class="btn-primary" id="saveClinicalActivityBtn" type="button">儲存臨床活動</button>
+        <button
+          class="btn-secondary"
+          id="cancelClinicalActivityBtn"
+          type="button"
+          data-help-title="取消新增臨床活動"
+          data-help="按呢個掣會取消今次新增臨床活動，不會寫入系統。"
+        >取消</button>
+        <button
+          class="btn-primary"
+          id="saveClinicalActivityBtn"
+          type="button"
+          data-help-title="儲存臨床活動"
+          data-help="按呢個掣會將而家填寫嘅臨床活動寫入病人紀錄，並即時顯示喺病人下方。"
+        >儲存臨床活動</button>
       </div>
     </div>
   </div>
@@ -1361,16 +1394,42 @@ body.display-mode .info-card {
 
 <div class="app">
   <div class="topbar">
-    <div class="title">
+    <div
+      class="title"
+      data-help-title="系統標題"
+      data-help="呢個系統俾職員管理急症醫學中心嘅候診、回診、過號同現正診症病人。上面可以切換唔同頁面。"
+    >
       香港中文大學醫院急症醫學中心輪候系統<br>CUHKMC Emergency Medicine Centre Queue Management System
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" data-tab="staffPage" type="button">職員管理</button>
-      <button class="tab-btn" data-tab="patientPage" type="button">病人狀態查詢</button>
-      <button class="tab-btn" data-tab="displayPage" type="button">候診看板</button>
+      <button
+        class="tab-btn active"
+        data-tab="staffPage"
+        type="button"
+        data-help-title="職員管理頁"
+        data-help="呢頁俾職員新增病人、建立診室、叫號、完成、過號、轉回診、轉房同管理整體候診流程。"
+      >職員管理</button>
+      <button
+        class="tab-btn"
+        data-tab="patientPage"
+        type="button"
+        data-help-title="病人狀態查詢頁"
+        data-help="呢頁用嚟查詢病人狀態。可以按 CUMC 號碼、診室、病人狀態同病人類型搜尋。"
+      >病人狀態查詢</button>
+      <button
+        class="tab-btn"
+        data-tab="displayPage"
+        type="button"
+        data-help-title="候診看板頁"
+        data-help="呢頁會以大螢幕方式顯示各診室嘅現正診症、候診、回診同過號名單，適合公眾顯示。"
+      >候診看板</button>
 
-      <label class="teach-toggle">
+      <label
+        class="teach-toggle"
+        data-help-title="操作教學模式"
+        data-help="開啟之後，只要滑鼠移到有教學說明嘅位置，就會彈出功能介紹。方便新同事學習操作。"
+      >
         <input id="teachModeToggle" type="checkbox" />
         <span>操作教學模式</span>
         <span class="teach-badge" id="teachModeBadge">關閉中</span>
@@ -1381,15 +1440,27 @@ body.display-mode .info-card {
   <div class="page active" id="staffPage">
     <div class="grid-2">
       <div class="panel">
-        <div class="panel-title">新增輪候病人</div>
+        <div
+          class="panel-title"
+          data-help-title="新增輪候病人"
+          data-help="喺呢度輸入病人資料，設定派房方式、優先級別、登記時間同排位方式，之後按「加入輪候」就可以將病人加入系統。"
+        >新增輪候病人</div>
 
         <div class="grid-5">
-          <div class="form-row">
+          <div
+            class="form-row"
+            data-help-title="CUMC 號碼"
+            data-help="輸入病人嘅 CUMC 號碼。系統會自動轉做大楷，亦會檢查有冇未完成個案重複。"
+          >
             <label for="patientCumcNo">CUMC 號碼</label>
             <input id="patientCumcNo" type="text" placeholder="例如：ABC1234" />
           </div>
 
-          <div class="form-row">
+          <div
+            class="form-row"
+            data-help-title="病人類型"
+            data-help="可選即場、網上取票或者預約。唔同病人類型會影響自動排位次序同可派往邊啲診室。"
+          >
             <label for="patientType">病人類型</label>
             <select id="patientType">
               <option value="walkin">即場</option>
@@ -1398,7 +1469,11 @@ body.display-mode .info-card {
             </select>
           </div>
 
-          <div class="form-row">
+          <div
+            class="form-row"
+            data-help-title="派往診室方式"
+            data-help="可以選擇智能分派、最短隊伍優先、輪流分派，或者手動指定診室。手動派房嘅病人之後唔會參與智能平均分流。"
+          >
             <label for="assignMode">派往診室</label>
             <select id="assignMode">
               <option value="smart" selected>自動分派：智能分派</option>
@@ -1408,12 +1483,20 @@ body.display-mode .info-card {
             </select>
           </div>
 
-          <div class="form-row">
+          <div
+            class="form-row"
+            data-help-title="指定診室"
+            data-help="只有當派房方式揀咗「手動選擇診室」時，呢個欄位先會生效。你可以直接指定病人去某一間房。"
+          >
             <label for="assignRoom">指定診室</label>
             <select id="assignRoom"></select>
           </div>
 
-          <div class="form-row">
+          <div
+            class="form-row"
+            data-help-title="醫療優先"
+            data-help="揀「是」即代表病人屬於較高優先次序，系統排隊時會較前顯示，候診看板亦會用特別顏色標示。"
+          >
             <label for="isPriority">醫療優先</label>
             <select id="isPriority">
               <option value="false">否</option>
@@ -1423,16 +1506,28 @@ body.display-mode .info-card {
         </div>
 
         <div class="grid-3" style="margin-top:14px;">
-          <div class="form-row">
+          <div
+            class="form-row"
+            data-help-title="登記時間"
+            data-help="預設會用而家時間。若勾選手動登記時間，就可以為補錄、預約或網上取票個案輸入原本登記時間。"
+          >
             <label for="registeredAt">登記時間</label>
             <input id="registeredAt" type="datetime-local" disabled />
-            <label style="display:flex;gap:8px;align-items:center;">
+            <label
+              style="display:flex;gap:8px;align-items:center;"
+              data-help-title="使用手動登記時間"
+              data-help="勾選後可以自訂登記時間。適合事後補錄、預約病人或者網上取票個案。"
+            >
               <input id="useCustomRegisteredAt" type="checkbox" style="width:auto;" />
               使用手動登記時間（適用於補錄、預約或網上取票）
             </label>
           </div>
 
-          <div class="form-row">
+          <div
+            class="form-row"
+            data-help-title="排位方式"
+            data-help="可選自動安排、排隊尾、排隊首或指定位置。自動安排會按優先級別、登記時間同病人類型決定位置。"
+          >
             <label for="insertMode">排位方式</label>
             <select id="insertMode">
               <option value="auto" selected>自動安排</option>
@@ -1442,21 +1537,39 @@ body.display-mode .info-card {
             </select>
           </div>
 
-          <div class="form-row">
+          <div
+            class="form-row"
+            data-help-title="指定位置"
+            data-help="如果排位方式揀咗「指定位置」，可以喺呢度輸入第幾位，例如 2 即代表插入做第二位。"
+          >
             <label for="insertPosition">指定位置</label>
             <input id="insertPosition" type="number" min="1" placeholder="例如：2" />
           </div>
         </div>
 
         <div class="actions" style="margin-top:14px; justify-content:flex-end;">
-          <button class="btn-primary" id="addPatientBtn" type="button">加入輪候</button>
+          <button
+            class="btn-primary"
+            id="addPatientBtn"
+            type="button"
+            data-help-title="加入輪候"
+            data-help="按呢個掣會將上面填好嘅病人資料正式加入輪候系統。加入後會即時出現在對應診室名單。"
+          >加入輪候</button>
         </div>
       </div>
 
       <div class="panel">
-        <div class="panel-title">新增診室</div>
+        <div
+          class="panel-title"
+          data-help-title="新增診室"
+          data-help="喺呢度建立新診室。輸入診室名稱同醫生名稱後，按「建立診室」即可新增一個可使用嘅診室。"
+        >新增診室</div>
         <div class="grid-3">
-          <div class="form-row">
+          <div
+            class="form-row"
+            data-help-title="診室名稱"
+            data-help="可由建議清單揀選，亦可以自由輸入，例如 1號房、2號房。"
+          >
             <label for="newRoomNo">診室</label>
             <input id="newRoomNo" list="roomNoOptions" type="text" placeholder="可選或自由輸入" />
             <datalist id="roomNoOptions">
@@ -1470,14 +1583,24 @@ body.display-mode .info-card {
               <option value="10號房"></option>
             </datalist>
           </div>
-          <div class="form-row">
+          <div
+            class="form-row"
+            data-help-title="醫生名稱"
+            data-help="輸入或選擇診室對應醫生名稱。建立後會顯示於職員頁同候診看板。"
+          >
             <label for="newDoctorName">醫生名稱</label>
             <input id="newDoctorName" list="doctorOptions" type="text" placeholder="可選或自由輸入" />
             <datalist id="doctorOptions"></datalist>
           </div>
           <div class="form-row">
             <label>&nbsp;</label>
-            <button class="btn-success" id="addRoomBtn" type="button">建立診室</button>
+            <button
+              class="btn-success"
+              id="addRoomBtn"
+              type="button"
+              data-help-title="建立診室"
+              data-help="按呢個掣會建立新診室。成功後，該診室會出現在下方診室管理區。"
+            >建立診室</button>
           </div>
         </div>
       </div>
@@ -1485,14 +1608,34 @@ body.display-mode .info-card {
 
     <div class="panel">
       <div class="toolbar-row">
-        <div class="panel-title" style="margin-bottom:0;">各診室輪候概況</div>
+        <div
+          class="panel-title"
+          style="margin-bottom:0;"
+          data-help-title="各診室輪候概況"
+          data-help="下面會列出每間已選擇顯示嘅診室，包括現正診症、候診、回診同過號名單，以及各項管理按鈕。"
+        >各診室輪候概況</div>
         <div class="actions">
-          <button class="btn-primary" id="rebalanceWaitingBtn" type="button">一鍵智能平均分流候診病人</button>
+          <button
+            class="btn-primary"
+            id="rebalanceWaitingBtn"
+            type="button"
+            data-help-title="一鍵智能平均分流候診病人"
+            data-help="按呢個掣可將符合條件嘅候診病人重新平均分配到開放中的診室。手動派房、手動轉房或預約病人不會被自動移動。"
+          >一鍵智能平均分流候診病人</button>
         </div>
       </div>
 
-      <div id="staffRoomFilterWrap" class="staff-room-filter-wrap"></div>
-      <div class="search-help-note">可剔選只顯示指定診室；只影響職員頁面顯示，不影響資料。</div>
+      <div
+        id="staffRoomFilterWrap"
+        class="staff-room-filter-wrap"
+        data-help-title="職員頁診室顯示篩選"
+        data-help="可以勾選只顯示某幾間診室，方便集中睇指定房間。呢個設定只影響職員頁顯示，不會改動系統資料。"
+      ></div>
+      <div
+        class="search-help-note"
+        data-help-title="診室篩選提示"
+        data-help="你可以按需要只睇部分診室，令畫面冇咁迫。取消勾選只係隱藏顯示，不會刪除診室。"
+      >可剔選只顯示指定診室；只影響職員頁面顯示，不影響資料。</div>
 
       <div id="roomsContainer" class="room-list" style="margin-top:14px;"></div>
     </div>
@@ -1500,21 +1643,37 @@ body.display-mode .info-card {
 
   <div class="page" id="patientPage">
     <div class="panel">
-      <div class="panel-title">病人狀態查詢</div>
+      <div
+        class="panel-title"
+        data-help-title="病人狀態查詢"
+        data-help="可以透過 CUMC 號碼、診室、狀態、病人類型等條件搜尋病人，查看目前排隊位置同完整紀錄。"
+      >病人狀態查詢</div>
 
       <div class="search-toolbar-grid">
-        <div class="form-row">
+        <div
+          class="form-row"
+          data-help-title="搜尋 CUMC 號碼"
+          data-help="輸入完整或者開首幾個字都可以搜尋。系統會提供符合條件嘅建議。"
+        >
           <label for="searchTicket">CUMC 號碼</label>
           <input id="searchTicket" list="searchTicketOptions" type="text" placeholder="可輸入開首幾個字，例如：ABC" autocomplete="off" />
           <datalist id="searchTicketOptions"></datalist>
         </div>
 
-        <div class="form-row">
+        <div
+          class="form-row"
+          data-help-title="搜尋診室"
+          data-help="可以只睇某一間診室嘅情況。如果只揀診室而唔輸入病人號碼，系統會顯示該房整體狀況。"
+        >
           <label for="searchRoom">診室（可選）</label>
           <select id="searchRoom"></select>
         </div>
 
-        <div class="form-row">
+        <div
+          class="form-row"
+          data-help-title="病人狀態篩選"
+          data-help="可按候診中、回診等候、現正診症、過號、已完成或已取消去篩選搜尋結果。"
+        >
           <label for="searchStatus">病人狀態</label>
           <select id="searchStatus">
             <option value="all">全部狀態</option>
@@ -1527,7 +1686,11 @@ body.display-mode .info-card {
           </select>
         </div>
 
-        <div class="form-row">
+        <div
+          class="form-row"
+          data-help-title="病人類型篩選"
+          data-help="可按即場、網上取票或預約篩選病人。"
+        >
           <label for="searchPatientType">病人類型</label>
           <select id="searchPatientType">
             <option value="all">全部類型</option>
@@ -1539,27 +1702,51 @@ body.display-mode .info-card {
 
         <div class="form-row">
           <label>&nbsp;</label>
-          <button class="btn-primary" id="searchPatientBtn" type="button">搜尋</button>
+          <button
+            class="btn-primary"
+            id="searchPatientBtn"
+            type="button"
+            data-help-title="搜尋"
+            data-help="按呢個掣會按目前條件搜尋病人，顯示列表或者病人詳細資料。"
+          >搜尋</button>
         </div>
 
         <div class="form-row">
           <label>&nbsp;</label>
-          <button class="btn-secondary" id="clearSearchBtn" type="button">清除條件</button>
+          <button
+            class="btn-secondary"
+            id="clearSearchBtn"
+            type="button"
+            data-help-title="清除條件"
+            data-help="按呢個掣會清空所有搜尋條件，恢復預設狀態。"
+          >清除條件</button>
         </div>
       </div>
 
       <div class="search-active-row">
-        <label class="search-checkbox">
+        <label
+          class="search-checkbox"
+          data-help-title="只顯示未完成個案"
+          data-help="勾選後只會顯示仍未完成嘅病人，包括候診中、回診等候、現正診症同過號。"
+        >
           <input id="searchActiveOnly" type="checkbox" checked />
           <span>只顯示未完成個案</span>
         </label>
 
-        <div class="search-help-note">
+        <div
+          class="search-help-note"
+          data-help-title="搜尋提示"
+          data-help="只選擇診室會顯示該診室整體情況；輸入 CUMC 號碼時，未完成個案會優先顯示。"
+        >
           提示：只選擇診室時，系統會顯示該診室目前情況；輸入 CUMC 號碼時，未完成個案會優先顯示。
         </div>
       </div>
 
-      <div class="search-chip-row">
+      <div
+        class="search-chip-row"
+        data-help-title="快速狀態篩選"
+        data-help="呢排按鈕可以快速切換病人狀態篩選，等你唔使每次都開下拉選單。"
+      >
         <button class="search-chip active" type="button" data-search-chip="all">全部狀態</button>
         <button class="search-chip" type="button" data-search-chip="waiting">候診中</button>
         <button class="search-chip" type="button" data-search-chip="review_waiting">回診等候</button>
@@ -1569,24 +1756,40 @@ body.display-mode .info-card {
         <button class="search-chip" type="button" data-search-chip="cancelled">已取消</button>
       </div>
 
-      <div id="patientSearchResult"></div>
+      <div
+        id="patientSearchResult"
+        data-help-title="搜尋結果"
+        data-help="搜尋後，呢度會顯示病人列表、房間概況，或者單一病人詳細紀錄。"
+      ></div>
     </div>
   </div>
 
   <div class="page" id="displayPage">
-    <div class="board-toolbar">
+    <div
+      class="board-toolbar"
+      data-help-title="候診看板"
+      data-help="候診看板會顯示目前開放或暫停中的診室。每頁最多顯示 4 間房，系統會自動輪播。"
+    >
       <div class="board-title">候診情況<br>Queue Status</div>
       <div class="board-time" id="boardTime"></div>
     </div>
 
-    <div class="info-card board-disclaimer">
+    <div
+      class="info-card board-disclaimer"
+      data-help-title="候診看板提示"
+      data-help="呢段文字係向病人說明候診時間只供參考，系統可能按臨床需要作出調整。"
+    >
       <div class="inline-note">
         輪候情況只供參考，會因應病人臨床需要及現場實際運作而作出調整，敬請見諒。<br>
         This queue is for reference only and may be adjusted at any time according to patients' clinical needs and operational requirements. Thank you for your understanding.
       </div>
     </div>
 
-    <div id="displayBoard"></div>
+    <div
+      id="displayBoard"
+      data-help-title="看板內容區"
+      data-help="呢度會顯示各診室嘅現正診症、候診、回診同過號名單。已關閉診室唔會顯示。"
+    ></div>
     <div class="board-footer-tip">香港中文大學醫院急症醫學中心<br>CUHKMC Emergency Medicine Centre</div>
   </div>
 </div>
@@ -1921,10 +2124,26 @@ function renderStaffRoomFilterControls() {
   const selected = new Set(state.staffRoomFilterRoomIds || []);
 
   wrap.innerHTML = `
-    <button class="search-chip" type="button" data-staff-room-filter-all="1">全選</button>
-    <button class="search-chip" type="button" data-staff-room-filter-none="1">清除</button>
+    <button
+      class="search-chip"
+      type="button"
+      data-staff-room-filter-all="1"
+      data-help-title="全選診室"
+      data-help="按呢個掣會將所有診室重新勾選並顯示返出嚟。"
+    >全選</button>
+    <button
+      class="search-chip"
+      type="button"
+      data-staff-room-filter-none="1"
+      data-help-title="清除診室顯示"
+      data-help="按呢個掣會取消所有勾選，職員頁會暫時唔顯示任何診室。"
+    >清除</button>
     ${rooms.map(room => `
-      <label class="search-checkbox">
+      <label
+        class="search-checkbox"
+        data-help-title="顯示或隱藏診室"
+        data-help="勾選會顯示 ${escapeHtml(room.roomNo)}；取消勾選只係隱藏職員頁畫面，不會刪除資料。"
+      >
         <input type="checkbox" data-staff-room-filter-id="${room.id}" ${selected.has(room.id) ? "checked" : ""} />
         <span>${escapeHtml(room.roomNo)}</span>
       </label>
@@ -2344,7 +2563,7 @@ function renderSearchPatientRows(patients, includeRoom = true) {
         <td>${escapeHtml(getPriorityLabel(patient))}</td>
         <td>${queuePosition}</td>
         <td>${escapeHtml(formatDateTime(patient.registeredAt))}</td>
-        <td><button class="btn-primary btn-small" type="button" data-search-view-patient-id="${patient.id}">查看詳情</button></td>
+        <td><button class="btn-primary btn-small" type="button" data-search-view-patient-id="${patient.id}" data-help-title="查看病人詳情" data-help="按呢個掣可以打開呢位病人嘅詳細資料，包括排隊紀錄同臨床活動紀錄。">查看詳情</button></td>
       </tr>
     `;
   }).join("");
@@ -2800,7 +3019,7 @@ function renderPatientHoverLogAttrs(patient) {
     ticketNo: getPatientDisplayNo(patient),
     logs: latestLogs
   }));
-  return `data-hover-log="${payload}"`;
+  return `data-hover-log="${payload}" data-help-title="病人資訊" data-help="顯示病人號碼、類型、優先級別、登記時間同最近臨床活動。移到號碼旁邊嘅 i 圖示會顯示最近 5 項排隊活動紀錄。"`
 }
 function renderPatientClinicalPreview(patient) {
   const logs = getPreviewClinicalLogs(patient, 10);
@@ -2843,7 +3062,7 @@ function renderRoomCardHtml(room) {
   const queueRows = waitingPatients.length
     ? waitingPatients.map((patient, index) => `
       <tr data-row-patient-id="${patient.id}">
-        <td><div class="queue-pos-badge">#${index + 1}</div></td>
+        <td><div class="queue-pos-badge" data-help-title="候診位置" data-help="顯示病人目前喺呢間診室候診隊伍中排第幾位。">#${index + 1}</div></td>
         <td>${renderPatientInfoBlock(
           patient,
           `${patient.initialAssignmentMode === "manual"
@@ -2854,39 +3073,39 @@ function renderRoomCardHtml(room) {
         <td>
           <div class="more-actions-wrap">
             <div class="main-actions">
-              <button class="btn-warning btn-small" type="button" data-action="togglePriority" data-patient-id="${patient.id}">
+              <button class="btn-warning btn-small" type="button" data-action="togglePriority" data-patient-id="${patient.id}" data-help-title="切換分流級別" data-help="按呢個掣可以將病人由 Cat 2 同 Cat 3 之間切換；如果病人仍然候診中，系統會自動重新排位。">
                 ${patient.priority ? "改為 Cat THREE" : "改為 Cat TWO"}
               </button>
-              <button class="btn-secondary btn-small" type="button" data-action="moveWaitingToReview" data-patient-id="${patient.id}">轉回診</button>
-              <button class="btn-secondary btn-small" type="button" data-action="openClinicalActivity" data-patient-id="${patient.id}">臨床活動</button>
-              <button class="btn-secondary btn-small more-toggle-btn" type="button" data-more-toggle="${patient.id}">排隊操作</button>
+              <button class="btn-secondary btn-small" type="button" data-action="moveWaitingToReview" data-patient-id="${patient.id}" data-help-title="轉回診" data-help="將仍然候診中的病人直接轉去回診名單，適用於需要完成檢查或處置後再見醫生嘅病人。">轉回診</button>
+              <button class="btn-secondary btn-small" type="button" data-action="openClinicalActivity" data-patient-id="${patient.id}" data-help-title="新增臨床活動" data-help="打開視窗，為病人新增臨床活動，例如去抽血、照 X-ray、安排入院等。">臨床活動</button>
+              <button class="btn-secondary btn-small more-toggle-btn" type="button" data-more-toggle="${patient.id}" data-help-title="排隊操作" data-help="展開更多候診操作，例如移前位置、指定位置、轉房、取消輪候等。">排隊操作</button>
             </div>
 
             <div class="more-actions-panel" data-more-panel="${patient.id}">
               <div class="more-actions-grid">
                 <div class="more-actions-line">
-                  <button class="btn-secondary btn-small" type="button" data-action="moveToFront" data-patient-id="${patient.id}">移至隊首</button>
+                  <button class="btn-secondary btn-small" type="button" data-action="moveToFront" data-patient-id="${patient.id}" data-help-title="移至隊首" data-help="將呢位候診病人移到該房隊伍最前。">移至隊首</button>
                   <div class="actions" style="margin:0;">
-                    <input class="insert-pos-input" type="number" min="1" placeholder="輸入位置" data-insert-position="${patient.id}" />
-                    <button class="btn-secondary btn-small" type="button" data-action="insertAtPosition" data-patient-id="${patient.id}">移至指定位置</button>
+                    <input class="insert-pos-input" type="number" min="1" placeholder="輸入位置" data-insert-position="${patient.id}" data-help-title="指定排隊位置" data-help="先輸入想移去第幾位，再按右邊按鈕。"/>
+                    <button class="btn-secondary btn-small" type="button" data-action="insertAtPosition" data-patient-id="${patient.id}" data-help-title="移至指定位置" data-help="按呢個掣會將病人移到你輸入嘅指定位置。">移至指定位置</button>
                   </div>
                 </div>
 
                 <div class="more-actions-line">
-                  <select class="transfer-room-select">
+                  <select class="transfer-room-select" data-help-title="選擇目標診室" data-help="先選擇想轉去邊一間開放中並接受新症嘅診室。">
                     <option value="">選擇目標診室</option>
                     ${transferOptions}
                   </select>
-                  <button class="btn-success btn-small" type="button" data-action="transferAuto" data-patient-id="${patient.id}">轉往診室</button>
+                  <button class="btn-success btn-small" type="button" data-action="transferAuto" data-patient-id="${patient.id}" data-help-title="轉往診室" data-help="將病人轉去選定診室，並由系統按規則自動安排位置。">轉往診室</button>
                 </div>
 
                 <div class="more-actions-line">
-                  <button class="btn-primary btn-small" type="button" data-action="transferFront" data-patient-id="${patient.id}">轉房並排隊首</button>
-                  <button class="btn-primary btn-small" type="button" data-action="transferTail" data-patient-id="${patient.id}">轉房並排隊尾</button>
+                  <button class="btn-primary btn-small" type="button" data-action="transferFront" data-patient-id="${patient.id}" data-help-title="轉房並排隊首" data-help="將病人轉去目標診室，並直接排到該房候診隊伍最前。">轉房並排隊首</button>
+                  <button class="btn-primary btn-small" type="button" data-action="transferTail" data-patient-id="${patient.id}" data-help-title="轉房並排隊尾" data-help="將病人轉去目標診室，並排到該房候診隊伍最後。">轉房並排隊尾</button>
                 </div>
 
                 <div class="more-actions-line single">
-                  <button class="btn-danger btn-small" type="button" data-action="cancelPatient" data-patient-id="${patient.id}">取消輪候</button>
+                  <button class="btn-danger btn-small" type="button" data-action="cancelPatient" data-patient-id="${patient.id}" data-help-title="取消輪候" data-help="將病人個案標記為已取消，並由候診名單移除。">取消輪候</button>
                 </div>
               </div>
             </div>
@@ -2903,28 +3122,28 @@ function renderRoomCardHtml(room) {
         <td>
           <div class="more-actions-wrap">
             <div class="main-actions">
-              <button class="btn-primary btn-small" type="button" data-action="callReviewPatient" data-patient-id="${patient.id}">叫號</button>
-              <button class="btn-warning btn-small" type="button" data-action="togglePriority" data-patient-id="${patient.id}">
+              <button class="btn-primary btn-small" type="button" data-action="callReviewPatient" data-patient-id="${patient.id}" data-help-title="回診叫號" data-help="將回診病人叫入房，設為現正診症。">叫號</button>
+              <button class="btn-warning btn-small" type="button" data-action="togglePriority" data-patient-id="${patient.id}" data-help-title="切換分流級別" data-help="切換呢位回診病人嘅優先級別。">
                 ${patient.priority ? "改為 Cat THREE" : "改為 Cat TWO"}</button>
-              <button class="btn-success btn-small" type="button" data-action="finishReviewPatient" data-patient-id="${patient.id}">完成</button>
-              <button class="btn-secondary btn-small" type="button" data-action="openClinicalActivity" data-patient-id="${patient.id}">臨床活動</button>
-              <button class="btn-secondary btn-small more-toggle-btn" type="button" data-more-toggle="${patient.id}">排隊操作</button>
-              <button class="btn-secondary btn-small" type="button" data-action="returnReviewToWaiting" data-patient-id="${patient.id}">返回候診</button>
+              <button class="btn-success btn-small" type="button" data-action="finishReviewPatient" data-patient-id="${patient.id}" data-help-title="完成回診" data-help="直接完成呢位回診病人個案。">完成</button>
+              <button class="btn-secondary btn-small" type="button" data-action="openClinicalActivity" data-patient-id="${patient.id}" data-help-title="新增臨床活動" data-help="為回診病人新增臨床活動紀錄。">臨床活動</button>
+              <button class="btn-secondary btn-small more-toggle-btn" type="button" data-more-toggle="${patient.id}" data-help-title="排隊操作" data-help="展開更多回診病人操作，例如轉房或取消輪候。">排隊操作</button>
+              <button class="btn-secondary btn-small" type="button" data-action="returnReviewToWaiting" data-patient-id="${patient.id}" data-help-title="返回候診" data-help="將回診病人重新放回候診名單，系統會自動安排位置。">返回候診</button>
             </div>
 
             <div class="more-actions-panel" data-more-panel="${patient.id}">
               <div class="more-actions-grid">
                 <div class="more-actions-line">
-                  <select class="transfer-room-select">
+                  <select class="transfer-room-select" data-help-title="選擇目標診室" data-help="先選擇回診病人要轉去邊一間診室。">
                     <option value="">選擇目標診室</option>
                     ${transferOptions}
                   </select>
-                  <button class="btn-success btn-small" type="button" data-action="transferAuto" data-patient-id="${patient.id}">轉往診室</button>
+                  <button class="btn-success btn-small" type="button" data-action="transferAuto" data-patient-id="${patient.id}" data-help-title="轉往診室" data-help="將回診病人轉去目標診室。">轉往診室</button>
                 </div>
 
                 <div class="more-actions-line">
-                  <button class="btn-primary btn-small" type="button" data-action="transferFront" data-patient-id="${patient.id}">轉房並排隊首</button>
-                  <button class="btn-danger btn-small" type="button" data-action="cancelPatient" data-patient-id="${patient.id}">取消輪候</button>
+                  <button class="btn-primary btn-small" type="button" data-action="transferFront" data-patient-id="${patient.id}" data-help-title="轉房並排隊首" data-help="將病人轉去新診室並排到最前。">轉房並排隊首</button>
+                  <button class="btn-danger btn-small" type="button" data-action="cancelPatient" data-patient-id="${patient.id}" data-help-title="取消輪候" data-help="取消呢位回診病人個案。">取消輪候</button>
                 </div>
               </div>
             </div>
@@ -2940,29 +3159,29 @@ function renderRoomCardHtml(room) {
         <td>${renderPatientInfoBlock(patient, "")}</td>
         <td>
           <div class="main-actions">
-            <button class="btn-primary btn-small" type="button" data-action="recallSkipped" data-patient-id="${patient.id}">重新叫號</button>
-            <button class="btn-success btn-small" type="button" data-action="requeueSkipped" data-patient-id="${patient.id}">返回原房</button>
-            <button class="btn-secondary btn-small" type="button" data-action="openClinicalActivity" data-patient-id="${patient.id}">臨床活動</button>
-            <button class="btn-secondary btn-small more-toggle-btn" type="button" data-more-toggle="${patient.id}">排隊操作</button>
+            <button class="btn-primary btn-small" type="button" data-action="recallSkipped" data-patient-id="${patient.id}" data-help-title="重新叫號" data-help="如果病人返到嚟，可以按呢個掣重新叫號，將病人設為現正診症。">重新叫號</button>
+            <button class="btn-success btn-small" type="button" data-action="requeueSkipped" data-patient-id="${patient.id}" data-help-title="返回原房" data-help="將過號病人重新放回原本診室候診隊列，系統會按規則重新排位。">返回原房</button>
+            <button class="btn-secondary btn-small" type="button" data-action="openClinicalActivity" data-patient-id="${patient.id}" data-help-title="新增臨床活動" data-help="為過號病人新增臨床活動紀錄。">臨床活動</button>
+            <button class="btn-secondary btn-small more-toggle-btn" type="button" data-more-toggle="${patient.id}" data-help-title="排隊操作" data-help="展開更多過號病人操作，例如轉房或取消輪候。">排隊操作</button>
           </div>
 
           <div class="more-actions-panel" data-more-panel="${patient.id}">
             <div class="more-actions-grid">
               <div class="more-actions-line">
-                <select class="transfer-room-select">
+                <select class="transfer-room-select" data-help-title="選擇目標診室" data-help="先揀要將過號病人轉去邊一間診室。">
                   <option value="">選擇目標診室</option>
                   ${transferOptions}
                 </select>
-                <button class="btn-success btn-small" type="button" data-action="transferAuto" data-patient-id="${patient.id}">轉往診室</button>
+                <button class="btn-success btn-small" type="button" data-action="transferAuto" data-patient-id="${patient.id}" data-help-title="轉往診室" data-help="將過號病人轉去另一間診室，並按系統規則安排。">轉往診室</button>
               </div>
 
               <div class="more-actions-line">
-                <button class="btn-primary btn-small" type="button" data-action="transferFront" data-patient-id="${patient.id}">轉房並排隊首</button>
-                <button class="btn-primary btn-small" type="button" data-action="transferTail" data-patient-id="${patient.id}">轉房並排隊尾</button>
+                <button class="btn-primary btn-small" type="button" data-action="transferFront" data-patient-id="${patient.id}" data-help-title="轉房並排隊首" data-help="將過號病人轉房後直接排最前。">轉房並排隊首</button>
+                <button class="btn-primary btn-small" type="button" data-action="transferTail" data-patient-id="${patient.id}" data-help-title="轉房並排隊尾" data-help="將過號病人轉房後排到最後。">轉房並排隊尾</button>
               </div>
 
               <div class="more-actions-line single">
-                <button class="btn-danger btn-small" type="button" data-action="cancelPatient" data-patient-id="${patient.id}">取消輪候</button>
+                <button class="btn-danger btn-small" type="button" data-action="cancelPatient" data-patient-id="${patient.id}" data-help-title="取消輪候" data-help="取消呢位過號病人個案。">取消輪候</button>
               </div>
             </div>
           </div>
@@ -2983,7 +3202,7 @@ function renderRoomCardHtml(room) {
 
   return `
     <div class="room-card" data-room-id="${room.id}">
-      <div class="room-card-header">
+      <div class="room-card-header" data-help-title="診室資料" data-help="顯示診室名稱、醫生名稱、開放狀態，以及而家係咪接受新症。">
         <div>
           <div class="room-no">${escapeHtml(room.roomNo)}</div>
           <div class="doctor-name">${escapeHtml(room.doctorName)}</div>
@@ -2999,31 +3218,31 @@ function renderRoomCardHtml(room) {
       </div>
 
       <div class="room-card-body">
-        <div class="current-box">
+        <div class="current-box" data-help-title="現正診症" data-help="顯示目前正在診症嘅病人。如果診室係暫停狀態，會顯示暫停原因。">
           <div class="current-label">現正診症</div>
           ${currentDisplay}
         </div>
 
         <div class="actions" style="margin-bottom:12px;">
-          <button class="btn-primary btn-small" data-action="callNext" data-room-id="${room.id}" type="button">叫號</button>
-          <button class="btn-secondary btn-small" data-action="moveCurrentToReview" data-room-id="${room.id}" type="button">轉回診</button>
-          <button class="btn-success btn-small" data-action="finishCurrent" data-room-id="${room.id}" type="button">完成</button>
-          <button class="btn-warning btn-small" data-action="skipCurrent" data-room-id="${room.id}" type="button">過號</button>
-          <button class="btn-secondary btn-small" data-action="setOpen" data-room-id="${room.id}" type="button">開放</button>
-          <button class="btn-secondary btn-small" data-action="setPausedWithReason" data-room-id="${room.id}" type="button">暫停</button>
-          <button class="${room.acceptingNew ? "btn-warning" : "btn-success"} btn-small" data-action="toggleAcceptingNew" data-room-id="${room.id}" type="button">
+          <button class="btn-primary btn-small" data-action="callNext" data-room-id="${room.id}" type="button" data-help-title="叫號" data-help="將候診名單中下一位病人叫入房，設為現正診症。">叫號</button>
+          <button class="btn-secondary btn-small" data-action="moveCurrentToReview" data-room-id="${room.id}" type="button" data-help-title="轉回診" data-help="將而家現正診症嘅病人轉去回診名單。">轉回診</button>
+          <button class="btn-success btn-small" data-action="finishCurrent" data-room-id="${room.id}" type="button" data-help-title="完成" data-help="將而家現正診症嘅病人標記為完成。">完成</button>
+          <button class="btn-warning btn-small" data-action="skipCurrent" data-room-id="${room.id}" type="button" data-help-title="過號" data-help="將而家現正診症嘅病人標記為過號，之後可重新叫號或返回隊列。">過號</button>
+          <button class="btn-secondary btn-small" data-action="setOpen" data-room-id="${room.id}" type="button" data-help-title="開放診室" data-help="將診室設為開放狀態，可以正常叫號及接收病人。">開放</button>
+          <button class="btn-secondary btn-small" data-action="setPausedWithReason" data-room-id="${room.id}" type="button" data-help-title="暫停診室" data-help="將診室設為暫停，可先填原因，例如急救中、小手術或巡房。">暫停</button>
+          <button class="${room.acceptingNew ? "btn-warning" : "btn-success"} btn-small" data-action="toggleAcceptingNew" data-room-id="${room.id}" type="button" data-help-title="停止或恢復收新症" data-help="控制診室係咪接受新症。停止收新症後，畫面仍然保留，但唔會派新病人入嚟。">
             ${room.acceptingNew ? "停止收新症" : "恢復收新症"}
-          <button class="btn-danger btn-small" data-action="setClosed" data-room-id="${room.id}" type="button">關閉</button>
           </button>
+          <button class="btn-danger btn-small" data-action="setClosed" data-room-id="${room.id}" type="button" data-help-title="關閉診室" data-help="將診室設為關閉。關閉後候診看板唔會顯示呢間房。">關閉</button>
         </div>
 
         <div class="actions" style="margin-bottom:14px;">
-          <input type="text" list="doctorOptions" value="${escapeHtml(room.doctorName)}" data-doctor-input="${room.id}" style="max-width:220px;" placeholder="可選或自由輸入" />
-          <button class="btn-secondary btn-small" data-action="updateDoctor" data-room-id="${room.id}" type="button">更新醫生名稱</button>
-          <button class="btn-danger btn-small" data-action="deleteRoom" data-room-id="${room.id}" type="button">刪除診室</button>
+          <input type="text" list="doctorOptions" value="${escapeHtml(room.doctorName)}" data-doctor-input="${room.id}" style="max-width:220px;" placeholder="可選或自由輸入" data-help-title="更新醫生名稱" data-help="可以修改呢間診室顯示嘅醫生名稱。"/>
+          <button class="btn-secondary btn-small" data-action="updateDoctor" data-room-id="${room.id}" type="button" data-help-title="更新醫生名稱" data-help="按呢個掣會儲存你喺左邊輸入欄修改後嘅醫生名稱。">更新醫生名稱</button>
+          <button class="btn-danger btn-small" data-action="deleteRoom" data-room-id="${room.id}" type="button" data-help-title="刪除診室" data-help="只有當診室冇候診、回診、過號或現正診症病人時，先可以刪除診室。">刪除診室</button>
         </div>
 
-        <div class="form-row" style="margin-bottom:14px;">
+        <div class="form-row" style="margin-bottom:14px;" data-help-title="暫停原因" data-help="可先揀常用原因，或者自己輸入原因，之後按「暫停」掣將診室暫停。">
           <label>暫停原因（可選擇或自訂）</label>
           <div class="actions">
             <select data-pause-reason-select="${room.id}" style="max-width:220px;">
@@ -3036,7 +3255,7 @@ function renderRoomCardHtml(room) {
           </div>
         </div>
 
-        <div class="section-title">候診名單</div>
+        <div class="section-title" data-help-title="候診名單" data-help="呢度列出目前等待見醫生嘅病人，按排隊次序排序。">候診名單</div>
         <table>
           <thead>
             <tr>
@@ -3048,7 +3267,7 @@ function renderRoomCardHtml(room) {
           <tbody>${queueRows}</tbody>
         </table>
 
-        <div class="section-title">回診名單</div>
+        <div class="section-title" data-help-title="回診名單" data-help="呢度係已初診、完成部分檢查或處理後，等候再次見醫生嘅病人。">回診名單</div>
         <div class="review-box">
           <div class="review-box-title">醫生已初診，等待完成檢查或處理後，再次見醫生</div>
           <table>
@@ -3062,7 +3281,7 @@ function renderRoomCardHtml(room) {
           </table>
         </div>
 
-        <div class="section-title">過號名單</div>
+        <div class="section-title" data-help-title="過號名單" data-help="呢度列出叫號時未到場嘅病人，可以重新叫號、返回原房，或者轉去其他診室。">過號名單</div>
         <table>
           <thead>
             <tr>
@@ -4747,7 +4966,13 @@ function initClinicalActivityModal() {
   clinicalActivityModal.saveBtnEl = document.getElementById("saveClinicalActivityBtn");
 
   clinicalActivityModal.presetWrapEl.innerHTML = CLINICAL_ACTIVITY_PRESETS.map(item => `
-    <button class="activity-chip" type="button" data-clinical-preset="${escapeHtml(item)}">${escapeHtml(item)}</button>
+    <button
+      class="activity-chip"
+      type="button"
+      data-clinical-preset="${escapeHtml(item)}"
+      data-help-title="快速加入臨床活動"
+      data-help="按一下會加入「${escapeHtml(item)}」去臨床活動欄位；再按一次可取消。"
+    >${escapeHtml(item)}</button>
   `).join("");
 
   document.getElementById("closeClinicalActivityModalBtn").addEventListener("click", closeClinicalActivityModal);
