@@ -1482,9 +1482,9 @@ data-help="選擇「是」代表病人屬較高優先級別，加入輪候後通
 <div class="grid-3" style="margin-top:14px;">
 <div class="form-row">
 <label for="registeredAt"
-data-help-title="登記時間（HKT）"
+data-help-title="登記時間"
 data-help="一般情況下無需手動修改，系統會自動使用當前香港時間。只於補錄或特殊情況下才需要勾選使用手動登記時間。">
-登記時間（HKT）
+登記時間
 </label>
 <input id="registeredAt" type="datetime-local" disabled
 data-help-title="手動登記時間輸入"
@@ -1915,7 +1915,7 @@ function formatBoardNow(date = new Date()) {
 }
 function formatRegisteredInline(iso) {
   const text = formatDateTime(iso);
-  return text === "—" ? "—" : `${text} 登記`;
+  return text === "—" ? "—" : `${text}｜登記`;
 }
 
 function notify(message, type = "info") {
@@ -2525,7 +2525,7 @@ function renderPatientSearchDetail(patient) {
         <div><strong>分流級別：</strong>${escapeHtml(getPriorityLabel(patient))}</div>
         <div><strong>首次派往診室方式：</strong>${patient.initialAssignmentMode === "manual" ? "手動派房（不可自動分流）" : "自動派房"}</div>
         <div><strong>手動轉房鎖定：</strong>${patient.manualLock ? `是${patient.manualLockReason ? `（${escapeHtml(patient.manualLockReason)}）` : ""}` : "否"}</div>
-        <div><strong>登記時間（HKT）：</strong>${escapeHtml(formatDateTime(patient.registeredAt))}</div>
+        <div><strong>登記時間：</strong>${escapeHtml(formatDateTime(patient.registeredAt))}</div>
         <div><strong>系統記錄建立時間：</strong>${escapeHtml(formatDateTime(patient.createdAt))}</div>
         <div><strong>最近臨床活動：</strong>${latestClinical ? escapeHtml(`${formatDateTime(latestClinical.time)}｜${latestClinical.activity}${latestClinical.details ? `：${latestClinical.details}` : ""}`) : "—"}</div>
         <div><strong>首次叫號時間：</strong>${escapeHtml(formatDateTime(patient.calledAt))}</div>
@@ -2567,7 +2567,7 @@ function renderPatientSearchList(patients, title = "找到多項結果") {
             <th>類型</th>
             <th>分流級別</th>
             <th>目前輪候位置</th>
-            <th>登記時間（HKT）</th>
+            <th>登記時間</th>
             <th>操作</th>
           </tr>
         </thead>
@@ -2595,7 +2595,7 @@ function renderRoomSearchSection(title, patients, includeRoom = false) {
                   <th>類型</th>
                   <th>分流級別</th>
                   <th>目前輪候位置</th>
-                  <th>登記時間（HKT）</th>
+                  <th>登記時間</th>
                   <th>操作</th>
                 </tr>
               </thead>
@@ -2987,7 +2987,7 @@ function renderRoomCardHtml(room) {
           <div class="more-actions-wrap">
             <div class="main-actions">
               <button class="btn-warning btn-small" type="button" data-action="togglePriority" data-patient-id="${patient.id}">
-                ${patient.priority ? "改為 Cat 3" : "改為 Cat 2"}
+                ${patient.priority ? "改為 Cat 3（一般）" : "改為 Cat 2（優先）"}
               </button>
               <button class="btn-secondary btn-small" type="button" data-action="moveWaitingToReview" data-patient-id="${patient.id}">轉回診</button>
               <button class="btn-secondary btn-small" type="button" data-action="openClinicalActivity" data-patient-id="${patient.id}">臨床活動</button>
@@ -3039,7 +3039,7 @@ function renderRoomCardHtml(room) {
               <button class="btn-secondary btn-small" type="button" data-action="returnReviewToWaiting" data-patient-id="${patient.id}">返回候診</button>
               <button class="btn-success btn-small" type="button" data-action="finishReviewPatient" data-patient-id="${patient.id}">完成</button>
               <button class="btn-warning btn-small" type="button" data-action="togglePriority" data-patient-id="${patient.id}">
-                ${patient.priority ? "改為 Cat 3" : "改為 Cat 2"}
+                ${patient.priority ? "改為 Cat 3（一舨）" : "改為 Cat 2（優先）"}
               </button>
               <button class="btn-secondary btn-small" type="button" data-action="openClinicalActivity" data-patient-id="${patient.id}">臨床活動</button>
               <button class="btn-secondary btn-small more-toggle-btn" type="button" data-more-toggle="${patient.id}">更多操作</button>
@@ -4209,7 +4209,7 @@ async function togglePriority(patientId) {
       const actualPosition = insertPatientIntoQueue(room, patient, "auto");
       addPatientLog(
         patient,
-        patient.priority ? "改為 Cat 2" : "改為 Cat 3",
+        patient.priority ? "改為 Cat 2（優先）" : "改為 Cat 3（一般）",
         `${room.roomNo} / ${room.doctorName} 已改為 ${patient.priority ? "Cat 2（優先）" : "Cat 3（一般）"}；現排第 ${actualPosition} 位`
       );
 
@@ -4221,7 +4221,7 @@ async function togglePriority(patientId) {
     } else {
       addPatientLog(
         patient,
-        patient.priority ? "改為 Cat 2" : "改為 Cat 3",
+        patient.priority ? "改為 Cat 2（優先）" : "改為 Cat 3（一般）",
         `${room ? room.roomNo + " / " + room.doctorName : "診室"} 已改為 ${patient.priority ? "Cat 2（優先）" : "Cat 3（一般）"}`
       );
 
@@ -4230,7 +4230,7 @@ async function togglePriority(patientId) {
       await savePatientToSupabase(patient);
     }
 
-    notify(patient.priority ? "已改為 Cat 2" : "已改為 Cat 3", "success");
+    notify(patient.priority ? "已改為 Cat 2（優先）" : "已改為 Cat 3（一般）", "success");
     await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
