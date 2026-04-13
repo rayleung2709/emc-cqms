@@ -2907,7 +2907,7 @@ function renderRoomCardHtml(room) {
               <button class="btn-secondary btn-small" type="button" data-action="returnReviewToWaiting" data-patient-id="${patient.id}">返回候診</button>
               <button class="btn-success btn-small" type="button" data-action="finishReviewPatient" data-patient-id="${patient.id}">完成</button>
               <button class="btn-warning btn-small" type="button" data-action="togglePriority" data-patient-id="${patient.id}">
-                ${patient.priority ? "改為 Cat 3" : "改為 Cat 2"}
+                ${patient.priority ? "改為 Cat THREE" : "改為 Cat TWO"}
               </button>
               <button class="btn-secondary btn-small" type="button" data-action="openClinicalActivity" data-patient-id="${patient.id}">臨床活動</button>
               <button class="btn-secondary btn-small more-toggle-btn" type="button" data-more-toggle="${patient.id}">更多操作</button>
@@ -4077,7 +4077,7 @@ async function togglePriority(patientId) {
       const actualPosition = insertPatientIntoQueue(room, patient, "auto");
       addPatientLog(
         patient,
-        patient.priority ? "改為 Cat 2" : "改為 Cat 3",
+        patient.priority ? "改為 Cat TWO" : "改為 Cat THREE",
         `${room.roomNo} / ${room.doctorName} 已改為 ${patient.priority ? "Cat 2（優先）" : "Cat 3（一般）"}；現排第 ${actualPosition} 位`
       );
 
