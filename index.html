@@ -1946,14 +1946,9 @@ function formatSupabaseError(error) {
 }
 
 function formatLogActor(log) {
-  if (!log) return "";
+  if (!log) return "未記錄操作者";
   const name = String(log.staffDisplayName || "").trim();
-  const email = String(log.staffEmail || "").trim();
-
-  if (name && email) return `${name}（${email}）`;
-  if (name) return name;
-  if (email) return email;
-  return "未記錄操作者";
+  return name || "未記錄操作者";
 }
   
 function formatLogMeta(log) {
