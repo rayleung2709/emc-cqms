@@ -1383,7 +1383,70 @@ body.display-mode .info-card {
         <label for="clinicalActivityDetails">補充說明（可留空）</label>
         <input id="clinicalActivityDetails" type="text" placeholder="例如：已送往 X-ray、等候內科病房、等候抽血結果" />
       </div>
+<div
+        class="form-row"
+        style="margin-top:14px;"
+        data-help-title="建立跟進事項"
+        data-help="如這次臨床活動需要後續跟進，可勾選此項，同時建立一項跟進事項。"
+      >
+        <label
+          style="display:flex;gap:8px;align-items:center;"
+          data-help-title="同時建立跟進事項"
+          data-help="勾選後，系統會在儲存臨床活動時，同時新增一項跟進事項，並自動帶入病人編號及求診號碼。"
+        >
+          <input id="clinicalCreateFollowupToggle" type="checkbox" style="width:auto;" />
+          同時建立跟進事項
+        </label>
+      </div>
 
+      <div
+        id="clinicalFollowupFields"
+        style="display:none; margin-top:14px;"
+      >
+        <div
+          class="grid-3"
+          data-help-title="跟進事項設定"
+          data-help="可設定跟進事項的類別、優先級及到期時間。"
+        >
+          <div class="form-row">
+            <label for="clinicalFollowupCategory">事項類別</label>
+            <select id="clinicalFollowupCategory">
+              <option value="other">其他</option>
+              <option value="callback">回電跟進</option>
+              <option value="abnormal_result">異常結果</option>
+              <option value="document_request">文件申請</option>
+              <option value="return_visit">覆診安排</option>
+              <option value="insurance_form">保險表格</option>
+              <option value="admin">行政事項</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="clinicalFollowupPriority">優先級</label>
+            <select id="clinicalFollowupPriority">
+              <option value="normal">一般</option>
+              <option value="low">低</option>
+              <option value="high">高</option>
+              <option value="urgent">緊急</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="clinicalFollowupDueAt">到期時間（可留空）</label>
+            <input id="clinicalFollowupDueAt" type="datetime-local" />
+          </div>
+        </div>
+
+        <div class="form-row" style="margin-top:14px;">
+          <label for="clinicalFollowupTitle">跟進主題</label>
+          <input id="clinicalFollowupTitle" type="text" placeholder="例如：跟進檢查結果、回電病人、安排覆診" />
+        </div>
+
+        <div class="form-row" style="margin-top:14px;">
+          <label for="clinicalFollowupAssignedTo">負責人（可留空）</label>
+          <input id="clinicalFollowupAssignedTo" type="text" placeholder="預設會自動填入目前登入職員名稱" />
+        </div>
+      </div>
       <div class="modal-actions">
         <button
           class="btn-secondary"
@@ -1934,7 +1997,14 @@ const clinicalActivityModal = {
   detailsInputEl: null,
   presetWrapEl: null,
   saveBtnEl: null,
-  patientId: null
+  patientId: null,
+  createFollowupToggleEl: null,
+  followupFieldsEl: null,
+  followupCategoryEl: null,
+  followupPriorityEl: null,
+  followupDueAtEl: null,
+  followupTitleEl: null,
+  followupAssignedToEl: null
 };
 
 function debugLog(...args) {
@@ -3846,6 +3916,7 @@ function toPatientPayload(patient) {
     id: patient.id,
     ticket_no: patient.ticketNo,
     cumc_no: patient.cumcNo,
+    encounter_no: patient.encounterNo || null,
     room_id: patient.roomId || null,
     source_type: patient.sourceType,
     priority: patient.priority,
@@ -3864,6 +3935,7 @@ function toPatientPayload(patient) {
     clinical_logs_json: Array.isArray(patient.clinicalLogs) ? patient.clinicalLogs : []
   };
 }
+  
 async function savePatientToSupabase(patient) {
   const payload = toPatientPayload(patient);
   const { data, error } = await sb.from("patients").upsert(payload).select();
@@ -5199,6 +5271,118 @@ function toggleClinicalPresetValue(value) {
   clinicalActivityModal.activityInputEl.focus();
 }
 
+function getCurrentStaffDisplayText() {
+  return String(
+    authState.profile?.display_name ||
+    authState.profile?.email ||
+    authState.user?.email ||
+    "unknown"
+  ).trim();
+}
+
+function toLocalDateTimeValue(date = new Date()) {
+  const pad = n => String(n).padStart(2, "0");
+  const yyyy = date.getFullYear();
+  const mm = pad(date.getMonth() + 1);
+  const dd = pad(date.getDate());
+  const hh = pad(date.getHours());
+  const mi = pad(date.getMinutes());
+  return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+}
+
+function localDateTimeValueToIso(value) {
+  if (!value) return null;
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString();
+}
+
+async function resolveEncounterIdByEncounterNo(encounterNo) {
+  const normalized = String(encounterNo || "").trim();
+  if (!normalized) return null;
+
+  const { data, error } = await sb
+    .from("encounters")
+    .select("id, encounter_no")
+    .eq("encounter_no", normalized)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data?.id || null;
+}
+
+async function createFollowupFromClinicalActivity(patient, activity, details) {
+  const patientId = String(patient?.cumcNo || "").trim();
+  if (!patientId) throw new Error("PATIENT_ID_MISSING");
+
+  const staffText = getCurrentStaffDisplayText();
+  const encounterId = await resolveEncounterIdByEncounterNo(patient?.encounterNo || null);
+
+  const title = String(clinicalActivityModal.followupTitleEl?.value || "").trim()
+    || `跟進：${activity}`;
+
+  const assignedTo = String(clinicalActivityModal.followupAssignedToEl?.value || "").trim()
+    || staffText;
+
+  const category = String(clinicalActivityModal.followupCategoryEl?.value || "other").trim();
+  const priority = String(clinicalActivityModal.followupPriorityEl?.value || "normal").trim();
+  const dueAtIso = localDateTimeValueToIso(clinicalActivityModal.followupDueAtEl?.value || "");
+
+  const descriptionParts = [
+    `臨床活動：${activity}`,
+    details ? `補充說明：${details}` : "",
+    patient?.encounterNo ? `求診號碼：${patient.encounterNo}` : ""
+  ].filter(Boolean);
+
+  const { data: insertedFollowup, error: followupError } = await sb
+    .from("followups")
+    .insert([{
+      patient_id: patientId,
+      encounter_id: encounterId,
+      category,
+      title,
+      description: descriptionParts.join("\n"),
+      status: "open",
+      priority,
+      assigned_to: assignedTo || null,
+      created_by: staffText,
+      due_at: dueAtIso,
+      source: "system",
+      requested_by: "doctor",
+      outcome: null
+    }])
+    .select()
+    .single();
+
+  if (followupError) throw followupError;
+
+  const eventPayload = [{
+    followup_id: insertedFollowup.id,
+    event_type: "created",
+    event_label: "Follow-up created",
+    event_data: {
+      status: "open",
+      priority,
+      assigned_to: assignedTo || null,
+      source: "system",
+      requested_by: "doctor",
+      from_clinical_activity: true,
+      activity,
+      details: details || null,
+      encounter_no: patient?.encounterNo || null
+    },
+    actor: staffText
+  }];
+
+  const { error: eventError } = await sb
+    .from("followup_events")
+    .insert(eventPayload);
+
+  if (eventError) throw eventError;
+
+  return insertedFollowup;
+}
+  
 function initClinicalActivityModal() {
   clinicalActivityModal.el = document.getElementById("clinicalActivityModal");
   clinicalActivityModal.patientInfoEl = document.getElementById("clinicalActivityPatientInfo");
@@ -5206,6 +5390,13 @@ function initClinicalActivityModal() {
   clinicalActivityModal.detailsInputEl = document.getElementById("clinicalActivityDetails");
   clinicalActivityModal.presetWrapEl = document.getElementById("clinicalActivityPresetWrap");
   clinicalActivityModal.saveBtnEl = document.getElementById("saveClinicalActivityBtn");
+  clinicalActivityModal.createFollowupToggleEl = document.getElementById("clinicalCreateFollowupToggle");
+  clinicalActivityModal.followupFieldsEl = document.getElementById("clinicalFollowupFields");
+  clinicalActivityModal.followupCategoryEl = document.getElementById("clinicalFollowupCategory");
+  clinicalActivityModal.followupPriorityEl = document.getElementById("clinicalFollowupPriority");
+  clinicalActivityModal.followupDueAtEl = document.getElementById("clinicalFollowupDueAt");
+  clinicalActivityModal.followupTitleEl = document.getElementById("clinicalFollowupTitle");
+  clinicalActivityModal.followupAssignedToEl = document.getElementById("clinicalFollowupAssignedTo");
 
   clinicalActivityModal.presetWrapEl.innerHTML = CLINICAL_ACTIVITY_PRESETS.map(item => `
     <button
@@ -5229,8 +5420,25 @@ function initClinicalActivityModal() {
   });
   clinicalActivityModal.saveBtnEl.addEventListener("click", (event) => withButtonLoading(event.currentTarget, saveClinicalActivityFromModal));
   clinicalActivityModal.activityInputEl.addEventListener("input", syncClinicalPresetChipStates);
+
+  clinicalActivityModal.createFollowupToggleEl?.addEventListener("change", () => {
+    const checked = !!clinicalActivityModal.createFollowupToggleEl.checked;
+    if (clinicalActivityModal.followupFieldsEl) {
+      clinicalActivityModal.followupFieldsEl.style.display = checked ? "block" : "none";
+    }
+
+    if (checked) {
+      const activity = String(clinicalActivityModal.activityInputEl?.value || "").trim();
+      if (!clinicalActivityModal.followupTitleEl.value.trim()) {
+        clinicalActivityModal.followupTitleEl.value = activity ? `跟進：${activity}` : "";
+      }
+      if (!clinicalActivityModal.followupAssignedToEl.value.trim()) {
+        clinicalActivityModal.followupAssignedToEl.value = getCurrentStaffDisplayText();
+      }
+    }
+  });
 }
-function openClinicalActivityModal(patientId) {
+  function openClinicalActivityModal(patientId) {
   const patient = getPatient(patientId);
   if (!patient) {
     notify("找不到病人", "error");
@@ -5239,9 +5447,19 @@ function openClinicalActivityModal(patientId) {
 
   clinicalActivityModal.patientId = patientId;
   const room = getRoom(patient.roomId);
-  clinicalActivityModal.patientInfoEl.textContent = `${getPatientDisplayNo(patient)}${room ? `｜${room.roomNo} / ${room.doctorName}` : ""}`;
+  clinicalActivityModal.patientInfoEl.textContent =
+    `${getPatientDisplayNo(patient)}${room ? `｜${room.roomNo} / ${room.doctorName}` : ""}${patient.encounterNo ? `｜求診號碼：${formatEncounterNoDisplay(patient.encounterNo)}` : ""}`;
+
   clinicalActivityModal.activityInputEl.value = "";
   clinicalActivityModal.detailsInputEl.value = "";
+  clinicalActivityModal.createFollowupToggleEl.checked = false;
+  clinicalActivityModal.followupFieldsEl.style.display = "none";
+  clinicalActivityModal.followupCategoryEl.value = "other";
+  clinicalActivityModal.followupPriorityEl.value = "normal";
+  clinicalActivityModal.followupDueAtEl.value = "";
+  clinicalActivityModal.followupTitleEl.value = "";
+  clinicalActivityModal.followupAssignedToEl.value = getCurrentStaffDisplayText();
+
   syncClinicalPresetChipStates();
   clinicalActivityModal.el.classList.add("show");
   clinicalActivityModal.el.setAttribute("aria-hidden", "false");
@@ -5255,7 +5473,18 @@ function closeClinicalActivityModal() {
   clinicalActivityModal.el.classList.remove("show");
   clinicalActivityModal.el.setAttribute("aria-hidden", "true");
   document.body.classList.remove("modal-open");
+
+  if (clinicalActivityModal.activityInputEl) clinicalActivityModal.activityInputEl.value = "";
+  if (clinicalActivityModal.detailsInputEl) clinicalActivityModal.detailsInputEl.value = "";
+  if (clinicalActivityModal.createFollowupToggleEl) clinicalActivityModal.createFollowupToggleEl.checked = false;
+  if (clinicalActivityModal.followupFieldsEl) clinicalActivityModal.followupFieldsEl.style.display = "none";
+  if (clinicalActivityModal.followupCategoryEl) clinicalActivityModal.followupCategoryEl.value = "other";
+  if (clinicalActivityModal.followupPriorityEl) clinicalActivityModal.followupPriorityEl.value = "normal";
+  if (clinicalActivityModal.followupDueAtEl) clinicalActivityModal.followupDueAtEl.value = "";
+  if (clinicalActivityModal.followupTitleEl) clinicalActivityModal.followupTitleEl.value = "";
+  if (clinicalActivityModal.followupAssignedToEl) clinicalActivityModal.followupAssignedToEl.value = "";
 }
+  
 async function saveClinicalActivityFromModal() {
   try {
     markUiBusy(2600);
@@ -5282,8 +5511,21 @@ async function saveClinicalActivityFromModal() {
 
     await savePatientToSupabase(patient);
 
+    let createdFollowup = null;
+    const shouldCreateFollowup = !!clinicalActivityModal.createFollowupToggleEl?.checked;
+
+    if (shouldCreateFollowup) {
+      createdFollowup = await createFollowupFromClinicalActivity(patient, activity, details);
+    }
+
     closeClinicalActivityModal();
-    notify(`已新增臨床活動：${activity}`, "success");
+
+    if (createdFollowup) {
+      notify(`已新增臨床活動，並建立跟進事項：${createdFollowup.followup_no || createdFollowup.id}`, "success");
+    } else {
+      notify(`已新增臨床活動：${activity}`, "success");
+    }
+
     await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
