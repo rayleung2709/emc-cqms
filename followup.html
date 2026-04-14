@@ -752,114 +752,205 @@
       color:#334155;
     }
 
-    .timeline{
-      position:relative;
-      display:grid;
-      gap:14px;
-      padding-left:8px;
-    }
+.timeline{
+  position:relative;
+  display:grid;
+  gap:18px;
+  padding-left:0;
+}
 
-    .timeline::before{
-      content:"";
-      position:absolute;
-      left:18px;
-      top:4px;
-      bottom:4px;
-      width:2px;
-      background:linear-gradient(180deg,#bfdbfe 0%,#dbeafe 35%,#e2e8f0 100%);
-      border-radius:999px;
-    }
+.timeline::before{
+  content:"";
+  position:absolute;
+  left:22px;
+  top:8px;
+  bottom:8px;
+  width:4px;
+  background:linear-gradient(180deg,#60a5fa 0%, #a78bfa 45%, #e2e8f0 100%);
+  border-radius:999px;
+  box-shadow:0 0 0 6px rgba(96,165,250,.06);
+}
 
-    .timeline-item{
-      position:relative;
-      display:grid;
-      grid-template-columns:36px minmax(0,1fr);
-      gap:14px;
-      align-items:start;
-    }
+.timeline-item{
+  position:relative;
+  display:grid;
+  grid-template-columns:56px minmax(0,1fr);
+  gap:16px;
+  align-items:start;
+}
 
-    .timeline-dot{
-      width:16px;
-      height:16px;
-      border-radius:999px;
-      margin-top:10px;
-      margin-left:10px;
-      background:linear-gradient(180deg,#3b82f6 0%,#2563eb 100%);
-      border:3px solid #fff;
-      box-shadow:0 0 0 4px rgba(37,99,235,.12);
-      position:relative;
-      z-index:1;
-    }
+.timeline-dot{
+  width:20px;
+  height:20px;
+  border-radius:999px;
+  margin-top:18px;
+  margin-left:14px;
+  background:linear-gradient(135deg,#2563eb 0%,#7c3aed 100%);
+  border:4px solid #fff;
+  box-shadow:
+    0 0 0 6px rgba(59,130,246,.10),
+    0 10px 22px rgba(37,99,235,.22);
+  position:relative;
+  z-index:2;
+}
 
-    .timeline-card{
-      border:1px solid var(--line);
-      border-radius:16px;
-      background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%);
-      padding:14px;
-      box-shadow:var(--shadow-sm);
-    }
+.timeline-card{
+  position:relative;
+  border:1px solid rgba(226,232,240,.95);
+  border-radius:20px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.98) 0%,rgba(248,250,252,.98) 100%);
+  padding:16px 16px 14px;
+  box-shadow:
+    0 12px 30px rgba(15,23,42,.06),
+    inset 0 1px 0 rgba(255,255,255,.85);
+  overflow:hidden;
+}
 
-    .timeline-top{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:8px;
-    }
+.timeline-card::before{
+  content:"";
+  position:absolute;
+  inset:0 auto 0 0;
+  width:5px;
+  background:linear-gradient(180deg,#3b82f6 0%,#8b5cf6 100%);
+  border-radius:20px 0 0 20px;
+}
 
-    .timeline-title{
-      font-size:14px;
-      font-weight:900;
-      color:#0f172a;
-    }
+.timeline-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
 
-    .timeline-time{
-      font-size:12px;
-      color:var(--muted);
-      white-space:nowrap;
-      background:#f8fafc;
-      border:1px solid var(--line);
-      border-radius:999px;
-      padding:4px 8px;
-    }
+.timeline-title-wrap{
+  display:grid;
+  gap:6px;
+}
 
-    .timeline-meta{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-bottom:10px;
-    }
+.timeline-title{
+  font-size:15px;
+  font-weight:900;
+  color:#0f172a;
+  letter-spacing:.01em;
+}
 
-    .timeline-tag{
-      display:inline-flex;
-      align-items:center;
-      border-radius:999px;
-      padding:4px 8px;
-      font-size:12px;
-      font-weight:800;
-      background:#f8fafc;
-      color:#475569;
-      border:1px solid var(--line);
-    }
+.timeline-subtitle{
+  font-size:12px;
+  color:#64748b;
+  line-height:1.5;
+}
 
-    .timeline-data{
-      font-size:13px;
-      color:#334155;
-      white-space:pre-wrap;
-      word-break:break-word;
-      line-height:1.7;
-    }
+.timeline-time{
+  flex:0 0 auto;
+  font-size:12px;
+  font-weight:800;
+  color:#334155;
+  white-space:nowrap;
+  background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);
+  border:1px solid #dbe5f0;
+  border-radius:999px;
+  padding:6px 10px;
+  box-shadow:0 4px 12px rgba(15,23,42,.04);
+}
 
-    .timeline-outcome{
-      margin-bottom:10px;
-      padding:10px 12px;
-      border-radius:12px;
-      background:#f0fdf4;
-      border:1px solid #bbf7d0;
-      color:#166534;
-      font-size:13px;
-      line-height:1.7;
-    }
+.timeline-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.timeline-tag{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  border-radius:999px;
+  padding:6px 10px;
+  font-size:12px;
+  font-weight:900;
+  background:#f8fafc;
+  color:#475569;
+  border:1px solid #e2e8f0;
+}
+
+.timeline-tag-actor{
+  background:#eef2ff;
+  color:#4338ca;
+  border-color:#c7d2fe;
+}
+
+.timeline-tag-type{
+  background:#eff6ff;
+  color:#1d4ed8;
+  border-color:#bfdbfe;
+}
+
+.timeline-outcome{
+  margin-bottom:12px;
+  padding:12px 14px;
+  border-radius:14px;
+  background:linear-gradient(180deg,#f0fdf4 0%,#ecfdf5 100%);
+  border:1px solid #bbf7d0;
+  color:#166534;
+  font-size:13px;
+  line-height:1.75;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
+}
+
+.timeline-data{
+  font-size:13px;
+  color:#334155;
+  white-space:pre-wrap;
+  word-break:break-word;
+  line-height:1.8;
+  background:#ffffff;
+  border:1px dashed #dbe5f0;
+  border-radius:14px;
+  padding:12px 14px;
+}
+
+.timeline-empty{
+  padding:18px;
+  border:1px dashed #cbd5e1;
+  border-radius:16px;
+  background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);
+  color:#64748b;
+  font-size:14px;
+}
+
+.encounter-alert{
+  margin-top:8px;
+  padding:10px 12px;
+  border-radius:12px;
+  font-size:12px;
+  line-height:1.6;
+  border:1px solid #fecaca;
+  background:#fff1f2;
+  color:#b91c1c;
+  display:none;
+}
+
+.encounter-alert.show{
+  display:block;
+}
+
+.encounter-ok{
+  margin-top:8px;
+  padding:10px 12px;
+  border-radius:12px;
+  font-size:12px;
+  line-height:1.6;
+  border:1px solid #bbf7d0;
+  background:#f0fdf4;
+  color:#166534;
+  display:none;
+}
+
+.encounter-ok.show{
+  display:block;
+}
 
     .note{
       color:var(--muted);
@@ -1379,12 +1470,17 @@
             <div class="smart-list" id="cumcSuggestList"></div>
             <div class="note" id="followupPatientNote">新增時可自由輸入；編輯時不可修改 CUMC 號碼。</div>
           </div>
-          <div class="field">
-            <label for="followupEncounterInput">求診號碼</label>
-            <input id="followupEncounterInput" type="text" placeholder="先輸入 / 選定 CUMC 號碼，這裡會列出相關求診號碼供你選擇或輸入" autocomplete="off" />
-            <div class="smart-list" id="encounterSuggestList"></div>
-            <div class="note" id="followupEncounterNote">會根據該 CUMC 號碼自動追出相關求診號碼及求診醫生。</div>
-          </div>
+        <div class="field">
+  <label for="followupEncounterInput">求診號碼</label>
+  <input id="followupEncounterInput" type="text" placeholder="輸入或選定 CUMC 號碼後，系統會自動帶出相關求診號碼" autocomplete="off" />
+  <div class="smart-list" id="encounterSuggestList"></div>
+  <div class="note" id="followupEncounterNote">系統會根據 CUMC 號碼自動追出相關求診號碼及求診醫生。</div>
+  <div class="encounter-ok" id="followupEncounterOk"></div>
+  <div class="encounter-alert" id="followupEncounterAlert"></div>
+</div> 
+
+
+          
           <div class="field">
             <label for="followupDoctorDisplay">求診醫生</label>
             <input id="followupDoctorDisplay" type="text" placeholder="根據求診號碼自動顯示" readonly />
@@ -1656,6 +1752,8 @@
       encounterInputEl: document.getElementById("followupEncounterInput"),
       encounterSuggestListEl: document.getElementById("encounterSuggestList"),
       encounterNoteEl: document.getElementById("followupEncounterNote"),
+      encounterOkEl: document.getElementById("followupEncounterOk"),
+      encounterAlertEl: document.getElementById("followupEncounterAlert"),
       doctorDisplayEl: document.getElementById("followupDoctorDisplay"),
       statusEl: document.getElementById("followupStatusInput"),
       priorityEl: document.getElementById("followupPriorityInput"),
@@ -1826,447 +1924,244 @@
       return state.patients.find(item => String(item.cumc_no || "").trim() === raw) || null;
     }
 
+
+
+
     function detectEncounterNo(enc) {
-      return String(
-        enc?.encounter_no ||
-        enc?.visit_no ||
-        enc?.consultation_no ||
-        enc?.case_no ||
-        enc?.number ||
-        enc?.enc_no ||
-        ""
-      ).trim();
+  return String(
+    enc?.encounter_no ||
+    enc?.encounterNo ||
+    enc?.visit_no ||
+    enc?.visitNo ||
+    enc?.consultation_no ||
+    enc?.consultationNo ||
+    enc?.case_no ||
+    enc?.caseNo ||
+    enc?.number ||
+    enc?.enc_no ||
+    enc?.encNo ||
+    enc?.patient_encounter_no ||
+    enc?.serial_no ||
+    ""
+  ).trim();
+}
+
+function getEncounterDoctorText(encounter) {
+  if (!encounter) return "—";
+  return String(
+    encounter.doctor_name ||
+    encounter.doctor_display_name ||
+    encounter.doctor ||
+    encounter.attending_doctor ||
+    encounter.provider_name ||
+    encounter.provider ||
+    encounter.doctor_in_charge ||
+    encounter.dr_name ||
+    encounter.dr ||
+    ""
+  ).trim() || "—";
+}
+
+function getEncounterByIdOrNo(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return null;
+  const compact = normalizeCompact(raw);
+
+  return state.encounters.find(enc => {
+    const id = String(enc.id || "").trim();
+    const no = detectEncounterNo(enc);
+    return normalizeCompact(id) === compact || normalizeCompact(no) === compact;
+  }) || null;
+}
+
+function getEncounterListByPatientCumc(patientCumc) {
+  const cumc = String(patientCumc || "").trim();
+  if (!cumc) {
+    return [];
+  }
+
+  const compactCumc = normalizeCompact(cumc);
+  const patientCandidates = state.patients.filter(p => normalizeCompact(p.cumc_no) === compactCumc);
+  const patientIdSet = new Set(
+    patientCandidates
+      .map(p => String(p.id || "").trim())
+      .filter(Boolean)
+      .map(v => normalizeCompact(v))
+  );
+
+  const fallbackPatientEncounterNos = patientCandidates
+    .map(p => String(p.encounter_no || "").trim())
+    .filter(Boolean)
+    .map(no => ({
+      id: `patient-fallback-${no}`,
+      encounter_no: no,
+      doctor_name: "",
+      __source: "patients.encounter_no"
+    }));
+
+  const results = [];
+  const seen = new Set();
+
+  state.encounters.forEach(enc => {
+    const possiblePatientKeys = [
+      enc.patient_id,
+      enc.patientId,
+      enc.cumc_no,
+      enc.cumcNo,
+      enc.patient_cumc_no,
+      enc.patientCumcNo,
+      enc.patient_no,
+      enc.patientNo,
+      enc.cumc,
+      enc.patient_code
+    ].map(v => normalizeCompact(v));
+
+    const matched = possiblePatientKeys.includes(compactCumc)
+      || possiblePatientKeys.some(v => patientIdSet.has(v));
+
+    if (!matched) return;
+
+    const no = detectEncounterNo(enc);
+    const uniqueKey = normalizeCompact(String(enc.id || no || ""));
+    if (!uniqueKey || seen.has(uniqueKey)) return;
+
+    seen.add(uniqueKey);
+    results.push({
+      ...enc,
+      __source: "encounters"
+    });
+  });
+
+  fallbackPatientEncounterNos.forEach(enc => {
+    const no = detectEncounterNo(enc);
+    const key = normalizeCompact(no);
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    results.push(enc);
+  });
+
+  results.sort((a, b) => {
+    const ad = new Date(a.updated_at || a.created_at || 0).getTime();
+    const bd = new Date(b.updated_at || b.created_at || 0).getTime();
+    return bd - ad;
+  });
+
+  return results;
+}
+
+function setEncounterMessage({ ok = "", alert = "" } = {}) {
+  if (followupModal.encounterOkEl) {
+    followupModal.encounterOkEl.textContent = ok;
+    followupModal.encounterOkEl.classList.toggle("show", !!ok);
+  }
+  if (followupModal.encounterAlertEl) {
+    followupModal.encounterAlertEl.textContent = alert;
+    followupModal.encounterAlertEl.classList.toggle("show", !!alert);
+  }
+}
+
+function renderEncounterSuggestions(cumcNo, keyword = "") {
+  const encounters = getEncounterListByPatientCumc(cumcNo);
+  const key = normalizeCompact(keyword);
+
+  const matched = encounters.filter(enc => {
+    const no = detectEncounterNo(enc);
+    const doc = getEncounterDoctorText(enc);
+    const source = String(enc.__source || "");
+    const combined = `${no} ${doc} ${source}`;
+    if (!key) return true;
+    return normalizeCompact(combined).includes(key);
+  });
+
+  if (!cumcNo || !matched.length) {
+    hideSuggestList(followupModal.encounterSuggestListEl);
+    return;
+  }
+
+  showSuggestList(
+    followupModal.encounterSuggestListEl,
+    matched.slice(0, 20).map(enc => {
+      const no = detectEncounterNo(enc) || String(enc.id || "");
+      const doc = getEncounterDoctorText(enc);
+      const sourceText = enc.__source === "patients.encounter_no" ? "病人主檔" : "求診紀錄";
+      return `
+        <button class="smart-item" type="button" data-encounter-value="${escapeHtml(no)}">
+          <div class="smart-main">${escapeHtml(no)}</div>
+          <div class="smart-sub">求診醫生：${escapeHtml(doc)}｜來源：${escapeHtml(sourceText)}</div>
+        </button>
+      `;
+    }).join("")
+  );
+
+  [...followupModal.encounterSuggestListEl.querySelectorAll("[data-encounter-value]")].forEach(btn => {
+    btn.addEventListener("click", () => {
+      const value = btn.getAttribute("data-encounter-value") || "";
+      followupModal.encounterInputEl.value = value;
+      hideSuggestList(followupModal.encounterSuggestListEl);
+      syncDoctorDisplayFromEncounterInput();
+    });
+  });
+}
+
+function syncEncounterSuggestionsByPatient(forceOpen = false) {
+  const cumcNo = String(followupModal.patientInputEl.value || "").trim();
+  const list = getEncounterListByPatientCumc(cumcNo);
+
+  if (!cumcNo) {
+    followupModal.encounterNoteEl.textContent = "請先輸入 CUMC 號碼。";
+    followupModal.encounterInputEl.value = "";
+    followupModal.doctorDisplayEl.value = "—";
+    setEncounterMessage({});
+    hideSuggestList(followupModal.encounterSuggestListEl);
+    return;
+  }
+
+  if (!list.length) {
+    followupModal.encounterNoteEl.textContent = `找不到與 ${cumcNo} 相關的求診號碼。`;
+    followupModal.encounterInputEl.value = "";
+    followupModal.doctorDisplayEl.value = "—";
+    setEncounterMessage({
+      alert: `此 CUMC 號碼暫時找不到任何求診號碼。請檢查 encounters / patients table 的關聯欄位或資料是否完整。`
+    });
+    hideSuggestList(followupModal.encounterSuggestListEl);
+    return;
+  }
+
+  followupModal.encounterNoteEl.textContent = `已找到 ${list.length} 個與 ${cumcNo} 相關的求診號碼。`;
+  setEncounterMessage({
+    ok: `系統已成功找到相關求診號碼，你可直接選擇；若未手動選擇，系統會自動帶入最新一個。`
+  });
+
+  const currentEncounter = String(followupModal.encounterInputEl.value || "").trim();
+  if (!currentEncounter) {
+    const firstEncounterNo = detectEncounterNo(list[0]);
+    if (firstEncounterNo) {
+      followupModal.encounterInputEl.value = firstEncounterNo;
     }
+  }
 
-    function getEncounterDoctorText(encounter) {
-      if (!encounter) return "—";
-      return String(
-        encounter.doctor_name ||
-        encounter.doctor_display_name ||
-        encounter.doctor ||
-        encounter.attending_doctor ||
-        encounter.provider_name ||
-        encounter.provider ||
-        encounter.doctor_in_charge ||
-        encounter.dr_name ||
-        encounter.dr ||
-        ""
-      ).trim() || "—";
-    }
+  syncDoctorDisplayFromEncounterInput();
 
-    function getEncounterByIdOrNo(value) {
-      const raw = String(value || "").trim();
-      if (!raw) return null;
-      return state.encounters.find(enc =>
-        String(enc.id || "").trim() === raw || detectEncounterNo(enc) === raw
-      ) || null;
-    }
+  if (forceOpen || document.activeElement === followupModal.encounterInputEl) {
+    renderEncounterSuggestions(cumcNo, followupModal.encounterInputEl.value || "");
+  }
+}
 
-    function getPrimaryEncounterStoredValue(item) {
-      return item?.encounter_id || item?.encounter_ref || item?.encounter_no || "";
-    }
+function syncDoctorDisplayFromEncounterInput() {
+  const raw = String(followupModal.encounterInputEl.value || "").trim();
+  const encounter = getEncounterByIdOrNo(raw);
 
-    function getEncounterDisplayByStoredValue(value) {
-      const raw = String(value || "").trim();
-      if (!raw) return "—";
-      const found = getEncounterByIdOrNo(raw);
-      if (!found) return raw;
-      return detectEncounterNo(found) || raw;
-    }
+  if (encounter) {
+    followupModal.doctorDisplayEl.value = getEncounterDoctorText(encounter);
+    return;
+  }
 
-    function getEncounterDoctorTextByStoredValue(value) {
-      const found = getEncounterByIdOrNo(value);
-      return getEncounterDoctorText(found);
-    }
+  const patientCumc = String(followupModal.patientInputEl.value || "").trim();
+  const list = getEncounterListByPatientCumc(patientCumc);
+  const fallback = list.find(enc => normalizeCompact(detectEncounterNo(enc)) === normalizeCompact(raw));
 
-    function getPatientCandidatesByCumc(patientCumc) {
-      const cumc = String(patientCumc || "").trim();
-      if (!cumc) return [];
-      return state.patients.filter(p => String(p.cumc_no || "").trim() === cumc);
-    }
-
-    function getEncounterListByPatientCumc(patientCumc) {
-      const cumc = String(patientCumc || "").trim();
-      if (!cumc) return [];
-
-      const patientCandidates = getPatientCandidatesByCumc(cumc);
-      const patientIdSet = new Set(
-        patientCandidates
-          .map(p => String(p.id || "").trim())
-          .filter(Boolean)
-      );
-
-      const seen = new Set();
-
-      return state.encounters.filter(enc => {
-        const encPatientId = String(enc.patient_id || "").trim();
-        const encCumc = String(enc.cumc_no || "").trim();
-        const encPatientCumc = String(enc.patient_cumc_no || "").trim();
-        const encPatientNo = String(enc.patient_no || "").trim();
-        const encEncounterNo = detectEncounterNo(enc);
-
-        const matched =
-          encPatientId === cumc ||
-          patientIdSet.has(encPatientId) ||
-          encCumc === cumc ||
-          encPatientCumc === cumc ||
-          encPatientNo === cumc;
-
-        if (!matched) return false;
-
-        const uniqueKey = String(enc.id || encEncounterNo || Math.random());
-        if (seen.has(uniqueKey)) return false;
-        seen.add(uniqueKey);
-        return true;
-      });
-    }
-
-    function statusLabel(status) {
-      return zh.status[String(status || "").trim()] || String(status || "—");
-    }
-
-    function priorityLabel(priority) {
-      return zh.priority[String(priority || "").trim()] || String(priority || "—");
-    }
-
-    function categoryLabel(category) {
-      return zh.category[String(category || "").trim()] || String(category || "—");
-    }
-
-    function eventLabel(eventType, fallbackLabel) {
-      return zh.event[String(eventType || "").trim()] || fallbackLabel || eventType || "事件";
-    }
-
-    function statusBadge(status) {
-      const value = String(status || "").trim() || "open";
-      return `<span class="badge badge-status-${escapeHtml(value)}">${escapeHtml(statusLabel(value))}</span>`;
-    }
-
-    function priorityBadge(priority) {
-      const value = String(priority || "").trim() || "normal";
-      return `<span class="badge badge-priority-${escapeHtml(value)}">${escapeHtml(priorityLabel(value))}</span>`;
-    }
-
-    function sortPriorityWeight(priority) {
-      switch (String(priority || "").trim()) {
-        case "urgent": return 4;
-        case "high": return 3;
-        case "normal": return 2;
-        case "low": return 1;
-        default: return 0;
-      }
-    }
-
-    function getDueState(item) {
-      const status = String(item?.status || "").trim();
-      if (["done","cancelled"].includes(status)) return "done";
-      if (!item?.due_at) return "normal";
-
-      const d = new Date(item.due_at);
-      if (Number.isNaN(d.getTime())) return "normal";
-
-      const now = new Date();
-      const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
-      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-
-      if (d.getTime() < startOfToday.getTime()) return "overdue";
-      if (d.getTime() <= endOfToday.getTime()) return "today";
-      return "normal";
-    }
-
-    function dueStateLabel(stateName) {
-      switch (stateName) {
-        case "overdue": return "已逾期";
-        case "today": return "今日到期";
-        case "done": return "已結束";
-        default: return "正常";
-      }
-    }
-
-    function renderSla(item) {
-      const type = getDueState(item);
-      return `<span class="sla sla-${escapeHtml(type)}"><span class="sla-dot"></span><span>${escapeHtml(dueStateLabel(type))}</span></span>`;
-    }
-
-    function formatEventData(eventData) {
-      if (!eventData) return "";
-      if (typeof eventData === "string") return eventData;
-
-      try {
-        const lines = [];
-        Object.entries(eventData).forEach(([k, v]) => {
-          if (v === null || v === undefined || v === "") return;
-          if (k === "outcome") return;
-          if (k === "changes" && typeof v === "object") {
-            const changes = Object.entries(v).map(([ck, cv]) => {
-              const from = cv?.from ?? "";
-              const to = cv?.to ?? "";
-              return `${ck}：${from} → ${to}`;
-            });
-            if (changes.length) lines.push(`變更：\n${changes.join("\n")}`);
-            return;
-          }
-          if (typeof v === "object") {
-            lines.push(`${k}：${JSON.stringify(v, null, 2)}`);
-          } else {
-            lines.push(`${k}：${String(v)}`);
-          }
-        });
-        return lines.join("\n");
-      } catch {
-        return String(eventData);
-      }
-    }
-
-    function uniqueCleanList(values) {
-      const output = [];
-      const seen = new Set();
-
-      (values || []).forEach(v => {
-        const raw = String(v || "").trim();
-        if (!raw) return;
-        const key = raw.toLowerCase();
-        if (seen.has(key)) return;
-        seen.add(key);
-        output.push(raw);
-      });
-
-      return output;
-    }
-
-    function splitMultiValue(raw) {
-      return uniqueCleanList(
-        String(raw || "")
-          .split(/\n|,|，|\/|\||、|;/)
-          .map(v => v.trim())
-      );
-    }
-
-    function safeJsonParse(raw) {
-      try {
-        return JSON.parse(raw);
-      } catch {
-        return null;
-      }
-    }
-
-    function normalizeMultiFieldToArray(value) {
-      if (Array.isArray(value)) return uniqueCleanList(value);
-      if (value && typeof value === "object") return uniqueCleanList(Object.values(value));
-      if (typeof value === "string") {
-        const trimmed = value.trim();
-        if (!trimmed) return [];
-        if ((trimmed.startsWith("[") && trimmed.endsWith("]")) || (trimmed.startsWith("{") && trimmed.endsWith("}"))) {
-          const parsed = safeJsonParse(trimmed);
-          if (Array.isArray(parsed)) return uniqueCleanList(parsed);
-        }
-        return splitMultiValue(trimmed);
-      }
-      return [];
-    }
-
-    function multiFieldToDisplay(value) {
-      const arr = normalizeMultiFieldToArray(value);
-      return arr.length ? arr.join("、") : "—";
-    }
-
-    function renderChipSet(values) {
-      return normalizeMultiFieldToArray(values)
-        .map(v => `<span class="badge badge-chip">${escapeHtml(v)}</span>`)
-        .join("");
-    }
-
-    function renderEditableChips(containerEl, values, removeHandlerName) {
-      containerEl.innerHTML = values.map((v, index) => `
-        <span class="chip">
-          <span>${escapeHtml(v)}</span>
-          <button type="button" data-remove-index="${index}" data-remove-handler="${escapeHtml(removeHandlerName)}">×</button>
-        </span>
-      `).join("");
-    }
-
-    function addChipValue(listName, rawValue) {
-      const value = String(rawValue || "").trim();
-      if (!value) return;
-      const next = uniqueCleanList([...(followupModal[listName] || []), value]);
-      followupModal[listName] = next;
-      renderModalChipGroups();
-    }
-
-    function removeChipValue(listName, index) {
-      followupModal[listName] = (followupModal[listName] || []).filter((_, i) => i !== index);
-      renderModalChipGroups();
-    }
-
-    function renderPresetButtons(containerEl, values, listName) {
-      containerEl.innerHTML = values.map(v => `
-        <button class="ghost-tag" type="button" data-preset-value="${escapeHtml(v)}" data-target-list="${escapeHtml(listName)}">${escapeHtml(v)}</button>
-      `).join("");
-    }
-
-    function renderModalChipGroups() {
-      renderEditableChips(followupModal.categoryChipsEl, followupModal.categoryValues, "categoryValues");
-      renderEditableChips(followupModal.sourceChipsEl, followupModal.sourceValues, "sourceValues");
-      renderEditableChips(followupModal.requestedByChipsEl, followupModal.requestedByValues, "requestedByValues");
-    }
-
-    function wireChipInput(inputEl, listName) {
-      inputEl.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === "," || event.key === "Tab") {
-          const value = inputEl.value.trim();
-          if (!value) return;
-          if (event.key !== "Tab") event.preventDefault();
-          addChipValue(listName, value);
-          inputEl.value = "";
-        } else if (event.key === "Backspace" && !inputEl.value.trim()) {
-          const arr = followupModal[listName] || [];
-          if (arr.length) {
-            followupModal[listName] = arr.slice(0, -1);
-            renderModalChipGroups();
-          }
-        }
-      });
-
-      inputEl.addEventListener("blur", () => {
-        const value = inputEl.value.trim();
-        if (!value) return;
-        addChipValue(listName, value);
-        inputEl.value = "";
-      });
-    }
-
-    function hideSuggestList(el) {
-      el.classList.remove("show");
-      el.innerHTML = "";
-    }
-
-    function showSuggestList(el, html) {
-      el.innerHTML = html;
-      el.classList.add("show");
-    }
-
-    function findCumcSuggestions(keyword) {
-      const key = normalizeCompact(keyword);
-      if (!key) return [];
-
-      const seen = new Set();
-      return state.patients
-        .map(item => String(item.cumc_no || "").trim())
-        .filter(Boolean)
-        .filter(cumc => {
-          const compact = normalizeCompact(cumc);
-          return compact.includes(key) || key.includes(compact);
-        })
-        .filter(cumc => {
-          const k = cumc.toLowerCase();
-          if (seen.has(k)) return false;
-          seen.add(k);
-          return true;
-        })
-        .sort((a,b) => a.localeCompare(b, "en"))
-        .slice(0, 12);
-    }
-
-    function renderCumcSuggestions() {
-      if (followupModal.mode !== "create") {
-        hideSuggestList(followupModal.cumcSuggestListEl);
-        return;
-      }
-
-      const keyword = followupModal.patientInputEl.value.trim();
-      const list = findCumcSuggestions(keyword);
-
-      if (!keyword || !list.length) {
-        hideSuggestList(followupModal.cumcSuggestListEl);
-        return;
-      }
-
-      showSuggestList(
-        followupModal.cumcSuggestListEl,
-        list.map(cumc => `
-          <button class="smart-item" type="button" data-cumc-value="${escapeHtml(cumc)}">
-            <div class="smart-main">${escapeHtml(cumc)}</div>
-            <div class="smart-sub">按一下帶出相關求診號碼</div>
-          </button>
-        `).join("")
-      );
-
-      [...followupModal.cumcSuggestListEl.querySelectorAll("[data-cumc-value]")].forEach(btn => {
-        btn.addEventListener("click", () => {
-          const value = btn.getAttribute("data-cumc-value") || "";
-          followupModal.patientInputEl.value = value;
-          hideSuggestList(followupModal.cumcSuggestListEl);
-          syncEncounterSuggestionsByPatient(true);
-        });
-      });
-    }
-
-    function renderEncounterSuggestions(cumcNo, keyword = "") {
-      const encounters = getEncounterListByPatientCumc(cumcNo);
-      const key = normalizeCompact(keyword);
-
-      const matched = encounters.filter(enc => {
-        const no = detectEncounterNo(enc);
-        const doc = getEncounterDoctorText(enc);
-        const combined = `${no} ${doc}`;
-        if (!key) return true;
-        return normalizeCompact(combined).includes(key);
-      });
-
-      if (!cumcNo || !matched.length) {
-        hideSuggestList(followupModal.encounterSuggestListEl);
-        return;
-      }
-
-      showSuggestList(
-        followupModal.encounterSuggestListEl,
-        matched.slice(0, 20).map(enc => {
-          const no = detectEncounterNo(enc) || String(enc.id || "");
-          const doc = getEncounterDoctorText(enc);
-          return `
-            <button class="smart-item" type="button" data-encounter-value="${escapeHtml(no)}">
-              <div class="smart-main">${escapeHtml(no)}</div>
-              <div class="smart-sub">求診醫生：${escapeHtml(doc)}</div>
-            </button>
-          `;
-        }).join("")
-      );
-
-      [...followupModal.encounterSuggestListEl.querySelectorAll("[data-encounter-value]")].forEach(btn => {
-        btn.addEventListener("click", () => {
-          const value = btn.getAttribute("data-encounter-value") || "";
-          followupModal.encounterInputEl.value = value;
-          hideSuggestList(followupModal.encounterSuggestListEl);
-          syncDoctorDisplayFromEncounterInput();
-        });
-      });
-    }
-
-    function syncEncounterSuggestionsByPatient(forceOpen = false) {
-      const cumcNo = String(followupModal.patientInputEl.value || "").trim();
-      const list = getEncounterListByPatientCumc(cumcNo);
-
-      followupModal.encounterNoteEl.textContent = cumcNo
-        ? `已找到 ${list.length} 個與 ${cumcNo} 相關的求診號碼。`
-        : "先輸入或選定 CUMC 號碼，系統才會列出相關求診號碼。";
-
-      if (!cumcNo) {
-        followupModal.doctorDisplayEl.value = "—";
-        hideSuggestList(followupModal.encounterSuggestListEl);
-        return;
-      }
-
-      if (forceOpen || document.activeElement === followupModal.encounterInputEl || list.length > 0) {
-        renderEncounterSuggestions(cumcNo, followupModal.encounterInputEl.value || "");
-      } else {
-        syncDoctorDisplayFromEncounterInput();
-      }
-    }
-
-    function syncDoctorDisplayFromEncounterInput() {
-      const raw = String(followupModal.encounterInputEl.value || "").trim();
-      followupModal.doctorDisplayEl.value = getEncounterDoctorTextByStoredValue(raw);
-    }
+  followupModal.doctorDisplayEl.value = getEncounterDoctorText(fallback);
+}
 
     async function init() {
       bindEvents();
@@ -2897,7 +2792,7 @@
           <div class="section">
             <h4>時間線</h4>
             <div class="timeline">
-              ${events.length ? events.map(renderTimelineItem).join("") : '<div class="muted">目前未有事件記錄。</div>'}
+              ${events.length ? events.map(renderTimelineItem).join("") : '<div class="timeline-empty">目前尚未有任何時間線記錄。</div>'}${events.length ? events.map(renderTimelineItem).join("") : '<div class="timeline-empty">目前尚未有任何時間線記錄。</div>'}
             </div>
           </div>
         </div>
@@ -2908,68 +2803,83 @@
       document.getElementById("detailQuickDoneBtn")?.addEventListener("click", () => openQuickDoneModal(item.id));
     }
 
-    function renderTimelineItem(item) {
-      const eventData = item.event_data && typeof item.event_data === "object" ? item.event_data : null;
-      const outcome = eventData?.outcome || eventData?.result || "";
-      const dataText = formatEventData(item.event_data);
+function renderTimelineItem(item) {
+  const eventData = item.event_data && typeof item.event_data === "object" ? item.event_data : null;
+  const outcome = eventData?.outcome || eventData?.result || "";
+  const dataText = formatEventData(item.event_data);
+  const actorText = getStaffDisplayText(item.actor);
+  const typeText = eventLabel(item.event_type, item.event_label);
+  const timeText = formatDateTime24(item.created_at);
 
-      return `
-        <div class="timeline-item">
-          <div class="timeline-dot"></div>
-          <div class="timeline-card">
-            <div class="timeline-top">
-              <div class="timeline-title">${escapeHtml(eventLabel(item.event_type, item.event_label))}</div>
-              <div class="timeline-time">${escapeHtml(formatDateTime24(item.created_at))}</div>
-            </div>
-
-            <div class="timeline-meta">
-              <span class="timeline-tag">類型：${escapeHtml(eventLabel(item.event_type, item.event_type || "事件"))}</span>
-              <span class="timeline-tag">操作者：${escapeHtml(getStaffDisplayText(item.actor))}</span>
-            </div>
-
-            ${outcome ? `<div class="timeline-outcome"><strong>處理結果：</strong><br>${escapeHtml(String(outcome))}</div>` : ""}
-
-            ${dataText ? `<div class="timeline-data">${escapeHtml(dataText)}</div>` : ""}
+  return `
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="timeline-top">
+          <div class="timeline-title-wrap">
+            <div class="timeline-title">${escapeHtml(typeText)}</div>
+            <div class="timeline-subtitle">由 ${escapeHtml(actorText)} 操作</div>
           </div>
+          <div class="timeline-time">${escapeHtml(timeText)}</div>
         </div>
-      `;
-    }
 
-    function resetModalSmartInputs() {
-      followupModal.categoryValues = [];
-      followupModal.sourceValues = [];
-      followupModal.requestedByValues = [];
-      followupModal.categoryInputEl.value = "";
-      followupModal.sourceInputEl.value = "";
-      followupModal.requestedByInputEl.value = "";
-      renderModalChipGroups();
-      hideSuggestList(followupModal.cumcSuggestListEl);
-      hideSuggestList(followupModal.encounterSuggestListEl);
-    }
+        <div class="timeline-meta">
+          <span class="timeline-tag timeline-tag-type">事件：${escapeHtml(typeText)}</span>
+          <span class="timeline-tag timeline-tag-actor">操作者：${escapeHtml(actorText)}</span>
+        </div>
+
+        ${outcome ? `
+          <div class="timeline-outcome">
+            <strong>處理結果</strong><br>
+            ${escapeHtml(String(outcome))}
+          </div>
+        ` : ""}
+
+        ${dataText ? `<div class="timeline-data">${escapeHtml(dataText)}</div>` : ""}
+      </div>
+    </div>
+  `;
+}
+
+function resetModalSmartInputs() {
+  followupModal.categoryValues = [];
+  followupModal.sourceValues = [];
+  followupModal.requestedByValues = [];
+  followupModal.categoryInputEl.value = "";
+  followupModal.sourceInputEl.value = "";
+  followupModal.requestedByInputEl.value = "";
+  renderModalChipGroups();
+  setEncounterMessage({});
+  hideSuggestList(followupModal.cumcSuggestListEl);
+  hideSuggestList(followupModal.encounterSuggestListEl);
+}
 
     function openFollowupModal(mode, followupId = null) {
       followupModal.mode = mode;
       followupModal.followupId = followupId;
       resetModalSmartInputs();
 
-      if (mode === "create") {
-        followupModal.titleEl.textContent = "新增事項";
-        followupModal.patientInputEl.value = "";
-        followupModal.patientInputEl.readOnly = false;
-        followupModal.patientInputEl.placeholder = "可自由輸入，會自動建議接近的 CUMC 號碼";
-        followupModal.patientNoteEl.textContent = "新增時可自由輸入；編輯時不可修改 CUMC 號碼。";
-        followupModal.encounterInputEl.value = "";
-        followupModal.statusEl.value = "open";
-        followupModal.priorityEl.value = "normal";
-        followupModal.dueAtEl.value = "";
-        followupModal.titleInputEl.value = "";
-        followupModal.assignedToEl.value = getCurrentStaffDisplayText();
-        followupModal.descriptionEl.value = "";
-        followupModal.outcomeEl.value = "";
-        followupModal.doctorDisplayEl.value = "—";
-        followupModal.sourceValues = ["手動"];
-        renderModalChipGroups();
-      } else {
+     if (mode === "create") {
+  followupModal.titleEl.textContent = "新增跟進事項";
+  followupModal.patientInputEl.value = "";
+  followupModal.patientInputEl.readOnly = false;
+  followupModal.patientInputEl.placeholder = "可輸入或搜尋 CUMC 號碼";
+  followupModal.patientNoteEl.textContent = "新增時可輸入 CUMC 號碼；編輯時不可修改。";
+  followupModal.encounterInputEl.value = "";
+  followupModal.encounterInputEl.placeholder = "系統會自動帶出相關求診號碼";
+  followupModal.encounterNoteEl.textContent = "請先輸入 CUMC 號碼。";
+  followupModal.statusEl.value = "open";
+  followupModal.priorityEl.value = "normal";
+  followupModal.dueAtEl.value = "";
+  followupModal.titleInputEl.value = "";
+  followupModal.assignedToEl.value = getCurrentStaffDisplayText();
+  followupModal.descriptionEl.value = "";
+  followupModal.outcomeEl.value = "";
+  followupModal.doctorDisplayEl.value = "—";
+  followupModal.sourceValues = ["手動"];
+  setEncounterMessage({});
+  renderModalChipGroups();
+} else {
         const item = state.followups.find(f => String(f.id) === String(followupId));
         if (!item) {
           notify("找不到事項", "error");
@@ -2978,7 +2888,7 @@
 
         const encounterStored = getPrimaryEncounterStoredValue(item);
 
-        followupModal.titleEl.textContent = `編輯事項：${formatFollowupNo(item)}`;
+followupModal.titleEl.textContent = `編輯跟進事項：${formatFollowupNo(item)}`;
         followupModal.patientInputEl.value = item.patient_id || "";
         followupModal.patientInputEl.readOnly = true;
         followupModal.patientInputEl.placeholder = "";
@@ -2995,8 +2905,9 @@
         followupModal.categoryValues = normalizeMultiFieldToArray(item.category);
         followupModal.sourceValues = normalizeMultiFieldToArray(item.source);
         followupModal.requestedByValues = normalizeMultiFieldToArray(item.requested_by);
-        renderModalChipGroups();
-        syncEncounterSuggestionsByPatient(true);
+renderModalChipGroups();
+setEncounterMessage({});
+syncEncounterSuggestionsByPatient(true);
       }
 
       followupModal.el.classList.add("show");
