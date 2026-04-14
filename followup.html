@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EMCQMS 跟進工作台</title>
+  <title>Follow-up 工作台</title>
   <link rel="icon" href="data:," />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -11,13 +11,14 @@
       --bg: #f3f6fb;
       --card: #ffffff;
       --line: #dbe3ee;
-      --text: #1f2937;
+      --text: #0f172a;
       --muted: #64748b;
       --primary: #2563eb;
+      --primary-dark: #1d4ed8;
       --success: #16a34a;
       --warning: #d97706;
       --danger: #dc2626;
-      --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
       --radius: 18px;
     }
 
@@ -25,15 +26,58 @@
 
     body {
       margin: 0;
-      font-family: Arial, "Microsoft JhengHei", "PingFang TC", sans-serif;
-      background: var(--bg);
+      background: linear-gradient(180deg, #eef4ff 0%, #f8fbff 25%, #f3f6fb 100%);
       color: var(--text);
+      font-family: Arial, "Microsoft JhengHei", "PingFang TC", sans-serif;
     }
 
     .app {
-      max-width: 960px;
+      max-width: 1320px;
       margin: 0 auto;
       padding: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .title {
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1.1;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.18fr 0.82fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
     }
 
     .panel {
@@ -42,67 +86,97 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 18px;
-      margin-bottom: 18px;
     }
 
-    .title {
-      font-size: 1.8rem;
-      font-weight: 900;
-      color: #0f172a;
-      margin-bottom: 16px;
+    .panel-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
     }
 
     .panel-title {
-      font-size: 1.1rem;
+      font-size: 1.06rem;
       font-weight: 900;
-      margin-bottom: 14px;
       color: #0f172a;
+    }
+
+    .panel-desc {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr 1fr 1fr auto auto;
+      gap: 10px;
     }
 
     .form-row {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      margin-bottom: 12px;
     }
 
     label {
-      font-size: 0.92rem;
-      font-weight: 800;
+      font-size: 0.84rem;
+      font-weight: 900;
       color: #334155;
     }
 
-    input {
+    input, select, textarea {
       width: 100%;
-      padding: 10px 12px;
-      border-radius: 12px;
       border: 1px solid #cbd5e1;
-      font-size: 0.98rem;
-      background: #fff;
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 0.95rem;
       color: var(--text);
+      background: #fff;
+      outline: none;
+      transition: 0.15s ease;
+      font-family: inherit;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 96px;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
     }
 
     button {
       border: none;
       border-radius: 12px;
-      padding: 10px 14px;
+      padding: 11px 14px;
       cursor: pointer;
-      font-weight: 800;
-      font-size: 0.94rem;
+      font-weight: 900;
+      font-size: 0.92rem;
+      transition: 0.15s ease;
     }
+
+    button:hover { transform: translateY(-1px); }
+    button:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
 
     .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); }
+
     .btn-secondary { background: #e2e8f0; color: #0f172a; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-success { background: var(--success); color: #fff; }
 
-    .actions {
+    .toolbar-actions {
       display: flex;
-      gap: 8px;
-      justify-content: flex-end;
+      gap: 10px;
+      align-items: end;
       flex-wrap: wrap;
-    }
-
-    .muted {
-      color: var(--muted);
     }
 
     .status-box {
@@ -110,125 +184,595 @@
       padding: 12px 14px;
       font-weight: 800;
       line-height: 1.5;
+      border: 1px solid transparent;
       white-space: pre-wrap;
       word-break: break-word;
     }
 
     .status-info {
       background: #eff6ff;
-      border: 1px solid #bfdbfe;
       color: #1d4ed8;
+      border-color: #bfdbfe;
     }
 
     .status-success {
       background: #dcfce7;
-      border: 1px solid #86efac;
       color: #166534;
+      border-color: #86efac;
     }
 
     .status-warning {
       background: #fff7ed;
-      border: 1px solid #fdba74;
       color: #c2410c;
+      border-color: #fdba74;
     }
 
     .status-error {
       background: #fef2f2;
-      border: 1px solid #fca5a5;
       color: #b91c1c;
+      border-color: #fca5a5;
     }
 
-    .kv {
-      display: grid;
-      grid-template-columns: 180px 1fr;
-      gap: 8px 12px;
-      font-size: 0.95rem;
+    .cases {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .case-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fff;
+      transition: 0.15s ease;
+      cursor: pointer;
+    }
+
+    .case-card:hover {
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+      border-color: #cbd5e1;
+    }
+
+    .case-card.active {
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+      background: #f8fbff;
+    }
+
+    .case-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .case-title {
+      font-size: 1rem;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.4;
+    }
+
+    .case-sub {
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-top: 4px;
       line-height: 1.5;
     }
 
-    .kv-key {
-      color: #475569;
-      font-weight: 900;
+    .badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
     }
 
-    .kv-value {
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.75rem;
+      font-weight: 900;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .pill-status-open { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+    .pill-status-in_progress { background: #fff7ed; color: #c2410c; border-color: #fdba74; }
+    .pill-status-pending { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+    .pill-status-completed { background: #dcfce7; color: #166534; border-color: #86efac; }
+    .pill-status-cancelled { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+
+    .pill-priority-low { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+    .pill-priority-normal { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+    .pill-priority-high { background: #fff7ed; color: #c2410c; border-color: #fdba74; }
+    .pill-priority-urgent { background: #fef2f2; color: #b91c1c; border-color: #fca5a5; }
+
+    .case-meta {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .meta-box, .detail-box {
+      border: 1px solid #e5ebf3;
+      border-radius: 12px;
+      padding: 10px;
+      background: #fbfdff;
+    }
+
+    .meta-label, .detail-label {
+      font-size: 0.75rem;
+      font-weight: 900;
+      color: var(--muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .meta-value, .detail-value {
+      font-size: 0.92rem;
+      font-weight: 800;
       color: #0f172a;
-      font-weight: 700;
+      line-height: 1.45;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .empty {
+      border: 1px dashed #cbd5e1;
+      border-radius: 16px;
+      padding: 22px;
+      color: var(--muted);
+      text-align: center;
+      font-weight: 800;
+      background: #fbfdff;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .divider {
+      height: 1px;
+      background: #e5ebf3;
+      margin: 14px 0;
+    }
+
+    .quick-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .quick-form .full {
+      grid-column: 1 / -1;
+    }
+
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .log-item {
+      border: 1px solid #e5ebf3;
+      border-radius: 14px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .log-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .log-type {
+      font-weight: 900;
+      color: #0f172a;
+      font-size: 0.9rem;
+    }
+
+    .log-time {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .log-body {
+      color: #334155;
+      font-size: 0.93rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
       word-break: break-word;
     }
 
-    .small {
-      font-size: 0.88rem;
+    .muted {
+      color: var(--muted);
     }
 
-    @media (max-width: 700px) {
-      .kv {
+    dialog {
+      border: none;
+      padding: 0;
+      background: transparent;
+      width: min(760px, calc(100vw - 24px));
+    }
+
+    @media (max-width: 1100px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 900px) {
+      .filters,
+      .case-meta,
+      .detail-grid,
+      .quick-form {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app { padding: 14px; }
+      .title { font-size: 1.55rem; }
+      .filters,
+      .case-meta,
+      .detail-grid,
+      .quick-form {
         grid-template-columns: 1fr;
       }
+      .top-actions { width: 100%; }
+      .top-actions button { width: 100%; }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <div class="title">跟進工作台</div>
-
-    <div class="panel">
-      <div class="panel-title">職員登入</div>
-
-      <div class="form-row">
-        <label for="loginEmail">CUMC 電郵</label>
-        <input id="loginEmail" type="email" placeholder="例如：petertmchan@cuhkmc.hk" autocomplete="username" />
+    <div class="topbar">
+      <div>
+        <div class="title">Follow-up 工作台</div>
+        <div class="subtitle">建立 case、更新狀態、加 comment、睇 timeline。</div>
       </div>
-
-      <div class="form-row">
-        <label for="loginPassword">密碼</label>
-        <input id="loginPassword" type="password" placeholder="請輸入密碼" autocomplete="current-password" />
-      </div>
-
-      <div class="actions">
-        <button class="btn-primary" id="loginBtn" type="button">登入</button>
-        <button class="btn-secondary" id="logoutBtn" type="button">登出</button>
+      <div class="top-actions">
+        <button class="btn-primary" id="newCaseBtn" type="button">+ 新增 Follow-up</button>
+        <button class="btn-secondary" id="refreshBtn" type="button">重新整理</button>
       </div>
     </div>
 
-    <div class="panel">
-      <div class="panel-title">系統狀態</div>
-      <div id="systemStatus" class="status-box status-info">初始化中…</div>
-    </div>
+    <div class="panel" style="margin-bottom: 18px;">
+      <div class="panel-title-row">
+        <div>
+          <div class="panel-title">篩選 / 搜尋</div>
+          <div class="panel-desc">用病人 CUMC、標題、狀態、優先級、負責人搜尋。</div>
+        </div>
+      </div>
 
-    <div class="panel">
-      <div class="panel-title">Auth / Session Debug</div>
-      <div class="kv">
-        <div class="kv-key">SUPABASE_URL</div>
-        <div class="kv-value" id="debugUrl">—</div>
+      <div class="filters">
+        <div class="form-row">
+          <label for="filterKeyword">關鍵字</label>
+          <input id="filterKeyword" type="text" placeholder="patient_id / followup_no / title" />
+        </div>
 
-        <div class="kv-key">ANON KEY 已設定</div>
-        <div class="kv-value" id="debugAnon">—</div>
+        <div class="form-row">
+          <label for="filterStatus">狀態</label>
+          <select id="filterStatus">
+            <option value="">全部</option>
+            <option value="open">open</option>
+            <option value="in_progress">in_progress</option>
+            <option value="pending">pending</option>
+            <option value="completed">completed</option>
+            <option value="cancelled">cancelled</option>
+          </select>
+        </div>
 
-        <div class="kv-key">Client 建立狀態</div>
-        <div class="kv-value" id="debugClient">—</div>
+        <div class="form-row">
+          <label for="filterPriority">優先級</label>
+          <select id="filterPriority">
+            <option value="">全部</option>
+            <option value="low">low</option>
+            <option value="normal">normal</option>
+            <option value="high">high</option>
+            <option value="urgent">urgent</option>
+          </select>
+        </div>
 
-        <div class="kv-key">目前 Session</div>
-        <div class="kv-value" id="debugSession">—</div>
+        <div class="form-row">
+          <label for="filterCategory">類型</label>
+          <select id="filterCategory">
+            <option value="">全部</option>
+            <option value="insurance_form">insurance_form</option>
+            <option value="abnormal_result">abnormal_result</option>
+            <option value="callback">callback</option>
+            <option value="document_request">document_request</option>
+            <option value="return_visit">return_visit</option>
+            <option value="admin">admin</option>
+            <option value="other">other</option>
+          </select>
+        </div>
 
-        <div class="kv-key">目前 User</div>
-        <div class="kv-value" id="debugUser">—</div>
+        <div class="form-row">
+          <label for="filterAssignedTo">負責人</label>
+          <input id="filterAssignedTo" type="text" placeholder="assigned_to" />
+        </div>
 
-        <div class="kv-key">目前 Staff Profile</div>
-        <div class="kv-value" id="debugProfile">—</div>
+        <div class="toolbar-actions">
+          <button class="btn-primary" id="searchBtn" type="button">搜尋</button>
+        </div>
+
+        <div class="toolbar-actions">
+          <button class="btn-secondary" id="resetFilterBtn" type="button">重設</button>
+        </div>
       </div>
     </div>
 
-    <div class="panel">
-      <div class="panel-title">常見問題</div>
-      <div class="small muted">
-        1. 如果按登入完全冇反應，通常係 `SUPABASE_URL` 或 `SUPABASE_ANON_KEY` 未改。<br />
-        2. 如果顯示 invalid login credentials，代表 email / password 唔啱。<br />
-        3. 如果成功登入但讀唔到 staff profile，代表 `staff_profiles` 無對應 user 或 RLS policy 阻擋。<br />
-        4. 請打開瀏覽器 Console 睇 error。
+    <div id="systemStatus" class="status-box status-info" style="margin-bottom: 18px;">初始化中…</div>
+
+    <div class="layout">
+      <div class="stack">
+        <div class="panel">
+          <div class="panel-title-row">
+            <div>
+              <div class="panel-title">Follow-up 個案</div>
+              <div class="panel-desc"><span id="caseCountText">0</span> 個結果</div>
+            </div>
+          </div>
+          <div id="caseList" class="cases"></div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="panel">
+          <div class="panel-title-row">
+            <div>
+              <div class="panel-title">個案詳情</div>
+              <div class="panel-desc">揀左 case 就可以即刻更新。</div>
+            </div>
+          </div>
+
+          <div id="detailEmpty" class="empty">請先喺左邊揀一個 follow-up。</div>
+
+          <div id="detailWrap" style="display:none;">
+            <div class="detail-grid">
+              <div class="detail-box">
+                <div class="detail-label">Follow-up No</div>
+                <div class="detail-value" id="detailNo">—</div>
+              </div>
+              <div class="detail-box">
+                <div class="detail-label">Patient ID</div>
+                <div class="detail-value" id="detailPatientId">—</div>
+              </div>
+              <div class="detail-box">
+                <div class="detail-label">Category</div>
+                <div class="detail-value" id="detailCategory">—</div>
+              </div>
+              <div class="detail-box">
+                <div class="detail-label">Encounter ID</div>
+                <div class="detail-value" id="detailEncounterId">—</div>
+              </div>
+              <div class="detail-box">
+                <div class="detail-label">Title</div>
+                <div class="detail-value" id="detailTitle">—</div>
+              </div>
+              <div class="detail-box">
+                <div class="detail-label">Description</div>
+                <div class="detail-value" id="detailDescription">—</div>
+              </div>
+              <div class="detail-box">
+                <div class="detail-label">Created By</div>
+                <div class="detail-value" id="detailCreatedBy">—</div>
+              </div>
+              <div class="detail-box">
+                <div class="detail-label">Created At</div>
+                <div class="detail-value" id="detailCreatedAt">—</div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="panel-title" style="font-size:0.98rem; margin-bottom:10px;">更新個案</div>
+            <div class="quick-form">
+              <div class="form-row">
+                <label for="editStatus">狀態</label>
+                <select id="editStatus">
+                  <option value="open">open</option>
+                  <option value="in_progress">in_progress</option>
+                  <option value="pending">pending</option>
+                  <option value="completed">completed</option>
+                  <option value="cancelled">cancelled</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <label for="editPriority">優先級</label>
+                <select id="editPriority">
+                  <option value="low">low</option>
+                  <option value="normal">normal</option>
+                  <option value="high">high</option>
+                  <option value="urgent">urgent</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <label for="editAssignedTo">負責人</label>
+                <input id="editAssignedTo" type="text" />
+              </div>
+
+              <div class="form-row">
+                <label for="editDueAt">到期時間</label>
+                <input id="editDueAt" type="datetime-local" />
+              </div>
+
+              <div class="form-row">
+                <label for="editSource">Source</label>
+                <select id="editSource">
+                  <option value="">—</option>
+                  <option value="phone">phone</option>
+                  <option value="counter">counter</option>
+                  <option value="doctor">doctor</option>
+                  <option value="lab">lab</option>
+                  <option value="system">system</option>
+                  <option value="email">email</option>
+                  <option value="admin">admin</option>
+                  <option value="other">other</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <label for="editRequestedBy">Requested By</label>
+                <select id="editRequestedBy">
+                  <option value="">—</option>
+                  <option value="patient">patient</option>
+                  <option value="doctor">doctor</option>
+                  <option value="nurse">nurse</option>
+                  <option value="admin">admin</option>
+                  <option value="external">external</option>
+                  <option value="system">system</option>
+                  <option value="other">other</option>
+                </select>
+              </div>
+
+              <div class="form-row full">
+                <label for="editOutcome">Outcome</label>
+                <textarea id="editOutcome" placeholder="完成結果 / 備註"></textarea>
+              </div>
+
+              <div class="toolbar-actions full">
+                <button class="btn-primary" id="saveCaseBtn" type="button">儲存更新</button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="panel-title" style="font-size:0.98rem; margin-bottom:10px;">新增 Comment</div>
+            <div class="quick-form">
+              <div class="form-row full">
+                <label for="newCommentText">Comment</label>
+                <textarea id="newCommentText" placeholder="例如：已致電病人，無人接聽，今晚再跟進。"></textarea>
+              </div>
+
+              <div class="toolbar-actions full">
+                <button class="btn-primary" id="addCommentBtn" type="button">加入 Comment</button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="panel-title" style="font-size:0.98rem; margin-bottom:10px;">Timeline</div>
+            <div id="timeline" class="timeline"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
+  <dialog id="caseDialog">
+    <div class="panel" style="margin:0;">
+      <div class="panel-title-row">
+        <div>
+          <div class="panel-title">新增 Follow-up</div>
+          <div class="panel-desc">跟你個 schema 欄位一致。</div>
+        </div>
+      </div>
+
+      <div class="quick-form">
+        <div class="form-row">
+          <label for="casePatientId">Patient ID（CUMC）</label>
+          <input id="casePatientId" type="text" placeholder="例如：CUMC123456" />
+        </div>
+
+        <div class="form-row">
+          <label for="caseEncounterId">Encounter ID（可留空）</label>
+          <input id="caseEncounterId" type="text" placeholder="UUID，可留空" />
+        </div>
+
+        <div class="form-row">
+          <label for="caseCategory">Category</label>
+          <select id="caseCategory">
+            <option value="insurance_form">insurance_form</option>
+            <option value="abnormal_result">abnormal_result</option>
+            <option value="callback">callback</option>
+            <option value="document_request">document_request</option>
+            <option value="return_visit">return_visit</option>
+            <option value="admin">admin</option>
+            <option value="other">other</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label for="casePriority">Priority</label>
+          <select id="casePriority">
+            <option value="low">low</option>
+            <option value="normal" selected>normal</option>
+            <option value="high">high</option>
+            <option value="urgent">urgent</option>
+          </select>
+        </div>
+
+        <div class="form-row full">
+          <label for="caseTitle">Title</label>
+          <input id="caseTitle" type="text" placeholder="例如：Insurance claim form" />
+        </div>
+
+        <div class="form-row full">
+          <label for="caseDescription">Description</label>
+          <textarea id="caseDescription" placeholder="補充內容"></textarea>
+        </div>
+
+        <div class="form-row">
+          <label for="caseAssignedTo">Assigned To</label>
+          <input id="caseAssignedTo" type="text" placeholder="例如：amy@hospital.org" />
+        </div>
+
+        <div class="form-row">
+          <label for="caseDueAt">Due At</label>
+          <input id="caseDueAt" type="datetime-local" />
+        </div>
+
+        <div class="form-row">
+          <label for="caseSource">Source</label>
+          <select id="caseSource">
+            <option value="">—</option>
+            <option value="phone">phone</option>
+            <option value="counter">counter</option>
+            <option value="doctor">doctor</option>
+            <option value="lab">lab</option>
+            <option value="system">system</option>
+            <option value="email">email</option>
+            <option value="admin">admin</option>
+            <option value="other">other</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label for="caseRequestedBy">Requested By</label>
+          <select id="caseRequestedBy">
+            <option value="">—</option>
+            <option value="patient">patient</option>
+            <option value="doctor">doctor</option>
+            <option value="nurse">nurse</option>
+            <option value="admin">admin</option>
+            <option value="external">external</option>
+            <option value="system">system</option>
+            <option value="other">other</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; margin-top:14px;">
+        <button class="btn-secondary" id="cancelCaseBtn" type="button">取消</button>
+        <button class="btn-primary" id="createCaseBtn" type="button">建立</button>
+      </div>
+    </div>
+  </dialog>
 
   <script>
     const SUPABASE_URL = "https://dvyberdrmmfgutjqnpjr.supabase.co";
@@ -236,7 +780,9 @@
 
     let sb = null;
     let currentUser = null;
-    let currentProfile = null;
+    let followups = [];
+    let selectedFollowupId = null;
+    let selectedTimeline = [];
 
     function setStatus(message, type = "info") {
       const el = document.getElementById("systemStatus");
@@ -249,231 +795,550 @@
       );
     }
 
-    function safeStringify(obj) {
+    function escapeHtml(text) {
+      return String(text ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function formatDateTime(value) {
+      if (!value) return "—";
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return value;
+      return d.toLocaleString("zh-HK", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function toDateTimeLocalValue(value) {
+      if (!value) return "";
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return "";
+      const offset = d.getTimezoneOffset();
+      const local = new Date(d.getTime() - offset * 60000);
+      return local.toISOString().slice(0, 16);
+    }
+
+    function fromDateTimeLocalValue(value) {
+      if (!value) return null;
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return null;
+      return d.toISOString();
+    }
+
+    function safeTrim(value) {
+      return String(value || "").trim();
+    }
+
+    async function init() {
       try {
-        return JSON.stringify(obj, null, 2);
-      } catch (e) {
-        return String(obj);
-      }
-    }
+        if (!SUPABASE_URL || SUPABASE_URL.includes("YOUR_PROJECT")) {
+          throw new Error("SUPABASE_URL 未設定");
+        }
+        if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes("YOUR_SUPABASE_ANON_KEY")) {
+          throw new Error("SUPABASE_ANON_KEY 未設定");
+        }
 
-    function updateDebug() {
-      document.getElementById("debugUrl").textContent = SUPABASE_URL || "—";
-      document.getElementById("debugAnon").textContent =
-        SUPABASE_ANON_KEY && !SUPABASE_ANON_KEY.includes("YOUR_SUPABASE_ANON_KEY")
-          ? "Yes"
-          : "No / Placeholder";
-      document.getElementById("debugClient").textContent = sb ? "Created" : "Not created";
-
-      document.getElementById("debugUser").textContent =
-        currentUser ? safeStringify({
-          id: currentUser.id,
-          email: currentUser.email
-        }) : "null";
-
-      document.getElementById("debugProfile").textContent =
-        currentProfile ? safeStringify(currentProfile) : "null";
-    }
-
-    function validateConfig() {
-      if (!SUPABASE_URL || SUPABASE_URL.includes("YOUR_PROJECT")) {
-        throw new Error("SUPABASE_URL 未設定，仍然係 placeholder。");
-      }
-      if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes("YOUR_SUPABASE_ANON_KEY")) {
-        throw new Error("SUPABASE_ANON_KEY 未設定，仍然係 placeholder。");
-      }
-    }
-
-    async function initSupabase() {
-      try {
-        validateConfig();
         sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        setStatus("Supabase client 已初始化。", "success");
-      } catch (error) {
-        sb = null;
-        setStatus("初始化失敗：\n" + error.message, "error");
-        console.error("initSupabase error:", error);
-      }
-      updateDebug();
-      await refreshSessionDebug();
-    }
-
-    async function refreshSessionDebug() {
-      if (!sb) {
-        document.getElementById("debugSession").textContent = "client not ready";
-        updateDebug();
-        return;
-      }
-
-      try {
-        const { data, error } = await sb.auth.getSession();
-        if (error) throw error;
-
-        document.getElementById("debugSession").textContent = safeStringify({
-          hasSession: !!data?.session,
-          userEmail: data?.session?.user?.email || null
-        });
-
-        currentUser = data?.session?.user || null;
-      } catch (error) {
-        document.getElementById("debugSession").textContent = "error: " + error.message;
-        console.error("getSession error:", error);
-      }
-
-      updateDebug();
-    }
-
-    async function loadCurrentStaffProfile() {
-      if (!sb) {
-        setStatus("Supabase client 未初始化，無法讀取 staff profile。", "error");
-        return;
-      }
-
-      try {
-        setStatus("檢查登入狀態中…", "info");
 
         const { data: userData, error: userError } = await sb.auth.getUser();
         if (userError) throw userError;
+        if (!userData?.user) throw new Error("未登入，請先完成 staff login");
 
-        currentUser = userData?.user || null;
-        currentProfile = null;
+        currentUser = userData.user;
 
-        if (!currentUser) {
-          setStatus("目前未登入。", "warning");
-          updateDebug();
-          return;
-        }
+        setStatus("載入 follow-up 中…", "info");
+        await loadFollowups();
+        setStatus("已載入 follow-up 個案。", "success");
+      } catch (error) {
+        console.error(error);
+        setStatus("初始化失敗：\n" + error.message, "error");
+      }
+    }
 
-        setStatus("已登入，讀取 staff profile 中…", "info");
+    async function loadFollowups() {
+      const { data, error } = await sb
+        .from("followups")
+        .select("*")
+        .order("updated_at", { ascending: false });
 
-        const { data: profile, error: profileError } = await sb
-          .from("staff_profiles")
-          .select("id, email, display_name, role, is_active")
-          .eq("id", currentUser.id)
+      if (error) throw error;
+      followups = data || [];
+      renderFollowupList();
+      renderDetail();
+    }
+
+    function getFilteredFollowups() {
+      const keyword = safeTrim(document.getElementById("filterKeyword").value).toLowerCase();
+      const status = document.getElementById("filterStatus").value;
+      const priority = document.getElementById("filterPriority").value;
+      const category = document.getElementById("filterCategory").value;
+      const assignedTo = safeTrim(document.getElementById("filterAssignedTo").value).toLowerCase();
+
+      let rows = [...followups];
+
+      if (keyword) {
+        rows = rows.filter(item =>
+          String(item.patient_id || "").toLowerCase().includes(keyword) ||
+          String(item.followup_no || "").toLowerCase().includes(keyword) ||
+          String(item.title || "").toLowerCase().includes(keyword) ||
+          String(item.description || "").toLowerCase().includes(keyword)
+        );
+      }
+
+      if (status) rows = rows.filter(item => item.status === status);
+      if (priority) rows = rows.filter(item => item.priority === priority);
+      if (category) rows = rows.filter(item => item.category === category);
+      if (assignedTo) rows = rows.filter(item => String(item.assigned_to || "").toLowerCase().includes(assignedTo));
+
+      return rows;
+    }
+
+    function renderFollowupList() {
+      const rows = getFilteredFollowups();
+      const list = document.getElementById("caseList");
+      document.getElementById("caseCountText").textContent = String(rows.length);
+
+      if (!rows.length) {
+        list.innerHTML = '<div class="empty">冇資料。按右上角「新增 Follow-up」開 case。</div>';
+        return;
+      }
+
+      list.innerHTML = rows.map(item => `
+        <div class="case-card ${item.id === selectedFollowupId ? "active" : ""}" data-id="${escapeHtml(item.id)}">
+          <div class="case-top">
+            <div>
+              <div class="case-title">${escapeHtml(item.title || "—")}</div>
+              <div class="case-sub">
+                ${escapeHtml(item.followup_no || "—")} ・ Patient: ${escapeHtml(item.patient_id || "—")}
+              </div>
+            </div>
+            <div class="case-sub">更新：${escapeHtml(formatDateTime(item.updated_at))}</div>
+          </div>
+
+          <div class="badges">
+            <span class="pill pill-status-${escapeHtml(item.status)}">${escapeHtml(item.status)}</span>
+            <span class="pill pill-priority-${escapeHtml(item.priority)}">${escapeHtml(item.priority)}</span>
+            <span class="pill pill-status-pending">${escapeHtml(item.category || "—")}</span>
+          </div>
+
+          <div class="case-meta">
+            <div class="meta-box">
+              <div class="meta-label">Assigned To</div>
+              <div class="meta-value">${escapeHtml(item.assigned_to || "—")}</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Due</div>
+              <div class="meta-value">${escapeHtml(formatDateTime(item.due_at))}</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Source</div>
+              <div class="meta-value">${escapeHtml(item.source || "—")}</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Requested By</div>
+              <div class="meta-value">${escapeHtml(item.requested_by || "—")}</div>
+            </div>
+          </div>
+        </div>
+      `).join("");
+
+      [...document.querySelectorAll(".case-card")].forEach(el => {
+        el.addEventListener("click", async () => {
+          selectedFollowupId = el.dataset.id;
+          renderFollowupList();
+          await loadFollowupDetail();
+        });
+      });
+    }
+
+    function getSelectedFollowup() {
+      return followups.find(item => item.id === selectedFollowupId) || null;
+    }
+
+    function renderDetail() {
+      const item = getSelectedFollowup();
+      const empty = document.getElementById("detailEmpty");
+      const wrap = document.getElementById("detailWrap");
+
+      if (!item) {
+        empty.style.display = "";
+        wrap.style.display = "none";
+        return;
+      }
+
+      empty.style.display = "none";
+      wrap.style.display = "";
+
+      document.getElementById("detailNo").textContent = item.followup_no || "—";
+      document.getElementById("detailPatientId").textContent = item.patient_id || "—";
+      document.getElementById("detailCategory").textContent = item.category || "—";
+      document.getElementById("detailEncounterId").textContent = item.encounter_id || "—";
+      document.getElementById("detailTitle").textContent = item.title || "—";
+      document.getElementById("detailDescription").textContent = item.description || "—";
+      document.getElementById("detailCreatedBy").textContent = item.created_by || "—";
+      document.getElementById("detailCreatedAt").textContent = formatDateTime(item.created_at);
+
+      document.getElementById("editStatus").value = item.status || "open";
+      document.getElementById("editPriority").value = item.priority || "normal";
+      document.getElementById("editAssignedTo").value = item.assigned_to || "";
+      document.getElementById("editDueAt").value = toDateTimeLocalValue(item.due_at);
+      document.getElementById("editSource").value = item.source || "";
+      document.getElementById("editRequestedBy").value = item.requested_by || "";
+      document.getElementById("editOutcome").value = item.outcome || "";
+
+      renderTimeline();
+    }
+
+    async function loadFollowupDetail() {
+      const item = getSelectedFollowup();
+      if (!item) {
+        renderDetail();
+        return;
+      }
+
+      setStatus("載入 timeline 中…", "info");
+
+      const [eventsRes, commentsRes] = await Promise.all([
+        sb.from("followup_events").select("*").eq("followup_id", item.id).order("created_at", { ascending: false }),
+        sb.from("followup_comments").select("*").eq("followup_id", item.id).order("created_at", { ascending: false })
+      ]);
+
+      if (eventsRes.error) throw eventsRes.error;
+      if (commentsRes.error) throw commentsRes.error;
+
+      const events = (eventsRes.data || []).map(row => ({
+        kind: "event",
+        id: row.id,
+        created_at: row.created_at,
+        title: row.event_label || row.event_type,
+        actor: row.actor || "—",
+        body: row.event_data ? JSON.stringify(row.event_data, null, 2) : "",
+        raw: row
+      }));
+
+      const comments = (commentsRes.data || []).map(row => ({
+        kind: "comment",
+        id: row.id,
+        created_at: row.created_at,
+        title: "Comment",
+        actor: row.created_by || "—",
+        body: row.comment_text || "",
+        raw: row
+      }));
+
+      selectedTimeline = [...events, ...comments].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      renderDetail();
+      setStatus("已載入個案詳情。", "success");
+    }
+
+    function renderTimeline() {
+      const el = document.getElementById("timeline");
+
+      if (!selectedFollowupId) {
+        el.innerHTML = "";
+        return;
+      }
+
+      if (!selectedTimeline.length) {
+        el.innerHTML = '<div class="empty">暫時未有 timeline。</div>';
+        return;
+      }
+
+      el.innerHTML = selectedTimeline.map(item => `
+        <div class="log-item">
+          <div class="log-head">
+            <div class="log-type">${escapeHtml(item.kind === "event" ? "Event" : "Comment")} ・ ${escapeHtml(item.actor || "—")}</div>
+            <div class="log-time">${escapeHtml(formatDateTime(item.created_at))}</div>
+          </div>
+          <div class="log-body"><strong>${escapeHtml(item.title || "—")}</strong>${item.body ? "\n" + escapeHtml(item.body) : ""}</div>
+        </div>
+      `).join("");
+    }
+
+    async function createFollowup() {
+      const patient_id = safeTrim(document.getElementById("casePatientId").value);
+      const encounter_id = safeTrim(document.getElementById("caseEncounterId").value) || null;
+      const category = document.getElementById("caseCategory").value;
+      const priority = document.getElementById("casePriority").value;
+      const title = safeTrim(document.getElementById("caseTitle").value);
+      const description = safeTrim(document.getElementById("caseDescription").value) || null;
+      const assigned_to = safeTrim(document.getElementById("caseAssignedTo").value) || null;
+      const due_at = fromDateTimeLocalValue(document.getElementById("caseDueAt").value);
+      const source = document.getElementById("caseSource").value || null;
+      const requested_by = document.getElementById("caseRequestedBy").value || null;
+      const created_by = currentUser?.email || currentUser?.id || "unknown";
+
+      if (!patient_id) {
+        setStatus("Patient ID（CUMC）必填。", "warning");
+        return;
+      }
+      if (!title) {
+        setStatus("Title 必填。", "warning");
+        return;
+      }
+
+      try {
+        setStatus("建立 follow-up 中…", "info");
+
+        const { data, error } = await sb
+          .from("followups")
+          .insert([{
+            patient_id,
+            encounter_id,
+            category,
+            title,
+            description,
+            status: "open",
+            priority,
+            assigned_to,
+            created_by,
+            due_at,
+            source,
+            requested_by
+          }])
+          .select()
           .single();
 
-        if (profileError) {
-          currentProfile = null;
-          setStatus(
-            "登入成功，但讀取 staff_profiles 失敗。\n" +
-            "可能原因：\n" +
-            "1. staff_profiles 無這個 user\n" +
-            "2. RLS policy 阻擋\n" +
-            "3. table 名稱唔啱\n\n" +
-            "錯誤： " + profileError.message,
-            "error"
-          );
-          console.error("profileError:", profileError);
-          updateDebug();
-          return;
+        if (error) throw error;
+
+        const { error: eventError } = await sb
+          .from("followup_events")
+          .insert([{
+            followup_id: data.id,
+            event_type: "created",
+            event_label: "Follow-up created",
+            event_data: {
+              status: "open",
+              priority,
+              assigned_to
+            },
+            actor: created_by
+          }]);
+
+        if (eventError) throw eventError;
+
+        closeCaseDialog();
+        resetCreateForm();
+        await loadFollowups();
+        selectedFollowupId = data.id;
+        await loadFollowupDetail();
+        setStatus("已建立 follow-up。", "success");
+      } catch (error) {
+        console.error(error);
+        setStatus("建立失敗：\n" + error.message, "error");
+      }
+    }
+
+    async function saveFollowupChanges() {
+      const item = getSelectedFollowup();
+      if (!item) {
+        setStatus("請先選擇個案。", "warning");
+        return;
+      }
+
+      const newStatus = document.getElementById("editStatus").value;
+      const newPriority = document.getElementById("editPriority").value;
+      const newAssignedTo = safeTrim(document.getElementById("editAssignedTo").value) || null;
+      const newDueAt = fromDateTimeLocalValue(document.getElementById("editDueAt").value);
+      const newSource = document.getElementById("editSource").value || null;
+      const newRequestedBy = document.getElementById("editRequestedBy").value || null;
+      const newOutcome = safeTrim(document.getElementById("editOutcome").value) || null;
+      const actor = currentUser?.email || currentUser?.id || "unknown";
+
+      try {
+        setStatus("更新個案中…", "info");
+
+        const eventsToInsert = [];
+
+        if (item.status !== newStatus) {
+          eventsToInsert.push({
+            followup_id: item.id,
+            event_type:
+              newStatus === "completed" ? "completed" :
+              newStatus === "cancelled" ? "cancelled" :
+              item.status === "cancelled" && newStatus !== "cancelled" ? "reopened" :
+              "status_changed",
+            event_label:
+              newStatus === "completed" ? "Follow-up completed" :
+              newStatus === "cancelled" ? "Follow-up cancelled" :
+              item.status === "cancelled" && newStatus !== "cancelled" ? "Follow-up reopened" :
+              "Status changed",
+            event_data: { from: item.status, to: newStatus },
+            actor
+          });
         }
 
-        currentProfile = profile;
-        setStatus(
-          "登入成功。\n" +
-          "User: " + (currentUser.email || "-") + "\n" +
-          "Staff: " + (profile.display_name || profile.email || "-"),
-          "success"
-        );
-        updateDebug();
+        if (item.priority !== newPriority) {
+          eventsToInsert.push({
+            followup_id: item.id,
+            event_type: "priority_changed",
+            event_label: "Priority changed",
+            event_data: { from: item.priority, to: newPriority },
+            actor
+          });
+        }
+
+        if ((item.assigned_to || null) !== newAssignedTo) {
+          eventsToInsert.push({
+            followup_id: item.id,
+            event_type: newAssignedTo ? "assigned" : "unassigned",
+            event_label: newAssignedTo ? "Assigned staff changed" : "Assigned staff removed",
+            event_data: { from: item.assigned_to || null, to: newAssignedTo },
+            actor
+          });
+        }
+
+        if ((item.due_at || null) !== (newDueAt || null)) {
+          eventsToInsert.push({
+            followup_id: item.id,
+            event_type: "due_date_changed",
+            event_label: "Due date changed",
+            event_data: { from: item.due_at || null, to: newDueAt || null },
+            actor
+          });
+        }
+
+        const { error: updateError } = await sb
+          .from("followups")
+          .update({
+            status: newStatus,
+            priority: newPriority,
+            assigned_to: newAssignedTo,
+            due_at: newDueAt,
+            source: newSource,
+            requested_by: newRequestedBy,
+            outcome: newOutcome
+          })
+          .eq("id", item.id);
+
+        if (updateError) throw updateError;
+
+        if (eventsToInsert.length) {
+          const { error: eventError } = await sb
+            .from("followup_events")
+            .insert(eventsToInsert);
+          if (eventError) throw eventError;
+        }
+
+        await loadFollowups();
+        await loadFollowupDetail();
+        setStatus("個案已更新。", "success");
       } catch (error) {
-        currentUser = null;
-        currentProfile = null;
-        setStatus("讀取目前使用者失敗：\n" + error.message, "error");
-        console.error("loadCurrentStaffProfile error:", error);
-        updateDebug();
+        console.error(error);
+        setStatus("更新失敗：\n" + error.message, "error");
       }
     }
 
-    async function loginStaff() {
-      const btn = document.getElementById("loginBtn");
-      const email = String(document.getElementById("loginEmail").value || "").trim();
-      const password = String(document.getElementById("loginPassword").value || "");
-
-      if (!sb) {
-        setStatus(
-          "Supabase client 未初始化。\n請先確認 SUPABASE_URL 同 SUPABASE_ANON_KEY 已經改成你自己 project。",
-          "error"
-        );
+    async function addComment() {
+      const item = getSelectedFollowup();
+      if (!item) {
+        setStatus("請先選擇個案。", "warning");
         return;
       }
 
-      if (!email || !password) {
-        setStatus("請輸入 email 同 password。", "warning");
+      const comment_text = safeTrim(document.getElementById("newCommentText").value);
+      const created_by = currentUser?.email || currentUser?.id || "unknown";
+
+      if (!comment_text) {
+        setStatus("Comment 唔可以留空。", "warning");
         return;
       }
 
       try {
-        btn.disabled = true;
-        btn.textContent = "登入中…";
-        setStatus("登入中…", "info");
+        setStatus("加入 comment 中…", "info");
 
-        const { data, error } = await sb.auth.signInWithPassword({
-          email,
-          password
-        });
+        const { error } = await sb
+          .from("followup_comments")
+          .insert([{
+            followup_id: item.id,
+            comment_text,
+            created_by,
+            is_internal: true
+          }]);
 
         if (error) throw error;
 
-        currentUser = data?.user || null;
-        await refreshSessionDebug();
-        await loadCurrentStaffProfile();
-
-        document.getElementById("loginPassword").value = "";
+        document.getElementById("newCommentText").value = "";
+        await loadFollowupDetail();
+        await loadFollowups();
+        setStatus("已加入 comment。", "success");
       } catch (error) {
-        setStatus(
-          "登入失敗：\n" + error.message + "\n\n" +
-          "常見原因：\n" +
-          "1. email / password 錯\n" +
-          "2. 此帳戶未在 Supabase Auth 建立\n" +
-          "3. Email 尚未確認（視乎你的 Auth 設定）",
-          "error"
-        );
-        console.error("loginStaff error:", error);
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "登入";
-        updateDebug();
+        console.error(error);
+        setStatus("加入 comment 失敗：\n" + error.message, "error");
       }
     }
 
-    async function logoutStaff() {
-      if (!sb) {
-        setStatus("Supabase client 未初始化。", "error");
-        return;
-      }
+    function resetCreateForm() {
+      document.getElementById("casePatientId").value = "";
+      document.getElementById("caseEncounterId").value = "";
+      document.getElementById("caseCategory").value = "insurance_form";
+      document.getElementById("casePriority").value = "normal";
+      document.getElementById("caseTitle").value = "";
+      document.getElementById("caseDescription").value = "";
+      document.getElementById("caseAssignedTo").value = "";
+      document.getElementById("caseDueAt").value = "";
+      document.getElementById("caseSource").value = "";
+      document.getElementById("caseRequestedBy").value = "";
+    }
 
+    function openCaseDialog() {
+      document.getElementById("caseDialog").showModal();
+    }
+
+    function closeCaseDialog() {
+      document.getElementById("caseDialog").close();
+    }
+
+    function renderAfterFilter() {
+      renderFollowupList();
+    }
+
+    document.getElementById("newCaseBtn").addEventListener("click", openCaseDialog);
+    document.getElementById("cancelCaseBtn").addEventListener("click", closeCaseDialog);
+    document.getElementById("createCaseBtn").addEventListener("click", createFollowup);
+    document.getElementById("saveCaseBtn").addEventListener("click", saveFollowupChanges);
+    document.getElementById("addCommentBtn").addEventListener("click", addComment);
+    document.getElementById("searchBtn").addEventListener("click", renderAfterFilter);
+    document.getElementById("resetFilterBtn").addEventListener("click", () => {
+      document.getElementById("filterKeyword").value = "";
+      document.getElementById("filterStatus").value = "";
+      document.getElementById("filterPriority").value = "";
+      document.getElementById("filterCategory").value = "";
+      document.getElementById("filterAssignedTo").value = "";
+      renderAfterFilter();
+    });
+    document.getElementById("refreshBtn").addEventListener("click", async () => {
       try {
-        setStatus("登出中…", "info");
-        const { error } = await sb.auth.signOut();
-        if (error) throw error;
-
-        currentUser = null;
-        currentProfile = null;
-        await refreshSessionDebug();
-        setStatus("已登出。", "success");
+        setStatus("重新整理中…", "info");
+        await loadFollowups();
+        if (selectedFollowupId) await loadFollowupDetail();
+        setStatus("已重新整理。", "success");
       } catch (error) {
-        setStatus("登出失敗：\n" + error.message, "error");
-        console.error("logoutStaff error:", error);
-      } finally {
-        updateDebug();
-      }
-    }
-
-    document.getElementById("loginBtn").addEventListener("click", loginStaff);
-    document.getElementById("logoutBtn").addEventListener("click", logoutStaff);
-
-    document.getElementById("loginPassword").addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        loginStaff();
+        console.error(error);
+        setStatus("重新整理失敗：\n" + error.message, "error");
       }
     });
 
-    window.addEventListener("load", async () => {
-      await initSupabase();
-      await loadCurrentStaffProfile();
+    document.getElementById("caseDialog").addEventListener("click", (event) => {
+      const panel = event.currentTarget.querySelector(".panel");
+      const rect = panel.getBoundingClientRect();
+      const inside =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom;
+      if (!inside) event.currentTarget.close();
     });
+
+    window.addEventListener("load", init);
   </script>
 </body>
 </html>
