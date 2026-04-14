@@ -275,6 +275,7 @@
       flex-direction:column;
       gap:6px;
       min-width:0;
+      position:relative;
     }
 
     .field label{
@@ -308,6 +309,11 @@
     .field textarea:focus{
       border-color:#93c5fd;
       box-shadow:0 0 0 4px rgba(37,99,235,.12);
+    }
+
+    .field input[readonly]{
+      background:#f8fafc;
+      color:#475569;
     }
 
     .layout{
@@ -463,6 +469,13 @@
     .badge-priority-high{ background:#fed7aa; color:#c2410c; }
     .badge-priority-urgent{ background:#fee2e2; color:#b91c1c; }
 
+    .badge-chip{
+      background:#eef2ff;
+      color:#4338ca;
+      border:1px solid #c7d2fe;
+      margin:0 6px 6px 0;
+    }
+
     .pill{
       display:inline-flex;
       align-items:center;
@@ -529,11 +542,13 @@
     }
 
     .mini-btn:hover{ transform:translateY(-1px); }
+
     .mini-btn.done{
       background:var(--success-soft);
       color:#166534;
       border:1px solid #bbf7d0;
     }
+
     .mini-btn.edit{
       background:var(--primary-soft);
       color:#1d4ed8;
@@ -930,6 +945,142 @@
       gap:14px;
     }
 
+    .smart-list{
+      display:none;
+      position:absolute;
+      left:0;
+      right:0;
+      top:100%;
+      margin-top:6px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      z-index:20;
+      overflow:hidden;
+      max-height:260px;
+      overflow-y:auto;
+    }
+
+    .smart-list.show{
+      display:block;
+    }
+
+    .smart-item{
+      width:100%;
+      border:none;
+      background:#fff;
+      text-align:left;
+      padding:11px 12px;
+      border-bottom:1px solid #f1f5f9;
+      cursor:pointer;
+      display:grid;
+      gap:4px;
+    }
+
+    .smart-item:last-child{
+      border-bottom:none;
+    }
+
+    .smart-item:hover{
+      background:#f8fbff;
+    }
+
+    .smart-main{
+      font-size:14px;
+      font-weight:900;
+      color:#0f172a;
+    }
+
+    .smart-sub{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .chips-input{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:8px;
+      min-height:46px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:8px 10px;
+      background:#fff;
+    }
+
+    .chips-input:focus-within{
+      border-color:#93c5fd;
+      box-shadow:0 0 0 4px rgba(37,99,235,.12);
+    }
+
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:#eef2ff;
+      color:#3730a3;
+      border:1px solid #c7d2fe;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .chip button{
+      appearance:none;
+      border:none;
+      background:transparent;
+      color:inherit;
+      cursor:pointer;
+      font-weight:900;
+      padding:0;
+      line-height:1;
+    }
+
+    .chip-entry{
+      flex:1 1 180px;
+      min-width:140px;
+      border:none !important;
+      outline:none !important;
+      box-shadow:none !important;
+      padding:4px 2px !important;
+      background:transparent !important;
+    }
+
+    .ghost-tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:8px;
+    }
+
+    .ghost-tag{
+      appearance:none;
+      border:1px dashed var(--line-strong);
+      background:#fff;
+      color:#475569;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .ghost-tag:hover{
+      border-color:#93c5fd;
+      color:var(--primary);
+      background:#eff6ff;
+    }
+
     .notify{
       position:fixed;
       right:18px;
@@ -1043,12 +1194,8 @@
       .modal{ padding:8px; }
       .modal-card{ max-height:94vh; }
       .header-left h1{ font-size:26px; }
-      .table-topbar{
-        padding:14px 14px 0;
-      }
-      .cards-wrap{
-        padding:12px;
-      }
+      .table-topbar{ padding:14px 14px 0; }
+      .cards-wrap{ padding:12px; }
     }
   </style>
 </head>
@@ -1104,7 +1251,7 @@
       <div class="toolbar-grid">
         <div class="field">
           <label for="searchInput">搜尋</label>
-          <input id="searchInput" type="text" placeholder="搜尋主題 / 病歷號 / 求診號碼 / 醫生 / 負責人 / AEFU 編號" />
+          <input id="searchInput" type="text" placeholder="搜尋主題 / CUMC 號碼 / 求診號碼 / 醫生 / 負責人 / AEFU 編號" />
         </div>
 
         <div class="field">
@@ -1184,7 +1331,7 @@
             <thead>
               <tr>
                 <th>AEFU #</th>
-                <th>主題 / 病歷號</th>
+                <th>主題 / CUMC 號碼</th>
                 <th>狀態</th>
                 <th>優先級</th>
                 <th>類別</th>
@@ -1227,14 +1374,16 @@
       <div class="modal-body">
         <div class="grid-3">
           <div class="field">
-            <label for="followupPatientSelect">病歷號</label>
-            <select id="followupPatientSelect"></select>
+            <label for="followupPatientInput">CUMC 號碼</label>
+            <input id="followupPatientInput" type="text" placeholder="可自由輸入，會自動建議接近的 CUMC 號碼" autocomplete="off" />
+            <div class="smart-list" id="cumcSuggestList"></div>
+            <div class="note" id="followupPatientNote">新增時可自由輸入；編輯時不可修改 CUMC 號碼。</div>
           </div>
           <div class="field">
             <label for="followupEncounterInput">求診號碼</label>
-            <input id="followupEncounterInput" list="followupEncounterDatalist" type="text" placeholder="可搜尋 / 可自由輸入" />
-            <datalist id="followupEncounterDatalist"></datalist>
-            <div class="note">如已選病歷號，會自動帶出該病歷號相關求診號碼。</div>
+            <input id="followupEncounterInput" type="text" placeholder="先輸入 / 選定 CUMC 號碼，這裡會列出相關求診號碼供你選擇或輸入" autocomplete="off" />
+            <div class="smart-list" id="encounterSuggestList"></div>
+            <div class="note" id="followupEncounterNote">會根據該 CUMC 號碼自動追出相關求診號碼及求診醫生。</div>
           </div>
           <div class="field">
             <label for="followupDoctorDisplay">求診醫生</label>
@@ -1242,19 +1391,22 @@
           </div>
         </div>
 
-        <div class="grid-3">
+        <div class="grid-2">
           <div class="field">
-            <label for="followupCategoryInput">類別</label>
-            <select id="followupCategoryInput">
-              <option value="other">其他</option>
-              <option value="callback">回電</option>
-              <option value="abnormal_result">異常結果</option>
-              <option value="document_request">文件申請</option>
-              <option value="return_visit">回診安排</option>
-              <option value="insurance_form">保險文件</option>
-              <option value="admin">行政</option>
-            </select>
+            <label>類別（可多選 / 可自訂）</label>
+            <div class="chips-input" id="categoryChipsWrap">
+              <div class="chips" id="followupCategoryChips"></div>
+              <input id="followupCategoryInput" class="chip-entry" type="text" placeholder="輸入類別後按 Enter" />
+            </div>
+            <div class="ghost-tags" id="followupCategoryPresets"></div>
           </div>
+          <div class="field">
+            <label for="followupAssignedToInput">負責人</label>
+            <input id="followupAssignedToInput" type="text" placeholder="預設填入目前登入職員名稱" />
+          </div>
+        </div>
+
+        <div class="grid-3">
           <div class="field">
             <label for="followupStatusInput">狀態</label>
             <select id="followupStatusInput">
@@ -1273,6 +1425,10 @@
               <option value="urgent">緊急</option>
             </select>
           </div>
+          <div class="field">
+            <label for="followupDueAtInput">到期時間</label>
+            <input id="followupDueAtInput" type="datetime-local" />
+          </div>
         </div>
 
         <div class="grid-2">
@@ -1281,24 +1437,22 @@
             <input id="followupTitleInput" type="text" placeholder="例如：回電病人跟進檢查結果" />
           </div>
           <div class="field">
-            <label for="followupAssignedToInput">負責人</label>
-            <input id="followupAssignedToInput" type="text" placeholder="預設填入目前登入職員名稱" />
+            <label>來源（可多選 / 可自訂）</label>
+            <div class="chips-input" id="sourceChipsWrap">
+              <div class="chips" id="followupSourceChips"></div>
+              <input id="followupSourceInput" class="chip-entry" type="text" placeholder="輸入來源後按 Enter" />
+            </div>
+            <div class="ghost-tags" id="followupSourcePresets"></div>
           </div>
         </div>
 
-        <div class="grid-3">
-          <div class="field">
-            <label for="followupSourceInput">來源</label>
-            <input id="followupSourceInput" type="text" placeholder="例如：手動 / 系統 / 電話" />
+        <div class="field">
+          <label>要求者（可多選 / 可自訂）</label>
+          <div class="chips-input" id="requestedByChipsWrap">
+            <div class="chips" id="followupRequestedByChips"></div>
+            <input id="followupRequestedByInput" class="chip-entry" type="text" placeholder="輸入要求者後按 Enter" />
           </div>
-          <div class="field">
-            <label for="followupRequestedByInput">要求者</label>
-            <input id="followupRequestedByInput" type="text" placeholder="例如：醫生 / 護士 / 病人" />
-          </div>
-          <div class="field">
-            <label for="followupDueAtInput">到期時間</label>
-            <input id="followupDueAtInput" type="datetime-local" />
-          </div>
+          <div class="ghost-tags" id="followupRequestedByPresets"></div>
         </div>
 
         <div class="field">
@@ -1415,6 +1569,10 @@
     const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    const PRESET_CATEGORIES = ["回電","異常結果","文件申請","回診安排","保險文件","行政","其他"];
+    const PRESET_SOURCES = ["手動","系統","電話","WhatsApp","前台","護士站","醫生口頭通知","電郵"];
+    const PRESET_REQUESTED_BY = ["醫生","護士","病人","家屬","前台","保險","化驗所","系統"];
+
     const state = {
       authUser: null,
       profile: null,
@@ -1492,23 +1650,35 @@
     const followupModal = {
       el: document.getElementById("followupModal"),
       titleEl: document.getElementById("followupModalTitle"),
-      patientSelectEl: document.getElementById("followupPatientSelect"),
+      patientInputEl: document.getElementById("followupPatientInput"),
+      patientNoteEl: document.getElementById("followupPatientNote"),
+      cumcSuggestListEl: document.getElementById("cumcSuggestList"),
       encounterInputEl: document.getElementById("followupEncounterInput"),
-      encounterDatalistEl: document.getElementById("followupEncounterDatalist"),
+      encounterSuggestListEl: document.getElementById("encounterSuggestList"),
+      encounterNoteEl: document.getElementById("followupEncounterNote"),
       doctorDisplayEl: document.getElementById("followupDoctorDisplay"),
-      categoryEl: document.getElementById("followupCategoryInput"),
       statusEl: document.getElementById("followupStatusInput"),
       priorityEl: document.getElementById("followupPriorityInput"),
       dueAtEl: document.getElementById("followupDueAtInput"),
       titleInputEl: document.getElementById("followupTitleInput"),
       assignedToEl: document.getElementById("followupAssignedToInput"),
-      sourceEl: document.getElementById("followupSourceInput"),
-      requestedByEl: document.getElementById("followupRequestedByInput"),
+      categoryInputEl: document.getElementById("followupCategoryInput"),
+      categoryChipsEl: document.getElementById("followupCategoryChips"),
+      categoryPresetsEl: document.getElementById("followupCategoryPresets"),
+      sourceInputEl: document.getElementById("followupSourceInput"),
+      sourceChipsEl: document.getElementById("followupSourceChips"),
+      sourcePresetsEl: document.getElementById("followupSourcePresets"),
+      requestedByInputEl: document.getElementById("followupRequestedByInput"),
+      requestedByChipsEl: document.getElementById("followupRequestedByChips"),
+      requestedByPresetsEl: document.getElementById("followupRequestedByPresets"),
       descriptionEl: document.getElementById("followupDescriptionInput"),
       outcomeEl: document.getElementById("followupOutcomeInput"),
       saveBtnEl: document.getElementById("saveFollowupBtn"),
       mode: "create",
-      followupId: null
+      followupId: null,
+      categoryValues: [],
+      sourceValues: [],
+      requestedByValues: []
     };
 
     const statusModal = {
@@ -1577,6 +1747,10 @@
       return String(value ?? "").trim().toLowerCase();
     }
 
+    function normalizeCompact(value) {
+      return String(value ?? "").replace(/\s+/g, "").trim().toLowerCase();
+    }
+
     function formatDateTime24(value) {
       if (!value) return "—";
       const d = new Date(value);
@@ -1639,6 +1813,12 @@
       return String(p.cumc_no || "—");
     }
 
+    function getPatientRecordByCumc(cumcNo) {
+      const raw = String(cumcNo || "").trim();
+      if (!raw) return null;
+      return state.patients.find(item => String(item.cumc_no || "").trim() === raw) || null;
+    }
+
     function detectEncounterNo(enc) {
       return String(
         enc?.encounter_no ||
@@ -1697,10 +1877,10 @@
       if (!cumc) return [];
 
       return state.encounters.filter(enc => {
-        return String(enc.patient_id || "") === cumc
-          || String(enc.cumc_no || "") === cumc
-          || String(enc.patient_cumc_no || "") === cumc
-          || String(enc.patient_no || "") === cumc;
+        return String(enc.patient_id || "").trim() === cumc
+          || String(enc.cumc_no || "").trim() === cumc
+          || String(enc.patient_cumc_no || "").trim() === cumc
+          || String(enc.patient_no || "").trim() === cumc;
       });
     }
 
@@ -1803,8 +1983,258 @@
       }
     }
 
+    function uniqueCleanList(values) {
+      const output = [];
+      const seen = new Set();
+
+      (values || []).forEach(v => {
+        const raw = String(v || "").trim();
+        if (!raw) return;
+        const key = raw.toLowerCase();
+        if (seen.has(key)) return;
+        seen.add(key);
+        output.push(raw);
+      });
+
+      return output;
+    }
+
+    function splitMultiValue(raw) {
+      return uniqueCleanList(
+        String(raw || "")
+          .split(/\n|,|，|\/|\||、|;/)
+          .map(v => v.trim())
+      );
+    }
+
+    function safeJsonParse(raw) {
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    }
+
+    function normalizeMultiFieldToArray(value) {
+      if (Array.isArray(value)) return uniqueCleanList(value);
+      if (value && typeof value === "object") return uniqueCleanList(Object.values(value));
+      if (typeof value === "string") {
+        const trimmed = value.trim();
+        if (!trimmed) return [];
+        if ((trimmed.startsWith("[") && trimmed.endsWith("]")) || (trimmed.startsWith("{") && trimmed.endsWith("}"))) {
+          const parsed = safeJsonParse(trimmed);
+          if (Array.isArray(parsed)) return uniqueCleanList(parsed);
+        }
+        return splitMultiValue(trimmed);
+      }
+      return [];
+    }
+
+    function multiFieldToDisplay(value) {
+      const arr = normalizeMultiFieldToArray(value);
+      return arr.length ? arr.join("、") : "—";
+    }
+
+    function renderChipSet(values) {
+      return normalizeMultiFieldToArray(values)
+        .map(v => `<span class="badge badge-chip">${escapeHtml(v)}</span>`)
+        .join("");
+    }
+
+    function renderEditableChips(containerEl, values, removeHandlerName) {
+      containerEl.innerHTML = values.map((v, index) => `
+        <span class="chip">
+          <span>${escapeHtml(v)}</span>
+          <button type="button" data-remove-index="${index}" data-remove-handler="${escapeHtml(removeHandlerName)}">×</button>
+        </span>
+      `).join("");
+    }
+
+    function addChipValue(listName, rawValue) {
+      const value = String(rawValue || "").trim();
+      if (!value) return;
+      const next = uniqueCleanList([...(followupModal[listName] || []), value]);
+      followupModal[listName] = next;
+      renderModalChipGroups();
+    }
+
+    function removeChipValue(listName, index) {
+      followupModal[listName] = (followupModal[listName] || []).filter((_, i) => i !== index);
+      renderModalChipGroups();
+    }
+
+    function renderPresetButtons(containerEl, values, listName) {
+      containerEl.innerHTML = values.map(v => `
+        <button class="ghost-tag" type="button" data-preset-value="${escapeHtml(v)}" data-target-list="${escapeHtml(listName)}">${escapeHtml(v)}</button>
+      `).join("");
+    }
+
+    function renderModalChipGroups() {
+      renderEditableChips(followupModal.categoryChipsEl, followupModal.categoryValues, "categoryValues");
+      renderEditableChips(followupModal.sourceChipsEl, followupModal.sourceValues, "sourceValues");
+      renderEditableChips(followupModal.requestedByChipsEl, followupModal.requestedByValues, "requestedByValues");
+    }
+
+    function wireChipInput(inputEl, listName) {
+      inputEl.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === "," || event.key === "Tab") {
+          const value = inputEl.value.trim();
+          if (!value) return;
+          if (event.key !== "Tab") event.preventDefault();
+          addChipValue(listName, value);
+          inputEl.value = "";
+        } else if (event.key === "Backspace" && !inputEl.value.trim()) {
+          const arr = followupModal[listName] || [];
+          if (arr.length) {
+            followupModal[listName] = arr.slice(0, -1);
+            renderModalChipGroups();
+          }
+        }
+      });
+
+      inputEl.addEventListener("blur", () => {
+        const value = inputEl.value.trim();
+        if (!value) return;
+        addChipValue(listName, value);
+        inputEl.value = "";
+      });
+    }
+
+    function hideSuggestList(el) {
+      el.classList.remove("show");
+      el.innerHTML = "";
+    }
+
+    function showSuggestList(el, html) {
+      el.innerHTML = html;
+      el.classList.add("show");
+    }
+
+    function findCumcSuggestions(keyword) {
+      const key = normalizeCompact(keyword);
+      if (!key) return [];
+
+      const seen = new Set();
+      return state.patients
+        .map(item => String(item.cumc_no || "").trim())
+        .filter(Boolean)
+        .filter(cumc => {
+          const compact = normalizeCompact(cumc);
+          return compact.includes(key) || key.includes(compact);
+        })
+        .filter(cumc => {
+          const k = cumc.toLowerCase();
+          if (seen.has(k)) return false;
+          seen.add(k);
+          return true;
+        })
+        .sort((a,b) => a.localeCompare(b, "en"))
+        .slice(0, 12);
+    }
+
+    function renderCumcSuggestions() {
+      if (followupModal.mode !== "create") {
+        hideSuggestList(followupModal.cumcSuggestListEl);
+        return;
+      }
+
+      const keyword = followupModal.patientInputEl.value.trim();
+      const list = findCumcSuggestions(keyword);
+
+      if (!keyword || !list.length) {
+        hideSuggestList(followupModal.cumcSuggestListEl);
+        return;
+      }
+
+      showSuggestList(
+        followupModal.cumcSuggestListEl,
+        list.map(cumc => `
+          <button class="smart-item" type="button" data-cumc-value="${escapeHtml(cumc)}">
+            <div class="smart-main">${escapeHtml(cumc)}</div>
+            <div class="smart-sub">按一下帶出相關求診號碼</div>
+          </button>
+        `).join("")
+      );
+
+      [...followupModal.cumcSuggestListEl.querySelectorAll("[data-cumc-value]")].forEach(btn => {
+        btn.addEventListener("click", () => {
+          const value = btn.getAttribute("data-cumc-value") || "";
+          followupModal.patientInputEl.value = value;
+          hideSuggestList(followupModal.cumcSuggestListEl);
+          syncEncounterSuggestionsByPatient(true);
+        });
+      });
+    }
+
+    function renderEncounterSuggestions(cumcNo, keyword = "") {
+      const encounters = getEncounterListByPatientCumc(cumcNo);
+      const key = normalizeCompact(keyword);
+
+      const matched = encounters.filter(enc => {
+        const no = detectEncounterNo(enc);
+        const doc = getEncounterDoctorText(enc);
+        const combined = `${no} ${doc}`;
+        if (!key) return true;
+        return normalizeCompact(combined).includes(key);
+      });
+
+      if (!cumcNo || !matched.length) {
+        hideSuggestList(followupModal.encounterSuggestListEl);
+        return;
+      }
+
+      showSuggestList(
+        followupModal.encounterSuggestListEl,
+        matched.slice(0, 20).map(enc => {
+          const no = detectEncounterNo(enc) || String(enc.id || "");
+          const doc = getEncounterDoctorText(enc);
+          return `
+            <button class="smart-item" type="button" data-encounter-value="${escapeHtml(no)}">
+              <div class="smart-main">${escapeHtml(no)}</div>
+              <div class="smart-sub">求診醫生：${escapeHtml(doc)}</div>
+            </button>
+          `;
+        }).join("")
+      );
+
+      [...followupModal.encounterSuggestListEl.querySelectorAll("[data-encounter-value]")].forEach(btn => {
+        btn.addEventListener("click", () => {
+          const value = btn.getAttribute("data-encounter-value") || "";
+          followupModal.encounterInputEl.value = value;
+          hideSuggestList(followupModal.encounterSuggestListEl);
+          syncDoctorDisplayFromEncounterInput();
+        });
+      });
+    }
+
+    function syncEncounterSuggestionsByPatient(forceOpen = false) {
+      const cumcNo = String(followupModal.patientInputEl.value || "").trim();
+      const list = getEncounterListByPatientCumc(cumcNo);
+      followupModal.encounterNoteEl.textContent = cumcNo
+        ? `已找到 ${list.length} 個與 ${cumcNo} 相關的求診號碼。`
+        : "先輸入或選定 CUMC 號碼，系統才會列出相關求診號碼。";
+
+      if (!cumcNo) {
+        followupModal.doctorDisplayEl.value = "—";
+        hideSuggestList(followupModal.encounterSuggestListEl);
+        return;
+      }
+
+      if (forceOpen || document.activeElement === followupModal.encounterInputEl) {
+        renderEncounterSuggestions(cumcNo, followupModal.encounterInputEl.value || "");
+      } else {
+        syncDoctorDisplayFromEncounterInput();
+      }
+    }
+
+    function syncDoctorDisplayFromEncounterInput() {
+      const raw = String(followupModal.encounterInputEl.value || "").trim();
+      followupModal.doctorDisplayEl.value = getEncounterDoctorTextByStoredValue(raw);
+    }
+
     async function init() {
       bindEvents();
+      initChipControls();
       syncViewButtons();
       applyResponsiveDefaultView();
       await withLoading(async () => {
@@ -1812,6 +2242,46 @@
         await loadAll();
         setupRealtime();
         renderAll();
+      });
+    }
+
+    function initChipControls() {
+      renderPresetButtons(followupModal.categoryPresetsEl, PRESET_CATEGORIES, "categoryValues");
+      renderPresetButtons(followupModal.sourcePresetsEl, PRESET_SOURCES, "sourceValues");
+      renderPresetButtons(followupModal.requestedByPresetsEl, PRESET_REQUESTED_BY, "requestedByValues");
+
+      wireChipInput(followupModal.categoryInputEl, "categoryValues");
+      wireChipInput(followupModal.sourceInputEl, "sourceValues");
+      wireChipInput(followupModal.requestedByInputEl, "requestedByValues");
+
+      document.addEventListener("click", (event) => {
+        const removeBtn = event.target.closest("[data-remove-index][data-remove-handler]");
+        if (removeBtn) {
+          const index = Number(removeBtn.getAttribute("data-remove-index"));
+          const handler = removeBtn.getAttribute("data-remove-handler");
+          if (handler && Number.isInteger(index)) removeChipValue(handler, index);
+          return;
+        }
+
+        const presetBtn = event.target.closest("[data-preset-value][data-target-list]");
+        if (presetBtn) {
+          const value = presetBtn.getAttribute("data-preset-value") || "";
+          const listName = presetBtn.getAttribute("data-target-list") || "";
+          if (listName) addChipValue(listName, value);
+          return;
+        }
+
+        if (!followupModal.el.contains(event.target)) {
+          hideSuggestList(followupModal.cumcSuggestListEl);
+          hideSuggestList(followupModal.encounterSuggestListEl);
+        } else {
+          if (!event.target.closest("#followupPatientInput") && !event.target.closest("#cumcSuggestList")) {
+            hideSuggestList(followupModal.cumcSuggestListEl);
+          }
+          if (!event.target.closest("#followupEncounterInput") && !event.target.closest("#encounterSuggestList")) {
+            hideSuggestList(followupModal.encounterSuggestListEl);
+          }
+        }
       });
     }
 
@@ -1873,8 +2343,20 @@
         if (event.target === followupModal.el) closeFollowupModal();
       });
       followupModal.saveBtnEl.addEventListener("click", () => withLoading(saveFollowupFromModal));
-      followupModal.patientSelectEl.addEventListener("change", syncEncounterSuggestionsByPatient);
-      followupModal.encounterInputEl.addEventListener("input", syncDoctorDisplayFromEncounterInput);
+
+      followupModal.patientInputEl.addEventListener("input", () => {
+        renderCumcSuggestions();
+        syncEncounterSuggestionsByPatient(false);
+      });
+      followupModal.patientInputEl.addEventListener("focus", renderCumcSuggestions);
+
+      followupModal.encounterInputEl.addEventListener("input", () => {
+        syncDoctorDisplayFromEncounterInput();
+        renderEncounterSuggestions(String(followupModal.patientInputEl.value || "").trim(), followupModal.encounterInputEl.value || "");
+      });
+      followupModal.encounterInputEl.addEventListener("focus", () => {
+        renderEncounterSuggestions(String(followupModal.patientInputEl.value || "").trim(), followupModal.encounterInputEl.value || "");
+      });
 
       document.getElementById("closeStatusModalBtn").addEventListener("click", closeStatusModal);
       document.getElementById("cancelStatusModalBtn").addEventListener("click", closeStatusModal);
@@ -1964,7 +2446,6 @@
       await loadFollowupEvents();
       populateAssigneeFilter();
       populateDoctorFilter();
-      populatePatientOptions();
     }
 
     async function loadStaffProfiles() {
@@ -2063,42 +2544,6 @@
       ui.doctorFilter.value = [...values].includes(current) ? current : "";
     }
 
-    function populatePatientOptions(selectedPatientId = "") {
-      const options = ['<option value="">請選擇病歷號</option>']
-        .concat(
-          state.patients
-            .slice()
-            .sort((a,b) => String(a.cumc_no || "").localeCompare(String(b.cumc_no || "")))
-            .map(p => `<option value="${escapeHtml(p.cumc_no || "")}">${escapeHtml(String(p.cumc_no || "—"))}</option>`)
-        )
-        .join("");
-      followupModal.patientSelectEl.innerHTML = options;
-      followupModal.patientSelectEl.value = selectedPatientId || "";
-      syncEncounterSuggestionsByPatient();
-    }
-
-    function syncEncounterSuggestionsByPatient(selectedValue = "") {
-      const patientId = String(followupModal.patientSelectEl.value || "").trim();
-      const list = patientId ? getEncounterListByPatientCumc(patientId) : [];
-      const current = selectedValue || followupModal.encounterInputEl.value || "";
-
-      followupModal.encounterDatalistEl.innerHTML = list.map(item => {
-        const no = detectEncounterNo(item);
-        const doctor = getEncounterDoctorText(item);
-        const text = no || String(item.id || "");
-        const label = `${text}${doctor !== "—" ? `｜${doctor}` : ""}`;
-        return `<option value="${escapeHtml(text)}" label="${escapeHtml(label)}"></option>`;
-      }).join("");
-
-      if (current) followupModal.encounterInputEl.value = current;
-      syncDoctorDisplayFromEncounterInput();
-    }
-
-    function syncDoctorDisplayFromEncounterInput() {
-      const raw = String(followupModal.encounterInputEl.value || "").trim();
-      followupModal.doctorDisplayEl.value = getEncounterDoctorTextByStoredValue(raw);
-    }
-
     function getFilteredFollowups() {
       const q = normalizeText(ui.searchInput.value);
       const priority = ui.priorityFilter.value;
@@ -2110,12 +2555,16 @@
       let list = state.followups.filter(item => {
         if (tabStatus && String(item.status || "") !== tabStatus) return false;
         if (priority && String(item.priority || "") !== priority) return false;
-        if (category && String(item.category || "") !== category) return false;
         if (assignee && getStaffDisplayText(item.assigned_to) !== assignee) return false;
 
         const encounterStored = getPrimaryEncounterStoredValue(item);
         const doctorText = getEncounterDoctorTextByStoredValue(encounterStored);
         if (doctor && doctorText !== doctor) return false;
+
+        const categoryList = normalizeMultiFieldToArray(item.category);
+        if (category && !categoryList.some(c => normalizeText(c) === normalizeText(category) || normalizeText(c) === normalizeText(categoryLabel(category)))) {
+          return false;
+        }
 
         if (q) {
           const haystack = [
@@ -2126,9 +2575,9 @@
             item.created_by,
             item.description,
             item.outcome,
-            item.category,
-            item.source,
-            item.requested_by,
+            multiFieldToDisplay(item.category),
+            multiFieldToDisplay(item.source),
+            multiFieldToDisplay(item.requested_by),
             item.encounter_id,
             item.encounter_ref,
             item.encounter_no,
@@ -2218,7 +2667,7 @@
             </td>
             <td>${statusBadge(item.status)}</td>
             <td>${priorityBadge(item.priority)}</td>
-            <td>${escapeHtml(categoryLabel(item.category))}</td>
+            <td>${renderChipSet(item.category) || '<span class="muted">—</span>'}</td>
             <td>${doctorText !== "—" ? `<div class="pill pill-doctor"><span>${escapeHtml(doctorText)}</span></div>` : '<span class="muted">—</span>'}</td>
             <td><div class="pill"><span>${escapeHtml(getStaffDisplayText(item.assigned_to))}</span></div></td>
             <td>${renderSla(item)}</td>
@@ -2283,7 +2732,7 @@
               <div class="followup-card-no">${escapeHtml(formatFollowupNo(item))}</div>
               <div class="followup-card-title">${escapeHtml(item.title || "—")}</div>
               <div class="followup-card-sub">
-                病歷號：${escapeHtml(patientText)}
+                CUMC 號碼：${escapeHtml(patientText)}
                 ${encounterText !== "—" ? `｜求診號碼：${escapeHtml(encounterText)}` : ""}
               </div>
             </div>
@@ -2292,7 +2741,7 @@
           <div class="followup-card-badges">
             ${statusBadge(item.status)}
             ${priorityBadge(item.priority)}
-            <span class="badge" style="background:#eef2ff;color:#4338ca;">${escapeHtml(categoryLabel(item.category))}</span>
+            ${renderChipSet(item.category)}
             ${renderSla(item)}
           </div>
 
@@ -2341,7 +2790,7 @@
             <div class="detail-badges">
               ${statusBadge(item.status)}
               ${priorityBadge(item.priority)}
-              <span class="badge" style="background:#eef2ff;color:#4338ca;">${escapeHtml(categoryLabel(item.category))}</span>
+              ${renderChipSet(item.category)}
               ${renderSla(item)}
             </div>
             <h3>${escapeHtml(item.title || "—")}</h3>
@@ -2349,7 +2798,7 @@
 
           <div class="detail-grid">
             <div class="meta-box">
-              <div class="k">病歷號</div>
+              <div class="k">CUMC 號碼</div>
               <div class="v">${escapeHtml(getPatientDisplayTextById(item.patient_id))}</div>
             </div>
             <div class="meta-box">
@@ -2369,8 +2818,12 @@
               <div class="v">${escapeHtml(getStaffDisplayText(item.created_by))}</div>
             </div>
             <div class="meta-box">
-              <div class="k">來源 / 要求者</div>
-              <div class="v">${escapeHtml([item.source || "—", item.requested_by || "—"].join("｜"))}</div>
+              <div class="k">來源</div>
+              <div class="v">${escapeHtml(multiFieldToDisplay(item.source))}</div>
+            </div>
+            <div class="meta-box">
+              <div class="k">要求者</div>
+              <div class="v">${escapeHtml(multiFieldToDisplay(item.requested_by))}</div>
             </div>
             <div class="meta-box">
               <div class="k">建立時間</div>
@@ -2443,25 +2896,40 @@
       `;
     }
 
+    function resetModalSmartInputs() {
+      followupModal.categoryValues = [];
+      followupModal.sourceValues = [];
+      followupModal.requestedByValues = [];
+      followupModal.categoryInputEl.value = "";
+      followupModal.sourceInputEl.value = "";
+      followupModal.requestedByInputEl.value = "";
+      renderModalChipGroups();
+      hideSuggestList(followupModal.cumcSuggestListEl);
+      hideSuggestList(followupModal.encounterSuggestListEl);
+    }
+
     function openFollowupModal(mode, followupId = null) {
       followupModal.mode = mode;
       followupModal.followupId = followupId;
+      resetModalSmartInputs();
 
       if (mode === "create") {
         followupModal.titleEl.textContent = "新增事項";
-        populatePatientOptions("");
+        followupModal.patientInputEl.value = "";
+        followupModal.patientInputEl.readOnly = false;
+        followupModal.patientInputEl.placeholder = "可自由輸入，會自動建議接近的 CUMC 號碼";
+        followupModal.patientNoteEl.textContent = "新增時可自由輸入；編輯時不可修改 CUMC 號碼。";
         followupModal.encounterInputEl.value = "";
-        followupModal.categoryEl.value = "other";
         followupModal.statusEl.value = "open";
         followupModal.priorityEl.value = "normal";
         followupModal.dueAtEl.value = "";
         followupModal.titleInputEl.value = "";
         followupModal.assignedToEl.value = getCurrentStaffDisplayText();
-        followupModal.sourceEl.value = "手動";
-        followupModal.requestedByEl.value = "";
         followupModal.descriptionEl.value = "";
         followupModal.outcomeEl.value = "";
         followupModal.doctorDisplayEl.value = "—";
+        followupModal.sourceValues = ["手動"];
+        renderModalChipGroups();
       } else {
         const item = state.followups.find(f => String(f.id) === String(followupId));
         if (!item) {
@@ -2472,20 +2940,24 @@
         const encounterStored = getPrimaryEncounterStoredValue(item);
 
         followupModal.titleEl.textContent = `編輯事項：${formatFollowupNo(item)}`;
-        populatePatientOptions(item.patient_id || "");
+        followupModal.patientInputEl.value = item.patient_id || "";
+        followupModal.patientInputEl.readOnly = true;
+        followupModal.patientInputEl.placeholder = "";
+        followupModal.patientNoteEl.textContent = "編輯事項時不可修改 CUMC 號碼。";
         followupModal.encounterInputEl.value = getEncounterDisplayByStoredValue(encounterStored) === "—" ? String(encounterStored || "") : getEncounterDisplayByStoredValue(encounterStored);
-        syncEncounterSuggestionsByPatient(followupModal.encounterInputEl.value);
-        followupModal.categoryEl.value = item.category || "other";
         followupModal.statusEl.value = item.status || "open";
         followupModal.priorityEl.value = item.priority || "normal";
         followupModal.dueAtEl.value = toDatetimeLocalValue(item.due_at);
         followupModal.titleInputEl.value = item.title || "";
         followupModal.assignedToEl.value = getStaffDisplayText(item.assigned_to);
-        followupModal.sourceEl.value = item.source || "";
-        followupModal.requestedByEl.value = item.requested_by || "";
         followupModal.descriptionEl.value = item.description || "";
         followupModal.outcomeEl.value = item.outcome || "";
         followupModal.doctorDisplayEl.value = getEncounterDoctorTextByStoredValue(encounterStored);
+        followupModal.categoryValues = normalizeMultiFieldToArray(item.category);
+        followupModal.sourceValues = normalizeMultiFieldToArray(item.source);
+        followupModal.requestedByValues = normalizeMultiFieldToArray(item.requested_by);
+        renderModalChipGroups();
+        syncEncounterSuggestionsByPatient(false);
       }
 
       followupModal.el.classList.add("show");
@@ -2495,6 +2967,8 @@
     }
 
     function closeFollowupModal() {
+      hideSuggestList(followupModal.cumcSuggestListEl);
+      hideSuggestList(followupModal.encounterSuggestListEl);
       followupModal.el.classList.remove("show");
       followupModal.el.setAttribute("aria-hidden", "true");
       document.body.classList.remove("modal-open");
@@ -2509,7 +2983,7 @@
 
       const encounterStored = getPrimaryEncounterStoredValue(item);
       statusModal.followupId = followupId;
-      statusModal.infoEl.textContent = `${formatFollowupNo(item)}｜${item.title || "—"}｜病歷號：${getPatientDisplayTextById(item.patient_id)}｜求診醫生：${getEncounterDoctorTextByStoredValue(encounterStored)}`;
+      statusModal.infoEl.textContent = `${formatFollowupNo(item)}｜${item.title || "—"}｜CUMC 號碼：${getPatientDisplayTextById(item.patient_id)}｜求診醫生：${getEncounterDoctorTextByStoredValue(encounterStored)}`;
       statusModal.statusEl.value = item.status || "open";
       statusModal.priorityEl.value = item.priority || "normal";
       statusModal.assignedToEl.value = getStaffDisplayText(item.assigned_to);
@@ -2538,7 +3012,7 @@
 
       const encounterStored = getPrimaryEncounterStoredValue(item);
       quickDoneModal.followupId = followupId;
-      quickDoneModal.infoEl.textContent = `${formatFollowupNo(item)}｜${item.title || "—"}｜病歷號：${getPatientDisplayTextById(item.patient_id)}｜求診醫生：${getEncounterDoctorTextByStoredValue(encounterStored)}`;
+      quickDoneModal.infoEl.textContent = `${formatFollowupNo(item)}｜${item.title || "—"}｜CUMC 號碼：${getPatientDisplayTextById(item.patient_id)}｜求診醫生：${getEncounterDoctorTextByStoredValue(encounterStored)}`;
       quickDoneModal.outcomeEl.value = item.outcome || "";
       quickDoneModal.remarkEl.value = "";
 
@@ -2556,11 +3030,11 @@
     }
 
     async function saveFollowupFromModal() {
-      const patientId = String(followupModal.patientSelectEl.value || "").trim();
+      const patientId = String(followupModal.patientInputEl.value || "").trim();
       const encounterInput = String(followupModal.encounterInputEl.value || "").trim();
       const matchedEncounter = getEncounterByIdOrNo(encounterInput);
       const encounterNo = matchedEncounter ? detectEncounterNo(matchedEncounter) : (encounterInput || null);
-      const encounterRef = matchedEncounter ? String(matchedEncounter.id) : (encounterInput || null);
+      const encounterRef = matchedEncounter ? String(matchedEncounter.id) : null;
       const encounterId = matchedEncounter?.id || null;
 
       const title = String(followupModal.titleInputEl.value || "").trim();
@@ -2569,27 +3043,40 @@
       const outcome = String(followupModal.outcomeEl.value || "").trim() || null;
       const status = String(followupModal.statusEl.value || "open").trim();
       const priority = String(followupModal.priorityEl.value || "normal").trim();
-      const category = String(followupModal.categoryEl.value || "other").trim();
-      const source = String(followupModal.sourceEl.value || "").trim() || "手動";
-      const requestedBy = String(followupModal.requestedByEl.value || "").trim() || null;
+      const category = uniqueCleanList(followupModal.categoryValues);
+      const source = uniqueCleanList(followupModal.sourceValues);
+      const requestedBy = uniqueCleanList(followupModal.requestedByValues);
       const dueAt = localValueToIso(followupModal.dueAtEl.value || "");
       const actor = getCurrentStaffDisplayText();
 
       if (!patientId) {
-        notify("請選擇病歷號", "warning");
-        followupModal.patientSelectEl.focus();
+        notify("請輸入 CUMC 號碼", "warning");
+        followupModal.patientInputEl.focus();
         return;
       }
+
+      if (followupModal.mode === "create" && !getPatientRecordByCumc(patientId)) {
+        notify("輸入的 CUMC 號碼未在病人資料找到，請確認後再儲存", "warning", 4200);
+        followupModal.patientInputEl.focus();
+        return;
+      }
+
       if (!title) {
         notify("請輸入主題", "warning");
         followupModal.titleInputEl.focus();
         return;
       }
 
+      if (!category.length) {
+        notify("請至少輸入一個類別", "warning");
+        followupModal.categoryInputEl.focus();
+        return;
+      }
+
       const payload = {
         patient_id: patientId,
         encounter_id: encounterId,
-        encounter_ref: encounterRef,
+        encounter_ref: encounterRef || encounterNo,
         encounter_no: encounterNo,
         category,
         title,
@@ -2625,6 +3112,7 @@
               assigned_to: assignedTo,
               source,
               requested_by: requestedBy,
+              category,
               encounter_no: encounterNo,
               encounter_doctor: getEncounterDoctorText(matchedEncounter),
               outcome: outcome || null
@@ -2642,6 +3130,8 @@
         const original = state.followups.find(f => String(f.id) === String(followupModal.followupId));
         if (!original) throw new Error("FOLLOWUP_NOT_FOUND");
 
+        payload.patient_id = original.patient_id;
+
         const { data, error } = await sb
           .from("followups")
           .update(payload)
@@ -2654,7 +3144,7 @@
         Object.entries(payload).forEach(([k, v]) => {
           const oldVal = original[k] ?? null;
           const newVal = v ?? null;
-          if (String(oldVal) !== String(newVal)) {
+          if (JSON.stringify(oldVal) !== JSON.stringify(newVal)) {
             changed[k] = { from: oldVal, to: newVal };
           }
         });
@@ -2667,6 +3157,9 @@
             event_label: "已更新事項",
             event_data: {
               changes: changed,
+              category,
+              source,
+              requested_by: requestedBy,
               encounter_no: encounterNo,
               encounter_doctor: getEncounterDoctorText(matchedEncounter),
               outcome: outcome || null
