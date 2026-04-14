@@ -34,6 +34,7 @@
     }
 
     *{ box-sizing:border-box; }
+
     html,body{
       margin:0;
       padding:0;
@@ -41,6 +42,7 @@
       color:var(--text);
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
     }
+
     body.modal-open{ overflow:hidden; }
 
     .app{
@@ -104,7 +106,13 @@
       transition:.16s ease;
       background:#e5e7eb;
       color:#111827;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
     }
+
     .btn:hover{ transform:translateY(-1px); }
     .btn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 
@@ -139,6 +147,15 @@
       background:var(--panel-tint);
       color:var(--text);
       border:1px solid var(--line);
+    }
+
+    .btn-home{
+      background:#0f172a;
+      color:#fff;
+    }
+
+    .btn-home:hover{
+      background:#1e293b;
     }
 
     .panel{
@@ -295,19 +312,62 @@
 
     .layout{
       display:grid;
-      grid-template-columns:minmax(0,1.6fr) minmax(390px,.95fr);
+      grid-template-columns:minmax(0,1.65fr) minmax(380px,.9fr);
       gap:18px;
       align-items:start;
     }
 
+    .table-panel{
+      min-width:0;
+    }
+
+    .table-topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 18px 0;
+      flex-wrap:wrap;
+    }
+
+    .view-switch{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:#f8fafc;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:4px;
+    }
+
+    .view-btn{
+      appearance:none;
+      border:none;
+      background:transparent;
+      color:var(--text-soft);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:13px;
+      font-weight:900;
+      cursor:pointer;
+      transition:.16s ease;
+    }
+
+    .view-btn.active{
+      background:#fff;
+      color:var(--primary);
+      box-shadow:0 2px 10px rgba(15,23,42,.08);
+    }
+
     .table-wrap{
       overflow:auto;
+      max-height:calc(100vh - 320px);
     }
 
     table{
       width:100%;
       border-collapse:collapse;
-      min-width:1320px;
+      min-width:1180px;
     }
 
     thead th{
@@ -480,6 +540,109 @@
       border:1px solid #bfdbfe;
     }
 
+    .cards-wrap{
+      display:none;
+      padding:14px;
+      gap:12px;
+      background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%);
+    }
+
+    .cards-wrap.show{
+      display:grid;
+    }
+
+    .followup-card{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+      box-shadow:var(--shadow-sm);
+      padding:14px;
+      display:grid;
+      gap:12px;
+      cursor:pointer;
+      transition:.16s ease;
+    }
+
+    .followup-card:hover{
+      transform:translateY(-1px);
+      border-color:#bfdbfe;
+    }
+
+    .followup-card.active{
+      border-color:#93c5fd;
+      background:#eff6ff;
+    }
+
+    .followup-card.row-overdue{
+      border-color:#fecaca;
+      background:linear-gradient(180deg,#fff8f8 0%,#fff 100%);
+    }
+
+    .followup-card.row-today{
+      border-color:#fde68a;
+      background:linear-gradient(180deg,#fffdf4 0%,#fff 100%);
+    }
+
+    .followup-card-top{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+
+    .followup-card-no{
+      font-size:13px;
+      font-weight:900;
+      color:var(--primary);
+    }
+
+    .followup-card-title{
+      font-size:16px;
+      font-weight:900;
+      color:#0f172a;
+      line-height:1.45;
+    }
+
+    .followup-card-sub{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.6;
+    }
+
+    .followup-card-badges{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .followup-card-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .card-meta{
+      background:#f8fafc;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px;
+    }
+
+    .card-meta .k{
+      font-size:11px;
+      font-weight:900;
+      color:var(--muted);
+      margin-bottom:4px;
+    }
+
+    .card-meta .v{
+      font-size:13px;
+      font-weight:800;
+      color:#0f172a;
+      line-height:1.5;
+      word-break:break-word;
+    }
+
     .right-panel{
       position:sticky;
       top:22px;
@@ -574,7 +737,6 @@
       color:#334155;
     }
 
-    /* 靚版 timeline */
     .timeline{
       position:relative;
       display:grid;
@@ -789,6 +951,7 @@
       white-space:pre-wrap;
       animation:toastIn .2s ease;
     }
+
     .toast.success{ background:#166534; }
     .toast.warning{ background:#92400e; }
     .toast.error{ background:#991b1b; }
@@ -841,6 +1004,12 @@
       .toolbar-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); }
       .layout{ grid-template-columns:1fr; }
       .right-panel{ position:static; }
+      .table-wrap{ max-height:none; }
+    }
+
+    @media (max-width: 980px){
+      .table-wrap{ display:none; }
+      .cards-wrap{ display:grid; }
     }
 
     @media (max-width: 900px){
@@ -848,18 +1017,23 @@
         flex-direction:column;
         align-items:stretch;
       }
+
       .header-actions{
         justify-content:flex-start;
       }
+
       .summary{
         grid-template-columns:repeat(2,minmax(0,1fr));
       }
+
       .grid-3,
       .grid-2,
       .detail-grid,
-      .detail-actions{
+      .detail-actions,
+      .followup-card-grid{
         grid-template-columns:1fr;
       }
+
       .toolbar-grid{ grid-template-columns:1fr; }
     }
 
@@ -869,6 +1043,12 @@
       .modal{ padding:8px; }
       .modal-card{ max-height:94vh; }
       .header-left h1{ font-size:26px; }
+      .table-topbar{
+        padding:14px 14px 0;
+      }
+      .cards-wrap{
+        padding:12px;
+      }
     }
   </style>
 </head>
@@ -878,9 +1058,10 @@
       <div class="header-left">
         <div class="header-tag">跟進事項工作台</div>
         <h1>跟進事項管理</h1>
-        <p>顯示跟進編號、24 小時制時間、求診醫生、狀態時間線、即時同步職員名稱，並支援快捷完成及 SLA 提示。</p>
+        <p>顯示狀態、優先級、求診醫生、時間線與即時同步職員名稱，並支援快捷完成及 SLA 提示。</p>
       </div>
       <div class="header-actions">
+        <a class="btn btn-home" id="homeBtn" href="/">返回主頁</a>
         <button class="btn btn-light" id="refreshBtn" type="button">重新整理</button>
         <button class="btn btn-primary" id="newFollowupBtn" type="button">新增事項</button>
       </div>
@@ -923,7 +1104,7 @@
       <div class="toolbar-grid">
         <div class="field">
           <label for="searchInput">搜尋</label>
-          <input id="searchInput" type="text" placeholder="搜尋跟進編號 / 主題 / 病歷號 / 求診號碼 / 醫生 / 負責人" />
+          <input id="searchInput" type="text" placeholder="搜尋主題 / 病歷號 / 求診號碼 / 醫生 / 負責人 / AEFU 編號" />
         </div>
 
         <div class="field">
@@ -982,7 +1163,7 @@
     </div>
 
     <div class="layout">
-      <div class="panel">
+      <div class="panel table-panel">
         <div class="panel-head">
           <div>
             <h2>事項列表</h2>
@@ -990,18 +1171,25 @@
           </div>
         </div>
 
-        <div class="table-wrap">
+        <div class="table-topbar">
+          <div class="note">桌面版顯示表格；手機 / 窄螢幕會自動轉為卡片列表。</div>
+          <div class="view-switch" aria-label="列表顯示模式">
+            <button class="view-btn active" id="desktopViewBtn" type="button">表格</button>
+            <button class="view-btn" id="cardViewBtn" type="button">卡片</button>
+          </div>
+        </div>
+
+        <div class="table-wrap" id="tableWrap">
           <table>
             <thead>
               <tr>
-                <th>跟進編號</th>
+                <th>AEFU #</th>
                 <th>主題 / 病歷號</th>
                 <th>狀態</th>
                 <th>優先級</th>
                 <th>類別</th>
                 <th>求診醫生</th>
                 <th>負責人</th>
-                <th>建立人</th>
                 <th>到期情況</th>
                 <th>到期時間</th>
                 <th>更新時間</th>
@@ -1012,6 +1200,7 @@
           </table>
         </div>
 
+        <div class="cards-wrap" id="followupCards"></div>
         <div class="empty-state" id="tableEmpty" style="display:none;">目前沒有符合條件的跟進事項。</div>
       </div>
 
@@ -1237,7 +1426,8 @@
       selectedFollowupId: null,
       subscriptions: [],
       loadingCount: 0,
-      activeTabStatus: ""
+      activeTabStatus: "",
+      listView: "table"
     };
 
     const zh = {
@@ -1282,6 +1472,8 @@
       refreshBtn: document.getElementById("refreshBtn"),
       newFollowupBtn: document.getElementById("newFollowupBtn"),
       followupTableBody: document.getElementById("followupTableBody"),
+      followupCards: document.getElementById("followupCards"),
+      tableWrap: document.getElementById("tableWrap"),
       tableEmpty: document.getElementById("tableEmpty"),
       tableMeta: document.getElementById("tableMeta"),
       detailRoot: document.getElementById("followupDetailRoot"),
@@ -1292,7 +1484,9 @@
       summaryUrgent: document.getElementById("summaryUrgent"),
       notifyRoot: document.getElementById("notifyRoot"),
       loadingOverlay: document.getElementById("loadingOverlay"),
-      statusTabs: document.getElementById("statusTabs")
+      statusTabs: document.getElementById("statusTabs"),
+      desktopViewBtn: document.getElementById("desktopViewBtn"),
+      cardViewBtn: document.getElementById("cardViewBtn")
     };
 
     const followupModal = {
@@ -1481,6 +1675,10 @@
       ) || null;
     }
 
+    function getPrimaryEncounterStoredValue(item) {
+      return item?.encounter_id || item?.encounter_ref || item?.encounter_no || "";
+    }
+
     function getEncounterDisplayByStoredValue(value) {
       const raw = String(value || "").trim();
       if (!raw) return "—";
@@ -1607,6 +1805,8 @@
 
     async function init() {
       bindEvents();
+      syncViewButtons();
+      applyResponsiveDefaultView();
       await withLoading(async () => {
         await ensureAuth();
         await loadAll();
@@ -1651,6 +1851,22 @@
         });
       });
 
+      ui.desktopViewBtn.addEventListener("click", () => {
+        state.listView = "table";
+        syncViewButtons();
+        renderAll();
+      });
+
+      ui.cardViewBtn.addEventListener("click", () => {
+        state.listView = "card";
+        syncViewButtons();
+        renderAll();
+      });
+
+      window.addEventListener("resize", () => {
+        applyResponsiveDefaultView(false);
+      });
+
       document.getElementById("closeFollowupModalBtn").addEventListener("click", closeFollowupModal);
       document.getElementById("cancelFollowupModalBtn").addEventListener("click", closeFollowupModal);
       followupModal.el.addEventListener("click", (event) => {
@@ -1680,6 +1896,29 @@
         if (statusModal.el.classList.contains("show")) closeStatusModal();
         if (quickDoneModal.el.classList.contains("show")) closeQuickDoneModal();
       });
+    }
+
+    function applyResponsiveDefaultView(force = true) {
+      const isNarrow = window.innerWidth <= 980;
+      if (force) {
+        state.listView = isNarrow ? "card" : "table";
+      } else if (isNarrow && state.listView === "table") {
+        state.listView = "card";
+      }
+      syncViewButtons();
+      renderListViewVisibility();
+    }
+
+    function syncViewButtons() {
+      ui.desktopViewBtn.classList.toggle("active", state.listView === "table");
+      ui.cardViewBtn.classList.toggle("active", state.listView === "card");
+    }
+
+    function renderListViewVisibility() {
+      const forceCardByViewport = window.innerWidth <= 980;
+      const showCards = forceCardByViewport || state.listView === "card";
+      ui.tableWrap.style.display = showCards ? "none" : "block";
+      ui.followupCards.classList.toggle("show", showCards);
     }
 
     function syncStatusTabsUI() {
@@ -1812,7 +2051,7 @@
     function populateDoctorFilter() {
       const values = new Set();
       state.followups.forEach(item => {
-        const doctor = getEncounterDoctorTextByStoredValue(item.encounter_ref || item.encounter_id || item.encounter_no);
+        const doctor = getEncounterDoctorTextByStoredValue(getPrimaryEncounterStoredValue(item));
         if (doctor && doctor !== "—") values.add(doctor);
       });
 
@@ -1874,7 +2113,8 @@
         if (category && String(item.category || "") !== category) return false;
         if (assignee && getStaffDisplayText(item.assigned_to) !== assignee) return false;
 
-        const doctorText = getEncounterDoctorTextByStoredValue(item.encounter_ref || item.encounter_id || item.encounter_no);
+        const encounterStored = getPrimaryEncounterStoredValue(item);
+        const doctorText = getEncounterDoctorTextByStoredValue(encounterStored);
         if (doctor && doctorText !== doctor) return false;
 
         if (q) {
@@ -1889,9 +2129,10 @@
             item.category,
             item.source,
             item.requested_by,
+            item.encounter_id,
             item.encounter_ref,
             item.encounter_no,
-            getEncounterDisplayByStoredValue(item.encounter_ref || item.encounter_id || item.encounter_no),
+            getEncounterDisplayByStoredValue(encounterStored),
             doctorText
           ].join(" ").toLowerCase();
 
@@ -1944,29 +2185,32 @@
       ui.summaryUrgent.textContent = String(urgentCount);
     }
 
+    function buildRowClass(item) {
+      const dueType = getDueState(item);
+      let rowClass = "";
+      if (dueType === "overdue") rowClass = "row-overdue";
+      if (dueType === "today") rowClass = "row-today";
+      if (String(item.id) === String(state.selectedFollowupId)) rowClass += " active";
+      return rowClass.trim();
+    }
+
     function renderTable() {
       const list = getFilteredFollowups();
+      renderListViewVisibility();
       ui.tableMeta.textContent = `${list.length} 項`;
       ui.tableEmpty.style.display = list.length ? "none" : "block";
 
       ui.followupTableBody.innerHTML = list.map(item => {
         const patientText = getPatientDisplayTextById(item.patient_id);
-        const encounterText = getEncounterDisplayByStoredValue(item.encounter_ref || item.encounter_id || item.encounter_no);
-        const doctorText = getEncounterDoctorTextByStoredValue(item.encounter_ref || item.encounter_id || item.encounter_no);
-        const dueType = getDueState(item);
-
-        let rowClass = "";
-        if (dueType === "overdue") rowClass = "row-overdue";
-        if (dueType === "today") rowClass = "row-today";
-        if (String(item.id) === String(state.selectedFollowupId)) rowClass += " active";
-
+        const encounterText = getEncounterDisplayByStoredValue(getPrimaryEncounterStoredValue(item));
+        const doctorText = getEncounterDoctorTextByStoredValue(getPrimaryEncounterStoredValue(item));
         const titleSub = [
           patientText,
           encounterText !== "—" ? `求診號碼 ${encounterText}` : ""
         ].filter(Boolean).join("｜");
 
         return `
-          <tr data-followup-id="${escapeHtml(item.id)}" class="${escapeHtml(rowClass.trim())}">
+          <tr data-followup-id="${escapeHtml(item.id)}" class="${escapeHtml(buildRowClass(item))}">
             <td><div class="followup-no">${escapeHtml(formatFollowupNo(item))}</div></td>
             <td class="title-cell">
               <div class="title-main">${escapeHtml(item.title || "—")}</div>
@@ -1977,7 +2221,6 @@
             <td>${escapeHtml(categoryLabel(item.category))}</td>
             <td>${doctorText !== "—" ? `<div class="pill pill-doctor"><span>${escapeHtml(doctorText)}</span></div>` : '<span class="muted">—</span>'}</td>
             <td><div class="pill"><span>${escapeHtml(getStaffDisplayText(item.assigned_to))}</span></div></td>
-            <td><div class="pill"><span>${escapeHtml(getStaffDisplayText(item.created_by))}</span></div></td>
             <td>${renderSla(item)}</td>
             <td>${escapeHtml(formatDateTime24(item.due_at))}</td>
             <td>${escapeHtml(formatDateTime24(item.updated_at || item.created_at))}</td>
@@ -1991,6 +2234,8 @@
         `;
       }).join("");
 
+      ui.followupCards.innerHTML = list.map(item => renderCardItem(item)).join("");
+
       [...ui.followupTableBody.querySelectorAll("tr[data-followup-id]")].forEach(row => {
         row.addEventListener("click", (event) => {
           const actionBtn = event.target.closest("button[data-action]");
@@ -2000,19 +2245,82 @@
         });
       });
 
-      [...ui.followupTableBody.querySelectorAll("button[data-action='quick-done']")].forEach(btn => {
+      [...ui.followupCards.querySelectorAll("[data-followup-card-id]")].forEach(card => {
+        card.addEventListener("click", (event) => {
+          const actionBtn = event.target.closest("button[data-action]");
+          if (actionBtn) return;
+          state.selectedFollowupId = card.getAttribute("data-followup-card-id");
+          renderAll();
+        });
+      });
+
+      [...document.querySelectorAll("button[data-action='quick-done']")].forEach(btn => {
         btn.addEventListener("click", (event) => {
           event.stopPropagation();
           openQuickDoneModal(btn.getAttribute("data-id"));
         });
       });
 
-      [...ui.followupTableBody.querySelectorAll("button[data-action='edit']")].forEach(btn => {
+      [...document.querySelectorAll("button[data-action='edit']")].forEach(btn => {
         btn.addEventListener("click", (event) => {
           event.stopPropagation();
           openFollowupModal("edit", btn.getAttribute("data-id"));
         });
       });
+    }
+
+    function renderCardItem(item) {
+      const patientText = getPatientDisplayTextById(item.patient_id);
+      const encounterText = getEncounterDisplayByStoredValue(getPrimaryEncounterStoredValue(item));
+      const doctorText = getEncounterDoctorTextByStoredValue(getPrimaryEncounterStoredValue(item));
+      const assignedText = getStaffDisplayText(item.assigned_to);
+      const updatedText = formatDateTime24(item.updated_at || item.created_at);
+
+      return `
+        <div class="followup-card ${escapeHtml(buildRowClass(item))}" data-followup-card-id="${escapeHtml(item.id)}">
+          <div class="followup-card-top">
+            <div>
+              <div class="followup-card-no">${escapeHtml(formatFollowupNo(item))}</div>
+              <div class="followup-card-title">${escapeHtml(item.title || "—")}</div>
+              <div class="followup-card-sub">
+                病歷號：${escapeHtml(patientText)}
+                ${encounterText !== "—" ? `｜求診號碼：${escapeHtml(encounterText)}` : ""}
+              </div>
+            </div>
+          </div>
+
+          <div class="followup-card-badges">
+            ${statusBadge(item.status)}
+            ${priorityBadge(item.priority)}
+            <span class="badge" style="background:#eef2ff;color:#4338ca;">${escapeHtml(categoryLabel(item.category))}</span>
+            ${renderSla(item)}
+          </div>
+
+          <div class="followup-card-grid">
+            <div class="card-meta">
+              <div class="k">求診醫生</div>
+              <div class="v">${escapeHtml(doctorText)}</div>
+            </div>
+            <div class="card-meta">
+              <div class="k">負責人</div>
+              <div class="v">${escapeHtml(assignedText)}</div>
+            </div>
+            <div class="card-meta">
+              <div class="k">到期時間</div>
+              <div class="v">${escapeHtml(formatDateTime24(item.due_at))}</div>
+            </div>
+            <div class="card-meta">
+              <div class="k">更新時間</div>
+              <div class="v">${escapeHtml(updatedText)}</div>
+            </div>
+          </div>
+
+          <div class="row-actions">
+            <button class="mini-btn done" type="button" data-action="quick-done" data-id="${escapeHtml(item.id)}">完成</button>
+            <button class="mini-btn edit" type="button" data-action="edit" data-id="${escapeHtml(item.id)}">編輯</button>
+          </div>
+        </div>
+      `;
     }
 
     function renderDetail() {
@@ -2025,7 +2333,7 @@
 
       ui.detailMeta.textContent = formatFollowupNo(item);
       const events = state.followupEventsMap.get(String(item.id)) || [];
-      const encounterStored = item.encounter_ref || item.encounter_id || item.encounter_no;
+      const encounterStored = getPrimaryEncounterStoredValue(item);
 
       ui.detailRoot.innerHTML = `
         <div class="detail-body">
@@ -2037,7 +2345,6 @@
               ${renderSla(item)}
             </div>
             <h3>${escapeHtml(item.title || "—")}</h3>
-            <div class="muted">跟進編號：${escapeHtml(formatFollowupNo(item))}</div>
           </div>
 
           <div class="detail-grid">
@@ -2162,7 +2469,7 @@
           return;
         }
 
-        const encounterStored = item.encounter_ref || item.encounter_id || item.encounter_no;
+        const encounterStored = getPrimaryEncounterStoredValue(item);
 
         followupModal.titleEl.textContent = `編輯事項：${formatFollowupNo(item)}`;
         populatePatientOptions(item.patient_id || "");
@@ -2200,7 +2507,7 @@
         return;
       }
 
-      const encounterStored = item.encounter_ref || item.encounter_id || item.encounter_no;
+      const encounterStored = getPrimaryEncounterStoredValue(item);
       statusModal.followupId = followupId;
       statusModal.infoEl.textContent = `${formatFollowupNo(item)}｜${item.title || "—"}｜病歷號：${getPatientDisplayTextById(item.patient_id)}｜求診醫生：${getEncounterDoctorTextByStoredValue(encounterStored)}`;
       statusModal.statusEl.value = item.status || "open";
@@ -2229,7 +2536,7 @@
         return;
       }
 
-      const encounterStored = item.encounter_ref || item.encounter_id || item.encounter_no;
+      const encounterStored = getPrimaryEncounterStoredValue(item);
       quickDoneModal.followupId = followupId;
       quickDoneModal.infoEl.textContent = `${formatFollowupNo(item)}｜${item.title || "—"}｜病歷號：${getPatientDisplayTextById(item.patient_id)}｜求診醫生：${getEncounterDoctorTextByStoredValue(encounterStored)}`;
       quickDoneModal.outcomeEl.value = item.outcome || "";
@@ -2255,7 +2562,7 @@
       const encounterNo = matchedEncounter ? detectEncounterNo(matchedEncounter) : (encounterInput || null);
       const encounterRef = matchedEncounter ? String(matchedEncounter.id) : (encounterInput || null);
       const encounterId = matchedEncounter?.id || null;
-      
+
       const title = String(followupModal.titleInputEl.value || "").trim();
       const assignedTo = String(followupModal.assignedToEl.value || "").trim() || getCurrentStaffDisplayText();
       const description = String(followupModal.descriptionEl.value || "").trim();
@@ -2279,22 +2586,23 @@
         return;
       }
 
-const payload = {
-  patient_id: patientId,
-  encounter_id: encounterId,
-  encounter_ref: encounterRef,
-  encounter_no: encounterNo,
-  category,
-  title,
-  description,
-  status,
-  priority,
-  assigned_to: assignedTo,
-  due_at: dueAt,
-  source,
-  requested_by: requestedBy,
-  outcome
-};
+      const payload = {
+        patient_id: patientId,
+        encounter_id: encounterId,
+        encounter_ref: encounterRef,
+        encounter_no: encounterNo,
+        category,
+        title,
+        description,
+        status,
+        priority,
+        assigned_to: assignedTo,
+        due_at: dueAt,
+        source,
+        requested_by: requestedBy,
+        outcome
+      };
+
       if (followupModal.mode === "create") {
         payload.created_by = actor;
 
@@ -2428,7 +2736,7 @@ const payload = {
             assigned_to: assignedTo,
             due_at: dueAt,
             encounter_no: item.encounter_no || null,
-            encounter_doctor: getEncounterDoctorTextByStoredValue(item.encounter_ref || item.encounter_id || item.encounter_no),
+            encounter_doctor: getEncounterDoctorTextByStoredValue(getPrimaryEncounterStoredValue(item)),
             outcome: outcome || null,
             remark: remark || null
           },
@@ -2480,7 +2788,7 @@ const payload = {
             from_status: item.status || null,
             to_status: "done",
             encounter_no: item.encounter_no || null,
-            encounter_doctor: getEncounterDoctorTextByStoredValue(item.encounter_ref || item.encounter_id || item.encounter_no),
+            encounter_doctor: getEncounterDoctorTextByStoredValue(getPrimaryEncounterStoredValue(item)),
             outcome,
             remark: remark || null
           },
