@@ -1944,18 +1944,67 @@
 
     function getEncounterDoctorText(encounter) {
       if (!encounter) return "—";
-      return String(
-        encounter.doctor_name ||
-        encounter.doctor_display_name ||
-        encounter.doctor ||
-        encounter.attending_doctor ||
-        encounter.provider_name ||
-        encounter.provider ||
-        encounter.doctor_in_charge ||
-        encounter.dr_name ||
-        encounter.dr ||
-        ""
-      ).trim() || "—";
+
+      const direct = [
+        encounter.doctor_name,
+        encounter.doctor_display_name,
+        encounter.doctor,
+        encounter.attending_doctor,
+        encounter.provider_name,
+        encounter.provider,
+        encounter.doctor_in_charge,
+        encounter.dr_name,
+        encounter.dr,
+        encounter.doctorName,
+        encounter.attendingDoctor,
+        encounter.assigned_doctor,
+        encounter.assignedDoctor,
+        encounter.consult_doctor,
+        encounter.consultDoctor,
+        encounter.doc_name,
+        encounter.docName,
+        encounter.physician,
+        encounter.medical_officer,
+        encounter.medicalOfficer,
+        encounter.provider_display,
+        encounter.providerDisplay,
+        encounter.doctor_user_name,
+        encounter.doctorUserName
+      ].map(v => String(v || "").trim()).filter(Boolean);
+
+      if (direct.length) return direct[0];
+
+      const nestedCandidates = [
+        encounter.doctor_info,
+        encounter.doctorInfo,
+        encounter.provider_info,
+        encounter.providerInfo,
+        encounter.attending,
+        encounter.provider_obj,
+        encounter.providerObj,
+        encounter.doctor_obj,
+        encounter.doctorObj
+      ];
+
+      for (const obj of nestedCandidates) {
+        if (!obj || typeof obj !== "object") continue;
+
+        const nested = [
+          obj.name,
+          obj.display_name,
+          obj.displayName,
+          obj.doctor_name,
+          obj.doctorName,
+          obj.provider_name,
+          obj.providerName,
+          obj.full_name,
+          obj.fullName
+        ].map(v => String(v || "").trim()).filter(Boolean);
+
+        if (nested.length) return nested[0];
+      }
+
+      return "—";
     }
 
     function getEncounterByIdOrNo(value) {
@@ -2060,6 +2109,17 @@
       return results;
     }
 
+    function setEncounterMessage({ ok = "", alert = "" } = {}) {
+      if (followupModal.encounterOkEl) {
+        followupModal.encounterOkEl.textContent = ok;
+        followupModal.encounterOkEl.classList.toggle("show", !!ok);
+      }
+      if (followupModal.encounterAlertEl) {
+        followupModal.encounterAlertEl.textContent = alert;
+        followupModal.encounterAlertEl.classList.toggle("show", !!alert);
+      }
+    }
+
     function statusLabel(status) {
       return zh.status[String(status || "").trim()] || String(status || "—");
     }
@@ -2136,7 +2196,6 @@
         Object.entries(eventData).forEach(([k, v]) => {
           if (v === null || v === undefined || v === "") return;
           if (k === "outcome") return;
-
           if (k === "changes" && typeof v === "object") {
             const changes = Object.entries(v).map(([ck, cv]) => {
               const from = cv?.from ?? "";
@@ -2146,7 +2205,6 @@
             if (changes.length) lines.push(`變更：\n${changes.join("\n")}`);
             return;
           }
-
           if (typeof v === "object") {
             lines.push(`${k}：${JSON.stringify(v, null, 2)}`);
           } else {
@@ -2346,17 +2404,6 @@
       });
     }
 
-    function setEncounterMessage({ ok = "", alert = "" } = {}) {
-      if (followupModal.encounterOkEl) {
-        followupModal.encounterOkEl.textContent = ok;
-        followupModal.encounterOkEl.classList.toggle("show", !!ok);
-      }
-      if (followupModal.encounterAlertEl) {
-        followupModal.encounterAlertEl.textContent = alert;
-        followupModal.encounterAlertEl.classList.toggle("show", !!alert);
-      }
-    }
-
     function renderEncounterSuggestions(cumcNo, keyword = "") {
       const encounters = getEncounterListByPatientCumc(cumcNo);
       const key = normalizeCompact(keyword);
@@ -2446,8 +2493,9 @@
 
     function syncDoctorDisplayFromEncounterInput() {
       const raw = String(followupModal.encounterInputEl.value || "").trim();
-      const encounter = getEncounterByIdOrNo(raw);
+      const compactRaw = normalizeCompact(raw);
 
+      const encounter = getEncounterByIdOrNo(raw);
       if (encounter) {
         followupModal.doctorDisplayEl.value = getEncounterDoctorText(encounter);
         return;
@@ -2455,9 +2503,24 @@
 
       const patientCumc = String(followupModal.patientInputEl.value || "").trim();
       const list = getEncounterListByPatientCumc(patientCumc);
-      const fallback = list.find(enc => normalizeCompact(detectEncounterNo(enc)) === normalizeCompact(raw));
 
-      followupModal.doctorDisplayEl.value = getEncounterDoctorText(fallback);
+      const fallback = list.find(enc => {
+        const no = detectEncounterNo(enc);
+        const id = String(enc.id || "").trim();
+        return normalizeCompact(no) === compactRaw || normalizeCompact(id) === compactRaw;
+      });
+
+      if (fallback) {
+        followupModal.doctorDisplayEl.value = getEncounterDoctorText(fallback);
+        return;
+      }
+
+      const looseDoctorMatch = state.encounters.find(enc => {
+        const no = detectEncounterNo(enc);
+        return normalizeCompact(no) === compactRaw;
+      });
+
+      followupModal.doctorDisplayEl.value = getEncounterDoctorText(looseDoctorMatch);
     }
 
     async function init() {
