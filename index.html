@@ -14,7 +14,7 @@
   --line-soft: #e8eef6;
   --text: #1f2937;
   --muted: #64748b;
-  --primary: #2563eb; 
+  --primary: #2563eb;
   --primary-dark: #1d4ed8;
   --success: #16a34a;
   --warning: #d97706;
@@ -112,7 +112,7 @@ body.display-mode .tabs { display: none !important; }
   align-items: center;
   justify-content: center;
 }
-  
+
 .tab-btn.active {
   background: var(--primary);
   color: #fff;
@@ -818,18 +818,9 @@ body.display-mode .info-card {
   line-height: 1.04;
   letter-spacing: 0.03em;
 }
-
-.board-current-ticket-red {
-  color: #fca5a5;
-}
-
-.board-current-ticket-yellow {
-  color: #fde68a;
-}
-
-.board-current-ticket-green {
-  color: #4ade80;
-}
+.board-current-ticket-red { color: #fca5a5; }
+.board-current-ticket-yellow { color: #fde68a; }
+.board-current-ticket-green { color: #4ade80; }
 .board-meta {
   font-size: 1rem;
   color: var(--board-sub);
@@ -2263,6 +2254,12 @@ function getRoomDisplayShort(roomNo) {
 function getPatientDisplayNo(patient) {
   return String(patient?.cumcNo || patient?.ticketNo || "").trim();
 }
+function formatEncounterNoDisplay(encounterNo) {
+  const text = String(encounterNo || "").trim();
+  if (!text) return "—";
+  if (text.length <= 1) return `(${text})`;
+  return `${text.slice(0, -1)}(${text.slice(-1)})`;
+}
 function getPatientTypeLabel(type) {
   if (type === "walkin") return "即場";
   if (type === "onlineTicket") return "網上取票";
@@ -2825,7 +2822,7 @@ function renderPatientSearchDetail(patient) {
     <div class="patient-search-result">
       <div class="grid-2">
         <div><strong>CUMC 號碼：</strong>${escapeHtml(getPatientDisplayNo(patient))}</div>
-        <div><strong>個案編號：</strong>${escapeHtml(patient.encounterNo || "—")}</div>
+        <div><strong>AE no.：</strong>${escapeHtml(formatEncounterNoDisplay(patient.encounterNo))}</div>
         <div><strong>所屬診室：</strong>${room ? `${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}` : "—"}</div>
         <div><strong>病人狀態：</strong>${escapeHtml(getStatusLabel(patient.status))}</div>
         <div><strong>病人類型：</strong>${escapeHtml(getPatientTypeLabel(patient.sourceType))}</div>
@@ -4087,7 +4084,7 @@ async function addPatient() {
     populateRoomSelect();
 
     notify(
-      `已加入輪候：${inserted.cumcNo} → ${room.roomNo}\n個案編號：${inserted.encounterNo || "—"}`,
+      `已加入輪候：${inserted.cumcNo} → ${room.roomNo}`,
       "success"
     );
   } catch (error) {
