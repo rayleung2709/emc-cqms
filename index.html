@@ -1489,8 +1489,6 @@ body.display-mode .info-card {
     </div>
   </div>
 </div>
-    
-    
 
   <div class="page active" id="staffPage">
     <div class="grid-2">
@@ -1851,7 +1849,7 @@ body.display-mode .info-card {
 
 <script>
 const SUPABASE_URL = "https://dvyberdrmmfgutjqnpjr.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
+const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const HKT_TIMEZONE = "Asia/Hong_Kong";
@@ -1893,7 +1891,7 @@ const authState = {
   user: null,
   profile: null
 };
-  
+
 const state = {
   rooms: [],
   patients: [],
@@ -1917,6 +1915,7 @@ let realtimeChannel = null;
 let renderTimer = null;
 let refreshInFlight = false;
 let queuedRefresh = false;
+let addPatientInFlight = false;
 
 const teachTooltip = {
   el: null,
@@ -1947,7 +1946,6 @@ const clinicalActivityModal = {
   patientId: null
 };
 
-  
 function debugLog(...args) {
   if (DEBUG) console.log("[CQMS DEBUG]", ...args);
 }
@@ -1969,13 +1967,13 @@ function formatLogActor(log) {
   if (name) return name;
   return "未記錄操作者";
 }
-  
+
 function formatLogMeta(log) {
   const timeText = formatDateTime(log?.time);
   const actorText = formatLogActor(log);
   return `${timeText}｜操作者：${actorText}`;
 }
-  
+
 function markUiBusy(ms = 2200) {
   state.uiBusyUntil = Date.now() + ms;
 }
@@ -2071,6 +2069,32 @@ function notify(message, type = "info") {
   wrap.appendChild(el);
   setTimeout(() => el.remove(), 4200);
 }
+
+function mapSupabasePatientRow(patient) {
+  return {
+    id: patient.id,
+    ticketNo: patient.ticket_no,
+    cumcNo: patient.cumc_no,
+    roomId: patient.room_id || "",
+    sourceType: patient.source_type || "walkin",
+    priority: !!patient.priority,
+    registeredAt: patient.registered_at || nowIso(),
+    status: patient.status || "waiting",
+    createdAt: patient.created_at || nowIso(),
+    queueOrder: Number.isFinite(patient.queue_order) ? patient.queue_order : null,
+    skippedAt: patient.skipped_at || null,
+    calledAt: patient.called_at || null,
+    doneAt: patient.done_at || null,
+    cancelledAt: patient.cancelled_at || null,
+    initialAssignmentMode: patient.initial_assignment_mode || "auto",
+    manualLock: !!patient.manual_lock,
+    manualLockReason: patient.manual_lock_reason || "",
+    logs: Array.isArray(patient.logs_json) ? patient.logs_json : [],
+    clinicalLogs: Array.isArray(patient.clinical_logs_json) ? patient.clinical_logs_json : [],
+    encounterNo: patient.encounter_no || null
+  };
+}
+
 function updateAuthUi() {
   const loggedOutView = document.getElementById("loggedOutView");
   const loggedInView = document.getElementById("loggedInView");
@@ -2181,7 +2205,6 @@ function requireStaffLogin() {
   return true;
 }
 
-  
 function setDisplayModeByTab(tabId) {
   document.body.classList.toggle("display-mode", tabId === "displayPage");
 }
@@ -2210,7 +2233,7 @@ function addPatientLog(patient, action, details = "") {
     staffEmail: authState.profile?.email || authState.user?.email || null
   });
 }
-  
+
 function ensureClinicalLogs(patient) {
   if (!Array.isArray(patient.clinicalLogs)) patient.clinicalLogs = [];
 }
@@ -2226,9 +2249,9 @@ function addClinicalLog(patient, activity, details = "") {
     staffEmail: authState.profile?.email || authState.user?.email || null
   });
 }
-  
+
 function getLatestClinicalLog(patient) {
-  const logs = Array.isArray(patient?.clinicalLogs) ? patient.clinicalLogs : [];
+  const logs = Array.isArray(patient?.clinicalLogs) ? patient?.clinicalLogs : [];
   return logs.length ? logs[0] : null;
 }
 function getPreviewClinicalLogs(patient, limit = 10) {
@@ -2773,27 +2796,27 @@ function renderPatientSearchDetail(patient) {
     queuePosition = "回診區";
   }
 
-const queueHistoryHtml = (patient.logs || []).length
-  ? patient.logs.map(log => `
-    <div class="history-item">
-      <div class="history-time">
-        ${escapeHtml(formatDateTime(log.time))}｜操作者：${escapeHtml(formatLogActor(log))}
+  const queueHistoryHtml = (patient.logs || []).length
+    ? patient.logs.map(log => `
+      <div class="history-item">
+        <div class="history-time">
+          ${escapeHtml(formatDateTime(log.time))}｜操作者：${escapeHtml(formatLogActor(log))}
+        </div>
+        <div class="history-text">${escapeHtml(log.action)}${log.details ? `：${escapeHtml(log.details)}` : ""}</div>
       </div>
-      <div class="history-text">${escapeHtml(log.action)}${log.details ? `：${escapeHtml(log.details)}` : ""}</div>
-    </div>
-  `).join("")
-  : `<div class="muted">暫無排隊活動紀錄</div>`;
+    `).join("")
+    : `<div class="muted">暫無排隊活動紀錄</div>`;
 
-const clinicalHistoryHtml = (patient.clinicalLogs || []).length
-  ? patient.clinicalLogs.map(log => `
-    <div class="history-item">
-      <div class="history-time">
-        ${escapeHtml(formatDateTime(log.time))}｜操作者：${escapeHtml(formatLogActor(log))}
+  const clinicalHistoryHtml = (patient.clinicalLogs || []).length
+    ? patient.clinicalLogs.map(log => `
+      <div class="history-item">
+        <div class="history-time">
+          ${escapeHtml(formatDateTime(log.time))}｜操作者：${escapeHtml(formatLogActor(log))}
+        </div>
+        <div class="history-text">${escapeHtml(log.activity)}${log.details ? `：${escapeHtml(log.details)}` : ""}</div>
       </div>
-      <div class="history-text">${escapeHtml(log.activity)}${log.details ? `：${escapeHtml(log.details)}` : ""}</div>
-    </div>
-  `).join("")
-  : `<div class="muted">暫無臨床活動紀錄</div>`;
+    `).join("")
+    : `<div class="muted">暫無臨床活動紀錄</div>`;
 
   const latestClinical = getLatestClinicalLog(patient);
 
@@ -2802,6 +2825,7 @@ const clinicalHistoryHtml = (patient.clinicalLogs || []).length
     <div class="patient-search-result">
       <div class="grid-2">
         <div><strong>CUMC 號碼：</strong>${escapeHtml(getPatientDisplayNo(patient))}</div>
+        <div><strong>個案編號：</strong>${escapeHtml(patient.encounterNo || "—")}</div>
         <div><strong>所屬診室：</strong>${room ? `${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}` : "—"}</div>
         <div><strong>病人狀態：</strong>${escapeHtml(getStatusLabel(patient.status))}</div>
         <div><strong>病人類型：</strong>${escapeHtml(getPatientTypeLabel(patient.sourceType))}</div>
@@ -2980,16 +3004,10 @@ function splitDoctorName(fullName) {
 
 function getBoardPatientColorClass(patient) {
   if (!patient) return "";
-
-  // Cat 2 -> 紅
   if (patient.priority) return "tag-priority";
-
-  // Cat 3 + appointment / onlineTicket -> 黃
   if (patient.sourceType === "appointment" || patient.sourceType === "onlineTicket") {
     return "tag-yellow";
   }
-
-  // Cat 3 + walkin -> 綠（用各區 base 樣式，現正診症會另外指定綠色 class）
   return "";
 }
 
@@ -2999,11 +3017,8 @@ function renderBoardTag(patient, type = "wait") {
   if (type === "review") baseClass = "tag-review";
 
   const extraClass = getBoardPatientColorClass(patient);
-
   return `<span class="board-tag ${baseClass} ${extraClass}">${escapeHtml(getPatientDisplayNo(patient))}</span>`;
 }
-
-  
 
 function getVisibleBoardRooms() {
   return sortedRooms().filter(room => room.status !== "closed");
@@ -3088,28 +3103,22 @@ function renderDisplayBoard(force = false) {
         ${
           currentPatient
             ? `
-             
-${
-  (() => {
-    let currentTicketColorClass = "board-current-ticket-green";
+              ${
+                (() => {
+                  let currentTicketColorClass = "board-current-ticket-green";
+                  if (currentPatient.priority) currentTicketColorClass = "board-current-ticket-red";
+                  else if (currentPatient.sourceType === "appointment" || currentPatient.sourceType === "onlineTicket") {
+                    currentTicketColorClass = "board-current-ticket-yellow";
+                  }
 
-    if (currentPatient.priority) {
-      // Cat 2 -> 紅
-      currentTicketColorClass = "board-current-ticket-red";
-    } else if (currentPatient.sourceType === "appointment" || currentPatient.sourceType === "onlineTicket") {
-      // Cat 3 + appointment / onlineTicket -> 黃
-      currentTicketColorClass = "board-current-ticket-yellow";
-    }
-
-    return `
-      <div class="board-current-ticket ${currentTicketColorClass}">
-        ${escapeHtml(getPatientDisplayNo(currentPatient))}
-      </div>
-      <div class="board-meta">${escapeHtml(formatRegisteredInline(currentPatient.registeredAt))}</div>
-    `;
-  })()
-}
-              
+                  return `
+                    <div class="board-current-ticket ${currentTicketColorClass}">
+                      ${escapeHtml(getPatientDisplayNo(currentPatient))}
+                    </div>
+                    <div class="board-meta">${escapeHtml(formatRegisteredInline(currentPatient.registeredAt))}</div>
+                  `;
+                })()
+              }
             `
             : `<div class="board-current-normal-ticket">—</div>`
         }
@@ -3781,7 +3790,8 @@ async function loadStateFromSupabase(showErrorToast = true) {
       manualLock: !!patient.manual_lock,
       manualLockReason: patient.manual_lock_reason || "",
       logs: Array.isArray(patient.logs_json) ? patient.logs_json : [],
-      clinicalLogs: Array.isArray(patient.clinical_logs_json) ? patient.clinical_logs_json : []
+      clinicalLogs: Array.isArray(patient.clinical_logs_json) ? patient.clinical_logs_json : [],
+      encounterNo: patient.encounter_no || null
     }));
 
     state.rooms.forEach(room => {
@@ -3973,11 +3983,19 @@ async function addRoom() {
 }
 
 async function addPatient() {
+  if (addPatientInFlight) {
+    notify("新增輪候進行中，請勿重覆提交", "warning");
+    return;
+  }
+
+  addPatientInFlight = true;
+
   try {
     markUiBusy(3200);
 
     const cumcNo = document.getElementById("patientCumcNo").value.trim().toUpperCase();
     document.getElementById("patientCumcNo").value = cumcNo;
+
     const patientType = document.getElementById("patientType").value;
     const assignMode = document.getElementById("assignMode").value;
     const manualRoomId = document.getElementById("assignRoom").value;
@@ -3989,15 +4007,6 @@ async function addPatient() {
 
     if (!cumcNo) {
       notify("請輸入 CUMC 號碼", "warning");
-      return;
-    }
-
-    const activeExists = state.patients.some(p =>
-      String(p.cumcNo || "").toLowerCase() === cumcNo.toLowerCase() &&
-      ["waiting", "review_waiting", "called", "skipped"].includes(p.status)
-    );
-    if (activeExists) {
-      notify("此病人目前已有未完成個案記錄", "warning");
       return;
     }
 
@@ -4016,6 +4025,7 @@ async function addPatient() {
       notify("找不到可派往的診室", "warning");
       return;
     }
+
     if (!canAssignPatientToRoom(room, patientType)) {
       if (!room.acceptingNew) {
         notify("此診室已停收新症，暫停派症", "warning");
@@ -4027,51 +4037,42 @@ async function addPatient() {
       return;
     }
 
-    const now = nowIso();
-    const registeredAt = useCustomRegisteredAt ? (hktLocalDateTimeToIso(registeredAtInput) || now) : now;
+    const registeredAt = useCustomRegisteredAt
+      ? (hktLocalDateTimeToIso(registeredAtInput) || nowIso())
+      : nowIso();
 
-    const patient = {
-      id: crypto.randomUUID(),
-      ticketNo: cumcNo,
-      cumcNo,
-      roomId: room.id,
-      sourceType: patientType,
-      priority,
-      registeredAt,
-      status: "waiting",
-      createdAt: now,
-      queueOrder: null,
-      skippedAt: null,
-      calledAt: null,
-      doneAt: null,
-      cancelledAt: null,
-      initialAssignmentMode: assignMode === "manual" ? "manual" : "auto",
-      manualLock: false,
-      manualLockReason: "",
-      logs: [],
-      clinicalLogs: []
-    };
+    const initialAssignmentMode = assignMode === "manual" ? "manual" : "auto";
 
-    addPatientLog(
-      patient,
-      "首次登記",
-      `已登記至 ${room.roomNo} / ${room.doctorName}；類型：${getPatientTypeLabel(patientType)}；首次派往診室方式：${patient.initialAssignmentMode === "manual" ? "手動派房" : "自動派房"}；登記時間：${formatDateTime(registeredAt)}；分流級別：${getPriorityLabel(patient)}`
-    );
+    const logsJson = [{
+      time: nowIso(),
+      action: "首次登記",
+      details: `已登記至 ${room.roomNo} / ${room.doctorName}；類型：${getPatientTypeLabel(patientType)}；首次派往診室方式：${initialAssignmentMode === "manual" ? "手動派房" : "自動派房"}；登記時間：${formatDateTime(registeredAt)}；分流級別：${priority ? "Cat 2（優先）" : "Cat 3（一般）"}`,
+      staffUserId: authState.user?.id || null,
+      staffDisplayName: authState.profile?.display_name || null,
+      staffEmail: authState.profile?.email || authState.user?.email || null
+    }];
 
-    state.patients.push(patient);
-    room.queuePatientIds.push(patient.id);
+    const { data, error } = await sb.rpc("create_patient_case_with_position", {
+      p_room_id: room.id,
+      p_cumc_no: cumcNo,
+      p_source_type: patientType,
+      p_priority: priority,
+      p_registered_at: registeredAt,
+      p_initial_assignment_mode: initialAssignmentMode,
+      p_manual_lock: false,
+      p_manual_lock_reason: null,
+      p_logs_json: logsJson,
+      p_clinical_logs_json: [],
+      p_insert_mode: insertMode,
+      p_insert_position: insertMode === "position" ? (parseInt(insertPosition, 10) || 1) : null
+    });
 
-    const actualPosition = insertPatientIntoQueue(room, patient, insertMode, insertPosition);
-    addPatientLog(patient, "排位", `加入 ${room.roomNo} / ${room.doctorName}；${getInsertModeText(insertMode, Math.max(1, parseInt(insertPosition, 10) || 1), actualPosition)}`);
+    if (error) throw error;
 
-    renderRoomOnly(room.id, true);
-    renderDisplayBoard(true);
-    populateRoomSelect();
-    populateSearchRoomSelect();
-    updateSearchTicketSuggestions(document.getElementById("searchTicket")?.value || "");
+    const insertedRow = Array.isArray(data) ? data[0] : data;
+    const inserted = mapSupabasePatientRow(insertedRow);
 
-    await savePatientToSupabase(patient);
-    await syncRoomQueuePatients(room);
+    await refreshFromCloudAndRender(false);
 
     document.getElementById("patientCumcNo").value = "";
     document.getElementById("isPriority").value = "false";
@@ -4085,12 +4086,33 @@ async function addPatient() {
     refreshRegisteredAtField();
     populateRoomSelect();
 
-    notify(`已加入輪候：${patient.ticketNo} → ${room.roomNo}`, "success");
-    await refreshFromCloudAndRender(false);
+    notify(
+      `已加入輪候：${inserted.cumcNo} → ${room.roomNo}\n個案編號：${inserted.encounterNo || "—"}`,
+      "success"
+    );
   } catch (error) {
     console.error(error);
-    notify("新增輪候病人失敗\n" + formatSupabaseError(error), "error");
+    const msg = formatSupabaseError(error).toLowerCase();
+
+    if (msg.includes("active_case_exists") || msg.includes("uq_patients_active_cumc_no")) {
+      notify("此病人目前已有未完成個案記錄", "warning");
+    } else if (msg.includes("room_not_found")) {
+      notify("找不到診室", "warning");
+    } else if (msg.includes("room_not_accepting_new")) {
+      notify("此診室已停收新症，暫停派症", "warning");
+    } else if (msg.includes("appointment_room_not_allowed")) {
+      notify("此診室目前不可接收預約病人", "warning");
+    } else if (msg.includes("room_not_open")) {
+      notify("此診室未開放，不能派症", "warning");
+    } else if (msg.includes("daily_encounter_sequence_exceeded")) {
+      notify("今日個案編號已滿，請通知管理員", "error");
+    } else {
+      notify("新增輪候病人失敗\n" + formatSupabaseError(error), "error");
+    }
+
     refreshFromCloudAndRender(false);
+  } finally {
+    addPatientInFlight = false;
   }
 }
 
@@ -5593,6 +5615,7 @@ async function initApp() {
   updateSearchTicketSuggestions("");
   await setupRealtimeAndPolling();
 }
+
 const _addRoom = addRoom;
 addRoom = async function (...args) {
   if (!requireStaffLogin()) return;
@@ -5746,7 +5769,7 @@ document.getElementById("loginPassword")?.addEventListener("keydown", (event) =>
     if (btn) withButtonLoading(btn, loginStaff);
   }
 });
-  
+
 initApp();
 </script>
 </body>
