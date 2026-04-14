@@ -8,42 +8,30 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --bg: #f4f7fb;
-      --bg-soft: #f8fbff;
+      --bg: #f3f6fb;
       --card: #ffffff;
-      --line: #d8e2ee;
-      --line-soft: #e9eef5;
-      --text: #0f172a;
+      --line: #dbe3ee;
+      --line-soft: #e8eef6;
+      --text: #1f2937;
       --muted: #64748b;
-      --primary: #1d4ed8;
-      --primary-2: #2563eb;
-      --primary-soft: #eff6ff;
-      --success: #15803d;
-      --success-soft: #dcfce7;
-      --warning: #b45309;
-      --warning-soft: #ffedd5;
-      --danger: #b91c1c;
-      --danger-soft: #fee2e2;
-      --gray-soft: #f1f5f9;
-      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
-      --shadow-soft: 0 6px 18px rgba(15, 23, 42, 0.06);
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --soft: #f8fafc;
+      --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
       --radius: 18px;
-      --radius-sm: 12px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html, body {
       margin: 0;
       padding: 0;
-      background:
-        radial-gradient(circle at top left, #edf4ff 0%, transparent 28%),
-        radial-gradient(circle at top right, #f3f8ff 0%, transparent 24%),
-        linear-gradient(180deg, #f7fbff 0%, #f4f7fb 100%);
-      color: var(--text);
       font-family: Arial, "Microsoft JhengHei", "PingFang TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
     }
 
     a {
@@ -56,81 +44,65 @@
     }
 
     .app {
-      max-width: 1400px;
+      max-width: 1680px;
       margin: 0 auto;
       padding: 20px;
     }
 
     .topbar {
       display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 14px;
-      flex-wrap: wrap;
       margin-bottom: 18px;
     }
 
-    .topbar-left {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      width: fit-content;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: #ffffff;
-      border: 1px solid var(--line);
-      color: #1e3a8a;
-      font-weight: 800;
-      box-shadow: var(--shadow-soft);
-    }
-
     .title {
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: 900;
       color: #0f172a;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
+      line-height: 1.2;
     }
 
     .subtitle {
+      margin-top: 8px;
       color: var(--muted);
-      font-size: 0.95rem;
+      font-size: 0.96rem;
       line-height: 1.6;
       font-weight: 700;
+      max-width: 880px;
     }
 
     .top-actions {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
+      align-items: center;
     }
 
-    .layout {
-      display: grid;
-      grid-template-columns: 1.06fr 0.94fr;
-      gap: 18px;
-      align-items: start;
-    }
-
-    .stack {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
+    .top-link {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      padding: 10px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      box-shadow: var(--shadow);
     }
 
     .panel {
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(8px);
+      background: var(--card);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 18px;
+      margin-bottom: 18px;
     }
 
     .panel-title-row {
@@ -143,7 +115,7 @@
     }
 
     .panel-title {
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: 900;
       color: #0f172a;
     }
@@ -151,7 +123,7 @@
     .panel-desc {
       margin-top: 4px;
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       line-height: 1.55;
       font-weight: 700;
     }
@@ -159,20 +131,20 @@
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+      gap: 16px;
       margin-bottom: 18px;
     }
 
     .summary-card {
       border: 1px solid var(--line);
-      border-radius: 16px;
-      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-      padding: 14px;
-      box-shadow: var(--shadow-soft);
+      border-radius: 18px;
+      background: #fff;
+      padding: 16px;
+      box-shadow: var(--shadow);
     }
 
     .summary-label {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 900;
       color: var(--muted);
       margin-bottom: 8px;
@@ -180,7 +152,7 @@
     }
 
     .summary-value {
-      font-size: 1.6rem;
+      font-size: 1.75rem;
       font-weight: 900;
       color: #0f172a;
       line-height: 1;
@@ -188,15 +160,35 @@
 
     .summary-sub {
       margin-top: 8px;
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       color: var(--muted);
-      font-weight: 700;
+      font-weight: 800;
+      line-height: 1.45;
     }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
 
     .filters {
       display: grid;
       grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr auto auto;
-      gap: 10px;
+      gap: 12px;
+      align-items: end;
     }
 
     .form-row {
@@ -206,79 +198,63 @@
     }
 
     label {
-      font-size: 0.84rem;
-      font-weight: 900;
+      font-size: 0.92rem;
+      font-weight: 800;
       color: #334155;
     }
 
-    input, select, textarea {
+    input, select, textarea, datalist {
       width: 100%;
-      border: 1px solid #cbd5e1;
+      padding: 10px 12px;
       border-radius: 12px;
-      padding: 11px 12px;
-      font-size: 0.95rem;
-      color: var(--text);
+      border: 1px solid #cbd5e1;
+      font-size: 0.98rem;
       background: #fff;
-      outline: none;
-      transition: 0.15s ease;
+      color: var(--text);
       font-family: inherit;
     }
 
     textarea {
-      resize: vertical;
       min-height: 96px;
+      resize: vertical;
     }
 
     input:focus, select:focus, textarea:focus {
+      outline: none;
       border-color: #93c5fd;
       box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .actions,
+    .toolbar-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
     }
 
     button {
       border: none;
       border-radius: 12px;
-      padding: 11px 14px;
+      padding: 10px 14px;
       cursor: pointer;
-      font-weight: 900;
-      font-size: 0.92rem;
+      font-weight: 800;
+      font-size: 0.94rem;
       transition: 0.15s ease;
     }
 
-    button:hover {
-      transform: translateY(-1px);
-    }
-
+    button:hover { transform: translateY(-1px); }
     button:disabled {
       opacity: 0.65;
       cursor: not-allowed;
       transform: none;
     }
 
-    .btn-primary {
-      background: linear-gradient(180deg, var(--primary-2) 0%, var(--primary) 100%);
-      color: #fff;
-      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
-    }
-
-    .btn-primary:hover {
-      filter: brightness(0.98);
-    }
-
-    .btn-secondary {
-      background: #e2e8f0;
-      color: #0f172a;
-    }
-
-    .btn-secondary:hover {
-      background: #dbe4ee;
-    }
-
-    .toolbar-actions {
-      display: flex;
-      gap: 10px;
-      align-items: end;
-      flex-wrap: wrap;
-    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-secondary { background: #e2e8f0; color: #0f172a; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-warning { background: var(--warning); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
 
     .status-box {
       border-radius: 14px;
@@ -315,6 +291,8 @@
       border-color: #fca5a5;
     }
 
+    .muted { color: var(--muted); }
+
     .cases {
       display: flex;
       flex-direction: column;
@@ -324,27 +302,15 @@
     .case-card {
       border: 1px solid var(--line);
       border-radius: 18px;
-      padding: 15px;
-      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-      transition: 0.18s ease;
+      padding: 16px;
+      background: #fff;
       cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .case-card::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 5px;
-      background: transparent;
       transition: 0.18s ease;
+      position: relative;
     }
 
     .case-card:hover {
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      box-shadow: var(--shadow);
       border-color: #cbd5e1;
       transform: translateY(-1px);
     }
@@ -353,10 +319,6 @@
       border-color: #93c5fd;
       box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
       background: #f8fbff;
-    }
-
-    .case-card.active::before {
-      background: linear-gradient(180deg, #60a5fa 0%, #1d4ed8 100%);
     }
 
     .case-top {
@@ -368,7 +330,7 @@
     }
 
     .case-title {
-      font-size: 1rem;
+      font-size: 1.02rem;
       font-weight: 900;
       color: #0f172a;
       line-height: 1.45;
@@ -377,7 +339,7 @@
     .case-sub {
       color: var(--muted);
       font-size: 0.88rem;
-      font-weight: 700;
+      font-weight: 800;
       margin-top: 4px;
       line-height: 1.5;
     }
@@ -392,10 +354,11 @@
     .pill {
       display: inline-flex;
       align-items: center;
+      padding: 4px 9px;
       border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 0.76rem;
-      font-weight: 900;
+      font-size: 0.72rem;
+      font-weight: 800;
+      line-height: 1.05;
       border: 1px solid transparent;
       white-space: nowrap;
     }
@@ -403,7 +366,7 @@
     .pill-status-open {
       background: #eff6ff;
       color: #1d4ed8;
-      border-color: #bfdbfe;
+      border-color: #93c5fd;
     }
 
     .pill-status-in_progress {
@@ -439,7 +402,7 @@
     .pill-priority-normal {
       background: #eff6ff;
       color: #1d4ed8;
-      border-color: #bfdbfe;
+      border-color: #93c5fd;
     }
 
     .pill-priority-high {
@@ -518,7 +481,7 @@
     }
 
     .section-title {
-      font-size: 0.98rem;
+      font-size: 1rem;
       font-weight: 900;
       color: #0f172a;
       margin-bottom: 10px;
@@ -601,7 +564,7 @@
       border-radius: 16px;
       padding: 14px;
       background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
-      box-shadow: var(--shadow-soft);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
     }
 
     .timeline-head {
@@ -651,7 +614,7 @@
 
     .timeline-kv {
       display: grid;
-      grid-template-columns: 120px 1fr;
+      grid-template-columns: 140px 1fr;
       gap: 8px;
       margin-top: 10px;
       padding-top: 10px;
@@ -672,17 +635,6 @@
       word-break: break-word;
     }
 
-    dialog {
-      border: none;
-      padding: 0;
-      background: transparent;
-      width: min(780px, calc(100vw - 24px));
-    }
-
-    .muted {
-      color: var(--muted);
-    }
-
     .footer-note {
       margin-top: 14px;
       color: var(--muted);
@@ -691,45 +643,97 @@
       line-height: 1.6;
     }
 
-    @media (max-width: 1180px) {
+    dialog {
+      border: none;
+      padding: 0;
+      background: transparent;
+      width: min(860px, calc(100vw - 24px));
+    }
+
+    dialog::backdrop {
+      background: rgba(15, 23, 42, 0.55);
+    }
+
+    .dialog-panel {
+      margin: 0;
+    }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.45;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .encounter-list-box {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #f8fbff;
+      padding: 12px;
+    }
+
+    .encounter-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .encounter-chip {
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #334155;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.86rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .encounter-chip.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    @media (max-width: 1400px) {
+      .summary-grid,
+      .grid-5,
+      .grid-4,
+      .grid-3,
+      .grid-2,
+      .detail-grid,
+      .quick-form {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .filters {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      .case-meta {
+        grid-template-columns: 1fr 1fr;
+      }
+
       .layout {
         grid-template-columns: 1fr;
       }
     }
 
     @media (max-width: 900px) {
-      .filters,
-      .case-meta,
+      .app { padding: 12px; }
+      .summary-grid,
+      .grid-5,
+      .grid-4,
+      .grid-3,
+      .grid-2,
       .detail-grid,
       .quick-form,
-      .summary-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .app {
-        padding: 14px;
-      }
-
-      .title {
-        font-size: 1.56rem;
-      }
-
       .filters,
-      .case-meta,
-      .detail-grid,
-      .quick-form,
-      .summary-grid {
+      .case-meta {
         grid-template-columns: 1fr;
-      }
-
-      .top-actions {
-        width: 100%;
-      }
-
-      .top-actions button {
-        width: 100%;
       }
 
       .timeline-kv {
@@ -739,21 +743,25 @@
       .timeline-meta {
         text-align: left;
       }
+
+      dialog {
+        width: calc(100vw - 16px);
+      }
     }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="topbar">
-      <div class="topbar-left">
-        <a href="index.html" class="back-link">← 返回主頁</a>
-        <div class="title">跟進事項管理</div>
+      <div>
+        <div class="title">跟進事項管理<br>Emergency Medicine Centre Follow-up System</div>
         <div class="subtitle">
           用於建立、查閱及更新病人跟進事項，並以時間軸方式整合處理紀錄與文字備註。
         </div>
       </div>
 
       <div class="top-actions">
+        <a href="index.html" class="top-link">返回主頁</a>
         <button class="btn-primary" id="newCaseBtn" type="button">新增跟進事項</button>
         <button class="btn-secondary" id="refreshBtn" type="button">重新整理</button>
       </div>
@@ -782,7 +790,7 @@
       </div>
     </div>
 
-    <div class="panel" style="margin-bottom:18px;">
+    <div class="panel">
       <div class="panel-title-row">
         <div>
           <div class="panel-title">篩選與搜尋</div>
@@ -835,7 +843,7 @@
 
         <div class="form-row">
           <label for="filterAssignedTo">負責人</label>
-          <input id="filterAssignedTo" type="text" placeholder="輸入負責人名稱或電郵" />
+          <input id="filterAssignedTo" type="text" placeholder="輸入負責人名稱" />
         </div>
 
         <div class="toolbar-actions">
@@ -889,7 +897,7 @@
                 <div class="detail-value" id="detailCategory">—</div>
               </div>
               <div class="detail-box">
-                <div class="detail-label">Encounter ID</div>
+                <div class="detail-label">Encounter</div>
                 <div class="detail-value" id="detailEncounterId">—</div>
               </div>
               <div class="detail-box">
@@ -937,7 +945,7 @@
 
               <div class="form-row">
                 <label for="editAssignedTo">負責人</label>
-                <input id="editAssignedTo" type="text" />
+                <input id="editAssignedTo" type="text" list="staffNameOptions" />
               </div>
 
               <div class="form-row">
@@ -1014,24 +1022,35 @@
     </div>
   </div>
 
+  <datalist id="staffNameOptions"></datalist>
+  <datalist id="patientIdOptions"></datalist>
+
   <dialog id="caseDialog">
-    <div class="panel" style="margin:0;">
+    <div class="panel dialog-panel">
       <div class="panel-title-row">
         <div>
           <div class="panel-title">新增跟進事項</div>
-          <div class="panel-desc">請按實際需要填寫。病人編號為必填，Encounter ID 可留空。</div>
+          <div class="panel-desc">請按實際需要填寫。病人編號為必填，Encounter 可留空。</div>
         </div>
       </div>
 
       <div class="quick-form">
         <div class="form-row">
           <label for="casePatientId">病人編號（CUMC）</label>
-          <input id="casePatientId" type="text" placeholder="例如：CUMC123456" />
+          <input id="casePatientId" list="patientIdOptions" type="text" placeholder="例如：ABC1234" autocomplete="off" />
+          <div class="small-note">輸入病人編號後，下面會列出可選 Encounter。</div>
         </div>
 
         <div class="form-row">
-          <label for="caseEncounterId">Encounter ID（可留空）</label>
-          <input id="caseEncounterId" type="text" placeholder="如有對應就輸入 UUID，否則可留空" />
+          <label for="caseEncounterSearch">Encounter（可搜尋）</label>
+          <input id="caseEncounterSearch" type="text" placeholder="可輸入 Encounter No 搜尋" autocomplete="off" />
+        </div>
+
+        <div class="form-row full">
+          <label for="caseEncounterId">Encounter</label>
+          <select id="caseEncounterId">
+            <option value="">未指定</option>
+          </select>
         </div>
 
         <div class="form-row">
@@ -1069,7 +1088,7 @@
 
         <div class="form-row">
           <label for="caseAssignedTo">負責人</label>
-          <input id="caseAssignedTo" type="text" placeholder="例如：amy@hospital.org" />
+          <input id="caseAssignedTo" type="text" list="staffNameOptions" placeholder="例如：陳大文" />
         </div>
 
         <div class="form-row">
@@ -1107,7 +1126,12 @@
         </div>
       </div>
 
-      <div style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; margin-top:14px;">
+      <div id="caseEncounterHint" class="encounter-list-box" style="display:none;">
+        <div class="small-note">可選 Encounter：</div>
+        <div id="caseEncounterChipRow" class="encounter-chip-row"></div>
+      </div>
+
+      <div class="actions" style="justify-content:flex-end; margin-top:14px;">
         <button class="btn-secondary" id="cancelCaseBtn" type="button">取消</button>
         <button class="btn-primary" id="createCaseBtn" type="button">建立跟進事項</button>
       </div>
@@ -1116,13 +1140,19 @@
 
   <script>
     const SUPABASE_URL = "https://dvyberdrmmfgutjqnpjr.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck".replace("YmJl","YmVy");
+    const HKT_TIMEZONE = "Asia/Hong_Kong";
 
     let sb = null;
     let currentUser = null;
+    let currentStaffProfile = null;
     let followups = [];
     let selectedFollowupId = null;
     let selectedTimeline = [];
+    let encounterOptions = [];
+    let realtimeChannel = null;
+    let staffProfiles = [];
+    let patientOptionRows = [];
 
     const STATUS_LABELS = {
       open: "待處理",
@@ -1197,35 +1227,89 @@
     function formatDateTime(value) {
       if (!value) return "—";
       const d = new Date(value);
-      if (Number.isNaN(d.getTime())) return value;
-      return d.toLocaleString("zh-HK", {
+      if (Number.isNaN(d.getTime())) return "—";
+      return new Intl.DateTimeFormat("zh-HK", {
+        timeZone: HKT_TIMEZONE,
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
         hour: "2-digit",
-        minute: "2-digit"
+        minute: "2-digit",
+        second: "2-digit",
+        hourCycle: "h23"
+      }).format(d);
+    }
+
+    function getHktDateParts(date = new Date()) {
+      const formatter = new Intl.DateTimeFormat("en-CA", {
+        timeZone: HKT_TIMEZONE,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hourCycle: "h23"
       });
+      const parts = formatter.formatToParts(date);
+      const map = {};
+      for (const p of parts) {
+        if (p.type !== "literal") map[p.type] = p.value;
+      }
+      return map;
     }
 
     function toDateTimeLocalValue(value) {
       if (!value) return "";
       const d = new Date(value);
       if (Number.isNaN(d.getTime())) return "";
-      const offset = d.getTimezoneOffset();
-      const local = new Date(d.getTime() - offset * 60000);
-      return local.toISOString().slice(0, 16);
+      const p = getHktDateParts(d);
+      return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
     }
 
-    function fromDateTimeLocalValue(value) {
+    function fromHktDateTimeLocalValue(value) {
       if (!value) return null;
-      const d = new Date(value);
-      if (Number.isNaN(d.getTime())) return null;
-      return d.toISOString();
+      const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+      if (!match) return null;
+      const [, y, m, d, hh, mm] = match;
+      const utcMillis = Date.UTC(Number(y), Number(m) - 1, Number(d), Number(hh) - 8, Number(mm), 0, 0);
+      return new Date(utcMillis).toISOString();
     }
 
     function labelOf(map, value) {
       if (value === null || value === undefined || value === "") return "未指定";
       return map[value] || value;
+    }
+
+    function formatFollowupNo(raw) {
+      const text = safeTrim(raw);
+      if (!text) return "—";
+      if (/^AEFU\d{9}$/.test(text)) {
+        return `${text.slice(0, 4)}-${text.slice(4, 10)}-${text.slice(10, 13)}`;
+      }
+      return text;
+    }
+
+    function getStaffDisplayNameByAnyText(raw) {
+      const input = safeTrim(raw);
+      if (!input) return "未記錄";
+      const direct = staffProfiles.find(p =>
+        safeTrim(p.display_name) === input ||
+        safeTrim(p.email).toLowerCase() === input.toLowerCase() ||
+        safeTrim(p.id) === input
+      );
+      if (direct) return safeTrim(direct.display_name) || safeTrim(direct.email) || input;
+      return input;
+    }
+
+    function getCurrentActorText() {
+      return (
+        safeTrim(currentStaffProfile?.display_name) ||
+        safeTrim(currentStaffProfile?.email) ||
+        safeTrim(currentUser?.email) ||
+        safeTrim(currentUser?.id) ||
+        "unknown"
+      );
     }
 
     function summarizeValue(key, value) {
@@ -1240,16 +1324,13 @@
 
     function getEventVisual(row, kind) {
       if (kind === "comment") {
-        return {
-          dotClass: "comment",
-          typeLabel: "文字備註"
-        };
+        return { dotClass: "comment", typeLabel: "文字備註" };
       }
 
       const t = row.event_type || "";
       if (t === "completed") return { dotClass: "success", typeLabel: "系統事件" };
       if (t === "cancelled") return { dotClass: "danger", typeLabel: "系統事件" };
-      if (t === "priority_changed" || t === "due_date_changed" || t === "pending") {
+      if (t === "priority_changed" || t === "due_date_changed" || t === "pending" || t === "outcome_updated") {
         return { dotClass: "warning", typeLabel: "系統事件" };
       }
       return { dotClass: "", typeLabel: "系統事件" };
@@ -1298,8 +1379,8 @@
           title: "已更新負責人",
           body: "",
           kv: [
-            ["原負責人", data.from || "未指定"],
-            ["新負責人", data.to || "未指定"]
+            ["原負責人", getStaffDisplayNameByAnyText(data.from) || "未指定"],
+            ["新負責人", getStaffDisplayNameByAnyText(data.to) || "未指定"]
           ]
         };
       }
@@ -1309,8 +1390,8 @@
           title: "已移除負責人",
           body: "",
           kv: [
-            ["原負責人", data.from || "未指定"],
-            ["目前負責人", data.to || "未指定"]
+            ["原負責人", getStaffDisplayNameByAnyText(data.from) || "未指定"],
+            ["目前負責人", getStaffDisplayNameByAnyText(data.to) || "未指定"]
           ]
         };
       }
@@ -1356,6 +1437,14 @@
         };
       }
 
+      if (type === "outcome_updated") {
+        return {
+          title: "處理結果已更新",
+          body: data.outcome || "",
+          kv: []
+        };
+      }
+
       return {
         title: row.event_label || "系統事件",
         body: row.event_data ? JSON.stringify(row.event_data, null, 2) : "",
@@ -1365,13 +1454,6 @@
 
     async function init() {
       try {
-        if (!SUPABASE_URL || SUPABASE_URL.includes("YOUR_PROJECT")) {
-          throw new Error("尚未設定 SUPABASE_URL");
-        }
-        if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes("YOUR_SUPABASE_ANON_KEY")) {
-          throw new Error("尚未設定 SUPABASE_ANON_KEY");
-        }
-
         sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const { data: userData, error: userError } = await sb.auth.getUser();
@@ -1380,13 +1462,146 @@
 
         currentUser = userData.user;
 
+        await loadStaffProfiles();
+        await loadCurrentStaffProfile();
+        renderStaffNameOptions();
         setStatus("正在載入跟進事項資料…", "info");
+        await loadPatientSuggestions();
         await loadFollowups();
+        await setupRealtime();
         setStatus("資料載入完成。", "success");
       } catch (error) {
         console.error(error);
         setStatus("初始化失敗：\n" + error.message, "error");
       }
+    }
+
+    async function loadStaffProfiles() {
+      const { data, error } = await sb
+        .from("staff_profiles")
+        .select("id, email, display_name, role, is_active")
+        .order("display_name", { ascending: true });
+
+      if (error) throw error;
+      staffProfiles = data || [];
+    }
+
+    async function loadCurrentStaffProfile() {
+      if (!currentUser?.id) return;
+      const { data, error } = await sb
+        .from("staff_profiles")
+        .select("id, email, display_name, role, is_active")
+        .eq("id", currentUser.id)
+        .single();
+
+      if (!error && data) currentStaffProfile = data;
+    }
+
+    function renderStaffNameOptions() {
+      const datalist = document.getElementById("staffNameOptions");
+      const names = Array.from(new Set(
+        staffProfiles
+          .map(p => safeTrim(p.display_name))
+          .filter(Boolean)
+      )).sort((a, b) => a.localeCompare(b, "zh-HK"));
+
+      datalist.innerHTML = names.map(name => `<option value="${escapeHtml(name)}"></option>`).join("");
+    }
+
+    async function loadPatientSuggestions() {
+      const { data, error } = await sb
+        .from("v_patient_cases")
+        .select("id, cumc_no, encounter_no, encounter_no_display, registered_at, status")
+        .order("registered_at", { ascending: false })
+        .limit(300);
+
+      if (error) throw error;
+
+      patientOptionRows = data || [];
+      const datalist = document.getElementById("patientIdOptions");
+      const patientIds = Array.from(new Set(patientOptionRows.map(x => safeTrim(x.cumc_no)).filter(Boolean))).slice(0, 100);
+      datalist.innerHTML = patientIds.map(id => `<option value="${escapeHtml(id)}"></option>`).join("");
+    }
+
+    async function loadEncountersForPatient(patientId) {
+      const patient = safeTrim(patientId).toUpperCase();
+      if (!patient) {
+        encounterOptions = [];
+        renderEncounterOptions();
+        return;
+      }
+
+      const [encRows, patientCaseRows] = await Promise.all([
+        sb.from("encounters")
+          .select("id, encounter_no, encounter_date, patient_id")
+          .eq("patient_id", patient)
+          .order("encounter_date", { ascending: false }),
+        sb.from("v_patient_cases")
+          .select("encounter_no, encounter_no_display, registered_at")
+          .eq("cumc_no", patient)
+          .order("registered_at", { ascending: false })
+      ]);
+
+      if (encRows.error) throw encRows.error;
+      if (patientCaseRows.error) throw patientCaseRows.error;
+
+      const caseMap = new Map((patientCaseRows.data || []).map(row => [row.encounter_no, row]));
+      encounterOptions = (encRows.data || []).map(row => {
+        const extra = caseMap.get(row.encounter_no);
+        return {
+          id: row.id,
+          encounter_no: row.encounter_no,
+          encounter_no_display: extra?.encounter_no_display || row.encounter_no || "—",
+          encounter_date: row.encounter_date,
+          patient_id: row.patient_id
+        };
+      });
+
+      renderEncounterOptions();
+    }
+
+    function renderEncounterOptions(filterText = "") {
+      const select = document.getElementById("caseEncounterId");
+      const chipWrap = document.getElementById("caseEncounterChipRow");
+      const hintBox = document.getElementById("caseEncounterHint");
+      const selected = select.value;
+      const keyword = safeTrim(filterText).toLowerCase();
+
+      const filtered = encounterOptions.filter(item => {
+        if (!keyword) return true;
+        return (
+          String(item.encounter_no || "").toLowerCase().includes(keyword) ||
+          String(item.encounter_no_display || "").toLowerCase().includes(keyword)
+        );
+      });
+
+      select.innerHTML = `
+        <option value="">未指定</option>
+        ${filtered.map(item => `
+          <option value="${escapeHtml(item.id)}">
+            ${escapeHtml(item.encounter_no_display || item.encounter_no || "—")}｜${escapeHtml(formatDateTime(item.encounter_date))}
+          </option>
+        `).join("")}
+      `;
+
+      if ([...select.options].some(opt => opt.value === selected)) {
+        select.value = selected;
+      }
+
+      if (!filtered.length) {
+        hintBox.style.display = "none";
+        chipWrap.innerHTML = "";
+        return;
+      }
+
+      hintBox.style.display = "";
+      chipWrap.innerHTML = filtered.slice(0, 12).map(item => `
+        <button
+          class="encounter-chip ${selected === item.id ? "active" : ""}"
+          type="button"
+          data-encounter-pick="${escapeHtml(item.id)}"
+        >${escapeHtml(item.encounter_no_display || item.encounter_no || "—")}</button>
+      `).join("");
     }
 
     async function loadFollowups() {
@@ -1403,6 +1618,26 @@
       renderDetail();
     }
 
+    async function setupRealtime() {
+      if (realtimeChannel) {
+        try { await sb.removeChannel(realtimeChannel); } catch (_) {}
+      }
+
+      realtimeChannel = sb
+        .channel("followup-live")
+        .on("postgres_changes", { event: "*", schema: "public", table: "followups" }, async () => {
+          await loadFollowups();
+          if (selectedFollowupId) await loadFollowupDetail(false);
+        })
+        .on("postgres_changes", { event: "*", schema: "public", table: "followup_events" }, async () => {
+          if (selectedFollowupId) await loadFollowupDetail(false);
+        })
+        .on("postgres_changes", { event: "*", schema: "public", table: "followup_comments" }, async () => {
+          if (selectedFollowupId) await loadFollowupDetail(false);
+        })
+        .subscribe();
+    }
+
     function getFilteredFollowups() {
       const keyword = safeTrim(document.getElementById("filterKeyword").value).toLowerCase();
       const status = document.getElementById("filterStatus").value;
@@ -1416,6 +1651,7 @@
         rows = rows.filter(item =>
           String(item.patient_id || "").toLowerCase().includes(keyword) ||
           String(item.followup_no || "").toLowerCase().includes(keyword) ||
+          formatFollowupNo(item.followup_no).toLowerCase().includes(keyword) ||
           String(item.title || "").toLowerCase().includes(keyword) ||
           String(item.description || "").toLowerCase().includes(keyword)
         );
@@ -1425,7 +1661,7 @@
       if (priority) rows = rows.filter(item => item.priority === priority);
       if (category) rows = rows.filter(item => item.category === category);
       if (assignedTo) {
-        rows = rows.filter(item => String(item.assigned_to || "").toLowerCase().includes(assignedTo));
+        rows = rows.filter(item => getStaffDisplayNameByAnyText(item.assigned_to).toLowerCase().includes(assignedTo));
       }
 
       return rows;
@@ -1460,7 +1696,7 @@
             <div>
               <div class="case-title">${escapeHtml(item.title || "—")}</div>
               <div class="case-sub">
-                ${escapeHtml(item.followup_no || "—")} ・ 病人編號：${escapeHtml(item.patient_id || "—")}
+                ${escapeHtml(formatFollowupNo(item.followup_no))} ・ 病人編號：${escapeHtml(item.patient_id || "—")}
               </div>
             </div>
             <div class="case-sub">最後更新：${escapeHtml(formatDateTime(item.updated_at))}</div>
@@ -1475,7 +1711,7 @@
           <div class="case-meta">
             <div class="meta-box">
               <div class="meta-label">負責人</div>
-              <div class="meta-value">${escapeHtml(item.assigned_to || "未指定")}</div>
+              <div class="meta-value">${escapeHtml(getStaffDisplayNameByAnyText(item.assigned_to) || "未指定")}</div>
             </div>
             <div class="meta-box">
               <div class="meta-label">到期時間</div>
@@ -1512,7 +1748,21 @@
       return followups.find(item => item.id === selectedFollowupId) || null;
     }
 
-    function renderDetail() {
+    async function getEncounterDisplayById(encounterId) {
+      if (!encounterId) return "未指定";
+      const { data, error } = await sb
+        .from("encounters")
+        .select("id, encounter_no, encounter_date")
+        .eq("id", encounterId)
+        .single();
+
+      if (error || !data) return String(encounterId);
+      const raw = safeTrim(data.encounter_no);
+      const display = raw ? `${raw}｜${formatDateTime(data.encounter_date)}` : String(encounterId);
+      return display;
+    }
+
+    async function renderDetail() {
       const item = getSelectedFollowup();
       const empty = document.getElementById("detailEmpty");
       const wrap = document.getElementById("detailWrap");
@@ -1526,35 +1776,42 @@
       empty.style.display = "none";
       wrap.style.display = "";
 
-      document.getElementById("detailNo").textContent = item.followup_no || "—";
+      document.getElementById("detailNo").textContent = formatFollowupNo(item.followup_no);
       document.getElementById("detailPatientId").textContent = item.patient_id || "—";
       document.getElementById("detailCategory").textContent = labelOf(CATEGORY_LABELS, item.category);
-      document.getElementById("detailEncounterId").textContent = item.encounter_id || "未指定";
+      document.getElementById("detailEncounterId").textContent = item.encounter_id ? "載入中…" : "未指定";
       document.getElementById("detailTitle").textContent = item.title || "—";
       document.getElementById("detailDescription").textContent = item.description || "未填寫";
-      document.getElementById("detailCreatedBy").textContent = item.created_by || "—";
+      document.getElementById("detailCreatedBy").textContent = getStaffDisplayNameByAnyText(item.created_by);
       document.getElementById("detailCreatedAt").textContent = formatDateTime(item.created_at);
 
       document.getElementById("editStatus").value = item.status || "open";
       document.getElementById("editPriority").value = item.priority || "normal";
-      document.getElementById("editAssignedTo").value = item.assigned_to || "";
+      document.getElementById("editAssignedTo").value = getStaffDisplayNameByAnyText(item.assigned_to) === "未記錄" ? "" : (getStaffDisplayNameByAnyText(item.assigned_to) === item.assigned_to ? (item.assigned_to || "") : getStaffDisplayNameByAnyText(item.assigned_to));
       document.getElementById("editDueAt").value = toDateTimeLocalValue(item.due_at);
       document.getElementById("editSource").value = item.source || "";
       document.getElementById("editRequestedBy").value = item.requested_by || "";
       document.getElementById("editOutcome").value = item.outcome || "";
 
       renderTimeline();
+
+      if (item.encounter_id) {
+        const display = await getEncounterDisplayById(item.encounter_id);
+        if (getSelectedFollowup()?.id === item.id) {
+          document.getElementById("detailEncounterId").textContent = display;
+        }
+      }
     }
 
-    async function loadFollowupDetail() {
+    async function loadFollowupDetail(showStatus = true) {
       const item = getSelectedFollowup();
       if (!item) {
         selectedTimeline = [];
-        renderDetail();
+        await renderDetail();
         return;
       }
 
-      setStatus("正在載入時間軸資料…", "info");
+      if (showStatus) setStatus("正在載入時間軸資料…", "info");
 
       const [eventsRes, commentsRes] = await Promise.all([
         sb.from("followup_events").select("*").eq("followup_id", item.id).order("created_at", { ascending: false }),
@@ -1570,7 +1827,7 @@
           kind: "event",
           id: row.id,
           created_at: row.created_at,
-          actor: row.actor || "未記錄",
+          actor: getStaffDisplayNameByAnyText(row.actor),
           title: t.title,
           body: t.body,
           kv: t.kv,
@@ -1582,7 +1839,7 @@
         kind: "comment",
         id: row.id,
         created_at: row.created_at,
-        actor: row.created_by || "未記錄",
+        actor: getStaffDisplayNameByAnyText(row.created_by),
         title: row.is_internal ? "內部備註" : "備註",
         body: row.comment_text || "",
         kv: [],
@@ -1593,8 +1850,8 @@
         (a, b) => new Date(b.created_at) - new Date(a.created_at)
       );
 
-      renderDetail();
-      setStatus("個案詳情已載入。", "success");
+      await renderDetail();
+      if (showStatus) setStatus("個案詳情已載入。", "success");
     }
 
     function renderTimeline() {
@@ -1642,17 +1899,17 @@
     }
 
     async function createFollowup() {
-      const patient_id = safeTrim(document.getElementById("casePatientId").value);
+      const patient_id = safeTrim(document.getElementById("casePatientId").value).toUpperCase();
       const encounter_id = safeTrim(document.getElementById("caseEncounterId").value) || null;
       const category = document.getElementById("caseCategory").value;
       const priority = document.getElementById("casePriority").value;
       const title = safeTrim(document.getElementById("caseTitle").value);
       const description = safeTrim(document.getElementById("caseDescription").value) || null;
       const assigned_to = safeTrim(document.getElementById("caseAssignedTo").value) || null;
-      const due_at = fromDateTimeLocalValue(document.getElementById("caseDueAt").value);
+      const due_at = fromHktDateTimeLocalValue(document.getElementById("caseDueAt").value);
       const source = document.getElementById("caseSource").value || null;
       const requested_by = document.getElementById("caseRequestedBy").value || null;
-      const created_by = currentUser?.email || currentUser?.id || "unknown";
+      const created_by = getCurrentActorText();
 
       if (!patient_id) {
         setStatus("請填寫病人編號。", "warning");
@@ -1726,11 +1983,11 @@
       const newStatus = document.getElementById("editStatus").value;
       const newPriority = document.getElementById("editPriority").value;
       const newAssignedTo = safeTrim(document.getElementById("editAssignedTo").value) || null;
-      const newDueAt = fromDateTimeLocalValue(document.getElementById("editDueAt").value);
+      const newDueAt = fromHktDateTimeLocalValue(document.getElementById("editDueAt").value);
       const newSource = document.getElementById("editSource").value || null;
       const newRequestedBy = document.getElementById("editRequestedBy").value || null;
       const newOutcome = safeTrim(document.getElementById("editOutcome").value) || null;
-      const actor = currentUser?.email || currentUser?.id || "unknown";
+      const actor = getCurrentActorText();
 
       try {
         setStatus("正在儲存更新…", "info");
@@ -1788,6 +2045,16 @@
           });
         }
 
+        if ((item.outcome || null) !== (newOutcome || null)) {
+          eventsToInsert.push({
+            followup_id: item.id,
+            event_type: "outcome_updated",
+            event_label: "Outcome updated",
+            event_data: { outcome: newOutcome || "" },
+            actor
+          });
+        }
+
         const { error: updateError } = await sb
           .from("followups")
           .update({
@@ -1827,7 +2094,7 @@
       }
 
       const comment_text = safeTrim(document.getElementById("newCommentText").value);
-      const created_by = currentUser?.email || currentUser?.id || "unknown";
+      const created_by = getCurrentActorText();
 
       if (!comment_text) {
         setStatus("備註內容不可留空。", "warning");
@@ -1860,7 +2127,8 @@
 
     function resetCreateForm() {
       document.getElementById("casePatientId").value = "";
-      document.getElementById("caseEncounterId").value = "";
+      document.getElementById("caseEncounterSearch").value = "";
+      document.getElementById("caseEncounterId").innerHTML = `<option value="">未指定</option>`;
       document.getElementById("caseCategory").value = "insurance_form";
       document.getElementById("casePriority").value = "normal";
       document.getElementById("caseTitle").value = "";
@@ -1869,6 +2137,9 @@
       document.getElementById("caseDueAt").value = "";
       document.getElementById("caseSource").value = "";
       document.getElementById("caseRequestedBy").value = "";
+      document.getElementById("caseEncounterHint").style.display = "none";
+      document.getElementById("caseEncounterChipRow").innerHTML = "";
+      encounterOptions = [];
     }
 
     function openCaseDialog() {
@@ -1903,8 +2174,11 @@
     document.getElementById("refreshBtn").addEventListener("click", async () => {
       try {
         setStatus("正在重新整理資料…", "info");
+        await loadStaffProfiles();
+        renderStaffNameOptions();
+        await loadPatientSuggestions();
         await loadFollowups();
-        if (selectedFollowupId) await loadFollowupDetail();
+        if (selectedFollowupId) await loadFollowupDetail(false);
         setStatus("資料已重新整理。", "success");
       } catch (error) {
         console.error(error);
@@ -1913,15 +2187,37 @@
     });
 
     document.getElementById("caseDialog").addEventListener("click", (event) => {
-      const panel = event.currentTarget.querySelector(".panel");
+      const panel = event.currentTarget.querySelector(".dialog-panel");
       const rect = panel.getBoundingClientRect();
       const inside =
         event.clientX >= rect.left &&
         event.clientX <= rect.right &&
         event.clientY >= rect.top &&
         event.clientY <= rect.bottom;
-
       if (!inside) event.currentTarget.close();
+    });
+
+    document.getElementById("casePatientId").addEventListener("input", async (event) => {
+      const value = safeTrim(event.target.value).toUpperCase();
+      event.target.value = value;
+      try {
+        await loadEncountersForPatient(value);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+
+    document.getElementById("caseEncounterSearch").addEventListener("input", (event) => {
+      renderEncounterOptions(event.target.value);
+    });
+
+    document.addEventListener("click", (event) => {
+      const btn = event.target.closest("[data-encounter-pick]");
+      if (!btn) return;
+      const encounterId = btn.getAttribute("data-encounter-pick");
+      const select = document.getElementById("caseEncounterId");
+      select.value = encounterId;
+      renderEncounterOptions(document.getElementById("caseEncounterSearch").value);
     });
 
     window.addEventListener("load", init);
