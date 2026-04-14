@@ -2822,7 +2822,7 @@ function renderPatientSearchDetail(patient) {
     <div class="patient-search-result">
       <div class="grid-2">
         <div><strong>CUMC 號碼：</strong>${escapeHtml(getPatientDisplayNo(patient))}</div>
-        <div><strong>AE no.：</strong>${escapeHtml(formatEncounterNoDisplay(patient.encounterNo))}</div>
+        <div><strong>求診號碼：</strong>${escapeHtml(formatEncounterNoDisplay(patient.encounterNo))}</div>
         <div><strong>所屬診室：</strong>${room ? `${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}` : "—"}</div>
         <div><strong>病人狀態：</strong>${escapeHtml(getStatusLabel(patient.status))}</div>
         <div><strong>病人類型：</strong>${escapeHtml(getPatientTypeLabel(patient.sourceType))}</div>
