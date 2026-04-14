@@ -3,85 +3,132 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>跟進事項管理</title>
+  <title>Follow-up 管理</title>
   <style>
     :root{
-      --bg:#f4f7fb;
-      --panel:#ffffff;
-      --panel-2:#f8fafc;
-      --text:#1f2937;
-      --muted:#6b7280;
-      --line:#e5e7eb;
+      --bg:#f6f8fb;
+      --surface:#ffffff;
+      --surface-soft:#f8fafc;
+      --surface-strong:#f1f5f9;
+      --text:#0f172a;
+      --text-soft:#475569;
+      --text-muted:#64748b;
+      --line:#e2e8f0;
+      --line-strong:#cbd5e1;
       --primary:#2563eb;
-      --primary-2:#1d4ed8;
+      --primary-hover:#1d4ed8;
+      --primary-soft:#dbeafe;
       --success:#16a34a;
+      --success-soft:#dcfce7;
       --warning:#d97706;
+      --warning-soft:#fef3c7;
       --danger:#dc2626;
+      --danger-soft:#fee2e2;
+      --gray-soft:#e5e7eb;
+      --shadow-sm:0 4px 14px rgba(15,23,42,.05);
       --shadow:0 10px 30px rgba(15,23,42,.08);
-      --radius:16px;
+      --radius:18px;
+      --radius-md:14px;
       --radius-sm:12px;
     }
 
     *{ box-sizing:border-box; }
-    html,body{ margin:0; padding:0; background:var(--bg); color:var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; }
+    html,body{
+      margin:0;
+      padding:0;
+      background:linear-gradient(180deg,#f8fbff 0%,#f4f7fb 100%);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+    }
     body.modal-open{ overflow:hidden; }
 
     .app{
-      max-width:1440px;
+      max-width:1480px;
       margin:0 auto;
-      padding:20px;
+      padding:24px;
     }
 
-    .topbar{
+    .page-header{
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
-      gap:16px;
+      gap:18px;
       margin-bottom:18px;
     }
 
-    .title-wrap h1{
-      margin:0;
-      font-size:28px;
-      font-weight:800;
-      letter-spacing:.02em;
+    .page-title-wrap{
+      min-width:0;
     }
 
-    .title-wrap p{
-      margin:6px 0 0;
-      color:var(--muted);
-      font-size:14px;
-    }
-
-    .top-actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
+    .page-kicker{
+      display:inline-flex;
       align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:var(--primary-soft);
+      color:var(--primary);
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.03em;
+      margin-bottom:10px;
+    }
+
+    .page-title{
+      margin:0;
+      font-size:30px;
+      font-weight:900;
+      letter-spacing:.01em;
+      line-height:1.15;
+    }
+
+    .page-subtitle{
+      margin:8px 0 0;
+      color:var(--text-muted);
+      font-size:14px;
+      line-height:1.55;
+    }
+
+    .header-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:flex-end;
     }
 
     .btn{
       appearance:none;
       border:none;
-      background:#e5e7eb;
-      color:#111827;
       border-radius:12px;
       padding:10px 14px;
+      min-height:42px;
+      background:#e5e7eb;
+      color:#111827;
       font-size:14px;
-      font-weight:700;
+      font-weight:800;
       cursor:pointer;
-      transition:.18s ease;
+      transition:.16s ease;
       box-shadow:none;
     }
 
     .btn:hover{ transform:translateY(-1px); }
-    .btn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
+    .btn:disabled{
+      opacity:.6;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .btn-light{
+      background:#fff;
+      border:1px solid var(--line);
+      color:var(--text);
+    }
 
     .btn-primary{
       background:var(--primary);
       color:#fff;
     }
-    .btn-primary:hover{ background:var(--primary-2); }
+    .btn-primary:hover{ background:var(--primary-hover); }
 
     .btn-success{
       background:var(--success);
@@ -98,23 +145,51 @@
       color:#fff;
     }
 
-    .btn-light{
-      background:#fff;
+    .btn-soft{
+      background:var(--surface-strong);
+      color:var(--text);
       border:1px solid var(--line);
     }
 
-    .toolbar{
-      background:var(--panel);
-      border:1px solid var(--line);
+    .panel{
+      background:var(--surface);
+      border:1px solid rgba(226,232,240,.95);
       border-radius:var(--radius);
-      padding:16px;
       box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .panel-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:16px 18px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%);
+    }
+
+    .panel-head h2{
+      margin:0;
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:.01em;
+    }
+
+    .panel-head .meta{
+      color:var(--text-muted);
+      font-size:13px;
+      margin-top:4px;
+    }
+
+    .toolbar{
+      padding:16px;
       margin-bottom:18px;
     }
 
     .toolbar-grid{
       display:grid;
-      grid-template-columns: 1.3fr 1fr 1fr 1fr 1fr 1fr auto;
+      grid-template-columns:1.4fr 1fr 1fr 1fr 1fr 1fr auto;
       gap:12px;
       align-items:end;
     }
@@ -128,8 +203,8 @@
 
     .field label{
       font-size:12px;
-      font-weight:700;
-      color:var(--muted);
+      font-weight:800;
+      color:var(--text-muted);
       letter-spacing:.02em;
     }
 
@@ -138,13 +213,13 @@
     .field textarea{
       width:100%;
       border:1px solid var(--line);
-      border-radius:12px;
       background:#fff;
       color:var(--text);
+      border-radius:12px;
       padding:10px 12px;
       font-size:14px;
       outline:none;
-      transition:border-color .18s ease, box-shadow .18s ease;
+      transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
     }
 
     .field textarea{
@@ -159,74 +234,86 @@
       box-shadow:0 0 0 4px rgba(37,99,235,.12);
     }
 
-    .summary-cards{
+    .stats{
       display:grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns:repeat(4,minmax(0,1fr));
       gap:14px;
       margin-bottom:18px;
     }
 
-    .card{
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
+    .stat-card{
       padding:16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%);
+      box-shadow:var(--shadow-sm);
     }
 
-    .summary-card .label{
-      color:var(--muted);
+    .stat-label{
+      color:var(--text-muted);
       font-size:13px;
-      font-weight:700;
-      margin-bottom:8px;
-    }
-
-    .summary-card .value{
-      font-size:28px;
       font-weight:800;
-      line-height:1;
+      margin-bottom:10px;
     }
 
-    .summary-card .sub{
+    .stat-value{
+      font-size:30px;
+      line-height:1;
+      font-weight:900;
+      color:var(--text);
+    }
+
+    .stat-sub{
       margin-top:8px;
-      color:var(--muted);
+      color:var(--text-muted);
       font-size:12px;
+    }
+
+    .tabs-wrap{
+      margin-bottom:18px;
+    }
+
+    .tabs{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      padding:10px;
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:16px;
+      box-shadow:var(--shadow-sm);
+    }
+
+    .tab-btn{
+      appearance:none;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--text-soft);
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:14px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.16s ease;
+    }
+
+    .tab-btn:hover{
+      transform:translateY(-1px);
+      border-color:#bfdbfe;
+    }
+
+    .tab-btn.active{
+      background:var(--primary);
+      color:#fff;
+      border-color:var(--primary);
+      box-shadow:0 8px 20px rgba(37,99,235,.18);
     }
 
     .layout{
       display:grid;
-      grid-template-columns: minmax(0, 1.5fr) minmax(360px, .9fr);
+      grid-template-columns:minmax(0, 1.55fr) minmax(380px, .95fr);
       gap:18px;
       align-items:start;
-    }
-
-    .panel{
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-
-    .panel-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:16px 18px;
-      border-bottom:1px solid var(--line);
-      background:linear-gradient(180deg, #fff 0%, #fbfdff 100%);
-    }
-
-    .panel-head h2{
-      margin:0;
-      font-size:18px;
-      font-weight:800;
-    }
-
-    .panel-head .meta{
-      color:var(--muted);
-      font-size:13px;
     }
 
     .table-wrap{
@@ -235,35 +322,36 @@
 
     table{
       width:100%;
+      min-width:1220px;
       border-collapse:collapse;
-      min-width:1100px;
     }
 
     thead th{
       position:sticky;
       top:0;
-      background:#f8fafc;
       z-index:1;
+      background:#f8fafc;
+      color:var(--text-muted);
       font-size:12px;
-      text-align:left;
-      color:#475569;
-      letter-spacing:.03em;
+      font-weight:900;
       text-transform:uppercase;
+      letter-spacing:.04em;
+      text-align:left;
+      white-space:nowrap;
       padding:12px 14px;
       border-bottom:1px solid var(--line);
-      white-space:nowrap;
     }
 
     tbody td{
-      padding:12px 14px;
+      padding:13px 14px;
       border-bottom:1px solid #edf2f7;
-      vertical-align:top;
       font-size:14px;
+      vertical-align:top;
     }
 
     tbody tr{
-      transition:background .15s ease;
       cursor:pointer;
+      transition:background .14s ease;
     }
 
     tbody tr:hover{
@@ -275,26 +363,32 @@
     }
 
     .followup-no{
-      font-weight:800;
+      font-weight:900;
       color:#0f172a;
       white-space:nowrap;
     }
 
     .title-cell{
-      min-width:220px;
+      min-width:260px;
     }
 
     .title-main{
-      font-weight:700;
+      font-weight:800;
+      color:#0f172a;
+      line-height:1.4;
       margin-bottom:4px;
-      color:#111827;
-      line-height:1.35;
     }
 
     .title-sub{
-      color:var(--muted);
+      color:var(--text-muted);
       font-size:12px;
-      line-height:1.4;
+      line-height:1.45;
+    }
+
+    .muted{
+      color:var(--text-muted);
+      font-size:12px;
+      line-height:1.45;
     }
 
     .badge{
@@ -302,11 +396,11 @@
       align-items:center;
       justify-content:center;
       border-radius:999px;
-      padding:4px 10px;
+      padding:5px 10px;
       font-size:12px;
-      font-weight:800;
-      letter-spacing:.02em;
+      font-weight:900;
       white-space:nowrap;
+      letter-spacing:.02em;
     }
 
     .badge-status-open{ background:#dbeafe; color:#1d4ed8; }
@@ -319,38 +413,40 @@
     .badge-priority-high{ background:#fed7aa; color:#c2410c; }
     .badge-priority-urgent{ background:#fee2e2; color:#b91c1c; }
 
-    .muted{
-      color:var(--muted);
-      font-size:12px;
-    }
-
-    .staff-chip{
+    .staff-chip,
+    .doctor-chip{
       display:inline-flex;
       align-items:center;
-      padding:4px 8px;
+      max-width:220px;
+      padding:5px 9px;
       border-radius:999px;
       background:#f3f4f6;
-      color:#374151;
+      color:#334155;
       font-size:12px;
-      font-weight:700;
-      max-width:220px;
+      font-weight:800;
     }
 
-    .staff-chip span{
+    .doctor-chip{
+      background:#ede9fe;
+      color:#5b21b6;
+    }
+
+    .staff-chip span,
+    .doctor-chip span{
+      display:block;
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
-      display:block;
     }
 
     .right-panel{
       position:sticky;
-      top:20px;
+      top:24px;
     }
 
     .detail-empty{
       padding:24px;
-      color:var(--muted);
+      color:var(--text-muted);
       font-size:14px;
     }
 
@@ -368,36 +464,50 @@
 
     .detail-title h3{
       margin:0;
-      font-size:22px;
+      font-size:24px;
       line-height:1.3;
+      font-weight:900;
+    }
+
+    .detail-badges{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
     }
 
     .detail-grid{
       display:grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
+      grid-template-columns:repeat(2,minmax(0,1fr));
       gap:12px;
     }
 
     .meta-box{
       border:1px solid var(--line);
-      background:var(--panel-2);
+      background:var(--surface-soft);
       border-radius:14px;
       padding:12px;
     }
 
     .meta-box .k{
-      color:var(--muted);
+      color:var(--text-muted);
       font-size:12px;
-      font-weight:700;
+      font-weight:800;
       margin-bottom:6px;
     }
 
     .meta-box .v{
+      color:var(--text);
       font-size:14px;
-      font-weight:700;
-      color:#111827;
+      font-weight:800;
       line-height:1.5;
       word-break:break-word;
+    }
+
+    .detail-actions{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:10px;
     }
 
     .section{
@@ -408,7 +518,7 @@
     .section h4{
       margin:0 0 12px;
       font-size:15px;
-      font-weight:800;
+      font-weight:900;
     }
 
     .desc-box{
@@ -416,6 +526,7 @@
       background:#fff;
       border-radius:14px;
       padding:12px 14px;
+      color:#334155;
       font-size:14px;
       line-height:1.7;
       white-space:pre-wrap;
@@ -423,15 +534,13 @@
     }
 
     .timeline{
-      position:relative;
       display:grid;
       gap:12px;
     }
 
     .timeline-item{
-      position:relative;
       display:grid;
-      grid-template-columns: 14px minmax(0,1fr);
+      grid-template-columns:14px minmax(0,1fr);
       gap:12px;
       align-items:start;
     }
@@ -446,9 +555,9 @@
     }
 
     .timeline-card{
+      background:#fff;
       border:1px solid var(--line);
       border-radius:14px;
-      background:#fff;
       padding:12px 14px;
     }
 
@@ -462,58 +571,52 @@
 
     .timeline-title{
       font-size:14px;
-      font-weight:800;
+      font-weight:900;
       color:#111827;
     }
 
     .timeline-time{
       font-size:12px;
-      color:var(--muted);
+      color:var(--text-muted);
       white-space:nowrap;
     }
 
     .timeline-meta{
-      color:var(--muted);
+      color:var(--text-muted);
       font-size:12px;
       margin-bottom:8px;
+      line-height:1.5;
     }
 
     .timeline-data{
+      color:#334155;
       font-size:13px;
-      color:#374151;
+      line-height:1.65;
       white-space:pre-wrap;
       word-break:break-word;
-      line-height:1.6;
     }
 
-    .detail-actions{
-      display:grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap:10px;
-    }
-
-    .status-row{
-      display:grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap:12px;
-      margin-bottom:12px;
+    .empty-state{
+      padding:26px 22px;
+      color:var(--text-muted);
+      font-size:14px;
     }
 
     .notify{
       position:fixed;
       right:18px;
       bottom:18px;
+      width:min(420px, calc(100vw - 24px));
       display:grid;
       gap:10px;
       z-index:1200;
-      width:min(420px, calc(100vw - 24px));
     }
 
     .toast{
-      background:#111827;
-      color:#fff;
-      border-radius:14px;
       padding:12px 14px;
+      border-radius:14px;
+      color:#fff;
+      background:#111827;
       box-shadow:var(--shadow);
       font-size:14px;
       line-height:1.5;
@@ -533,27 +636,27 @@
     .loading-overlay{
       position:fixed;
       inset:0;
-      background:rgba(255,255,255,.65);
-      backdrop-filter:blur(2px);
       display:none;
       align-items:center;
       justify-content:center;
+      background:rgba(255,255,255,.66);
+      backdrop-filter:blur(2px);
       z-index:1300;
     }
 
     .loading-overlay.show{ display:flex; }
 
     .loading-card{
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:18px 22px;
-      box-shadow:var(--shadow);
       display:flex;
       align-items:center;
       gap:12px;
-      font-weight:700;
-      color:#374151;
+      padding:18px 22px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      color:#334155;
+      font-weight:800;
     }
 
     .spinner{
@@ -572,43 +675,43 @@
     .modal{
       position:fixed;
       inset:0;
-      background:rgba(15,23,42,.45);
       display:none;
       align-items:center;
       justify-content:center;
-      z-index:1400;
       padding:16px;
+      background:rgba(15,23,42,.45);
+      z-index:1400;
     }
 
     .modal.show{ display:flex; }
 
     .modal-card{
-      width:min(920px, 100%);
-      max-height:min(90vh, 980px);
+      width:min(960px, 100%);
+      max-height:min(92vh, 980px);
       overflow:auto;
       background:#fff;
-      border-radius:18px;
       border:1px solid var(--line);
+      border-radius:18px;
       box-shadow:0 30px 60px rgba(15,23,42,.22);
     }
 
     .modal-head{
+      position:sticky;
+      top:0;
+      z-index:1;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:12px;
       padding:16px 18px;
-      border-bottom:1px solid var(--line);
-      position:sticky;
-      top:0;
       background:#fff;
-      z-index:1;
+      border-bottom:1px solid var(--line);
     }
 
     .modal-head h3{
       margin:0;
       font-size:20px;
-      font-weight:800;
+      font-weight:900;
     }
 
     .modal-body{
@@ -618,118 +721,136 @@
     }
 
     .modal-actions{
+      position:sticky;
+      bottom:0;
+      z-index:1;
       display:flex;
       justify-content:flex-end;
       gap:10px;
       padding:16px 18px;
-      border-top:1px solid var(--line);
-      position:sticky;
-      bottom:0;
       background:#fff;
+      border-top:1px solid var(--line);
     }
 
     .grid-2{
       display:grid;
-      grid-template-columns:repeat(2, minmax(0,1fr));
+      grid-template-columns:repeat(2,minmax(0,1fr));
       gap:14px;
     }
 
     .grid-3{
       display:grid;
-      grid-template-columns:repeat(3, minmax(0,1fr));
+      grid-template-columns:repeat(3,minmax(0,1fr));
       gap:14px;
     }
 
     .note{
-      color:var(--muted);
+      color:var(--text-muted);
       font-size:12px;
       line-height:1.5;
     }
 
-    .empty-state{
-      padding:28px 22px;
-      color:var(--muted);
-      font-size:14px;
-    }
-
-    @media (max-width: 1200px){
+    @media (max-width: 1240px){
       .toolbar-grid{
-        grid-template-columns: repeat(3, minmax(0,1fr));
+        grid-template-columns:repeat(3,minmax(0,1fr));
       }
       .layout{
-        grid-template-columns: 1fr;
+        grid-template-columns:1fr;
       }
       .right-panel{
         position:static;
       }
     }
 
-    @media (max-width: 820px){
-      .summary-cards{
-        grid-template-columns: repeat(2, minmax(0,1fr));
+    @media (max-width: 900px){
+      .page-header{
+        flex-direction:column;
+        align-items:stretch;
+      }
+      .header-actions{
+        justify-content:flex-start;
+      }
+      .stats{
+        grid-template-columns:repeat(2,minmax(0,1fr));
       }
       .grid-3,
       .grid-2,
-      .status-row,
       .detail-grid,
       .detail-actions{
         grid-template-columns:1fr;
       }
       .toolbar-grid{
-        grid-template-columns: 1fr;
-      }
-      .topbar{
-        flex-direction:column;
-        align-items:stretch;
-      }
-      .top-actions{
-        justify-content:flex-start;
+        grid-template-columns:1fr;
       }
     }
 
     @media (max-width: 560px){
       .app{ padding:14px; }
-      .summary-cards{
+      .stats{
         grid-template-columns:1fr;
       }
-      .modal{
-        padding:8px;
-      }
-      .modal-card{
-        max-height:94vh;
-      }
+      .modal{ padding:8px; }
+      .modal-card{ max-height:94vh; }
+      .page-title{ font-size:26px; }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <div class="topbar">
-      <div class="title-wrap">
-        <h1>跟進事項管理</h1>
-        <p>Follow-up 工作台｜顯示 follow-up no、24 小時制時間、timeline outcome、即時同步 staff display name。</p>
+    <div class="page-header">
+      <div class="page-title-wrap">
+        <div class="page-kicker">FOLLOW-UP WORKSPACE</div>
+        <h1 class="page-title">跟進事項管理</h1>
+        <p class="page-subtitle">
+          顯示 Follow-up No.、24 小時制時間、timeline outcome、實時 staff display name，同時支援 encounter doctor 顯示、狀態 tabs，同快捷完成。
+        </p>
       </div>
-      <div class="top-actions">
+      <div class="header-actions">
         <button class="btn btn-light" id="refreshBtn" type="button">重新整理</button>
         <button class="btn btn-primary" id="newFollowupBtn" type="button">新增跟進事項</button>
       </div>
     </div>
 
-    <div class="toolbar">
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">全部事項</div>
+        <div class="stat-value" id="summaryTotal">0</div>
+        <div class="stat-sub">目前篩選結果總數</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">待處理</div>
+        <div class="stat-value" id="summaryOpen">0</div>
+        <div class="stat-sub">open / pending</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">今日到期 / 已逾期</div>
+        <div class="stat-value" id="summaryDue">0</div>
+        <div class="stat-sub">只計未完成事項</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">高優先 / 緊急</div>
+        <div class="stat-value" id="summaryUrgent">0</div>
+        <div class="stat-sub">high / urgent</div>
+      </div>
+    </div>
+
+    <div class="tabs-wrap">
+      <div class="tabs" id="statusTabs">
+        <button class="tab-btn active" type="button" data-tab-status="">全部</button>
+        <button class="tab-btn" type="button" data-tab-status="open">Open</button>
+        <button class="tab-btn" type="button" data-tab-status="pending">Pending</button>
+        <button class="tab-btn" type="button" data-tab-status="done">Done</button>
+        <button class="tab-btn" type="button" data-tab-status="cancelled">Cancelled</button>
+      </div>
+    </div>
+
+    <div class="panel toolbar">
       <div class="toolbar-grid">
         <div class="field">
           <label for="searchInput">搜尋</label>
-          <input id="searchInput" type="text" placeholder="搜尋 follow-up no / 標題 / CUMC / assigned / created by / encounter" />
+          <input id="searchInput" type="text" placeholder="搜尋 follow-up no / 標題 / CUMC / doctor / assigned / encounter" />
         </div>
-        <div class="field">
-          <label for="statusFilter">狀態</label>
-          <select id="statusFilter">
-            <option value="">全部</option>
-            <option value="open">open</option>
-            <option value="pending">pending</option>
-            <option value="done">done</option>
-            <option value="cancelled">cancelled</option>
-          </select>
-        </div>
+
         <div class="field">
           <label for="priorityFilter">優先級</label>
           <select id="priorityFilter">
@@ -740,6 +861,7 @@
             <option value="urgent">urgent</option>
           </select>
         </div>
+
         <div class="field">
           <label for="categoryFilter">類別</label>
           <select id="categoryFilter">
@@ -753,12 +875,21 @@
             <option value="other">other</option>
           </select>
         </div>
+
         <div class="field">
           <label for="assigneeFilter">負責人</label>
           <select id="assigneeFilter">
             <option value="">全部</option>
           </select>
         </div>
+
+        <div class="field">
+          <label for="doctorFilter">Encounter 醫生</label>
+          <select id="doctorFilter">
+            <option value="">全部</option>
+          </select>
+        </div>
+
         <div class="field">
           <label for="sortSelect">排序</label>
           <select id="sortSelect">
@@ -768,32 +899,10 @@
             <option value="priority_desc">優先級</option>
           </select>
         </div>
-        <div class="field">
-          <button class="btn" id="clearFiltersBtn" type="button">清除篩選</button>
-        </div>
-      </div>
-    </div>
 
-    <div class="summary-cards">
-      <div class="card summary-card">
-        <div class="label">全部事項</div>
-        <div class="value" id="summaryTotal">0</div>
-        <div class="sub">目前已載入跟進事項總數</div>
-      </div>
-      <div class="card summary-card">
-        <div class="label">待處理</div>
-        <div class="value" id="summaryOpen">0</div>
-        <div class="sub">狀態為 open / pending</div>
-      </div>
-      <div class="card summary-card">
-        <div class="label">今日到期 / 已逾期</div>
-        <div class="value" id="summaryDue">0</div>
-        <div class="sub">依本機時間計算</div>
-      </div>
-      <div class="card summary-card">
-        <div class="label">高優先 / 緊急</div>
-        <div class="value" id="summaryUrgent">0</div>
-        <div class="sub">priority = high / urgent</div>
+        <div class="field">
+          <button class="btn btn-soft" id="clearFiltersBtn" type="button">清除篩選</button>
+        </div>
       </div>
     </div>
 
@@ -805,15 +914,17 @@
             <div class="meta" id="tableMeta">0 項</div>
           </div>
         </div>
+
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
                 <th>Follow-up No.</th>
-                <th>標題 / 病人</th>
+                <th>標題 / 病人代碼</th>
                 <th>狀態</th>
                 <th>優先級</th>
                 <th>類別</th>
+                <th>Encounter 醫生</th>
                 <th>負責人</th>
                 <th>建立人</th>
                 <th>到期時間</th>
@@ -823,6 +934,7 @@
             <tbody id="followupTableBody"></tbody>
           </table>
         </div>
+
         <div class="empty-state" id="tableEmpty" style="display:none;">目前沒有符合條件的跟進事項。</div>
       </div>
 
@@ -846,6 +958,7 @@
         <h3 id="followupModalTitle">新增跟進事項</h3>
         <button class="btn btn-light" id="closeFollowupModalBtn" type="button">關閉</button>
       </div>
+
       <div class="modal-body">
         <div class="grid-3">
           <div class="field">
@@ -859,6 +972,13 @@
             </select>
           </div>
           <div class="field">
+            <label for="followupDoctorDisplay">Encounter 醫生</label>
+            <input id="followupDoctorDisplay" type="text" placeholder="根據所選 encounter 自動顯示" readonly />
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="field">
             <label for="followupCategoryInput">類別</label>
             <select id="followupCategoryInput">
               <option value="other">other</option>
@@ -870,9 +990,6 @@
               <option value="admin">admin</option>
             </select>
           </div>
-        </div>
-
-        <div class="grid-3">
           <div class="field">
             <label for="followupStatusInput">狀態</label>
             <select id="followupStatusInput">
@@ -891,10 +1008,6 @@
               <option value="urgent">urgent</option>
             </select>
           </div>
-          <div class="field">
-            <label for="followupDueAtInput">到期時間</label>
-            <input id="followupDueAtInput" type="datetime-local" />
-          </div>
         </div>
 
         <div class="grid-2">
@@ -908,14 +1021,18 @@
           </div>
         </div>
 
-        <div class="grid-2">
+        <div class="grid-3">
           <div class="field">
             <label for="followupSourceInput">來源</label>
-            <input id="followupSourceInput" type="text" placeholder="例如：system / manual / phone" />
+            <input id="followupSourceInput" type="text" placeholder="例如：manual / system / phone" />
           </div>
           <div class="field">
             <label for="followupRequestedByInput">要求者</label>
             <input id="followupRequestedByInput" type="text" placeholder="例如：doctor / nurse / patient" />
+          </div>
+          <div class="field">
+            <label for="followupDueAtInput">到期時間</label>
+            <input id="followupDueAtInput" type="datetime-local" />
           </div>
         </div>
 
@@ -927,9 +1044,10 @@
         <div class="field">
           <label for="followupOutcomeInput">Outcome / 結果</label>
           <textarea id="followupOutcomeInput" placeholder="如已完成或有結果，可填寫 outcome"></textarea>
-          <div class="note">當狀態改為 done / cancelled 時，建議同時填寫 outcome；timeline 會顯示。</div>
+          <div class="note">若狀態設為 done / cancelled，建議同時填寫 outcome；timeline 會顯示。</div>
         </div>
       </div>
+
       <div class="modal-actions">
         <button class="btn" id="cancelFollowupModalBtn" type="button">取消</button>
         <button class="btn btn-primary" id="saveFollowupBtn" type="button">儲存</button>
@@ -938,14 +1056,16 @@
   </div>
 
   <div class="modal" id="statusModal" aria-hidden="true">
-    <div class="modal-card" style="width:min(720px, 100%);">
+    <div class="modal-card" style="width:min(760px, 100%);">
       <div class="modal-head">
         <h3>更新狀態</h3>
         <button class="btn btn-light" id="closeStatusModalBtn" type="button">關閉</button>
       </div>
+
       <div class="modal-body">
         <div id="statusModalInfo" class="note"></div>
-        <div class="status-row">
+
+        <div class="grid-2">
           <div class="field">
             <label for="statusModalStatusInput">新狀態</label>
             <select id="statusModalStatusInput">
@@ -965,6 +1085,7 @@
             </select>
           </div>
         </div>
+
         <div class="grid-2">
           <div class="field">
             <label for="statusModalAssignedToInput">負責人</label>
@@ -975,18 +1096,49 @@
             <input id="statusModalDueAtInput" type="datetime-local" />
           </div>
         </div>
+
         <div class="field">
           <label for="statusModalOutcomeInput">Outcome / 結果</label>
           <textarea id="statusModalOutcomeInput" placeholder="例如：已聯絡病人，已安排覆診"></textarea>
         </div>
+
         <div class="field">
           <label for="statusModalRemarkInput">備註 / 事件說明</label>
           <textarea id="statusModalRemarkInput" placeholder="例如：病人表示下星期一回診"></textarea>
         </div>
       </div>
+
       <div class="modal-actions">
         <button class="btn" id="cancelStatusModalBtn" type="button">取消</button>
         <button class="btn btn-success" id="saveStatusModalBtn" type="button">更新</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="quickDoneModal" aria-hidden="true">
+    <div class="modal-card" style="width:min(680px, 100%);">
+      <div class="modal-head">
+        <h3>完成並填 Outcome</h3>
+        <button class="btn btn-light" id="closeQuickDoneModalBtn" type="button">關閉</button>
+      </div>
+
+      <div class="modal-body">
+        <div id="quickDoneInfo" class="note"></div>
+
+        <div class="field">
+          <label for="quickDoneOutcomeInput">Outcome / 結果</label>
+          <textarea id="quickDoneOutcomeInput" placeholder="例如：已通知病人，醫生建議兩星期後覆診"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="quickDoneRemarkInput">備註 / Timeline 說明</label>
+          <textarea id="quickDoneRemarkInput" placeholder="例如：電話聯絡成功，病人已確認明白"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn" id="cancelQuickDoneModalBtn" type="button">取消</button>
+        <button class="btn btn-success" id="saveQuickDoneBtn" type="button">標記完成</button>
       </div>
     </div>
   </div>
@@ -1003,8 +1155,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     // ====== 請自行替換 ======
-    const SUPABASE_URL = window.SUPABASE_URL || "https://dvyberdrmmfgutjqnpjr.supabase.co";
-    const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
+    const SUPABASE_URL = window.SUPABASE_URL || "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || "YOUR_SUPABASE_ANON_KEY";
     // ========================
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -1019,15 +1171,16 @@
       followupEventsMap: new Map(),
       selectedFollowupId: null,
       subscriptions: [],
-      loadingCount: 0
+      loadingCount: 0,
+      activeTabStatus: ""
     };
 
     const ui = {
       searchInput: document.getElementById("searchInput"),
-      statusFilter: document.getElementById("statusFilter"),
       priorityFilter: document.getElementById("priorityFilter"),
       categoryFilter: document.getElementById("categoryFilter"),
       assigneeFilter: document.getElementById("assigneeFilter"),
+      doctorFilter: document.getElementById("doctorFilter"),
       sortSelect: document.getElementById("sortSelect"),
       clearFiltersBtn: document.getElementById("clearFiltersBtn"),
       refreshBtn: document.getElementById("refreshBtn"),
@@ -1042,7 +1195,8 @@
       summaryDue: document.getElementById("summaryDue"),
       summaryUrgent: document.getElementById("summaryUrgent"),
       notifyRoot: document.getElementById("notifyRoot"),
-      loadingOverlay: document.getElementById("loadingOverlay")
+      loadingOverlay: document.getElementById("loadingOverlay"),
+      statusTabs: document.getElementById("statusTabs")
     };
 
     const followupModal = {
@@ -1050,6 +1204,7 @@
       titleEl: document.getElementById("followupModalTitle"),
       patientSelectEl: document.getElementById("followupPatientSelect"),
       encounterSelectEl: document.getElementById("followupEncounterSelect"),
+      doctorDisplayEl: document.getElementById("followupDoctorDisplay"),
       categoryEl: document.getElementById("followupCategoryInput"),
       statusEl: document.getElementById("followupStatusInput"),
       priorityEl: document.getElementById("followupPriorityInput"),
@@ -1078,6 +1233,15 @@
       followupId: null
     };
 
+    const quickDoneModal = {
+      el: document.getElementById("quickDoneModal"),
+      infoEl: document.getElementById("quickDoneInfo"),
+      outcomeEl: document.getElementById("quickDoneOutcomeInput"),
+      remarkEl: document.getElementById("quickDoneRemarkInput"),
+      saveBtnEl: document.getElementById("saveQuickDoneBtn"),
+      followupId: null
+    };
+
     function notify(message, type = "success", timeout = 3200) {
       const item = document.createElement("div");
       item.className = `toast ${type}`;
@@ -1097,9 +1261,7 @@
 
     function hideLoading() {
       state.loadingCount = Math.max(0, state.loadingCount - 1);
-      if (!state.loadingCount) {
-        ui.loadingOverlay.classList.remove("show");
-      }
+      if (!state.loadingCount) ui.loadingOverlay.classList.remove("show");
     }
 
     async function withLoading(fn) {
@@ -1186,11 +1348,31 @@
       return `CUMC ${p.cumc_no || "—"}${p.ticket_no ? `｜Ticket ${p.ticket_no}` : ""}`;
     }
 
+    function getEncounterById(encounterId) {
+      if (!encounterId) return null;
+      return state.encounters.find(item => String(item.id) === String(encounterId)) || null;
+    }
+
     function getEncounterDisplayById(encounterId) {
       if (!encounterId) return "—";
-      const found = state.encounters.find(item => String(item.id) === String(encounterId));
+      const found = getEncounterById(encounterId);
       if (!found) return String(encounterId);
       return found.encounter_no || `#${found.id}`;
+    }
+
+    function getEncounterDoctorTextById(encounterId) {
+      const found = getEncounterById(encounterId);
+      if (!found) return "—";
+      return String(
+        found.doctor_name ||
+        found.doctor_display_name ||
+        found.doctor ||
+        found.attending_doctor ||
+        found.provider_name ||
+        found.provider ||
+        found.doctor_in_charge ||
+        ""
+      ).trim() || "—";
     }
 
     function statusBadge(status) {
@@ -1253,19 +1435,21 @@
 
     function bindEvents() {
       ui.searchInput.addEventListener("input", renderAll);
-      ui.statusFilter.addEventListener("change", renderAll);
       ui.priorityFilter.addEventListener("change", renderAll);
       ui.categoryFilter.addEventListener("change", renderAll);
       ui.assigneeFilter.addEventListener("change", renderAll);
+      ui.doctorFilter.addEventListener("change", renderAll);
       ui.sortSelect.addEventListener("change", renderAll);
 
       ui.clearFiltersBtn.addEventListener("click", () => {
+        state.activeTabStatus = "";
         ui.searchInput.value = "";
-        ui.statusFilter.value = "";
         ui.priorityFilter.value = "";
         ui.categoryFilter.value = "";
         ui.assigneeFilter.value = "";
+        ui.doctorFilter.value = "";
         ui.sortSelect.value = "updated_desc";
+        syncStatusTabsUI();
         renderAll();
       });
 
@@ -1275,8 +1459,14 @@
         notify("已重新整理", "success");
       }));
 
-      ui.newFollowupBtn.addEventListener("click", () => {
-        openFollowupModal("create");
+      ui.newFollowupBtn.addEventListener("click", () => openFollowupModal("create"));
+
+      [...ui.statusTabs.querySelectorAll("[data-tab-status]")].forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.activeTabStatus = btn.getAttribute("data-tab-status") || "";
+          syncStatusTabsUI();
+          renderAll();
+        });
       });
 
       document.getElementById("closeFollowupModalBtn").addEventListener("click", closeFollowupModal);
@@ -1285,7 +1475,8 @@
         if (event.target === followupModal.el) closeFollowupModal();
       });
       followupModal.saveBtnEl.addEventListener("click", () => withLoading(saveFollowupFromModal));
-      followupModal.patientSelectEl.addEventListener("change", syncEncounterOptionsForSelectedPatient);
+      followupModal.patientSelectEl.addEventListener("change", () => syncEncounterOptionsForSelectedPatient());
+      followupModal.encounterSelectEl.addEventListener("change", syncFollowupDoctorDisplay);
 
       document.getElementById("closeStatusModalBtn").addEventListener("click", closeStatusModal);
       document.getElementById("cancelStatusModalBtn").addEventListener("click", closeStatusModal);
@@ -1294,10 +1485,25 @@
       });
       statusModal.saveBtnEl.addEventListener("click", () => withLoading(saveStatusUpdate));
 
+      document.getElementById("closeQuickDoneModalBtn").addEventListener("click", closeQuickDoneModal);
+      document.getElementById("cancelQuickDoneModalBtn").addEventListener("click", closeQuickDoneModal);
+      quickDoneModal.el.addEventListener("click", (event) => {
+        if (event.target === quickDoneModal.el) closeQuickDoneModal();
+      });
+      quickDoneModal.saveBtnEl.addEventListener("click", () => withLoading(saveQuickDone));
+
       document.addEventListener("keydown", (event) => {
         if (event.key !== "Escape") return;
         if (followupModal.el.classList.contains("show")) closeFollowupModal();
         if (statusModal.el.classList.contains("show")) closeStatusModal();
+        if (quickDoneModal.el.classList.contains("show")) closeQuickDoneModal();
+      });
+    }
+
+    function syncStatusTabsUI() {
+      [...ui.statusTabs.querySelectorAll("[data-tab-status]")].forEach(btn => {
+        const value = btn.getAttribute("data-tab-status") || "";
+        btn.classList.toggle("active", value === state.activeTabStatus);
       });
     }
 
@@ -1305,9 +1511,7 @@
       const { data, error } = await sb.auth.getUser();
       if (error) throw error;
       state.authUser = data?.user || null;
-      if (!state.authUser) {
-        notify("未登入，請先登入系統。", "error", 5000);
-      }
+      if (!state.authUser) notify("未登入，請先登入系統。", "error", 5000);
       await loadMyProfile();
     }
 
@@ -1338,6 +1542,7 @@
       ]);
       await loadFollowupEvents();
       populateAssigneeFilter();
+      populateDoctorFilter();
       populatePatientOptions();
     }
 
@@ -1362,7 +1567,7 @@
     async function loadEncounters() {
       const { data, error } = await sb
         .from("encounters")
-        .select("id, encounter_no, patient_id, created_at")
+        .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
       state.encounters = Array.isArray(data) ? data : [];
@@ -1375,6 +1580,7 @@
         .order("updated_at", { ascending: false });
       if (error) throw error;
       state.followups = Array.isArray(data) ? data : [];
+
       if (state.selectedFollowupId && !state.followups.some(item => String(item.id) === String(state.selectedFollowupId))) {
         state.selectedFollowupId = null;
       }
@@ -1388,12 +1594,14 @@
         state.followupEventsMap = new Map();
         return;
       }
+
       const ids = state.followups.map(item => item.id);
       const { data, error } = await sb
         .from("followup_events")
         .select("*")
         .in("followup_id", ids)
         .order("created_at", { ascending: false });
+
       if (error) throw error;
 
       const map = new Map();
@@ -1411,24 +1619,51 @@
         const v = String(item.assigned_to || "").trim();
         if (v) values.add(getStaffDisplayText(v));
       });
+
       const current = ui.assigneeFilter.value;
-      const options = ['<option value="">全部</option>']
-        .concat([...values].sort((a,b) => a.localeCompare(b, "zh-Hant")).map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`))
+      ui.assigneeFilter.innerHTML = ['<option value="">全部</option>']
+        .concat(
+          [...values]
+            .sort((a,b) => a.localeCompare(b, "zh-Hant"))
+            .map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`)
+        )
         .join("");
-      ui.assigneeFilter.innerHTML = options;
+
       ui.assigneeFilter.value = [...values].includes(current) ? current : "";
+    }
+
+    function populateDoctorFilter() {
+      const values = new Set();
+      state.followups.forEach(item => {
+        const doctor = getEncounterDoctorTextById(item.encounter_id);
+        if (doctor && doctor !== "—") values.add(doctor);
+      });
+
+      const current = ui.doctorFilter.value;
+      ui.doctorFilter.innerHTML = ['<option value="">全部</option>']
+        .concat(
+          [...values]
+            .sort((a,b) => a.localeCompare(b, "zh-Hant"))
+            .map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`)
+        )
+        .join("");
+
+      ui.doctorFilter.value = [...values].includes(current) ? current : "";
     }
 
     function populatePatientOptions(selectedPatientId = "") {
       const options = ['<option value="">請選擇病人</option>']
-        .concat(state.patients
-          .slice()
-          .sort((a,b) => String(a.cumc_no || "").localeCompare(String(b.cumc_no || "")))
-          .map(p => {
-            const label = `CUMC ${p.cumc_no || "—"}${p.ticket_no ? `｜Ticket ${p.ticket_no}` : ""}${p.encounter_no ? `｜Enc ${p.encounter_no}` : ""}`;
-            return `<option value="${escapeHtml(p.cumc_no || "")}">${escapeHtml(label)}</option>`;
-          }))
+        .concat(
+          state.patients
+            .slice()
+            .sort((a,b) => String(a.cumc_no || "").localeCompare(String(b.cumc_no || "")))
+            .map(p => {
+              const label = `CUMC ${p.cumc_no || "—"}${p.ticket_no ? `｜Ticket ${p.ticket_no}` : ""}${p.encounter_no ? `｜Enc ${p.encounter_no}` : ""}`;
+              return `<option value="${escapeHtml(p.cumc_no || "")}">${escapeHtml(label)}</option>`;
+            })
+        )
         .join("");
+
       followupModal.patientSelectEl.innerHTML = options;
       followupModal.patientSelectEl.value = selectedPatientId || "";
       syncEncounterOptionsForSelectedPatient();
@@ -1440,7 +1675,12 @@
       let list = [];
 
       if (patientId) {
-        list = state.encounters.filter(item => String(item.patient_id || "") === patientId);
+        list = state.encounters.filter(item => {
+          return String(item.patient_id || "") === patientId
+            || String(item.cumc_no || "") === patientId
+            || String(item.patient_cumc_no || "") === patientId;
+        });
+
         if (!list.length) {
           const patient = state.patients.find(p => String(p.cumc_no || "") === patientId);
           if (patient?.encounter_no) {
@@ -1450,33 +1690,44 @@
         }
       }
 
-      const options = ['<option value="">不指定</option>']
-        .concat(list.map(item => {
-          const text = `${item.encounter_no || item.id}${item.created_at ? `｜${formatDateTime24(item.created_at)}` : ""}`;
-          return `<option value="${escapeHtml(item.id)}">${escapeHtml(text)}</option>`;
-        }))
+      followupModal.encounterSelectEl.innerHTML = ['<option value="">不指定</option>']
+        .concat(
+          list.map(item => {
+            const doctor = getEncounterDoctorTextById(item.id);
+            const text = `${item.encounter_no || item.id}${doctor !== "—" ? `｜Dr ${doctor}` : ""}${item.created_at ? `｜${formatDateTime24(item.created_at)}` : ""}`;
+            return `<option value="${escapeHtml(item.id)}">${escapeHtml(text)}</option>`;
+          })
+        )
         .join("");
 
-      followupModal.encounterSelectEl.innerHTML = options;
       if (current && list.some(item => String(item.id) === String(current))) {
         followupModal.encounterSelectEl.value = String(current);
       } else {
         followupModal.encounterSelectEl.value = "";
       }
+
+      syncFollowupDoctorDisplay();
+    }
+
+    function syncFollowupDoctorDisplay() {
+      const encounterId = String(followupModal.encounterSelectEl.value || "").trim();
+      followupModal.doctorDisplayEl.value = getEncounterDoctorTextById(encounterId);
     }
 
     function getFilteredFollowups() {
       const q = normalizeText(ui.searchInput.value);
-      const status = ui.statusFilter.value;
       const priority = ui.priorityFilter.value;
       const category = ui.categoryFilter.value;
       const assignee = ui.assigneeFilter.value;
+      const doctor = ui.doctorFilter.value;
+      const tabStatus = state.activeTabStatus;
 
       let list = state.followups.filter(item => {
-        if (status && String(item.status || "") !== status) return false;
+        if (tabStatus && String(item.status || "") !== tabStatus) return false;
         if (priority && String(item.priority || "") !== priority) return false;
         if (category && String(item.category || "") !== category) return false;
         if (assignee && getStaffDisplayText(item.assigned_to) !== assignee) return false;
+        if (doctor && getEncounterDoctorTextById(item.encounter_id) !== doctor) return false;
 
         if (q) {
           const haystack = [
@@ -1490,10 +1741,13 @@
             item.category,
             item.source,
             item.requested_by,
-            getEncounterDisplayById(item.encounter_id)
+            getEncounterDisplayById(item.encounter_id),
+            getEncounterDoctorTextById(item.encounter_id)
           ].join(" ").toLowerCase();
+
           if (!haystack.includes(q)) return false;
         }
+
         return true;
       });
 
@@ -1520,6 +1774,7 @@
           list.sort((a,b) => new Date(b.updated_at || b.created_at || 0).getTime() - new Date(a.updated_at || a.created_at || 0).getTime());
           break;
       }
+
       return list;
     }
 
@@ -1531,18 +1786,17 @@
 
     function renderSummary() {
       const list = getFilteredFollowups();
-      const total = list.length;
-      const openCount = list.filter(item => ["open", "pending"].includes(String(item.status || ""))).length;
-      const dueCount = list.filter(item =>
-        ["open", "pending"].includes(String(item.status || "")) &&
-        isDueTodayOrOverdue(item.due_at)
-      ).length;
-      const urgentCount = list.filter(item => ["high", "urgent"].includes(String(item.priority || ""))).length;
-
-      ui.summaryTotal.textContent = String(total);
-      ui.summaryOpen.textContent = String(openCount);
-      ui.summaryDue.textContent = String(dueCount);
-      ui.summaryUrgent.textContent = String(urgentCount);
+      ui.summaryTotal.textContent = String(list.length);
+      ui.summaryOpen.textContent = String(list.filter(item => ["open","pending"].includes(String(item.status || ""))).length);
+      ui.summaryDue.textContent = String(
+        list.filter(item =>
+          ["open","pending"].includes(String(item.status || "")) &&
+          isDueTodayOrOverdue(item.due_at)
+        ).length
+      );
+      ui.summaryUrgent.textContent = String(
+        list.filter(item => ["high","urgent"].includes(String(item.priority || ""))).length
+      );
     }
 
     function renderTable() {
@@ -1553,6 +1807,8 @@
       ui.followupTableBody.innerHTML = list.map(item => {
         const patientText = getPatientDisplayTextById(item.patient_id);
         const encounterText = getEncounterDisplayById(item.encounter_id);
+        const doctorText = getEncounterDoctorTextById(item.encounter_id);
+
         const titleSub = [
           patientText,
           encounterText !== "—" ? `Encounter ${encounterText}` : ""
@@ -1568,6 +1824,7 @@
             <td>${statusBadge(item.status)}</td>
             <td>${priorityBadge(item.priority)}</td>
             <td>${escapeHtml(item.category || "—")}</td>
+            <td>${doctorText !== "—" ? `<div class="doctor-chip"><span>${escapeHtml(doctorText)}</span></div>` : '<span class="muted">—</span>'}</td>
             <td><div class="staff-chip"><span>${escapeHtml(getStaffDisplayText(item.assigned_to))}</span></div></td>
             <td><div class="staff-chip"><span>${escapeHtml(getStaffDisplayText(item.created_by))}</span></div></td>
             <td>${escapeHtml(formatDateTime24(item.due_at))}</td>
@@ -1593,12 +1850,14 @@
       }
 
       ui.detailMeta.textContent = formatFollowupNo(item);
+
       const events = state.followupEventsMap.get(String(item.id)) || [];
+      const doctorText = getEncounterDoctorTextById(item.encounter_id);
 
       ui.detailRoot.innerHTML = `
         <div class="detail-body">
           <div class="detail-title">
-            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <div class="detail-badges">
               ${statusBadge(item.status)}
               ${priorityBadge(item.priority)}
               <span class="badge" style="background:#eef2ff;color:#4338ca;">${escapeHtml(item.category || "other")}</span>
@@ -1612,39 +1871,52 @@
               <div class="k">病人</div>
               <div class="v">${escapeHtml(getPatientDisplayTextById(item.patient_id))}</div>
             </div>
+
             <div class="meta-box">
               <div class="k">Encounter</div>
               <div class="v">${escapeHtml(getEncounterDisplayById(item.encounter_id))}</div>
             </div>
+
+            <div class="meta-box">
+              <div class="k">Encounter 醫生</div>
+              <div class="v">${escapeHtml(doctorText)}</div>
+            </div>
+
             <div class="meta-box">
               <div class="k">負責人</div>
               <div class="v">${escapeHtml(getStaffDisplayText(item.assigned_to))}</div>
             </div>
+
             <div class="meta-box">
               <div class="k">建立人</div>
               <div class="v">${escapeHtml(getStaffDisplayText(item.created_by))}</div>
             </div>
+
+            <div class="meta-box">
+              <div class="k">來源 / 要求者</div>
+              <div class="v">${escapeHtml([item.source || "—", item.requested_by || "—"].join("｜"))}</div>
+            </div>
+
             <div class="meta-box">
               <div class="k">建立時間</div>
               <div class="v">${escapeHtml(formatDateTime24(item.created_at))}</div>
             </div>
+
             <div class="meta-box">
               <div class="k">更新時間</div>
               <div class="v">${escapeHtml(formatDateTime24(item.updated_at || item.created_at))}</div>
             </div>
+
             <div class="meta-box">
               <div class="k">到期時間</div>
               <div class="v">${escapeHtml(formatDateTime24(item.due_at))}</div>
-            </div>
-            <div class="meta-box">
-              <div class="k">來源 / 要求者</div>
-              <div class="v">${escapeHtml([item.source || "—", item.requested_by || "—"].join("｜"))}</div>
             </div>
           </div>
 
           <div class="detail-actions">
             <button class="btn btn-primary" type="button" id="detailEditBtn">編輯事項</button>
-            <button class="btn btn-success" type="button" id="detailUpdateStatusBtn">更新狀態 / outcome</button>
+            <button class="btn btn-light" type="button" id="detailUpdateStatusBtn">更新狀態</button>
+            <button class="btn btn-success" type="button" id="detailQuickDoneBtn">完成並填 Outcome</button>
           </div>
 
           <div class="section">
@@ -1668,18 +1940,18 @@
 
       const editBtn = document.getElementById("detailEditBtn");
       const updateStatusBtn = document.getElementById("detailUpdateStatusBtn");
-      if (editBtn) {
-        editBtn.addEventListener("click", () => openFollowupModal("edit", item.id));
-      }
-      if (updateStatusBtn) {
-        updateStatusBtn.addEventListener("click", () => openStatusModal(item.id));
-      }
+      const quickDoneBtn = document.getElementById("detailQuickDoneBtn");
+
+      if (editBtn) editBtn.addEventListener("click", () => openFollowupModal("edit", item.id));
+      if (updateStatusBtn) updateStatusBtn.addEventListener("click", () => openStatusModal(item.id));
+      if (quickDoneBtn) quickDoneBtn.addEventListener("click", () => openQuickDoneModal(item.id));
     }
 
     function renderTimelineItem(item) {
-      const dataText = formatEventData(item.event_data);
       const eventData = item.event_data && typeof item.event_data === "object" ? item.event_data : null;
       const outcome = eventData?.outcome || eventData?.result || "";
+      const dataText = formatEventData(item.event_data);
+
       return `
         <div class="timeline-item">
           <div class="timeline-dot"></div>
@@ -1715,12 +1987,14 @@
         followupModal.requestedByEl.value = "";
         followupModal.descriptionEl.value = "";
         followupModal.outcomeEl.value = "";
+        followupModal.doctorDisplayEl.value = "—";
       } else {
         const item = state.followups.find(f => String(f.id) === String(followupId));
         if (!item) {
           notify("找不到跟進事項", "error");
           return;
         }
+
         followupModal.titleEl.textContent = `編輯跟進事項：${formatFollowupNo(item)}`;
         populatePatientOptions(item.patient_id || "");
         syncEncounterOptionsForSelectedPatient(item.encounter_id || "");
@@ -1734,6 +2008,7 @@
         followupModal.requestedByEl.value = item.requested_by || "";
         followupModal.descriptionEl.value = item.description || "";
         followupModal.outcomeEl.value = item.outcome || "";
+        followupModal.doctorDisplayEl.value = getEncounterDoctorTextById(item.encounter_id);
       }
 
       followupModal.el.classList.add("show");
@@ -1754,14 +2029,16 @@
         notify("找不到跟進事項", "error");
         return;
       }
+
       statusModal.followupId = followupId;
-      statusModal.infoEl.textContent = `${formatFollowupNo(item)}｜${item.title || "—"}｜病人：${getPatientDisplayTextById(item.patient_id)}`;
+      statusModal.infoEl.textContent = `${formatFollowupNo(item)}｜${item.title || "—"}｜病人：${getPatientDisplayTextById(item.patient_id)}｜醫生：${getEncounterDoctorTextById(item.encounter_id)}`;
       statusModal.statusEl.value = item.status || "open";
       statusModal.priorityEl.value = item.priority || "normal";
       statusModal.assignedToEl.value = getStaffDisplayText(item.assigned_to);
       statusModal.dueAtEl.value = toDatetimeLocalValue(item.due_at);
       statusModal.outcomeEl.value = item.outcome || "";
       statusModal.remarkEl.value = "";
+
       statusModal.el.classList.add("show");
       statusModal.el.setAttribute("aria-hidden", "false");
       document.body.classList.add("modal-open");
@@ -1771,6 +2048,31 @@
       statusModal.followupId = null;
       statusModal.el.classList.remove("show");
       statusModal.el.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("modal-open");
+    }
+
+    function openQuickDoneModal(followupId) {
+      const item = state.followups.find(f => String(f.id) === String(followupId));
+      if (!item) {
+        notify("找不到跟進事項", "error");
+        return;
+      }
+
+      quickDoneModal.followupId = followupId;
+      quickDoneModal.infoEl.textContent = `${formatFollowupNo(item)}｜${item.title || "—"}｜病人：${getPatientDisplayTextById(item.patient_id)}｜醫生：${getEncounterDoctorTextById(item.encounter_id)}`;
+      quickDoneModal.outcomeEl.value = item.outcome || "";
+      quickDoneModal.remarkEl.value = "";
+
+      quickDoneModal.el.classList.add("show");
+      quickDoneModal.el.setAttribute("aria-hidden", "false");
+      document.body.classList.add("modal-open");
+      setTimeout(() => quickDoneModal.outcomeEl.focus(), 0);
+    }
+
+    function closeQuickDoneModal() {
+      quickDoneModal.followupId = null;
+      quickDoneModal.el.classList.remove("show");
+      quickDoneModal.el.setAttribute("aria-hidden", "true");
       document.body.classList.remove("modal-open");
     }
 
@@ -1794,6 +2096,7 @@
         followupModal.patientSelectEl.focus();
         return;
       }
+
       if (!title) {
         notify("請輸入主題", "warning");
         followupModal.titleInputEl.focus();
@@ -1822,23 +2125,27 @@
           .insert([payload])
           .select()
           .single();
+
         if (error) throw error;
 
-        const eventPayload = {
-          followup_id: data.id,
-          event_type: "created",
-          event_label: "Follow-up created",
-          event_data: {
-            status,
-            priority,
-            assigned_to: assignedTo,
-            source,
-            requested_by: requestedBy,
-            outcome: outcome || null
-          },
-          actor
-        };
-        const { error: eventError } = await sb.from("followup_events").insert([eventPayload]);
+        const { error: eventError } = await sb
+          .from("followup_events")
+          .insert([{
+            followup_id: data.id,
+            event_type: "created",
+            event_label: "Follow-up created",
+            event_data: {
+              status,
+              priority,
+              assigned_to: assignedTo,
+              source,
+              requested_by: requestedBy,
+              encounter_doctor: getEncounterDoctorTextById(encounterId),
+              outcome: outcome || null
+            },
+            actor
+          }]);
+
         if (eventError) throw eventError;
 
         await loadAll();
@@ -1871,6 +2178,7 @@
           .eq("id", followupModal.followupId)
           .select()
           .single();
+
         if (error) throw error;
 
         const changed = {};
@@ -1890,10 +2198,12 @@
             event_label: "Follow-up updated",
             event_data: {
               changes: changed,
+              encounter_doctor: getEncounterDoctorTextById(encounterId),
               outcome: outcome || null
             },
             actor
           }]);
+
         if (eventError) throw eventError;
 
         await loadAll();
@@ -1930,6 +2240,7 @@
         .eq("id", item.id)
         .select()
         .single();
+
       if (error) throw error;
 
       const eventType = status === "done"
@@ -1944,25 +2255,25 @@
           ? "Follow-up cancelled"
           : "Follow-up status updated";
 
-      const eventData = {
-        from_status: item.status || null,
-        to_status: status,
-        priority,
-        assigned_to: assignedTo,
-        due_at: dueAt,
-        outcome: outcome || null,
-        remark: remark || null
-      };
-
       const { error: eventError } = await sb
         .from("followup_events")
         .insert([{
           followup_id: item.id,
           event_type: eventType,
           event_label: eventLabel,
-          event_data: eventData,
+          event_data: {
+            from_status: item.status || null,
+            to_status: status,
+            priority,
+            assigned_to: assignedTo,
+            due_at: dueAt,
+            encounter_doctor: getEncounterDoctorTextById(item.encounter_id),
+            outcome: outcome || null,
+            remark: remark || null
+          },
           actor
         }]);
+
       if (eventError) throw eventError;
 
       await loadAll();
@@ -1970,6 +2281,59 @@
       closeStatusModal();
       renderAll();
       notify(`已更新狀態：${formatFollowupNo(data)}`, "success");
+    }
+
+    async function saveQuickDone() {
+      const item = state.followups.find(f => String(f.id) === String(quickDoneModal.followupId));
+      if (!item) throw new Error("FOLLOWUP_NOT_FOUND");
+
+      const outcome = String(quickDoneModal.outcomeEl.value || "").trim();
+      const remark = String(quickDoneModal.remarkEl.value || "").trim() || null;
+      const actor = getCurrentStaffDisplayText();
+
+      if (!outcome) {
+        notify("請輸入 outcome", "warning");
+        quickDoneModal.outcomeEl.focus();
+        return;
+      }
+
+      const payload = {
+        status: "done",
+        outcome
+      };
+
+      const { data, error } = await sb
+        .from("followups")
+        .update(payload)
+        .eq("id", item.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const { error: eventError } = await sb
+        .from("followup_events")
+        .insert([{
+          followup_id: item.id,
+          event_type: "completed",
+          event_label: "Follow-up completed (quick action)",
+          event_data: {
+            from_status: item.status || null,
+            to_status: "done",
+            encounter_doctor: getEncounterDoctorTextById(item.encounter_id),
+            outcome,
+            remark: remark || null
+          },
+          actor
+        }]);
+
+      if (eventError) throw eventError;
+
+      await loadAll();
+      state.selectedFollowupId = data.id;
+      closeQuickDoneModal();
+      renderAll();
+      notify(`已完成事項：${formatFollowupNo(data)}`, "success");
     }
 
     function setupRealtime() {
@@ -2034,18 +2398,18 @@
       }
     }
 
+    function formatError(error) {
+      if (!error) return "Unknown error";
+      if (typeof error === "string") return error;
+      return error.message || JSON.stringify(error);
+    }
+
     window.addEventListener("beforeunload", cleanupRealtime);
 
     init().catch(error => {
       console.error(error);
       notify("載入失敗\n" + formatError(error), "error", 5000);
     });
-
-    function formatError(error) {
-      if (!error) return "Unknown error";
-      if (typeof error === "string") return error;
-      return error.message || JSON.stringify(error);
-    }
   </script>
 </body>
 </html>
