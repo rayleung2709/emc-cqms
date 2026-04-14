@@ -2254,7 +2254,8 @@
       const matchedEncounter = getEncounterByIdOrNo(encounterInput);
       const encounterNo = matchedEncounter ? detectEncounterNo(matchedEncounter) : (encounterInput || null);
       const encounterRef = matchedEncounter ? String(matchedEncounter.id) : (encounterInput || null);
-
+      const encounterId = matchedEncounter?.id || null;
+      
       const title = String(followupModal.titleInputEl.value || "").trim();
       const assignedTo = String(followupModal.assignedToEl.value || "").trim() || getCurrentStaffDisplayText();
       const description = String(followupModal.descriptionEl.value || "").trim();
@@ -2278,23 +2279,22 @@
         return;
       }
 
-      const payload = {
-        patient_id: patientId,
-        encounter_id: encounterRef,
-        encounter_ref: encounterRef,
-        encounter_no: encounterNo,
-        category,
-        title,
-        description,
-        status,
-        priority,
-        assigned_to: assignedTo,
-        due_at: dueAt,
-        source,
-        requested_by: requestedBy,
-        outcome
-      };
-
+const payload = {
+  patient_id: patientId,
+  encounter_id: encounterId,
+  encounter_ref: encounterRef,
+  encounter_no: encounterNo,
+  category,
+  title,
+  description,
+  status,
+  priority,
+  assigned_to: assignedTo,
+  due_at: dueAt,
+  source,
+  requested_by: requestedBy,
+  outcome
+};
       if (followupModal.mode === "create") {
         payload.created_by = actor;
 
