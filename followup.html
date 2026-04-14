@@ -1208,7 +1208,7 @@
         <p>顯示狀態、優先級、求診醫生、時間線與即時同步職員名稱，並支援快捷完成及 SLA 提示。</p>
       </div>
       <div class="header-actions">
-        <a class="btn btn-home" id="homeBtn" href="/">返回主頁</a>
+        <a class="btn btn-home" id="homeBtn" href="https://rayleung2709.github.io/emc-cqms/index.htm">返回主頁</a>
         <button class="btn btn-light" id="refreshBtn" type="button">重新整理</button>
         <button class="btn btn-primary" id="newFollowupBtn" type="button">新增事項</button>
       </div>
@@ -1808,9 +1808,16 @@
     }
 
     function getPatientDisplayTextById(patientId) {
-      const p = state.patients.find(item => String(item.cumc_no || "") === String(patientId || ""));
-      if (!p) return patientId ? String(patientId) : "—";
-      return String(p.cumc_no || "—");
+      const raw = String(patientId || "").trim();
+      if (!raw) return "—";
+
+      const byCumc = state.patients.find(item => String(item.cumc_no || "").trim() === raw);
+      if (byCumc) return String(byCumc.cumc_no || "—");
+
+      const byId = state.patients.find(item => String(item.id || "").trim() === raw);
+      if (byId) return String(byId.cumc_no || raw);
+
+      return raw;
     }
 
     function getPatientRecordByCumc(cumcNo) {
@@ -1851,7 +1858,7 @@
       const raw = String(value || "").trim();
       if (!raw) return null;
       return state.encounters.find(enc =>
-        String(enc.id) === raw || detectEncounterNo(enc) === raw
+        String(enc.id || "").trim() === raw || detectEncounterNo(enc) === raw
       ) || null;
     }
 
@@ -1872,15 +1879,45 @@
       return getEncounterDoctorText(found);
     }
 
+    function getPatientCandidatesByCumc(patientCumc) {
+      const cumc = String(patientCumc || "").trim();
+      if (!cumc) return [];
+      return state.patients.filter(p => String(p.cumc_no || "").trim() === cumc);
+    }
+
     function getEncounterListByPatientCumc(patientCumc) {
       const cumc = String(patientCumc || "").trim();
       if (!cumc) return [];
 
+      const patientCandidates = getPatientCandidatesByCumc(cumc);
+      const patientIdSet = new Set(
+        patientCandidates
+          .map(p => String(p.id || "").trim())
+          .filter(Boolean)
+      );
+
+      const seen = new Set();
+
       return state.encounters.filter(enc => {
-        return String(enc.patient_id || "").trim() === cumc
-          || String(enc.cumc_no || "").trim() === cumc
-          || String(enc.patient_cumc_no || "").trim() === cumc
-          || String(enc.patient_no || "").trim() === cumc;
+        const encPatientId = String(enc.patient_id || "").trim();
+        const encCumc = String(enc.cumc_no || "").trim();
+        const encPatientCumc = String(enc.patient_cumc_no || "").trim();
+        const encPatientNo = String(enc.patient_no || "").trim();
+        const encEncounterNo = detectEncounterNo(enc);
+
+        const matched =
+          encPatientId === cumc ||
+          patientIdSet.has(encPatientId) ||
+          encCumc === cumc ||
+          encPatientCumc === cumc ||
+          encPatientNo === cumc;
+
+        if (!matched) return false;
+
+        const uniqueKey = String(enc.id || encEncounterNo || Math.random());
+        if (seen.has(uniqueKey)) return false;
+        seen.add(uniqueKey);
+        return true;
       });
     }
 
@@ -1957,7 +1994,6 @@
 
       try {
         const lines = [];
-
         Object.entries(eventData).forEach(([k, v]) => {
           if (v === null || v === undefined || v === "") return;
           if (k === "outcome") return;
@@ -1976,7 +2012,6 @@
             lines.push(`${k}：${String(v)}`);
           }
         });
-
         return lines.join("\n");
       } catch {
         return String(eventData);
@@ -2210,6 +2245,7 @@
     function syncEncounterSuggestionsByPatient(forceOpen = false) {
       const cumcNo = String(followupModal.patientInputEl.value || "").trim();
       const list = getEncounterListByPatientCumc(cumcNo);
+
       followupModal.encounterNoteEl.textContent = cumcNo
         ? `已找到 ${list.length} 個與 ${cumcNo} 相關的求診號碼。`
         : "先輸入或選定 CUMC 號碼，系統才會列出相關求診號碼。";
@@ -2220,7 +2256,7 @@
         return;
       }
 
-      if (forceOpen || document.activeElement === followupModal.encounterInputEl) {
+      if (forceOpen || document.activeElement === followupModal.encounterInputEl || list.length > 0) {
         renderEncounterSuggestions(cumcNo, followupModal.encounterInputEl.value || "");
       } else {
         syncDoctorDisplayFromEncounterInput();
@@ -2346,9 +2382,12 @@
 
       followupModal.patientInputEl.addEventListener("input", () => {
         renderCumcSuggestions();
-        syncEncounterSuggestionsByPatient(false);
+        syncEncounterSuggestionsByPatient(true);
       });
-      followupModal.patientInputEl.addEventListener("focus", renderCumcSuggestions);
+      followupModal.patientInputEl.addEventListener("focus", () => {
+        renderCumcSuggestions();
+        syncEncounterSuggestionsByPatient(true);
+      });
 
       followupModal.encounterInputEl.addEventListener("input", () => {
         syncDoctorDisplayFromEncounterInput();
@@ -2606,7 +2645,7 @@
           list.sort((a,b) => {
             const diff = sortPriorityWeight(b.priority) - sortPriorityWeight(a.priority);
             if (diff) return diff;
-            return new Date(b.updated_at || 0).getTime() - new Date(a.updated_at || 0).getTime();
+            return new Date(b.updated_at || 0).getTime() - new Date(a.updated_at || a.created_at || 0).getTime();
           });
           break;
         default:
@@ -2957,7 +2996,7 @@
         followupModal.sourceValues = normalizeMultiFieldToArray(item.source);
         followupModal.requestedByValues = normalizeMultiFieldToArray(item.requested_by);
         renderModalChipGroups();
-        syncEncounterSuggestionsByPatient(false);
+        syncEncounterSuggestionsByPatient(true);
       }
 
       followupModal.el.classList.add("show");
