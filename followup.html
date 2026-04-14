@@ -3,36 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Follow-up 工作台</title>
+  <title>EMCFUS 急症醫學中心跟進系統</title>
   <link rel="icon" href="data:," />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --bg: #f3f6fb;
+      --bg: #f4f7fb;
+      --bg-soft: #f8fbff;
       --card: #ffffff;
-      --line: #dbe3ee;
+      --line: #d8e2ee;
+      --line-soft: #e9eef5;
       --text: #0f172a;
       --muted: #64748b;
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --success: #16a34a;
-      --warning: #d97706;
-      --danger: #dc2626;
-      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --primary: #1d4ed8;
+      --primary-2: #2563eb;
+      --primary-soft: #eff6ff;
+      --success: #15803d;
+      --success-soft: #dcfce7;
+      --warning: #b45309;
+      --warning-soft: #ffedd5;
+      --danger: #b91c1c;
+      --danger-soft: #fee2e2;
+      --gray-soft: #f1f5f9;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+      --shadow-soft: 0 6px 18px rgba(15, 23, 42, 0.06);
       --radius: 18px;
+      --radius-sm: 12px;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
-    body {
+    html, body {
       margin: 0;
-      background: linear-gradient(180deg, #eef4ff 0%, #f8fbff 25%, #f3f6fb 100%);
+      padding: 0;
+      background:
+        radial-gradient(circle at top left, #edf4ff 0%, transparent 28%),
+        radial-gradient(circle at top right, #f3f8ff 0%, transparent 24%),
+        linear-gradient(180deg, #f7fbff 0%, #f4f7fb 100%);
       color: var(--text);
       font-family: Arial, "Microsoft JhengHei", "PingFang TC", sans-serif;
     }
 
+    a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
     .app {
-      max-width: 1320px;
+      max-width: 1400px;
       margin: 0 auto;
       padding: 20px;
     }
@@ -40,24 +64,44 @@
     .topbar {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
       align-items: flex-start;
+      gap: 14px;
       flex-wrap: wrap;
       margin-bottom: 18px;
+    }
+
+    .topbar-left {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      color: #1e3a8a;
+      font-weight: 800;
+      box-shadow: var(--shadow-soft);
     }
 
     .title {
       font-size: 2rem;
       font-weight: 900;
-      line-height: 1.1;
       color: #0f172a;
+      line-height: 1.1;
       letter-spacing: -0.02em;
     }
 
     .subtitle {
-      margin-top: 8px;
       color: var(--muted);
       font-size: 0.95rem;
+      line-height: 1.6;
       font-weight: 700;
     }
 
@@ -69,7 +113,7 @@
 
     .layout {
       display: grid;
-      grid-template-columns: 1.18fr 0.82fr;
+      grid-template-columns: 1.06fr 0.94fr;
       gap: 18px;
       align-items: start;
     }
@@ -81,7 +125,8 @@
     }
 
     .panel {
-      background: var(--card);
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
@@ -98,22 +143,59 @@
     }
 
     .panel-title {
-      font-size: 1.06rem;
+      font-size: 1.05rem;
       font-weight: 900;
       color: #0f172a;
     }
 
     .panel-desc {
+      margin-top: 4px;
       color: var(--muted);
       font-size: 0.9rem;
+      line-height: 1.55;
       font-weight: 700;
-      margin-top: 4px;
-      line-height: 1.5;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .summary-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+      padding: 14px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .summary-label {
+      font-size: 0.8rem;
+      font-weight: 900;
+      color: var(--muted);
+      margin-bottom: 8px;
+      letter-spacing: 0.04em;
+    }
+
+    .summary-value {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1;
+    }
+
+    .summary-sub {
+      margin-top: 8px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 700;
     }
 
     .filters {
       display: grid;
-      grid-template-columns: 1.3fr 1fr 1fr 1fr 1fr auto auto;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr auto auto;
       gap: 10px;
     }
 
@@ -162,15 +244,34 @@
       transition: 0.15s ease;
     }
 
-    button:hover { transform: translateY(-1px); }
-    button:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+    button:hover {
+      transform: translateY(-1px);
+    }
 
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--primary-dark); }
+    button:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
 
-    .btn-secondary { background: #e2e8f0; color: #0f172a; }
-    .btn-danger { background: var(--danger); color: #fff; }
-    .btn-success { background: var(--success); color: #fff; }
+    .btn-primary {
+      background: linear-gradient(180deg, var(--primary-2) 0%, var(--primary) 100%);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
+    }
+
+    .btn-primary:hover {
+      filter: brightness(0.98);
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .btn-secondary:hover {
+      background: #dbe4ee;
+    }
 
     .toolbar-actions {
       display: flex;
@@ -187,6 +288,7 @@
       border: 1px solid transparent;
       white-space: pre-wrap;
       word-break: break-word;
+      margin-bottom: 18px;
     }
 
     .status-info {
@@ -221,22 +323,40 @@
 
     .case-card {
       border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-      background: #fff;
-      transition: 0.15s ease;
+      border-radius: 18px;
+      padding: 15px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+      transition: 0.18s ease;
       cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .case-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      background: transparent;
+      transition: 0.18s ease;
     }
 
     .case-card:hover {
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
       border-color: #cbd5e1;
+      transform: translateY(-1px);
     }
 
     .case-card.active {
       border-color: #93c5fd;
       box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
       background: #f8fbff;
+    }
+
+    .case-card.active::before {
+      background: linear-gradient(180deg, #60a5fa 0%, #1d4ed8 100%);
     }
 
     .case-top {
@@ -251,7 +371,7 @@
       font-size: 1rem;
       font-weight: 900;
       color: #0f172a;
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
     .case-sub {
@@ -274,22 +394,71 @@
       align-items: center;
       border-radius: 999px;
       padding: 6px 10px;
-      font-size: 0.75rem;
+      font-size: 0.76rem;
       font-weight: 900;
       border: 1px solid transparent;
       white-space: nowrap;
     }
 
-    .pill-status-open { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
-    .pill-status-in_progress { background: #fff7ed; color: #c2410c; border-color: #fdba74; }
-    .pill-status-pending { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
-    .pill-status-completed { background: #dcfce7; color: #166534; border-color: #86efac; }
-    .pill-status-cancelled { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+    .pill-status-open {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+    }
 
-    .pill-priority-low { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
-    .pill-priority-normal { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
-    .pill-priority-high { background: #fff7ed; color: #c2410c; border-color: #fdba74; }
-    .pill-priority-urgent { background: #fef2f2; color: #b91c1c; border-color: #fca5a5; }
+    .pill-status-in_progress {
+      background: #fff7ed;
+      color: #c2410c;
+      border-color: #fdba74;
+    }
+
+    .pill-status-pending {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #fcd34d;
+    }
+
+    .pill-status-completed {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #86efac;
+    }
+
+    .pill-status-cancelled {
+      background: #f1f5f9;
+      color: #475569;
+      border-color: #cbd5e1;
+    }
+
+    .pill-priority-low {
+      background: #f1f5f9;
+      color: #475569;
+      border-color: #cbd5e1;
+    }
+
+    .pill-priority-normal {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+    }
+
+    .pill-priority-high {
+      background: #fff7ed;
+      color: #c2410c;
+      border-color: #fdba74;
+    }
+
+    .pill-priority-urgent {
+      background: #fef2f2;
+      color: #b91c1c;
+      border-color: #fca5a5;
+    }
+
+    .pill-category {
+      background: #f8fafc;
+      color: #334155;
+      border-color: #dbe3ee;
+    }
 
     .case-meta {
       margin-top: 12px;
@@ -298,14 +467,16 @@
       gap: 10px;
     }
 
-    .meta-box, .detail-box {
+    .meta-box,
+    .detail-box {
       border: 1px solid #e5ebf3;
-      border-radius: 12px;
-      padding: 10px;
+      border-radius: 14px;
+      padding: 11px;
       background: #fbfdff;
     }
 
-    .meta-label, .detail-label {
+    .meta-label,
+    .detail-label {
       font-size: 0.75rem;
       font-weight: 900;
       color: var(--muted);
@@ -314,11 +485,12 @@
       letter-spacing: 0.04em;
     }
 
-    .meta-value, .detail-value {
+    .meta-value,
+    .detail-value {
       font-size: 0.92rem;
       font-weight: 800;
       color: #0f172a;
-      line-height: 1.45;
+      line-height: 1.5;
       word-break: break-word;
       white-space: pre-wrap;
     }
@@ -339,10 +511,17 @@
       gap: 12px;
     }
 
-    .divider {
+    .section-divider {
       height: 1px;
       background: #e5ebf3;
-      margin: 14px 0;
+      margin: 16px 0;
+    }
+
+    .section-title {
+      font-size: 0.98rem;
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 10px;
     }
 
     .quick-form {
@@ -355,122 +534,277 @@
       grid-column: 1 / -1;
     }
 
+    .timeline-shell {
+      position: relative;
+      padding-left: 6px;
+    }
+
     .timeline {
+      position: relative;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 14px;
       margin-top: 12px;
+      padding-left: 28px;
     }
 
-    .log-item {
-      border: 1px solid #e5ebf3;
-      border-radius: 14px;
-      padding: 12px;
-      background: #fff;
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 9px;
+      top: 6px;
+      bottom: 6px;
+      width: 3px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #bfdbfe 0%, #93c5fd 40%, #dbeafe 100%);
     }
 
-    .log-head {
+    .timeline-item {
+      position: relative;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -26px;
+      top: 18px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 3px solid #ffffff;
+      box-shadow: 0 0 0 3px rgba(191, 219, 254, 0.55);
+      background: #60a5fa;
+      z-index: 1;
+    }
+
+    .timeline-dot.comment {
+      background: #64748b;
+      box-shadow: 0 0 0 3px rgba(203, 213, 225, 0.8);
+    }
+
+    .timeline-dot.success {
+      background: #16a34a;
+      box-shadow: 0 0 0 3px rgba(134, 239, 172, 0.8);
+    }
+
+    .timeline-dot.warning {
+      background: #d97706;
+      box-shadow: 0 0 0 3px rgba(253, 186, 116, 0.8);
+    }
+
+    .timeline-dot.danger {
+      background: #dc2626;
+      box-shadow: 0 0 0 3px rgba(252, 165, 165, 0.8);
+    }
+
+    .timeline-card {
+      border: 1px solid var(--line-soft);
+      border-radius: 16px;
+      padding: 14px;
+      background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .timeline-head {
       display: flex;
       justify-content: space-between;
       gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      align-items: center;
     }
 
-    .log-type {
+    .timeline-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .timeline-type {
+      font-size: 0.76rem;
+      font-weight: 900;
+      color: #475569;
+      letter-spacing: 0.04em;
+    }
+
+    .timeline-title {
+      font-size: 0.96rem;
       font-weight: 900;
       color: #0f172a;
-      font-size: 0.9rem;
+      line-height: 1.45;
     }
 
-    .log-time {
-      color: var(--muted);
+    .timeline-meta {
       font-size: 0.82rem;
       font-weight: 800;
+      color: var(--muted);
+      text-align: right;
+      line-height: 1.5;
     }
 
-    .log-body {
+    .timeline-body {
       color: #334155;
       font-size: 0.93rem;
-      line-height: 1.6;
+      line-height: 1.7;
       white-space: pre-wrap;
       word-break: break-word;
     }
 
-    .muted {
-      color: var(--muted);
+    .timeline-kv {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #dbe3ee;
+    }
+
+    .timeline-k {
+      font-size: 0.82rem;
+      color: #64748b;
+      font-weight: 900;
+    }
+
+    .timeline-v {
+      font-size: 0.9rem;
+      color: #0f172a;
+      font-weight: 700;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
     dialog {
       border: none;
       padding: 0;
       background: transparent;
-      width: min(760px, calc(100vw - 24px));
+      width: min(780px, calc(100vw - 24px));
     }
 
-    @media (max-width: 1100px) {
-      .layout { grid-template-columns: 1fr; }
+    .muted {
+      color: var(--muted);
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1180px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 900px) {
       .filters,
       .case-meta,
       .detail-grid,
-      .quick-form {
+      .quick-form,
+      .summary-grid {
         grid-template-columns: 1fr 1fr;
       }
     }
 
     @media (max-width: 640px) {
-      .app { padding: 14px; }
-      .title { font-size: 1.55rem; }
+      .app {
+        padding: 14px;
+      }
+
+      .title {
+        font-size: 1.56rem;
+      }
+
       .filters,
       .case-meta,
       .detail-grid,
-      .quick-form {
+      .quick-form,
+      .summary-grid {
         grid-template-columns: 1fr;
       }
-      .top-actions { width: 100%; }
-      .top-actions button { width: 100%; }
+
+      .top-actions {
+        width: 100%;
+      }
+
+      .top-actions button {
+        width: 100%;
+      }
+
+      .timeline-kv {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline-meta {
+        text-align: left;
+      }
     }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="topbar">
-      <div>
-        <div class="title">Follow-up 工作台</div>
-        <div class="subtitle">建立 case、更新狀態、加 comment、睇 timeline。</div>
+      <div class="topbar-left">
+        <a href="index.html" class="back-link">← 返回主頁</a>
+        <div class="title">跟進事項管理</div>
+        <div class="subtitle">
+          用於建立、查閱及更新病人跟進事項，並以時間軸方式整合處理紀錄與文字備註。
+        </div>
       </div>
+
       <div class="top-actions">
-        <button class="btn-primary" id="newCaseBtn" type="button">+ 新增 Follow-up</button>
+        <button class="btn-primary" id="newCaseBtn" type="button">新增跟進事項</button>
         <button class="btn-secondary" id="refreshBtn" type="button">重新整理</button>
       </div>
     </div>
 
-    <div class="panel" style="margin-bottom: 18px;">
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-label">總個案數</div>
+        <div class="summary-value" id="summaryTotal">0</div>
+        <div class="summary-sub">目前範圍內顯示的跟進事項</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">待處理</div>
+        <div class="summary-value" id="summaryOpen">0</div>
+        <div class="summary-sub">狀態為「待處理」</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">處理中</div>
+        <div class="summary-value" id="summaryInProgress">0</div>
+        <div class="summary-sub">狀態為「處理中」或「待回覆」</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">高優先級</div>
+        <div class="summary-value" id="summaryUrgent">0</div>
+        <div class="summary-sub">優先級為「高」或「緊急」</div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-bottom:18px;">
       <div class="panel-title-row">
         <div>
-          <div class="panel-title">篩選 / 搜尋</div>
-          <div class="panel-desc">用病人 CUMC、標題、狀態、優先級、負責人搜尋。</div>
+          <div class="panel-title">篩選與搜尋</div>
+          <div class="panel-desc">可依病人編號、跟進編號、主題、狀態、優先級、類別及負責人搜尋。</div>
         </div>
       </div>
 
       <div class="filters">
         <div class="form-row">
           <label for="filterKeyword">關鍵字</label>
-          <input id="filterKeyword" type="text" placeholder="patient_id / followup_no / title" />
+          <input id="filterKeyword" type="text" placeholder="例如：病人編號、跟進編號、主題" />
         </div>
 
         <div class="form-row">
-          <label for="filterStatus">狀態</label>
+          <label for="filterStatus">處理狀態</label>
           <select id="filterStatus">
             <option value="">全部</option>
-            <option value="open">open</option>
-            <option value="in_progress">in_progress</option>
-            <option value="pending">pending</option>
-            <option value="completed">completed</option>
-            <option value="cancelled">cancelled</option>
+            <option value="open">待處理</option>
+            <option value="in_progress">處理中</option>
+            <option value="pending">待回覆</option>
+            <option value="completed">已完成</option>
+            <option value="cancelled">已取消</option>
           </select>
         </div>
 
@@ -478,30 +812,30 @@
           <label for="filterPriority">優先級</label>
           <select id="filterPriority">
             <option value="">全部</option>
-            <option value="low">low</option>
-            <option value="normal">normal</option>
-            <option value="high">high</option>
-            <option value="urgent">urgent</option>
+            <option value="low">低</option>
+            <option value="normal">一般</option>
+            <option value="high">高</option>
+            <option value="urgent">緊急</option>
           </select>
         </div>
 
         <div class="form-row">
-          <label for="filterCategory">類型</label>
+          <label for="filterCategory">事項類別</label>
           <select id="filterCategory">
             <option value="">全部</option>
-            <option value="insurance_form">insurance_form</option>
-            <option value="abnormal_result">abnormal_result</option>
-            <option value="callback">callback</option>
-            <option value="document_request">document_request</option>
-            <option value="return_visit">return_visit</option>
-            <option value="admin">admin</option>
-            <option value="other">other</option>
+            <option value="insurance_form">保險表格</option>
+            <option value="abnormal_result">異常結果</option>
+            <option value="callback">回電跟進</option>
+            <option value="document_request">文件申請</option>
+            <option value="return_visit">覆診安排</option>
+            <option value="admin">行政事項</option>
+            <option value="other">其他</option>
           </select>
         </div>
 
         <div class="form-row">
           <label for="filterAssignedTo">負責人</label>
-          <input id="filterAssignedTo" type="text" placeholder="assigned_to" />
+          <input id="filterAssignedTo" type="text" placeholder="輸入負責人名稱或電郵" />
         </div>
 
         <div class="toolbar-actions">
@@ -514,15 +848,15 @@
       </div>
     </div>
 
-    <div id="systemStatus" class="status-box status-info" style="margin-bottom: 18px;">初始化中…</div>
+    <div id="systemStatus" class="status-box status-info">系統初始化中…</div>
 
     <div class="layout">
       <div class="stack">
         <div class="panel">
           <div class="panel-title-row">
             <div>
-              <div class="panel-title">Follow-up 個案</div>
-              <div class="panel-desc"><span id="caseCountText">0</span> 個結果</div>
+              <div class="panel-title">跟進事項清單</div>
+              <div class="panel-desc">共 <span id="caseCountText">0</span> 項結果。</div>
             </div>
           </div>
           <div id="caseList" class="cases"></div>
@@ -534,11 +868,11 @@
           <div class="panel-title-row">
             <div>
               <div class="panel-title">個案詳情</div>
-              <div class="panel-desc">揀左 case 就可以即刻更新。</div>
+              <div class="panel-desc">選取左側個案後，可於此查看資料、更新狀態及新增備註。</div>
             </div>
           </div>
 
-          <div id="detailEmpty" class="empty">請先喺左邊揀一個 follow-up。</div>
+          <div id="detailEmpty" class="empty">請先於左側選取一項跟進事項。</div>
 
           <div id="detailWrap" style="display:none;">
             <div class="detail-grid">
@@ -576,28 +910,28 @@
               </div>
             </div>
 
-            <div class="divider"></div>
+            <div class="section-divider"></div>
 
-            <div class="panel-title" style="font-size:0.98rem; margin-bottom:10px;">更新個案</div>
+            <div class="section-title">更新跟進事項</div>
             <div class="quick-form">
               <div class="form-row">
-                <label for="editStatus">狀態</label>
+                <label for="editStatus">處理狀態</label>
                 <select id="editStatus">
-                  <option value="open">open</option>
-                  <option value="in_progress">in_progress</option>
-                  <option value="pending">pending</option>
-                  <option value="completed">completed</option>
-                  <option value="cancelled">cancelled</option>
+                  <option value="open">待處理</option>
+                  <option value="in_progress">處理中</option>
+                  <option value="pending">待回覆</option>
+                  <option value="completed">已完成</option>
+                  <option value="cancelled">已取消</option>
                 </select>
               </div>
 
               <div class="form-row">
                 <label for="editPriority">優先級</label>
                 <select id="editPriority">
-                  <option value="low">low</option>
-                  <option value="normal">normal</option>
-                  <option value="high">high</option>
-                  <option value="urgent">urgent</option>
+                  <option value="low">低</option>
+                  <option value="normal">一般</option>
+                  <option value="high">高</option>
+                  <option value="urgent">緊急</option>
                 </select>
               </div>
 
@@ -612,37 +946,37 @@
               </div>
 
               <div class="form-row">
-                <label for="editSource">Source</label>
+                <label for="editSource">來源</label>
                 <select id="editSource">
-                  <option value="">—</option>
-                  <option value="phone">phone</option>
-                  <option value="counter">counter</option>
-                  <option value="doctor">doctor</option>
-                  <option value="lab">lab</option>
-                  <option value="system">system</option>
-                  <option value="email">email</option>
-                  <option value="admin">admin</option>
-                  <option value="other">other</option>
+                  <option value="">未指定</option>
+                  <option value="phone">電話</option>
+                  <option value="counter">櫃檯</option>
+                  <option value="doctor">醫生</option>
+                  <option value="lab">化驗</option>
+                  <option value="system">系統</option>
+                  <option value="email">電郵</option>
+                  <option value="admin">行政</option>
+                  <option value="other">其他</option>
                 </select>
               </div>
 
               <div class="form-row">
-                <label for="editRequestedBy">Requested By</label>
+                <label for="editRequestedBy">提出者</label>
                 <select id="editRequestedBy">
-                  <option value="">—</option>
-                  <option value="patient">patient</option>
-                  <option value="doctor">doctor</option>
-                  <option value="nurse">nurse</option>
-                  <option value="admin">admin</option>
-                  <option value="external">external</option>
-                  <option value="system">system</option>
-                  <option value="other">other</option>
+                  <option value="">未指定</option>
+                  <option value="patient">病人</option>
+                  <option value="doctor">醫生</option>
+                  <option value="nurse">護士</option>
+                  <option value="admin">行政人員</option>
+                  <option value="external">外部機構</option>
+                  <option value="system">系統</option>
+                  <option value="other">其他</option>
                 </select>
               </div>
 
               <div class="form-row full">
-                <label for="editOutcome">Outcome</label>
-                <textarea id="editOutcome" placeholder="完成結果 / 備註"></textarea>
+                <label for="editOutcome">處理結果</label>
+                <textarea id="editOutcome" placeholder="請輸入處理結果、完成內容或補充說明"></textarea>
               </div>
 
               <div class="toolbar-actions full">
@@ -650,24 +984,30 @@
               </div>
             </div>
 
-            <div class="divider"></div>
+            <div class="section-divider"></div>
 
-            <div class="panel-title" style="font-size:0.98rem; margin-bottom:10px;">新增 Comment</div>
+            <div class="section-title">新增備註</div>
             <div class="quick-form">
               <div class="form-row full">
-                <label for="newCommentText">Comment</label>
-                <textarea id="newCommentText" placeholder="例如：已致電病人，無人接聽，今晚再跟進。"></textarea>
+                <label for="newCommentText">備註內容</label>
+                <textarea id="newCommentText" placeholder="請輸入跟進備註，例如已聯絡病人、待回覆或後續安排"></textarea>
               </div>
 
               <div class="toolbar-actions full">
-                <button class="btn-primary" id="addCommentBtn" type="button">加入 Comment</button>
+                <button class="btn-primary" id="addCommentBtn" type="button">加入備註</button>
               </div>
             </div>
 
-            <div class="divider"></div>
+            <div class="section-divider"></div>
 
-            <div class="panel-title" style="font-size:0.98rem; margin-bottom:10px;">Timeline</div>
-            <div id="timeline" class="timeline"></div>
+            <div class="section-title">處理時間軸</div>
+            <div class="timeline-shell">
+              <div id="timeline" class="timeline"></div>
+            </div>
+
+            <div class="footer-note">
+              時間軸會整合系統事件與文字備註，並依建立時間由新至舊排列。
+            </div>
           </div>
         </div>
       </div>
@@ -678,98 +1018,98 @@
     <div class="panel" style="margin:0;">
       <div class="panel-title-row">
         <div>
-          <div class="panel-title">新增 Follow-up</div>
-          <div class="panel-desc">跟你個 schema 欄位一致。</div>
+          <div class="panel-title">新增跟進事項</div>
+          <div class="panel-desc">請按實際需要填寫。病人編號為必填，Encounter ID 可留空。</div>
         </div>
       </div>
 
       <div class="quick-form">
         <div class="form-row">
-          <label for="casePatientId">Patient ID（CUMC）</label>
+          <label for="casePatientId">病人編號（CUMC）</label>
           <input id="casePatientId" type="text" placeholder="例如：CUMC123456" />
         </div>
 
         <div class="form-row">
           <label for="caseEncounterId">Encounter ID（可留空）</label>
-          <input id="caseEncounterId" type="text" placeholder="UUID，可留空" />
+          <input id="caseEncounterId" type="text" placeholder="如有對應就輸入 UUID，否則可留空" />
         </div>
 
         <div class="form-row">
-          <label for="caseCategory">Category</label>
+          <label for="caseCategory">事項類別</label>
           <select id="caseCategory">
-            <option value="insurance_form">insurance_form</option>
-            <option value="abnormal_result">abnormal_result</option>
-            <option value="callback">callback</option>
-            <option value="document_request">document_request</option>
-            <option value="return_visit">return_visit</option>
-            <option value="admin">admin</option>
-            <option value="other">other</option>
+            <option value="insurance_form">保險表格</option>
+            <option value="abnormal_result">異常結果</option>
+            <option value="callback">回電跟進</option>
+            <option value="document_request">文件申請</option>
+            <option value="return_visit">覆診安排</option>
+            <option value="admin">行政事項</option>
+            <option value="other">其他</option>
           </select>
         </div>
 
         <div class="form-row">
-          <label for="casePriority">Priority</label>
+          <label for="casePriority">優先級</label>
           <select id="casePriority">
-            <option value="low">low</option>
-            <option value="normal" selected>normal</option>
-            <option value="high">high</option>
-            <option value="urgent">urgent</option>
+            <option value="low">低</option>
+            <option value="normal" selected>一般</option>
+            <option value="high">高</option>
+            <option value="urgent">緊急</option>
           </select>
         </div>
 
         <div class="form-row full">
-          <label for="caseTitle">Title</label>
-          <input id="caseTitle" type="text" placeholder="例如：Insurance claim form" />
+          <label for="caseTitle">主題</label>
+          <input id="caseTitle" type="text" placeholder="例如：保險申請表需醫生簽署" />
         </div>
 
         <div class="form-row full">
-          <label for="caseDescription">Description</label>
-          <textarea id="caseDescription" placeholder="補充內容"></textarea>
+          <label for="caseDescription">內容說明</label>
+          <textarea id="caseDescription" placeholder="請輸入詳細說明"></textarea>
         </div>
 
         <div class="form-row">
-          <label for="caseAssignedTo">Assigned To</label>
+          <label for="caseAssignedTo">負責人</label>
           <input id="caseAssignedTo" type="text" placeholder="例如：amy@hospital.org" />
         </div>
 
         <div class="form-row">
-          <label for="caseDueAt">Due At</label>
+          <label for="caseDueAt">到期時間</label>
           <input id="caseDueAt" type="datetime-local" />
         </div>
 
         <div class="form-row">
-          <label for="caseSource">Source</label>
+          <label for="caseSource">來源</label>
           <select id="caseSource">
-            <option value="">—</option>
-            <option value="phone">phone</option>
-            <option value="counter">counter</option>
-            <option value="doctor">doctor</option>
-            <option value="lab">lab</option>
-            <option value="system">system</option>
-            <option value="email">email</option>
-            <option value="admin">admin</option>
-            <option value="other">other</option>
+            <option value="">未指定</option>
+            <option value="phone">電話</option>
+            <option value="counter">櫃檯</option>
+            <option value="doctor">醫生</option>
+            <option value="lab">化驗</option>
+            <option value="system">系統</option>
+            <option value="email">電郵</option>
+            <option value="admin">行政</option>
+            <option value="other">其他</option>
           </select>
         </div>
 
         <div class="form-row">
-          <label for="caseRequestedBy">Requested By</label>
+          <label for="caseRequestedBy">提出者</label>
           <select id="caseRequestedBy">
-            <option value="">—</option>
-            <option value="patient">patient</option>
-            <option value="doctor">doctor</option>
-            <option value="nurse">nurse</option>
-            <option value="admin">admin</option>
-            <option value="external">external</option>
-            <option value="system">system</option>
-            <option value="other">other</option>
+            <option value="">未指定</option>
+            <option value="patient">病人</option>
+            <option value="doctor">醫生</option>
+            <option value="nurse">護士</option>
+            <option value="admin">行政人員</option>
+            <option value="external">外部機構</option>
+            <option value="system">系統</option>
+            <option value="other">其他</option>
           </select>
         </div>
       </div>
 
       <div style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; margin-top:14px;">
         <button class="btn-secondary" id="cancelCaseBtn" type="button">取消</button>
-        <button class="btn-primary" id="createCaseBtn" type="button">建立</button>
+        <button class="btn-primary" id="createCaseBtn" type="button">建立跟進事項</button>
       </div>
     </div>
   </dialog>
@@ -783,6 +1123,52 @@
     let followups = [];
     let selectedFollowupId = null;
     let selectedTimeline = [];
+
+    const STATUS_LABELS = {
+      open: "待處理",
+      in_progress: "處理中",
+      pending: "待回覆",
+      completed: "已完成",
+      cancelled: "已取消"
+    };
+
+    const PRIORITY_LABELS = {
+      low: "低",
+      normal: "一般",
+      high: "高",
+      urgent: "緊急"
+    };
+
+    const CATEGORY_LABELS = {
+      insurance_form: "保險表格",
+      abnormal_result: "異常結果",
+      callback: "回電跟進",
+      document_request: "文件申請",
+      return_visit: "覆診安排",
+      admin: "行政事項",
+      other: "其他"
+    };
+
+    const SOURCE_LABELS = {
+      phone: "電話",
+      counter: "櫃檯",
+      doctor: "醫生",
+      lab: "化驗",
+      system: "系統",
+      email: "電郵",
+      admin: "行政",
+      other: "其他"
+    };
+
+    const REQUESTED_BY_LABELS = {
+      patient: "病人",
+      doctor: "醫生",
+      nurse: "護士",
+      admin: "行政人員",
+      external: "外部機構",
+      system: "系統",
+      other: "其他"
+    };
 
     function setStatus(message, type = "info") {
       const el = document.getElementById("systemStatus");
@@ -802,6 +1188,10 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+    }
+
+    function safeTrim(value) {
+      return String(value || "").trim();
     }
 
     function formatDateTime(value) {
@@ -833,30 +1223,166 @@
       return d.toISOString();
     }
 
-    function safeTrim(value) {
-      return String(value || "").trim();
+    function labelOf(map, value) {
+      if (value === null || value === undefined || value === "") return "未指定";
+      return map[value] || value;
+    }
+
+    function summarizeValue(key, value) {
+      if (value === null || value === undefined || value === "") return "未指定";
+      if (key === "status" || key === "from_status" || key === "to_status") return labelOf(STATUS_LABELS, value);
+      if (key === "priority" || key === "from_priority" || key === "to_priority") return labelOf(PRIORITY_LABELS, value);
+      if (key === "category") return labelOf(CATEGORY_LABELS, value);
+      if (key === "source") return labelOf(SOURCE_LABELS, value);
+      if (key === "requested_by") return labelOf(REQUESTED_BY_LABELS, value);
+      return String(value);
+    }
+
+    function getEventVisual(row, kind) {
+      if (kind === "comment") {
+        return {
+          dotClass: "comment",
+          typeLabel: "文字備註"
+        };
+      }
+
+      const t = row.event_type || "";
+      if (t === "completed") return { dotClass: "success", typeLabel: "系統事件" };
+      if (t === "cancelled") return { dotClass: "danger", typeLabel: "系統事件" };
+      if (t === "priority_changed" || t === "due_date_changed" || t === "pending") {
+        return { dotClass: "warning", typeLabel: "系統事件" };
+      }
+      return { dotClass: "", typeLabel: "系統事件" };
+    }
+
+    function translateEvent(row) {
+      const type = row.event_type;
+      const data = row.event_data || {};
+
+      if (type === "created") {
+        return {
+          title: "已建立跟進事項",
+          body: "",
+          kv: [
+            ["初始狀態", labelOf(STATUS_LABELS, data.status)],
+            ["優先級", labelOf(PRIORITY_LABELS, data.priority)],
+            ["負責人", data.assigned_to || "未指定"]
+          ]
+        };
+      }
+
+      if (type === "status_changed") {
+        return {
+          title: "處理狀態已更新",
+          body: "",
+          kv: [
+            ["原狀態", labelOf(STATUS_LABELS, data.from)],
+            ["新狀態", labelOf(STATUS_LABELS, data.to)]
+          ]
+        };
+      }
+
+      if (type === "priority_changed") {
+        return {
+          title: "優先級已更新",
+          body: "",
+          kv: [
+            ["原優先級", labelOf(PRIORITY_LABELS, data.from)],
+            ["新優先級", labelOf(PRIORITY_LABELS, data.to)]
+          ]
+        };
+      }
+
+      if (type === "assigned") {
+        return {
+          title: "已更新負責人",
+          body: "",
+          kv: [
+            ["原負責人", data.from || "未指定"],
+            ["新負責人", data.to || "未指定"]
+          ]
+        };
+      }
+
+      if (type === "unassigned") {
+        return {
+          title: "已移除負責人",
+          body: "",
+          kv: [
+            ["原負責人", data.from || "未指定"],
+            ["目前負責人", data.to || "未指定"]
+          ]
+        };
+      }
+
+      if (type === "due_date_changed") {
+        return {
+          title: "到期時間已更新",
+          body: "",
+          kv: [
+            ["原到期時間", data.from ? formatDateTime(data.from) : "未指定"],
+            ["新到期時間", data.to ? formatDateTime(data.to) : "未指定"]
+          ]
+        };
+      }
+
+      if (type === "completed") {
+        return {
+          title: "跟進事項已完成",
+          body: data.outcome ? "處理結果：" + data.outcome : "",
+          kv: []
+        };
+      }
+
+      if (type === "cancelled") {
+        return {
+          title: "跟進事項已取消",
+          body: "",
+          kv: [
+            ["原狀態", labelOf(STATUS_LABELS, data.from)],
+            ["新狀態", labelOf(STATUS_LABELS, data.to)]
+          ]
+        };
+      }
+
+      if (type === "reopened") {
+        return {
+          title: "跟進事項已重新開啟",
+          body: "",
+          kv: [
+            ["原狀態", labelOf(STATUS_LABELS, data.from)],
+            ["新狀態", labelOf(STATUS_LABELS, data.to)]
+          ]
+        };
+      }
+
+      return {
+        title: row.event_label || "系統事件",
+        body: row.event_data ? JSON.stringify(row.event_data, null, 2) : "",
+        kv: []
+      };
     }
 
     async function init() {
       try {
         if (!SUPABASE_URL || SUPABASE_URL.includes("YOUR_PROJECT")) {
-          throw new Error("SUPABASE_URL 未設定");
+          throw new Error("尚未設定 SUPABASE_URL");
         }
         if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes("YOUR_SUPABASE_ANON_KEY")) {
-          throw new Error("SUPABASE_ANON_KEY 未設定");
+          throw new Error("尚未設定 SUPABASE_ANON_KEY");
         }
 
         sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const { data: userData, error: userError } = await sb.auth.getUser();
         if (userError) throw userError;
-        if (!userData?.user) throw new Error("未登入，請先完成 staff login");
+        if (!userData?.user) throw new Error("尚未登入，請先完成職員登入");
 
         currentUser = userData.user;
 
-        setStatus("載入 follow-up 中…", "info");
+        setStatus("正在載入跟進事項資料…", "info");
         await loadFollowups();
-        setStatus("已載入 follow-up 個案。", "success");
+        setStatus("資料載入完成。", "success");
       } catch (error) {
         console.error(error);
         setStatus("初始化失敗：\n" + error.message, "error");
@@ -870,7 +1396,9 @@
         .order("updated_at", { ascending: false });
 
       if (error) throw error;
+
       followups = data || [];
+      renderSummary();
       renderFollowupList();
       renderDetail();
     }
@@ -896,9 +1424,24 @@
       if (status) rows = rows.filter(item => item.status === status);
       if (priority) rows = rows.filter(item => item.priority === priority);
       if (category) rows = rows.filter(item => item.category === category);
-      if (assignedTo) rows = rows.filter(item => String(item.assigned_to || "").toLowerCase().includes(assignedTo));
+      if (assignedTo) {
+        rows = rows.filter(item => String(item.assigned_to || "").toLowerCase().includes(assignedTo));
+      }
 
       return rows;
+    }
+
+    function renderSummary() {
+      const rows = getFilteredFollowups();
+      const total = rows.length;
+      const open = rows.filter(x => x.status === "open").length;
+      const inProgress = rows.filter(x => x.status === "in_progress" || x.status === "pending").length;
+      const urgent = rows.filter(x => x.priority === "high" || x.priority === "urgent").length;
+
+      document.getElementById("summaryTotal").textContent = String(total);
+      document.getElementById("summaryOpen").textContent = String(open);
+      document.getElementById("summaryInProgress").textContent = String(inProgress);
+      document.getElementById("summaryUrgent").textContent = String(urgent);
     }
 
     function renderFollowupList() {
@@ -907,7 +1450,7 @@
       document.getElementById("caseCountText").textContent = String(rows.length);
 
       if (!rows.length) {
-        list.innerHTML = '<div class="empty">冇資料。按右上角「新增 Follow-up」開 case。</div>';
+        list.innerHTML = '<div class="empty">目前沒有符合條件的跟進事項。</div>';
         return;
       }
 
@@ -917,34 +1460,34 @@
             <div>
               <div class="case-title">${escapeHtml(item.title || "—")}</div>
               <div class="case-sub">
-                ${escapeHtml(item.followup_no || "—")} ・ Patient: ${escapeHtml(item.patient_id || "—")}
+                ${escapeHtml(item.followup_no || "—")} ・ 病人編號：${escapeHtml(item.patient_id || "—")}
               </div>
             </div>
-            <div class="case-sub">更新：${escapeHtml(formatDateTime(item.updated_at))}</div>
+            <div class="case-sub">最後更新：${escapeHtml(formatDateTime(item.updated_at))}</div>
           </div>
 
           <div class="badges">
-            <span class="pill pill-status-${escapeHtml(item.status)}">${escapeHtml(item.status)}</span>
-            <span class="pill pill-priority-${escapeHtml(item.priority)}">${escapeHtml(item.priority)}</span>
-            <span class="pill pill-status-pending">${escapeHtml(item.category || "—")}</span>
+            <span class="pill pill-status-${escapeHtml(item.status)}">${escapeHtml(labelOf(STATUS_LABELS, item.status))}</span>
+            <span class="pill pill-priority-${escapeHtml(item.priority)}">${escapeHtml(labelOf(PRIORITY_LABELS, item.priority))}</span>
+            <span class="pill pill-category">${escapeHtml(labelOf(CATEGORY_LABELS, item.category))}</span>
           </div>
 
           <div class="case-meta">
             <div class="meta-box">
-              <div class="meta-label">Assigned To</div>
-              <div class="meta-value">${escapeHtml(item.assigned_to || "—")}</div>
+              <div class="meta-label">負責人</div>
+              <div class="meta-value">${escapeHtml(item.assigned_to || "未指定")}</div>
             </div>
             <div class="meta-box">
-              <div class="meta-label">Due</div>
+              <div class="meta-label">到期時間</div>
               <div class="meta-value">${escapeHtml(formatDateTime(item.due_at))}</div>
             </div>
             <div class="meta-box">
-              <div class="meta-label">Source</div>
-              <div class="meta-value">${escapeHtml(item.source || "—")}</div>
+              <div class="meta-label">來源</div>
+              <div class="meta-value">${escapeHtml(labelOf(SOURCE_LABELS, item.source))}</div>
             </div>
             <div class="meta-box">
-              <div class="meta-label">Requested By</div>
-              <div class="meta-value">${escapeHtml(item.requested_by || "—")}</div>
+              <div class="meta-label">提出者</div>
+              <div class="meta-value">${escapeHtml(labelOf(REQUESTED_BY_LABELS, item.requested_by))}</div>
             </div>
           </div>
         </div>
@@ -952,9 +1495,15 @@
 
       [...document.querySelectorAll(".case-card")].forEach(el => {
         el.addEventListener("click", async () => {
-          selectedFollowupId = el.dataset.id;
-          renderFollowupList();
-          await loadFollowupDetail();
+          try {
+            selectedFollowupId = el.dataset.id;
+            renderFollowupList();
+            renderDetail();
+            await loadFollowupDetail();
+          } catch (error) {
+            console.error(error);
+            setStatus("載入個案詳情失敗：\n" + error.message, "error");
+          }
         });
       });
     }
@@ -979,10 +1528,10 @@
 
       document.getElementById("detailNo").textContent = item.followup_no || "—";
       document.getElementById("detailPatientId").textContent = item.patient_id || "—";
-      document.getElementById("detailCategory").textContent = item.category || "—";
-      document.getElementById("detailEncounterId").textContent = item.encounter_id || "—";
+      document.getElementById("detailCategory").textContent = labelOf(CATEGORY_LABELS, item.category);
+      document.getElementById("detailEncounterId").textContent = item.encounter_id || "未指定";
       document.getElementById("detailTitle").textContent = item.title || "—";
-      document.getElementById("detailDescription").textContent = item.description || "—";
+      document.getElementById("detailDescription").textContent = item.description || "未填寫";
       document.getElementById("detailCreatedBy").textContent = item.created_by || "—";
       document.getElementById("detailCreatedAt").textContent = formatDateTime(item.created_at);
 
@@ -1000,11 +1549,12 @@
     async function loadFollowupDetail() {
       const item = getSelectedFollowup();
       if (!item) {
+        selectedTimeline = [];
         renderDetail();
         return;
       }
 
-      setStatus("載入 timeline 中…", "info");
+      setStatus("正在載入時間軸資料…", "info");
 
       const [eventsRes, commentsRes] = await Promise.all([
         sb.from("followup_events").select("*").eq("followup_id", item.id).order("created_at", { ascending: false }),
@@ -1014,29 +1564,37 @@
       if (eventsRes.error) throw eventsRes.error;
       if (commentsRes.error) throw commentsRes.error;
 
-      const events = (eventsRes.data || []).map(row => ({
-        kind: "event",
-        id: row.id,
-        created_at: row.created_at,
-        title: row.event_label || row.event_type,
-        actor: row.actor || "—",
-        body: row.event_data ? JSON.stringify(row.event_data, null, 2) : "",
-        raw: row
-      }));
+      const events = (eventsRes.data || []).map(row => {
+        const t = translateEvent(row);
+        return {
+          kind: "event",
+          id: row.id,
+          created_at: row.created_at,
+          actor: row.actor || "未記錄",
+          title: t.title,
+          body: t.body,
+          kv: t.kv,
+          raw: row
+        };
+      });
 
       const comments = (commentsRes.data || []).map(row => ({
         kind: "comment",
         id: row.id,
         created_at: row.created_at,
-        title: "Comment",
-        actor: row.created_by || "—",
+        actor: row.created_by || "未記錄",
+        title: row.is_internal ? "內部備註" : "備註",
         body: row.comment_text || "",
+        kv: [],
         raw: row
       }));
 
-      selectedTimeline = [...events, ...comments].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      selectedTimeline = [...events, ...comments].sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at)
+      );
+
       renderDetail();
-      setStatus("已載入個案詳情。", "success");
+      setStatus("個案詳情已載入。", "success");
     }
 
     function renderTimeline() {
@@ -1048,19 +1606,39 @@
       }
 
       if (!selectedTimeline.length) {
-        el.innerHTML = '<div class="empty">暫時未有 timeline。</div>';
+        el.innerHTML = '<div class="empty">目前尚無處理紀錄。</div>';
         return;
       }
 
-      el.innerHTML = selectedTimeline.map(item => `
-        <div class="log-item">
-          <div class="log-head">
-            <div class="log-type">${escapeHtml(item.kind === "event" ? "Event" : "Comment")} ・ ${escapeHtml(item.actor || "—")}</div>
-            <div class="log-time">${escapeHtml(formatDateTime(item.created_at))}</div>
+      el.innerHTML = selectedTimeline.map(item => {
+        const visual = getEventVisual(item.raw || {}, item.kind);
+        const kvHtml = (item.kv || []).length
+          ? (item.kv || []).map(([k, v]) => `
+              <div class="timeline-k">${escapeHtml(k)}</div>
+              <div class="timeline-v">${escapeHtml(v)}</div>
+            `).join("")
+          : "";
+
+        return `
+          <div class="timeline-item">
+            <div class="timeline-dot ${escapeHtml(visual.dotClass)}"></div>
+            <div class="timeline-card">
+              <div class="timeline-head">
+                <div class="timeline-title-wrap">
+                  <div class="timeline-type">${escapeHtml(visual.typeLabel)}</div>
+                  <div class="timeline-title">${escapeHtml(item.title || "—")}</div>
+                </div>
+                <div class="timeline-meta">
+                  <div>${escapeHtml(item.actor || "未記錄")}</div>
+                  <div>${escapeHtml(formatDateTime(item.created_at))}</div>
+                </div>
+              </div>
+              ${item.body ? `<div class="timeline-body">${escapeHtml(item.body)}</div>` : ""}
+              ${kvHtml ? `<div class="timeline-kv">${kvHtml}</div>` : ""}
+            </div>
           </div>
-          <div class="log-body"><strong>${escapeHtml(item.title || "—")}</strong>${item.body ? "\n" + escapeHtml(item.body) : ""}</div>
-        </div>
-      `).join("");
+        `;
+      }).join("");
     }
 
     async function createFollowup() {
@@ -1077,16 +1655,17 @@
       const created_by = currentUser?.email || currentUser?.id || "unknown";
 
       if (!patient_id) {
-        setStatus("Patient ID（CUMC）必填。", "warning");
+        setStatus("請填寫病人編號。", "warning");
         return;
       }
+
       if (!title) {
-        setStatus("Title 必填。", "warning");
+        setStatus("請填寫主題。", "warning");
         return;
       }
 
       try {
-        setStatus("建立 follow-up 中…", "info");
+        setStatus("正在建立跟進事項…", "info");
 
         const { data, error } = await sb
           .from("followups")
@@ -1130,7 +1709,7 @@
         await loadFollowups();
         selectedFollowupId = data.id;
         await loadFollowupDetail();
-        setStatus("已建立 follow-up。", "success");
+        setStatus("跟進事項已建立。", "success");
       } catch (error) {
         console.error(error);
         setStatus("建立失敗：\n" + error.message, "error");
@@ -1140,7 +1719,7 @@
     async function saveFollowupChanges() {
       const item = getSelectedFollowup();
       if (!item) {
-        setStatus("請先選擇個案。", "warning");
+        setStatus("請先選取要更新的個案。", "warning");
         return;
       }
 
@@ -1154,7 +1733,7 @@
       const actor = currentUser?.email || currentUser?.id || "unknown";
 
       try {
-        setStatus("更新個案中…", "info");
+        setStatus("正在儲存更新…", "info");
 
         const eventsToInsert = [];
 
@@ -1171,7 +1750,10 @@
               newStatus === "cancelled" ? "Follow-up cancelled" :
               item.status === "cancelled" && newStatus !== "cancelled" ? "Follow-up reopened" :
               "Status changed",
-            event_data: { from: item.status, to: newStatus },
+            event_data:
+              newStatus === "completed" && newOutcome
+                ? { from: item.status, to: newStatus, outcome: newOutcome }
+                : { from: item.status, to: newStatus },
             actor
           });
         }
@@ -1230,7 +1812,7 @@
 
         await loadFollowups();
         await loadFollowupDetail();
-        setStatus("個案已更新。", "success");
+        setStatus("個案資料已更新。", "success");
       } catch (error) {
         console.error(error);
         setStatus("更新失敗：\n" + error.message, "error");
@@ -1240,7 +1822,7 @@
     async function addComment() {
       const item = getSelectedFollowup();
       if (!item) {
-        setStatus("請先選擇個案。", "warning");
+        setStatus("請先選取個案。", "warning");
         return;
       }
 
@@ -1248,12 +1830,12 @@
       const created_by = currentUser?.email || currentUser?.id || "unknown";
 
       if (!comment_text) {
-        setStatus("Comment 唔可以留空。", "warning");
+        setStatus("備註內容不可留空。", "warning");
         return;
       }
 
       try {
-        setStatus("加入 comment 中…", "info");
+        setStatus("正在加入備註…", "info");
 
         const { error } = await sb
           .from("followup_comments")
@@ -1269,10 +1851,10 @@
         document.getElementById("newCommentText").value = "";
         await loadFollowupDetail();
         await loadFollowups();
-        setStatus("已加入 comment。", "success");
+        setStatus("備註已加入。", "success");
       } catch (error) {
         console.error(error);
-        setStatus("加入 comment 失敗：\n" + error.message, "error");
+        setStatus("加入備註失敗：\n" + error.message, "error");
       }
     }
 
@@ -1298,6 +1880,7 @@
     }
 
     function renderAfterFilter() {
+      renderSummary();
       renderFollowupList();
     }
 
@@ -1307,6 +1890,7 @@
     document.getElementById("saveCaseBtn").addEventListener("click", saveFollowupChanges);
     document.getElementById("addCommentBtn").addEventListener("click", addComment);
     document.getElementById("searchBtn").addEventListener("click", renderAfterFilter);
+
     document.getElementById("resetFilterBtn").addEventListener("click", () => {
       document.getElementById("filterKeyword").value = "";
       document.getElementById("filterStatus").value = "";
@@ -1315,12 +1899,13 @@
       document.getElementById("filterAssignedTo").value = "";
       renderAfterFilter();
     });
+
     document.getElementById("refreshBtn").addEventListener("click", async () => {
       try {
-        setStatus("重新整理中…", "info");
+        setStatus("正在重新整理資料…", "info");
         await loadFollowups();
         if (selectedFollowupId) await loadFollowupDetail();
-        setStatus("已重新整理。", "success");
+        setStatus("資料已重新整理。", "success");
       } catch (error) {
         console.error(error);
         setStatus("重新整理失敗：\n" + error.message, "error");
@@ -1335,6 +1920,7 @@
         event.clientX <= rect.right &&
         event.clientY >= rect.top &&
         event.clientY <= rect.bottom;
+
       if (!inside) event.currentTarget.close();
     });
 
