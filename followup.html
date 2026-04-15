@@ -569,6 +569,7 @@
                 <th>類別</th>
                 <th>求診醫生</th>
                 <th>負責人</th>
+                <th>要求者</th>
                 <th>到期情況</th>
                 <th>到期時間</th>
                 <th>更新時間</th>
@@ -685,12 +686,18 @@
             <div class="ghost-tags" id="followupSourcePresets"></div>
           </div>
           <div class="field">
-            <label>要求者（可多選 / 可自訂）</label>
-            <div class="chips-input">
-              <div class="chips" id="followupRequestedByChips"></div>
-              <input id="followupRequestedByInput" class="chip-entry" type="text" placeholder="輸入要求者後按 Enter" />
-            </div>
-            <div class="ghost-tags" id="followupRequestedByPresets"></div>
+            <label for="followupRequestedByInput">要求者</label>
+            <select id="followupRequestedByInput">
+              <option value="">請選擇</option>
+              <option value="patient">病人</option>
+              <option value="doctor">醫生</option>
+              <option value="nurse">護士</option>
+              <option value="admin">行政</option>
+              <option value="external">外部</option>
+              <option value="system">系統</option>
+              <option value="other">其他</option>
+            </select>
+            <div class="note">此欄只會寫入 DB 允許的英文 code。</div>
           </div>
         </div>
 
@@ -809,7 +816,6 @@
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const PRESET_SOURCES = ["手動","系統","電話","WhatsApp","前台","護士站","醫生口頭通知","電郵"];
-    const PRESET_REQUESTED_BY = ["醫生","護士","病人","家屬","前台","保險","化驗所","系統"];
 
     const ALLOWED_CATEGORIES = [
       "callback",
@@ -818,6 +824,16 @@
       "return_visit",
       "insurance_form",
       "admin",
+      "other"
+    ];
+
+    const ALLOWED_REQUESTED_BY = [
+      "patient",
+      "doctor",
+      "nurse",
+      "admin",
+      "external",
+      "system",
       "other"
     ];
 
@@ -846,6 +862,15 @@
         return_visit: "回診安排",
         insurance_form: "保險文件",
         admin: "行政",
+        other: "其他"
+      },
+      requestedBy: {
+        patient: "病人",
+        doctor: "醫生",
+        nurse: "護士",
+        admin: "行政",
+        external: "外部",
+        system: "系統",
         other: "其他"
       },
       event: {
@@ -907,15 +932,12 @@
       sourceChipsEl: document.getElementById("followupSourceChips"),
       sourcePresetsEl: document.getElementById("followupSourcePresets"),
       requestedByInputEl: document.getElementById("followupRequestedByInput"),
-      requestedByChipsEl: document.getElementById("followupRequestedByChips"),
-      requestedByPresetsEl: document.getElementById("followupRequestedByPresets"),
       descriptionEl: document.getElementById("followupDescriptionInput"),
       outcomeEl: document.getElementById("followupOutcomeInput"),
       saveBtnEl: document.getElementById("saveFollowupBtn"),
       mode: "create",
       followupId: null,
-      sourceValues: [],
-      requestedByValues: []
+      sourceValues: []
     };
 
     const statusModal = {
@@ -1219,6 +1241,16 @@
       return zh.category[normalized] || String(normalized || "—");
     }
 
+    function normalizeRequestedByValue(value) {
+      const raw = String(value || "").trim();
+      return ALLOWED_REQUESTED_BY.includes(raw) ? raw : "";
+    }
+
+    function requestedByLabel(value) {
+      const normalized = normalizeRequestedByValue(value);
+      return normalized ? (zh.requestedBy[normalized] || normalized) : "—";
+    }
+
     function eventLabel(eventType, fallbackLabel) {
       return zh.event[String(eventType || "").trim()] || fallbackLabel || eventType || "事件";
     }
@@ -1339,11 +1371,6 @@
       return [];
     }
 
-    function multiFieldToDisplay(value) {
-      const arr = normalizeMultiFieldToArray(value);
-      return arr.length ? arr.join("、") : "—";
-    }
-
     function renderEditableChips(containerEl, values, removeHandlerName) {
       containerEl.innerHTML = values.map((v, index) => `
         <span class="chip">
@@ -1374,7 +1401,6 @@
 
     function renderModalChipGroups() {
       renderEditableChips(followupModal.sourceChipsEl, followupModal.sourceValues, "sourceValues");
-      renderEditableChips(followupModal.requestedByChipsEl, followupModal.requestedByValues, "requestedByValues");
     }
 
     function wireChipInput(inputEl, listName) {
@@ -1599,9 +1625,7 @@
 
     function initChipControls() {
       renderPresetButtons(followupModal.sourcePresetsEl, PRESET_SOURCES, "sourceValues");
-      renderPresetButtons(followupModal.requestedByPresetsEl, PRESET_REQUESTED_BY, "requestedByValues");
       wireChipInput(followupModal.sourceInputEl, "sourceValues");
-      wireChipInput(followupModal.requestedByInputEl, "requestedByValues");
 
       document.addEventListener("click", (event) => {
         const removeBtn = event.target.closest("[data-remove-index][data-remove-handler]");
@@ -1805,7 +1829,8 @@
       if (error) throw error;
       state.followups = Array.isArray(data) ? data.map(item => ({
         ...item,
-        category: normalizeCategoryValue(item.category)
+        category: normalizeCategoryValue(item.category),
+        requested_by: normalizeRequestedByValue(item.requested_by)
       })) : [];
 
       if (state.selectedFollowupId && !state.followups.some(item => String(item.id) === String(state.selectedFollowupId))) {
@@ -1899,6 +1924,7 @@
             categoryLabel(item.category),
             item.source,
             item.requested_by,
+            requestedByLabel(item.requested_by),
             item.encounter_id,
             item.encounter_ref,
             item.encounter_no,
@@ -1988,6 +2014,7 @@
             <td><span class="badge badge-chip">${escapeHtml(categoryLabel(item.category))}</span></td>
             <td>${doctorText !== "—" ? `<div class="pill pill-doctor"><span>${escapeHtml(doctorText)}</span></div>` : '<span class="muted">—</span>'}</td>
             <td><div class="pill"><span>${escapeHtml(getStaffDisplayText(item.assigned_to))}</span></div></td>
+            <td><span class="badge badge-chip">${escapeHtml(requestedByLabel(item.requested_by))}</span></td>
             <td>${renderSla(item)}</td>
             <td>${escapeHtml(formatDateTime24(item.due_at))}</td>
             <td>${escapeHtml(formatDateTime24(item.updated_at || item.created_at))}</td>
@@ -2025,6 +2052,7 @@
               ${statusBadge(item.status)}
               ${priorityBadge(item.priority)}
               <span class="badge badge-chip">${escapeHtml(categoryLabel(item.category))}</span>
+              <span class="badge badge-chip">${escapeHtml(requestedByLabel(item.requested_by))}</span>
               ${renderSla(item)}
             </div>
 
@@ -2038,8 +2066,8 @@
                 <div class="v">${escapeHtml(assignedText)}</div>
               </div>
               <div class="card-meta">
-                <div class="k">到期時間</div>
-                <div class="v">${escapeHtml(formatDateTime24(item.due_at))}</div>
+                <div class="k">要求者</div>
+                <div class="v">${escapeHtml(requestedByLabel(item.requested_by))}</div>
               </div>
               <div class="card-meta">
                 <div class="k">更新時間</div>
@@ -2107,6 +2135,7 @@
               ${statusBadge(item.status)}
               ${priorityBadge(item.priority)}
               <span class="badge badge-chip">${escapeHtml(categoryLabel(item.category))}</span>
+              <span class="badge badge-chip">${escapeHtml(requestedByLabel(item.requested_by))}</span>
               ${renderSla(item)}
             </div>
             <h3>${escapeHtml(item.title || "—")}</h3>
@@ -2135,11 +2164,11 @@
             </div>
             <div class="meta-box">
               <div class="k">來源</div>
-              <div class="v">${escapeHtml(multiFieldToDisplay(item.source))}</div>
+              <div class="v">${escapeHtml(normalizeMultiFieldToArray(item.source).join("、") || "—")}</div>
             </div>
             <div class="meta-box">
               <div class="k">要求者</div>
-              <div class="v">${escapeHtml(multiFieldToDisplay(item.requested_by))}</div>
+              <div class="v">${escapeHtml(requestedByLabel(item.requested_by))}</div>
             </div>
             <div class="meta-box">
               <div class="k">建立時間</div>
@@ -2225,7 +2254,6 @@
 
     function resetModalSmartInputs() {
       followupModal.sourceValues = [];
-      followupModal.requestedByValues = [];
       followupModal.sourceInputEl.value = "";
       followupModal.requestedByInputEl.value = "";
       renderModalChipGroups();
@@ -2252,6 +2280,7 @@
         followupModal.dueAtEl.value = "";
         followupModal.titleInputEl.value = "";
         followupModal.assignedToEl.value = getCurrentStaffDisplayText();
+        followupModal.requestedByInputEl.value = "";
         followupModal.descriptionEl.value = "";
         followupModal.outcomeEl.value = "";
         followupModal.doctorDisplayEl.value = "—";
@@ -2278,11 +2307,11 @@
         followupModal.dueAtEl.value = toDatetimeLocalValue(item.due_at);
         followupModal.titleInputEl.value = item.title || "";
         followupModal.assignedToEl.value = getStaffDisplayText(item.assigned_to);
+        followupModal.requestedByInputEl.value = normalizeRequestedByValue(item.requested_by);
         followupModal.descriptionEl.value = item.description || "";
         followupModal.outcomeEl.value = item.outcome || "";
         followupModal.doctorDisplayEl.value = getEncounterDoctorTextByStoredValue(encounterStored);
         followupModal.sourceValues = normalizeMultiFieldToArray(item.source);
-        followupModal.requestedByValues = normalizeMultiFieldToArray(item.requested_by);
         renderModalChipGroups();
         setEncounterMessage({});
         syncEncounterSuggestionsByPatient(true);
@@ -2371,7 +2400,15 @@
         console.warn("Invalid category from UI:", category);
         category = "other";
       }
+
+      let requestedBy = String(followupModal.requestedByInputEl.value || "").trim();
+      if (!ALLOWED_REQUESTED_BY.includes(requestedBy)) {
+        console.warn("Invalid requested_by from UI:", requestedBy);
+        requestedBy = "";
+      }
+
       console.log("category to insert =", category);
+      console.log("requested_by to insert =", requestedBy || null);
 
       const title = String(followupModal.titleInputEl.value || "").trim();
       const assignedTo = String(followupModal.assignedToEl.value || "").trim() || getCurrentStaffDisplayText();
@@ -2380,7 +2417,6 @@
       const status = String(followupModal.statusEl.value || "open").trim();
       const priority = String(followupModal.priorityEl.value || "normal").trim();
       const source = uniqueCleanList(followupModal.sourceValues).join("、") || null;
-      const requestedBy = uniqueCleanList(followupModal.requestedByValues).join("、") || null;
       const dueAt = localValueToIso(followupModal.dueAtEl.value || "");
       const actor = getCurrentStaffDisplayText();
 
@@ -2412,7 +2448,7 @@
         assigned_to: assignedTo,
         due_at: dueAt,
         source,
-        requested_by: requestedBy,
+        requested_by: requestedBy || null,
         outcome
       };
 
@@ -2435,7 +2471,7 @@
             priority,
             assigned_to: assignedTo,
             source,
-            requested_by: requestedBy,
+            requested_by: requestedBy || null,
             category,
             encounter_no: encounterNo,
             encounter_doctor: getEncounterDoctorText(matchedEncounter),
@@ -2488,7 +2524,7 @@
             changes: changed,
             category,
             source,
-            requested_by: requestedBy,
+            requested_by: requestedBy || null,
             encounter_no: encounterNo,
             encounter_doctor: getEncounterDoctorText(matchedEncounter),
             outcome: outcome || null
