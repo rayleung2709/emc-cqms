@@ -4940,7 +4940,6 @@ async function rebalanceWaitingPatients() {
     const confirmText =
       `將重新智能平均分流 ${movablePatients.length} 位候診病人。\n\n` +
       `只會處理：候診中、非預約、非手動派房或轉房病人。\n` +
-      `回診等候病人不會被移動，但會以每人 0.5 分計入智能負荷。\n\n` +
       `是否繼續？`;
 
     if (!window.confirm(confirmText)) return;
