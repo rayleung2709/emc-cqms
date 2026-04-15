@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -30,12 +29,9 @@
       --shadow-sm:0 6px 18px rgba(15,23,42,.05);
       --shadow:0 16px 40px rgba(15,23,42,.08);
       --radius:18px;
-      --radius-md:14px;
-      --radius-sm:12px;
     }
 
     *{ box-sizing:border-box; }
-
     html,body{
       margin:0;
       padding:0;
@@ -43,1244 +39,398 @@
       color:var(--text);
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
     }
-
     body.modal-open{ overflow:hidden; }
 
-    .app{
-      max-width:1480px;
-      margin:0 auto;
-      padding:22px;
-    }
+    .app{ max-width:1480px; margin:0 auto; padding:22px; }
 
     .header{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:18px;
-      margin-bottom:18px;
+      display:flex; justify-content:space-between; align-items:flex-start; gap:18px; margin-bottom:18px;
     }
-
-    .header-left h1{
-      margin:0;
-      font-size:30px;
-      font-weight:900;
-      letter-spacing:.01em;
-      line-height:1.15;
-    }
-
-    .header-left p{
-      margin:8px 0 0;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.6;
-    }
-
+    .header-left h1{ margin:0; font-size:30px; font-weight:900; line-height:1.15; }
+    .header-left p{ margin:8px 0 0; color:var(--muted); font-size:14px; line-height:1.6; }
     .header-tag{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      margin-bottom:10px;
-      padding:6px 10px;
-      border-radius:999px;
-      background:var(--primary-soft);
-      color:var(--primary);
-      font-size:12px;
-      font-weight:900;
-      letter-spacing:.04em;
+      display:inline-flex; align-items:center; gap:8px; margin-bottom:10px; padding:6px 10px;
+      border-radius:999px; background:var(--primary-soft); color:var(--primary); font-size:12px; font-weight:900;
     }
-
-    .header-actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-    }
+    .header-actions{ display:flex; flex-wrap:wrap; gap:10px; }
 
     .btn{
-      appearance:none;
-      border:none;
-      border-radius:12px;
-      min-height:42px;
-      padding:10px 14px;
-      font-size:14px;
-      font-weight:900;
-      cursor:pointer;
-      transition:.16s ease;
-      background:#e5e7eb;
-      color:#111827;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
+      appearance:none; border:none; border-radius:12px; min-height:42px; padding:10px 14px;
+      font-size:14px; font-weight:900; cursor:pointer; transition:.16s ease;
+      background:#e5e7eb; color:#111827; text-decoration:none;
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
     }
-
     .btn:hover{ transform:translateY(-1px); }
     .btn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
-
-    .btn-light{
-      background:#fff;
-      border:1px solid var(--line);
-      color:var(--text);
-    }
-
-    .btn-primary{
-      background:var(--primary);
-      color:#fff;
-    }
+    .btn-light{ background:#fff; border:1px solid var(--line); color:var(--text); }
+    .btn-primary{ background:var(--primary); color:#fff; }
     .btn-primary:hover{ background:var(--primary-2); }
-
-    .btn-success{
-      background:var(--success);
-      color:#fff;
-    }
-
-    .btn-warning{
-      background:var(--warning);
-      color:#fff;
-    }
-
-    .btn-danger{
-      background:var(--danger);
-      color:#fff;
-    }
-
-    .btn-soft{
-      background:var(--panel-tint);
-      color:var(--text);
-      border:1px solid var(--line);
-    }
-
-    .btn-home{
-      background:#0f172a;
-      color:#fff;
-    }
-
-    .btn-home:hover{
-      background:#1e293b;
-    }
+    .btn-success{ background:var(--success); color:#fff; }
+    .btn-danger{ background:var(--danger); color:#fff; }
+    .btn-soft{ background:var(--panel-tint); color:var(--text); border:1px solid var(--line); }
+    .btn-home{ background:#0f172a; color:#fff; }
+    .btn-home:hover{ background:#1e293b; }
 
     .panel{
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
+      background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+      box-shadow:var(--shadow); overflow:hidden;
     }
-
     .panel-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:16px 18px;
-      border-bottom:1px solid var(--line);
-      background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:16px 18px; border-bottom:1px solid var(--line); background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%);
     }
-
-    .panel-head h2{
-      margin:0;
-      font-size:18px;
-      font-weight:900;
-    }
-
-    .panel-head .meta{
-      color:var(--muted);
-      font-size:13px;
-      margin-top:4px;
-    }
+    .panel-head h2{ margin:0; font-size:18px; font-weight:900; }
+    .panel-head .meta{ color:var(--muted); font-size:13px; margin-top:4px; }
 
     .summary{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:14px;
-      margin-bottom:18px;
+      display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin-bottom:18px;
     }
-
     .summary-card{
       background:linear-gradient(180deg,#fff 0%,#fbfdff 100%);
-      border:1px solid var(--line);
-      border-radius:18px;
-      box-shadow:var(--shadow-sm);
-      padding:16px;
+      border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); padding:16px;
     }
+    .summary-card .label{ font-size:13px; font-weight:800; color:var(--muted); margin-bottom:8px; }
+    .summary-card .value{ font-size:30px; line-height:1; font-weight:900; color:var(--text); }
+    .summary-card .sub{ margin-top:8px; font-size:12px; color:var(--muted); }
 
-    .summary-card .label{
-      font-size:13px;
-      font-weight:800;
-      color:var(--muted);
-      margin-bottom:8px;
-    }
-
-    .summary-card .value{
-      font-size:30px;
-      line-height:1;
-      font-weight:900;
-      color:var(--text);
-    }
-
-    .summary-card .sub{
-      margin-top:8px;
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    .tabs-wrap{
-      margin-bottom:18px;
-    }
-
+    .tabs-wrap{ margin-bottom:18px; }
     .tabs{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      padding:10px;
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:16px;
-      box-shadow:var(--shadow-sm);
+      display:flex; flex-wrap:wrap; gap:10px; padding:10px; background:var(--panel);
+      border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm);
     }
-
     .tab-btn{
-      appearance:none;
-      border:1px solid var(--line);
-      background:#fff;
-      color:var(--text-soft);
-      border-radius:999px;
-      padding:10px 14px;
-      font-size:14px;
-      font-weight:900;
-      cursor:pointer;
-      transition:.16s ease;
+      appearance:none; border:1px solid var(--line); background:#fff; color:var(--text-soft);
+      border-radius:999px; padding:10px 14px; font-size:14px; font-weight:900; cursor:pointer; transition:.16s ease;
     }
-
     .tab-btn.active{
-      background:var(--primary);
-      color:#fff;
-      border-color:var(--primary);
-      box-shadow:0 8px 20px rgba(37,99,235,.18);
+      background:var(--primary); color:#fff; border-color:var(--primary); box-shadow:0 8px 20px rgba(37,99,235,.18);
     }
 
-    .toolbar{
-      margin-bottom:18px;
-      padding:16px;
-    }
-
+    .toolbar{ margin-bottom:18px; padding:16px; }
     .toolbar-grid{
-      display:grid;
-      grid-template-columns:1.45fr 1fr 1fr 1fr 1fr 1fr auto;
-      gap:12px;
-      align-items:end;
+      display:grid; grid-template-columns:1.45fr 1fr 1fr 1fr 1fr 1fr auto; gap:12px; align-items:end;
     }
 
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      min-width:0;
-      position:relative;
-    }
-
-    .field label{
-      color:var(--muted);
-      font-size:12px;
-      font-weight:900;
-      letter-spacing:.02em;
-    }
-
-    .field input,
-    .field select,
-    .field textarea{
-      width:100%;
-      border:1px solid var(--line);
-      background:#fff;
-      color:var(--text);
-      border-radius:12px;
-      padding:10px 12px;
-      font-size:14px;
-      outline:none;
+    .field{ display:flex; flex-direction:column; gap:6px; min-width:0; position:relative; }
+    .field label{ color:var(--muted); font-size:12px; font-weight:900; letter-spacing:.02em; }
+    .field input,.field select,.field textarea{
+      width:100%; border:1px solid var(--line); background:#fff; color:var(--text);
+      border-radius:12px; padding:10px 12px; font-size:14px; outline:none;
       transition:border-color .16s ease, box-shadow .16s ease;
     }
-
-    .field textarea{
-      min-height:110px;
-      resize:vertical;
+    .field textarea{ min-height:110px; resize:vertical; }
+    .field input:focus,.field select:focus,.field textarea:focus{
+      border-color:#93c5fd; box-shadow:0 0 0 4px rgba(37,99,235,.12);
     }
-
-    .field input:focus,
-    .field select:focus,
-    .field textarea:focus{
-      border-color:#93c5fd;
-      box-shadow:0 0 0 4px rgba(37,99,235,.12);
-    }
-
-    .field input[readonly]{
-      background:#f8fafc;
-      color:#475569;
-    }
+    .field input[readonly]{ background:#f8fafc; color:#475569; }
 
     .layout{
-      display:grid;
-      grid-template-columns:minmax(0,1.65fr) minmax(380px,.9fr);
-      gap:18px;
-      align-items:start;
+      display:grid; grid-template-columns:minmax(0,1.65fr) minmax(380px,.9fr); gap:18px; align-items:start;
     }
-
-    .table-panel{
-      min-width:0;
-    }
+    .table-panel{ min-width:0; }
 
     .table-topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:14px 18px 0;
-      flex-wrap:wrap;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:14px 18px 0; flex-wrap:wrap;
     }
 
     .view-switch{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      background:#f8fafc;
-      border:1px solid var(--line);
-      border-radius:999px;
-      padding:4px;
+      display:inline-flex; align-items:center; gap:8px; background:#f8fafc;
+      border:1px solid var(--line); border-radius:999px; padding:4px;
     }
-
     .view-btn{
-      appearance:none;
-      border:none;
-      background:transparent;
-      color:var(--text-soft);
-      border-radius:999px;
-      padding:8px 12px;
-      font-size:13px;
-      font-weight:900;
-      cursor:pointer;
-      transition:.16s ease;
+      appearance:none; border:none; background:transparent; color:var(--text-soft);
+      border-radius:999px; padding:8px 12px; font-size:13px; font-weight:900; cursor:pointer; transition:.16s ease;
     }
+    .view-btn.active{ background:#fff; color:var(--primary); box-shadow:0 2px 10px rgba(15,23,42,.08); }
 
-    .view-btn.active{
-      background:#fff;
-      color:var(--primary);
-      box-shadow:0 2px 10px rgba(15,23,42,.08);
-    }
-
-    .table-wrap{
-      overflow:auto;
-      max-height:calc(100vh - 320px);
-    }
-
-    table{
-      width:100%;
-      border-collapse:collapse;
-      min-width:1180px;
-    }
-
+    .table-wrap{ overflow:auto; max-height:calc(100vh - 320px); }
+    table{ width:100%; border-collapse:collapse; min-width:1180px; }
     thead th{
-      position:sticky;
-      top:0;
-      z-index:1;
-      background:#f8fafc;
-      color:var(--muted);
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:.04em;
-      text-align:left;
-      padding:12px 14px;
-      border-bottom:1px solid var(--line);
+      position:sticky; top:0; z-index:1; background:#f8fafc; color:var(--muted); font-size:12px;
+      text-transform:uppercase; letter-spacing:.04em; text-align:left; padding:12px 14px; border-bottom:1px solid var(--line);
       white-space:nowrap;
     }
+    tbody td{ padding:13px 14px; border-bottom:1px solid #edf2f7; vertical-align:top; font-size:14px; }
+    tbody tr{ transition:background .14s ease; cursor:pointer; }
+    tbody tr:hover{ background:#f8fbff; }
+    tbody tr.active{ background:#eff6ff; }
+    tbody tr.row-overdue{ background:linear-gradient(180deg,#fff8f8 0%,#fff 100%); }
+    tbody tr.row-today{ background:linear-gradient(180deg,#fffdf4 0%,#fff 100%); }
 
-    tbody td{
-      padding:13px 14px;
-      border-bottom:1px solid #edf2f7;
-      vertical-align:top;
-      font-size:14px;
-    }
-
-    tbody tr{
-      transition:background .14s ease;
-      cursor:pointer;
-    }
-
-    tbody tr:hover{
-      background:#f8fbff;
-    }
-
-    tbody tr.active{
-      background:#eff6ff;
-    }
-
-    tbody tr.row-overdue{
-      background:linear-gradient(180deg,#fff8f8 0%,#fff 100%);
-    }
-
-    tbody tr.row-today{
-      background:linear-gradient(180deg,#fffdf4 0%,#fff 100%);
-    }
-
-    .followup-no{
-      font-weight:900;
-      color:#0f172a;
-      white-space:nowrap;
-    }
-
-    .title-cell{
-      min-width:260px;
-    }
-
-    .title-main{
-      font-weight:800;
-      line-height:1.38;
-      margin-bottom:4px;
-      color:#0f172a;
-    }
-
-    .title-sub{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.45;
-    }
-
-    .muted{
-      color:var(--muted);
-      font-size:12px;
-    }
+    .followup-no{ font-weight:900; color:#0f172a; white-space:nowrap; }
+    .title-cell{ min-width:260px; }
+    .title-main{ font-weight:800; line-height:1.38; margin-bottom:4px; color:#0f172a; }
+    .title-sub{ color:var(--muted); font-size:12px; line-height:1.45; }
+    .muted{ color:var(--muted); font-size:12px; }
 
     .badge{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:999px;
-      padding:5px 10px;
-      font-size:12px;
-      font-weight:900;
-      letter-spacing:.02em;
-      white-space:nowrap;
+      display:inline-flex; align-items:center; justify-content:center; border-radius:999px;
+      padding:5px 10px; font-size:12px; font-weight:900; white-space:nowrap;
     }
-
     .badge-status-open{ background:#dbeafe; color:#1d4ed8; }
     .badge-status-pending{ background:#fef3c7; color:#b45309; }
     .badge-status-done{ background:#dcfce7; color:#15803d; }
     .badge-status-cancelled{ background:#fee2e2; color:#b91c1c; }
-
     .badge-priority-low{ background:#e5e7eb; color:#374151; }
     .badge-priority-normal{ background:#dbeafe; color:#1d4ed8; }
     .badge-priority-high{ background:#fed7aa; color:#c2410c; }
     .badge-priority-urgent{ background:#fee2e2; color:#b91c1c; }
-
-    .badge-chip{
-      background:#eef2ff;
-      color:#4338ca;
-      border:1px solid #c7d2fe;
-      margin:0 6px 6px 0;
-    }
+    .badge-chip{ background:#eef2ff; color:#4338ca; border:1px solid #c7d2fe; margin:0 6px 6px 0; }
 
     .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      border-radius:999px;
-      padding:5px 10px;
-      background:#f3f4f6;
-      color:#334155;
-      font-size:12px;
-      font-weight:800;
-      max-width:220px;
+      display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:5px 10px;
+      background:#f3f4f6; color:#334155; font-size:12px; font-weight:800; max-width:220px;
     }
-
     .pill span{
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-      display:block;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block;
     }
+    .pill-doctor{ background:var(--violet-soft); color:#5b21b6; }
 
-    .pill-doctor{
-      background:var(--violet-soft);
-      color:#5b21b6;
-    }
-
-    .sla{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-size:12px;
-      font-weight:900;
-      white-space:nowrap;
-    }
-
-    .sla-dot{
-      width:10px;
-      height:10px;
-      border-radius:999px;
-      display:inline-block;
-      flex:0 0 auto;
-    }
-
+    .sla{ display:inline-flex; align-items:center; gap:8px; font-size:12px; font-weight:900; white-space:nowrap; }
+    .sla-dot{ width:10px; height:10px; border-radius:999px; display:inline-block; flex:0 0 auto; }
     .sla-normal .sla-dot{ background:#94a3b8; }
     .sla-today .sla-dot{ background:#f59e0b; box-shadow:0 0 0 4px rgba(245,158,11,.12); }
     .sla-overdue .sla-dot{ background:#dc2626; box-shadow:0 0 0 4px rgba(220,38,38,.12); }
     .sla-done .sla-dot{ background:#16a34a; box-shadow:0 0 0 4px rgba(22,163,74,.12); }
 
-    .row-actions{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
+    .row-actions{ display:flex; gap:8px; flex-wrap:wrap; }
     .mini-btn{
-      appearance:none;
-      border:none;
-      border-radius:10px;
-      padding:7px 10px;
-      font-size:12px;
-      font-weight:900;
-      cursor:pointer;
-      transition:.16s ease;
-      white-space:nowrap;
+      appearance:none; border:none; border-radius:10px; padding:7px 10px; font-size:12px; font-weight:900;
+      cursor:pointer; transition:.16s ease; white-space:nowrap;
     }
-
     .mini-btn:hover{ transform:translateY(-1px); }
+    .mini-btn.done{ background:var(--success-soft); color:#166534; border:1px solid #bbf7d0; }
+    .mini-btn.edit{ background:var(--primary-soft); color:#1d4ed8; border:1px solid #bfdbfe; }
 
-    .mini-btn.done{
-      background:var(--success-soft);
-      color:#166534;
-      border:1px solid #bbf7d0;
-    }
-
-    .mini-btn.edit{
-      background:var(--primary-soft);
-      color:#1d4ed8;
-      border:1px solid #bfdbfe;
-    }
-
-    .cards-wrap{
-      display:none;
-      padding:14px;
-      gap:12px;
-      background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%);
-    }
-
-    .cards-wrap.show{
-      display:grid;
-    }
+    .cards-wrap{ display:none; padding:14px; gap:12px; background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%); }
+    .cards-wrap.show{ display:grid; }
 
     .followup-card{
-      border:1px solid var(--line);
-      border-radius:16px;
-      background:#fff;
-      box-shadow:var(--shadow-sm);
-      padding:14px;
-      display:grid;
-      gap:12px;
-      cursor:pointer;
-      transition:.16s ease;
+      border:1px solid var(--line); border-radius:16px; background:#fff; box-shadow:var(--shadow-sm);
+      padding:14px; display:grid; gap:12px; cursor:pointer; transition:.16s ease;
     }
-
-    .followup-card:hover{
-      transform:translateY(-1px);
-      border-color:#bfdbfe;
-    }
-
-    .followup-card.active{
-      border-color:#93c5fd;
-      background:#eff6ff;
-    }
-
-    .followup-card.row-overdue{
-      border-color:#fecaca;
-      background:linear-gradient(180deg,#fff8f8 0%,#fff 100%);
-    }
-
-    .followup-card.row-today{
-      border-color:#fde68a;
-      background:linear-gradient(180deg,#fffdf4 0%,#fff 100%);
-    }
-
-    .followup-card-top{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:flex-start;
-    }
-
-    .followup-card-no{
-      font-size:13px;
-      font-weight:900;
-      color:var(--primary);
-    }
-
-    .followup-card-title{
-      font-size:16px;
-      font-weight:900;
-      color:#0f172a;
-      line-height:1.45;
-    }
-
-    .followup-card-sub{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.6;
-    }
-
-    .followup-card-badges{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-
-    .followup-card-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:10px;
-    }
+    .followup-card:hover{ transform:translateY(-1px); border-color:#bfdbfe; }
+    .followup-card.active{ border-color:#93c5fd; background:#eff6ff; }
+    .followup-card.row-overdue{ border-color:#fecaca; background:linear-gradient(180deg,#fff8f8 0%,#fff 100%); }
+    .followup-card.row-today{ border-color:#fde68a; background:linear-gradient(180deg,#fffdf4 0%,#fff 100%); }
+    .followup-card-top{ display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
+    .followup-card-no{ font-size:13px; font-weight:900; color:var(--primary); }
+    .followup-card-title{ font-size:16px; font-weight:900; color:#0f172a; line-height:1.45; }
+    .followup-card-sub{ color:var(--muted); font-size:12px; line-height:1.6; }
+    .followup-card-badges{ display:flex; flex-wrap:wrap; gap:8px; }
+    .followup-card-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
 
     .card-meta{
-      background:#f8fafc;
-      border:1px solid var(--line);
-      border-radius:12px;
-      padding:10px;
+      background:#f8fafc; border:1px solid var(--line); border-radius:12px; padding:10px;
     }
+    .card-meta .k{ font-size:11px; font-weight:900; color:var(--muted); margin-bottom:4px; }
+    .card-meta .v{ font-size:13px; font-weight:800; color:#0f172a; line-height:1.5; word-break:break-word; }
 
-    .card-meta .k{
-      font-size:11px;
-      font-weight:900;
-      color:var(--muted);
-      margin-bottom:4px;
-    }
-
-    .card-meta .v{
-      font-size:13px;
-      font-weight:800;
-      color:#0f172a;
-      line-height:1.5;
-      word-break:break-word;
-    }
-
-    .right-panel{
-      position:sticky;
-      top:22px;
-    }
-
-    .detail-empty{
-      padding:24px;
-      color:var(--muted);
-      font-size:14px;
-    }
-
-    .detail-body{
-      padding:18px;
-      display:grid;
-      gap:16px;
-    }
-
-    .detail-title{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .detail-title h3{
-      margin:0;
-      font-size:24px;
-      line-height:1.3;
-      font-weight:900;
-    }
-
-    .detail-badges{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      align-items:center;
-    }
-
-    .detail-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
-    }
+    .right-panel{ position:sticky; top:22px; }
+    .detail-empty{ padding:24px; color:var(--muted); font-size:14px; }
+    .detail-body{ padding:18px; display:grid; gap:16px; }
+    .detail-title{ display:flex; flex-direction:column; gap:10px; }
+    .detail-title h3{ margin:0; font-size:24px; line-height:1.3; font-weight:900; }
+    .detail-badges{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .detail-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
 
     .meta-box{
-      border:1px solid var(--line);
-      background:var(--panel-soft);
-      border-radius:14px;
-      padding:12px;
+      border:1px solid var(--line); background:var(--panel-soft); border-radius:14px; padding:12px;
     }
+    .meta-box .k{ color:var(--muted); font-size:12px; font-weight:900; margin-bottom:6px; }
+    .meta-box .v{ font-size:14px; font-weight:800; line-height:1.5; color:#111827; word-break:break-word; }
 
-    .meta-box .k{
-      color:var(--muted);
-      font-size:12px;
-      font-weight:900;
-      margin-bottom:6px;
-    }
-
-    .meta-box .v{
-      font-size:14px;
-      font-weight:800;
-      line-height:1.5;
-      color:#111827;
-      word-break:break-word;
-    }
-
-    .detail-actions{
-      display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:10px;
-    }
-
-    .section{
-      border-top:1px solid var(--line);
-      padding-top:16px;
-    }
-
-    .section h4{
-      margin:0 0 12px;
-      font-size:15px;
-      font-weight:900;
-    }
+    .detail-actions{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+    .section{ border-top:1px solid var(--line); padding-top:16px; }
+    .section h4{ margin:0 0 12px; font-size:15px; font-weight:900; }
 
     .desc-box{
-      border:1px solid var(--line);
-      background:#fff;
-      border-radius:14px;
-      padding:12px 14px;
-      font-size:14px;
-      line-height:1.7;
-      white-space:pre-wrap;
-      word-break:break-word;
-      color:#334155;
+      border:1px solid var(--line); background:#fff; border-radius:14px; padding:12px 14px;
+      font-size:14px; line-height:1.7; white-space:pre-wrap; word-break:break-word; color:#334155;
     }
 
-    .timeline{
-      position:relative;
-      display:grid;
-      gap:18px;
-      padding-left:0;
-    }
-
+    .timeline{ position:relative; display:grid; gap:18px; padding-left:0; }
     .timeline::before{
-      content:"";
-      position:absolute;
-      left:22px;
-      top:8px;
-      bottom:8px;
-      width:4px;
+      content:""; position:absolute; left:22px; top:8px; bottom:8px; width:4px;
       background:linear-gradient(180deg,#60a5fa 0%, #a78bfa 45%, #e2e8f0 100%);
-      border-radius:999px;
-      box-shadow:0 0 0 6px rgba(96,165,250,.06);
+      border-radius:999px; box-shadow:0 0 0 6px rgba(96,165,250,.06);
     }
-
     .timeline-item{
-      position:relative;
-      display:grid;
-      grid-template-columns:56px minmax(0,1fr);
-      gap:16px;
-      align-items:start;
+      position:relative; display:grid; grid-template-columns:56px minmax(0,1fr); gap:16px; align-items:start;
     }
-
     .timeline-dot{
-      width:20px;
-      height:20px;
-      border-radius:999px;
-      margin-top:18px;
-      margin-left:14px;
+      width:20px; height:20px; border-radius:999px; margin-top:18px; margin-left:14px;
       background:linear-gradient(135deg,#2563eb 0%,#7c3aed 100%);
       border:4px solid #fff;
-      box-shadow:
-        0 0 0 6px rgba(59,130,246,.10),
-        0 10px 22px rgba(37,99,235,.22);
-      position:relative;
-      z-index:2;
+      box-shadow:0 0 0 6px rgba(59,130,246,.10),0 10px 22px rgba(37,99,235,.22);
+      position:relative; z-index:2;
     }
-
     .timeline-card{
-      position:relative;
-      border:1px solid rgba(226,232,240,.95);
-      border-radius:20px;
-      background:
-        linear-gradient(180deg,rgba(255,255,255,.98) 0%,rgba(248,250,252,.98) 100%);
-      padding:16px 16px 14px;
-      box-shadow:
-        0 12px 30px rgba(15,23,42,.06),
-        inset 0 1px 0 rgba(255,255,255,.85);
+      position:relative; border:1px solid rgba(226,232,240,.95); border-radius:20px;
+      background:linear-gradient(180deg,rgba(255,255,255,.98) 0%,rgba(248,250,252,.98) 100%);
+      padding:16px 16px 14px; box-shadow:0 12px 30px rgba(15,23,42,.06), inset 0 1px 0 rgba(255,255,255,.85);
       overflow:hidden;
     }
-
     .timeline-card::before{
-      content:"";
-      position:absolute;
-      inset:0 auto 0 0;
-      width:5px;
-      background:linear-gradient(180deg,#3b82f6 0%,#8b5cf6 100%);
-      border-radius:20px 0 0 20px;
+      content:""; position:absolute; inset:0 auto 0 0; width:5px;
+      background:linear-gradient(180deg,#3b82f6 0%,#8b5cf6 100%); border-radius:20px 0 0 20px;
     }
-
     .timeline-top{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:12px;
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px;
     }
-
-    .timeline-title-wrap{
-      display:grid;
-      gap:6px;
-    }
-
-    .timeline-title{
-      font-size:15px;
-      font-weight:900;
-      color:#0f172a;
-      letter-spacing:.01em;
-    }
-
-    .timeline-subtitle{
-      font-size:12px;
-      color:#64748b;
-      line-height:1.5;
-    }
-
+    .timeline-title-wrap{ display:grid; gap:6px; }
+    .timeline-title{ font-size:15px; font-weight:900; color:#0f172a; }
+    .timeline-subtitle{ font-size:12px; color:#64748b; line-height:1.5; }
     .timeline-time{
-      flex:0 0 auto;
-      font-size:12px;
-      font-weight:800;
-      color:#334155;
-      white-space:nowrap;
-      background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);
-      border:1px solid #dbe5f0;
-      border-radius:999px;
-      padding:6px 10px;
-      box-shadow:0 4px 12px rgba(15,23,42,.04);
+      flex:0 0 auto; font-size:12px; font-weight:800; color:#334155; white-space:nowrap;
+      background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%); border:1px solid #dbe5f0;
+      border-radius:999px; padding:6px 10px; box-shadow:0 4px 12px rgba(15,23,42,.04);
     }
-
-    .timeline-meta{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-bottom:12px;
-    }
-
+    .timeline-meta{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
     .timeline-tag{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      border-radius:999px;
-      padding:6px 10px;
-      font-size:12px;
-      font-weight:900;
-      background:#f8fafc;
-      color:#475569;
-      border:1px solid #e2e8f0;
+      display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:6px 10px;
+      font-size:12px; font-weight:900; background:#f8fafc; color:#475569; border:1px solid #e2e8f0;
     }
-
-    .timeline-tag-actor{
-      background:#eef2ff;
-      color:#4338ca;
-      border-color:#c7d2fe;
-    }
-
-    .timeline-tag-type{
-      background:#eff6ff;
-      color:#1d4ed8;
-      border-color:#bfdbfe;
-    }
-
+    .timeline-tag-actor{ background:#eef2ff; color:#4338ca; border-color:#c7d2fe; }
+    .timeline-tag-type{ background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe; }
     .timeline-outcome{
-      margin-bottom:12px;
-      padding:12px 14px;
-      border-radius:14px;
+      margin-bottom:12px; padding:12px 14px; border-radius:14px;
       background:linear-gradient(180deg,#f0fdf4 0%,#ecfdf5 100%);
-      border:1px solid #bbf7d0;
-      color:#166534;
-      font-size:13px;
-      line-height:1.75;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
+      border:1px solid #bbf7d0; color:#166534; font-size:13px; line-height:1.75;
     }
-
     .timeline-data{
-      font-size:13px;
-      color:#334155;
-      white-space:pre-wrap;
-      word-break:break-word;
-      line-height:1.8;
-      background:#ffffff;
-      border:1px dashed #dbe5f0;
-      border-radius:14px;
-      padding:12px 14px;
+      font-size:13px; color:#334155; white-space:pre-wrap; word-break:break-word; line-height:1.8;
+      background:#ffffff; border:1px dashed #dbe5f0; border-radius:14px; padding:12px 14px;
     }
-
     .timeline-empty{
-      padding:18px;
-      border:1px dashed #cbd5e1;
-      border-radius:16px;
-      background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);
-      color:#64748b;
-      font-size:14px;
+      padding:18px; border:1px dashed #cbd5e1; border-radius:16px;
+      background:linear-gradient(180deg,#fff 0%,#f8fafc 100%); color:#64748b; font-size:14px;
     }
 
-    .encounter-alert{
-      margin-top:8px;
-      padding:10px 12px;
-      border-radius:12px;
-      font-size:12px;
-      line-height:1.6;
-      border:1px solid #fecaca;
-      background:#fff1f2;
-      color:#b91c1c;
-      display:none;
+    .encounter-alert,.encounter-ok{
+      margin-top:8px; padding:10px 12px; border-radius:12px; font-size:12px; line-height:1.6; display:none;
     }
+    .encounter-alert{ border:1px solid #fecaca; background:#fff1f2; color:#b91c1c; }
+    .encounter-ok{ border:1px solid #bbf7d0; background:#f0fdf4; color:#166534; }
+    .encounter-alert.show,.encounter-ok.show{ display:block; }
 
-    .encounter-alert.show{
-      display:block;
-    }
-
-    .encounter-ok{
-      margin-top:8px;
-      padding:10px 12px;
-      border-radius:12px;
-      font-size:12px;
-      line-height:1.6;
-      border:1px solid #bbf7d0;
-      background:#f0fdf4;
-      color:#166534;
-      display:none;
-    }
-
-    .encounter-ok.show{
-      display:block;
-    }
-
-    .note{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.55;
-    }
-
-    .empty-state{
-      padding:28px 22px;
-      color:var(--muted);
-      font-size:14px;
-    }
+    .note{ color:var(--muted); font-size:12px; line-height:1.55; }
+    .empty-state{ padding:28px 22px; color:var(--muted); font-size:14px; }
 
     .modal{
-      position:fixed;
-      inset:0;
-      background:rgba(15,23,42,.45);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:1400;
-      padding:16px;
+      position:fixed; inset:0; background:rgba(15,23,42,.45); display:none; align-items:center; justify-content:center;
+      z-index:1400; padding:16px;
     }
-
     .modal.show{ display:flex; }
 
     .modal-card{
-      width:min(980px,100%);
-      max-height:min(92vh,980px);
-      overflow:auto;
-      background:#fff;
-      border-radius:18px;
-      border:1px solid var(--line);
-      box-shadow:0 30px 60px rgba(15,23,42,.22);
+      width:min(980px,100%); max-height:min(92vh,980px); overflow:auto;
+      background:#fff; border-radius:18px; border:1px solid var(--line); box-shadow:0 30px 60px rgba(15,23,42,.22);
     }
-
     .modal-head{
-      position:sticky;
-      top:0;
-      z-index:1;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:16px 18px;
-      border-bottom:1px solid var(--line);
-      background:#fff;
+      position:sticky; top:0; z-index:1; display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:16px 18px; border-bottom:1px solid var(--line); background:#fff;
     }
-
-    .modal-head h3{
-      margin:0;
-      font-size:20px;
-      font-weight:900;
-    }
-
-    .modal-body{
-      padding:18px;
-      display:grid;
-      gap:14px;
-    }
-
+    .modal-head h3{ margin:0; font-size:20px; font-weight:900; }
+    .modal-body{ padding:18px; display:grid; gap:14px; }
     .modal-actions{
-      position:sticky;
-      bottom:0;
-      z-index:1;
-      display:flex;
-      justify-content:flex-end;
-      gap:10px;
-      padding:16px 18px;
-      border-top:1px solid var(--line);
-      background:#fff;
+      position:sticky; bottom:0; z-index:1; display:flex; justify-content:flex-end; gap:10px;
+      padding:16px 18px; border-top:1px solid var(--line); background:#fff;
     }
 
-    .grid-2{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:14px;
-    }
-
-    .grid-3{
-      display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:14px;
-    }
+    .grid-2{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+    .grid-3{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
 
     .smart-list{
-      display:none;
-      position:absolute;
-      left:0;
-      right:0;
-      top:100%;
-      margin-top:6px;
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:14px;
-      box-shadow:var(--shadow);
-      z-index:20;
-      overflow:hidden;
-      max-height:260px;
-      overflow-y:auto;
+      display:none; position:absolute; left:0; right:0; top:100%; margin-top:6px; background:#fff;
+      border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow);
+      z-index:20; overflow:hidden; max-height:260px; overflow-y:auto;
     }
-
-    .smart-list.show{
-      display:block;
-    }
-
+    .smart-list.show{ display:block; }
     .smart-item{
-      width:100%;
-      border:none;
-      background:#fff;
-      text-align:left;
-      padding:11px 12px;
-      border-bottom:1px solid #f1f5f9;
-      cursor:pointer;
-      display:grid;
-      gap:4px;
+      width:100%; border:none; background:#fff; text-align:left; padding:11px 12px;
+      border-bottom:1px solid #f1f5f9; cursor:pointer; display:grid; gap:4px;
     }
-
-    .smart-item:last-child{
-      border-bottom:none;
-    }
-
-    .smart-item:hover{
-      background:#f8fbff;
-    }
-
-    .smart-main{
-      font-size:14px;
-      font-weight:900;
-      color:#0f172a;
-    }
-
-    .smart-sub{
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.5;
-    }
+    .smart-item:last-child{ border-bottom:none; }
+    .smart-item:hover{ background:#f8fbff; }
+    .smart-main{ font-size:14px; font-weight:900; color:#0f172a; }
+    .smart-sub{ font-size:12px; color:var(--muted); line-height:1.5; }
 
     .chips-input{
-      display:flex;
-      flex-wrap:wrap;
-      align-items:center;
-      gap:8px;
-      min-height:46px;
-      border:1px solid var(--line);
-      border-radius:12px;
-      padding:8px 10px;
-      background:#fff;
+      display:flex; flex-wrap:wrap; align-items:center; gap:8px; min-height:46px;
+      border:1px solid var(--line); border-radius:12px; padding:8px 10px; background:#fff;
     }
-
     .chips-input:focus-within{
-      border-color:#93c5fd;
-      box-shadow:0 0 0 4px rgba(37,99,235,.12);
+      border-color:#93c5fd; box-shadow:0 0 0 4px rgba(37,99,235,.12);
     }
-
-    .chips{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-
+    .chips{ display:flex; flex-wrap:wrap; gap:8px; }
     .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      background:#eef2ff;
-      color:#3730a3;
-      border:1px solid #c7d2fe;
-      border-radius:999px;
-      padding:6px 10px;
-      font-size:12px;
-      font-weight:900;
-      line-height:1;
+      display:inline-flex; align-items:center; gap:8px; background:#eef2ff; color:#3730a3;
+      border:1px solid #c7d2fe; border-radius:999px; padding:6px 10px; font-size:12px; font-weight:900; line-height:1;
     }
-
     .chip button{
-      appearance:none;
-      border:none;
-      background:transparent;
-      color:inherit;
-      cursor:pointer;
-      font-weight:900;
-      padding:0;
-      line-height:1;
+      appearance:none; border:none; background:transparent; color:inherit; cursor:pointer; font-weight:900; padding:0;
     }
-
     .chip-entry{
-      flex:1 1 180px;
-      min-width:140px;
-      border:none !important;
-      outline:none !important;
-      box-shadow:none !important;
-      padding:4px 2px !important;
-      background:transparent !important;
+      flex:1 1 180px; min-width:140px; border:none !important; outline:none !important;
+      box-shadow:none !important; padding:4px 2px !important; background:transparent !important;
     }
-
-    .ghost-tags{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:8px;
-    }
-
+    .ghost-tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
     .ghost-tag{
-      appearance:none;
-      border:1px dashed var(--line-strong);
-      background:#fff;
-      color:#475569;
-      border-radius:999px;
-      padding:6px 10px;
-      font-size:12px;
-      font-weight:800;
-      cursor:pointer;
+      appearance:none; border:1px dashed var(--line-strong); background:#fff; color:#475569;
+      border-radius:999px; padding:6px 10px; font-size:12px; font-weight:800; cursor:pointer;
     }
-
-    .ghost-tag:hover{
-      border-color:#93c5fd;
-      color:var(--primary);
-      background:#eff6ff;
-    }
+    .ghost-tag:hover{ border-color:#93c5fd; color:var(--primary); background:#eff6ff; }
 
     .notify{
-      position:fixed;
-      right:18px;
-      bottom:18px;
-      display:grid;
-      gap:10px;
-      z-index:1200;
-      width:min(420px, calc(100vw - 24px));
+      position:fixed; right:18px; bottom:18px; display:grid; gap:10px; z-index:1200; width:min(420px, calc(100vw - 24px));
     }
-
     .toast{
-      background:#111827;
-      color:#fff;
-      border-radius:14px;
-      padding:12px 14px;
-      box-shadow:var(--shadow);
-      font-size:14px;
-      line-height:1.5;
-      white-space:pre-wrap;
-      animation:toastIn .2s ease;
+      background:#111827; color:#fff; border-radius:14px; padding:12px 14px; box-shadow:var(--shadow);
+      font-size:14px; line-height:1.5; white-space:pre-wrap; animation:toastIn .2s ease;
     }
-
     .toast.success{ background:#166534; }
     .toast.warning{ background:#92400e; }
     .toast.error{ background:#991b1b; }
-
     @keyframes toastIn{
       from{ opacity:0; transform:translateY(10px); }
       to{ opacity:1; transform:translateY(0); }
     }
 
     .loading-overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(255,255,255,.66);
-      backdrop-filter:blur(2px);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:1300;
+      position:fixed; inset:0; background:rgba(255,255,255,.66); backdrop-filter:blur(2px);
+      display:none; align-items:center; justify-content:center; z-index:1300;
     }
-
     .loading-overlay.show{ display:flex; }
-
     .loading-card{
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:18px 22px;
-      box-shadow:var(--shadow);
-      display:flex;
-      align-items:center;
-      gap:12px;
-      font-weight:800;
-      color:#374151;
+      background:#fff; border:1px solid var(--line); border-radius:16px; padding:18px 22px; box-shadow:var(--shadow);
+      display:flex; align-items:center; gap:12px; font-weight:800; color:#374151;
     }
-
     .spinner{
-      width:20px;
-      height:20px;
-      border-radius:999px;
-      border:3px solid #dbeafe;
-      border-top-color:var(--primary);
+      width:20px; height:20px; border-radius:999px; border:3px solid #dbeafe; border-top-color:var(--primary);
       animation:spin .8s linear infinite;
     }
+    @keyframes spin{ to{ transform:rotate(360deg); } }
 
-    @keyframes spin{
-      to{ transform:rotate(360deg); }
-    }
-
-    @media (max-width: 1240px){
+    @media (max-width:1240px){
       .toolbar-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); }
       .layout{ grid-template-columns:1fr; }
       .right-panel{ position:static; }
       .table-wrap{ max-height:none; }
     }
-
-    @media (max-width: 980px){
+    @media (max-width:980px){
       .table-wrap{ display:none; }
       .cards-wrap{ display:grid; }
     }
-
-    @media (max-width: 900px){
-      .header{
-        flex-direction:column;
-        align-items:stretch;
-      }
-
-      .header-actions{
-        justify-content:flex-start;
-      }
-
-      .summary{
-        grid-template-columns:repeat(2,minmax(0,1fr));
-      }
-
-      .grid-3,
-      .grid-2,
-      .detail-grid,
-      .detail-actions,
-      .followup-card-grid{
-        grid-template-columns:1fr;
-      }
-
+    @media (max-width:900px){
+      .header{ flex-direction:column; align-items:stretch; }
+      .header-actions{ justify-content:flex-start; }
+      .summary{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .grid-3,.grid-2,.detail-grid,.detail-actions,.followup-card-grid{ grid-template-columns:1fr; }
       .toolbar-grid{ grid-template-columns:1fr; }
     }
-
-    @media (max-width: 560px){
+    @media (max-width:560px){
       .app{ padding:14px; }
       .summary{ grid-template-columns:1fr; }
       .modal{ padding:8px; }
@@ -1300,7 +450,7 @@
         <p>顯示狀態、優先級、求診醫生、時間線與即時同步職員名稱，並支援快捷完成及 SLA 提示。</p>
       </div>
       <div class="header-actions">
-        <a class="btn btn-home" id="homeBtn" href="https://rayleung2709.github.io/emc-cqms/index.html">返回主頁</a>
+        <a class="btn btn-home" href="https://rayleung2709.github.io/emc-cqms/index.html">返回主頁</a>
         <button class="btn btn-light" id="refreshBtn" type="button">重新整理</button>
         <button class="btn btn-primary" id="newFollowupBtn" type="button">新增事項</button>
       </div>
@@ -1345,7 +495,6 @@
           <label for="searchInput">搜尋</label>
           <input id="searchInput" type="text" placeholder="搜尋主題 / CUMC 號碼 / 求診號碼 / 醫生 / 負責人 / AEFU 編號" />
         </div>
-
         <div class="field">
           <label for="priorityFilter">優先級</label>
           <select id="priorityFilter">
@@ -1356,7 +505,6 @@
             <option value="urgent">緊急</option>
           </select>
         </div>
-
         <div class="field">
           <label for="categoryFilter">類別</label>
           <select id="categoryFilter">
@@ -1370,21 +518,14 @@
             <option value="other">其他</option>
           </select>
         </div>
-
         <div class="field">
           <label for="assigneeFilter">負責人</label>
-          <select id="assigneeFilter">
-            <option value="">全部</option>
-          </select>
+          <select id="assigneeFilter"><option value="">全部</option></select>
         </div>
-
         <div class="field">
           <label for="doctorFilter">求診醫生</label>
-          <select id="doctorFilter">
-            <option value="">全部</option>
-          </select>
+          <select id="doctorFilter"><option value="">全部</option></select>
         </div>
-
         <div class="field">
           <label for="sortSelect">排序</label>
           <select id="sortSelect">
@@ -1394,7 +535,6 @@
             <option value="priority_desc">優先級</option>
           </select>
         </div>
-
         <div class="field">
           <button class="btn btn-soft" id="clearFiltersBtn" type="button">清除篩選</button>
         </div>
@@ -1412,7 +552,7 @@
 
         <div class="table-topbar">
           <div class="note">桌面版顯示表格；手機 / 窄螢幕會自動轉為卡片列表。</div>
-          <div class="view-switch" aria-label="列表顯示模式">
+          <div class="view-switch">
             <button class="view-btn active" id="desktopViewBtn" type="button">表格</button>
             <button class="view-btn" id="cardViewBtn" type="button">卡片</button>
           </div>
@@ -1487,18 +627,26 @@
           </div>
         </div>
 
-        <div class="grid-2">
+        <div class="grid-3">
           <div class="field">
-            <label>類別（可多選 / 可自訂）</label>
-            <div class="chips-input" id="categoryChipsWrap">
-              <div class="chips" id="followupCategoryChips"></div>
-              <input id="followupCategoryInput" class="chip-entry" type="text" placeholder="輸入類別後按 Enter" />
-            </div>
-            <div class="ghost-tags" id="followupCategoryPresets"></div>
+            <label for="followupCategoryInput">類別</label>
+            <select id="followupCategoryInput">
+              <option value="callback">回電</option>
+              <option value="abnormal_result">異常結果</option>
+              <option value="document_request">文件申請</option>
+              <option value="return_visit">回診安排</option>
+              <option value="insurance_form">保險文件</option>
+              <option value="admin">行政</option>
+              <option value="other">其他</option>
+            </select>
           </div>
           <div class="field">
             <label for="followupAssignedToInput">負責人</label>
             <input id="followupAssignedToInput" type="text" placeholder="預設填入目前登入職員名稱" />
+          </div>
+          <div class="field">
+            <label for="followupDueAtInput">到期時間</label>
+            <input id="followupDueAtInput" type="datetime-local" />
           </div>
         </div>
 
@@ -1522,33 +670,28 @@
             </select>
           </div>
           <div class="field">
-            <label for="followupDueAtInput">到期時間</label>
-            <input id="followupDueAtInput" type="datetime-local" />
+            <label for="followupTitleInput">主題</label>
+            <input id="followupTitleInput" type="text" placeholder="例如：回電病人跟進檢查結果" />
           </div>
         </div>
 
         <div class="grid-2">
           <div class="field">
-            <label for="followupTitleInput">主題</label>
-            <input id="followupTitleInput" type="text" placeholder="例如：回電病人跟進檢查結果" />
-          </div>
-          <div class="field">
             <label>來源（可多選 / 可自訂）</label>
-            <div class="chips-input" id="sourceChipsWrap">
+            <div class="chips-input">
               <div class="chips" id="followupSourceChips"></div>
               <input id="followupSourceInput" class="chip-entry" type="text" placeholder="輸入來源後按 Enter" />
             </div>
             <div class="ghost-tags" id="followupSourcePresets"></div>
           </div>
-        </div>
-
-        <div class="field">
-          <label>要求者（可多選 / 可自訂）</label>
-          <div class="chips-input" id="requestedByChipsWrap">
-            <div class="chips" id="followupRequestedByChips"></div>
-            <input id="followupRequestedByInput" class="chip-entry" type="text" placeholder="輸入要求者後按 Enter" />
+          <div class="field">
+            <label>要求者（可多選 / 可自訂）</label>
+            <div class="chips-input">
+              <div class="chips" id="followupRequestedByChips"></div>
+              <input id="followupRequestedByInput" class="chip-entry" type="text" placeholder="輸入要求者後按 Enter" />
+            </div>
+            <div class="ghost-tags" id="followupRequestedByPresets"></div>
           </div>
-          <div class="ghost-tags" id="followupRequestedByPresets"></div>
         </div>
 
         <div class="field">
@@ -1665,7 +808,6 @@
     const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const PRESET_CATEGORIES = ["回電","異常結果","文件申請","回診安排","保險文件","行政","其他"];
     const PRESET_SOURCES = ["手動","系統","電話","WhatsApp","前台","護士站","醫生口頭通知","電郵"];
     const PRESET_REQUESTED_BY = ["醫生","護士","病人","家屬","前台","保險","化驗所","系統"];
 
@@ -1685,18 +827,8 @@
     };
 
     const zh = {
-      status: {
-        open: "開啟",
-        pending: "等待中",
-        done: "已完成",
-        cancelled: "已取消"
-      },
-      priority: {
-        low: "低",
-        normal: "一般",
-        high: "高",
-        urgent: "緊急"
-      },
+      status: { open: "開啟", pending: "等待中", done: "已完成", cancelled: "已取消" },
+      priority: { low: "低", normal: "一般", high: "高", urgent: "緊急" },
       category: {
         callback: "回電",
         abnormal_result: "異常結果",
@@ -1755,14 +887,12 @@
       encounterOkEl: document.getElementById("followupEncounterOk"),
       encounterAlertEl: document.getElementById("followupEncounterAlert"),
       doctorDisplayEl: document.getElementById("followupDoctorDisplay"),
+      categoryEl: document.getElementById("followupCategoryInput"),
       statusEl: document.getElementById("followupStatusInput"),
       priorityEl: document.getElementById("followupPriorityInput"),
       dueAtEl: document.getElementById("followupDueAtInput"),
       titleInputEl: document.getElementById("followupTitleInput"),
       assignedToEl: document.getElementById("followupAssignedToInput"),
-      categoryInputEl: document.getElementById("followupCategoryInput"),
-      categoryChipsEl: document.getElementById("followupCategoryChips"),
-      categoryPresetsEl: document.getElementById("followupCategoryPresets"),
       sourceInputEl: document.getElementById("followupSourceInput"),
       sourceChipsEl: document.getElementById("followupSourceChips"),
       sourcePresetsEl: document.getElementById("followupSourcePresets"),
@@ -1774,7 +904,6 @@
       saveBtnEl: document.getElementById("saveFollowupBtn"),
       mode: "create",
       followupId: null,
-      categoryValues: [],
       sourceValues: [],
       requestedByValues: []
     };
@@ -1908,13 +1037,10 @@
     function getPatientDisplayTextById(patientId) {
       const raw = String(patientId || "").trim();
       if (!raw) return "—";
-
       const byCumc = state.patients.find(item => String(item.cumc_no || "").trim() === raw);
       if (byCumc) return String(byCumc.cumc_no || "—");
-
       const byId = state.patients.find(item => String(item.id || "").trim() === raw);
       if (byId) return String(byId.cumc_no || raw);
-
       return raw;
     }
 
@@ -1945,63 +1071,27 @@
 
     function getEncounterDoctorText(encounter) {
       if (!encounter) return "—";
-
       const direct = [
-        encounter.doctor_name,
-        encounter.doctor_display_name,
-        encounter.doctor,
-        encounter.attending_doctor,
-        encounter.provider_name,
-        encounter.provider,
-        encounter.doctor_in_charge,
-        encounter.dr_name,
-        encounter.dr,
-        encounter.doctorName,
-        encounter.attendingDoctor,
-        encounter.assigned_doctor,
-        encounter.assignedDoctor,
-        encounter.consult_doctor,
-        encounter.consultDoctor,
-        encounter.doc_name,
-        encounter.docName,
-        encounter.physician,
-        encounter.medical_officer,
-        encounter.medicalOfficer,
-        encounter.provider_display,
-        encounter.providerDisplay,
-        encounter.doctor_user_name,
-        encounter.doctorUserName
+        encounter.doctor_name, encounter.doctor_display_name, encounter.doctor, encounter.attending_doctor,
+        encounter.provider_name, encounter.provider, encounter.doctor_in_charge, encounter.dr_name,
+        encounter.dr, encounter.doctorName, encounter.attendingDoctor, encounter.assigned_doctor,
+        encounter.assignedDoctor, encounter.consult_doctor, encounter.consultDoctor, encounter.doc_name,
+        encounter.docName, encounter.physician, encounter.medical_officer, encounter.medicalOfficer,
+        encounter.provider_display, encounter.providerDisplay, encounter.doctor_user_name, encounter.doctorUserName
       ].map(v => String(v || "").trim()).filter(Boolean);
-
       if (direct.length) return direct[0];
 
       const nestedCandidates = [
-        encounter.doctor_info,
-        encounter.doctorInfo,
-        encounter.provider_info,
-        encounter.providerInfo,
-        encounter.attending,
-        encounter.provider_obj,
-        encounter.providerObj,
-        encounter.doctor_obj,
-        encounter.doctorObj
+        encounter.doctor_info, encounter.doctorInfo, encounter.provider_info, encounter.providerInfo,
+        encounter.attending, encounter.provider_obj, encounter.providerObj, encounter.doctor_obj, encounter.doctorObj
       ];
 
       for (const obj of nestedCandidates) {
         if (!obj || typeof obj !== "object") continue;
-
         const nested = [
-          obj.name,
-          obj.display_name,
-          obj.displayName,
-          obj.doctor_name,
-          obj.doctorName,
-          obj.provider_name,
-          obj.providerName,
-          obj.full_name,
-          obj.fullName
+          obj.name, obj.display_name, obj.displayName, obj.doctor_name,
+          obj.doctorName, obj.provider_name, obj.providerName, obj.full_name, obj.fullName
         ].map(v => String(v || "").trim()).filter(Boolean);
-
         if (nested.length) return nested[0];
       }
 
@@ -2012,7 +1102,6 @@
       const raw = String(value || "").trim();
       if (!raw) return null;
       const compact = normalizeCompact(raw);
-
       return state.encounters.find(enc => {
         const id = String(enc.id || "").trim();
         const no = detectEncounterNo(enc);
@@ -2044,10 +1133,7 @@
       const compactCumc = normalizeCompact(cumc);
       const patientCandidates = state.patients.filter(p => normalizeCompact(p.cumc_no) === compactCumc);
       const patientIdSet = new Set(
-        patientCandidates
-          .map(p => String(p.id || "").trim())
-          .filter(Boolean)
-          .map(v => normalizeCompact(v))
+        patientCandidates.map(p => String(p.id || "").trim()).filter(Boolean).map(v => normalizeCompact(v))
       );
 
       const fallbackPatientEncounterNos = patientCandidates
@@ -2065,16 +1151,8 @@
 
       state.encounters.forEach(enc => {
         const possiblePatientKeys = [
-          enc.patient_id,
-          enc.patientId,
-          enc.cumc_no,
-          enc.cumcNo,
-          enc.patient_cumc_no,
-          enc.patientCumcNo,
-          enc.patient_no,
-          enc.patientNo,
-          enc.cumc,
-          enc.patient_code
+          enc.patient_id, enc.patientId, enc.cumc_no, enc.cumcNo, enc.patient_cumc_no,
+          enc.patientCumcNo, enc.patient_no, enc.patientNo, enc.cumc, enc.patient_code
         ].map(v => normalizeCompact(v));
 
         const matched = possiblePatientKeys.includes(compactCumc)
@@ -2085,12 +1163,8 @@
         const no = detectEncounterNo(enc);
         const uniqueKey = normalizeCompact(String(enc.id || no || ""));
         if (!uniqueKey || seen.has(uniqueKey)) return;
-
         seen.add(uniqueKey);
-        results.push({
-          ...enc,
-          __source: "encounters"
-        });
+        results.push({ ...enc, __source: "encounters" });
       });
 
       fallbackPatientEncounterNos.forEach(enc => {
@@ -2111,14 +1185,10 @@
     }
 
     function setEncounterMessage({ ok = "", alert = "" } = {}) {
-      if (followupModal.encounterOkEl) {
-        followupModal.encounterOkEl.textContent = ok;
-        followupModal.encounterOkEl.classList.toggle("show", !!ok);
-      }
-      if (followupModal.encounterAlertEl) {
-        followupModal.encounterAlertEl.textContent = alert;
-        followupModal.encounterAlertEl.classList.toggle("show", !!alert);
-      }
+      followupModal.encounterOkEl.textContent = ok;
+      followupModal.encounterOkEl.classList.toggle("show", !!ok);
+      followupModal.encounterAlertEl.textContent = alert;
+      followupModal.encounterAlertEl.classList.toggle("show", !!alert);
     }
 
     function statusLabel(status) {
@@ -2198,11 +1268,7 @@
           if (v === null || v === undefined || v === "") return;
           if (k === "outcome") return;
           if (k === "changes" && typeof v === "object") {
-            const changes = Object.entries(v).map(([ck, cv]) => {
-              const from = cv?.from ?? "";
-              const to = cv?.to ?? "";
-              return `${ck}：${from} → ${to}`;
-            });
+            const changes = Object.entries(v).map(([ck, cv]) => `${ck}：${cv?.from ?? ""} → ${cv?.to ?? ""}`);
             if (changes.length) lines.push(`變更：\n${changes.join("\n")}`);
             return;
           }
@@ -2221,7 +1287,6 @@
     function uniqueCleanList(values) {
       const output = [];
       const seen = new Set();
-
       (values || []).forEach(v => {
         const raw = String(v || "").trim();
         if (!raw) return;
@@ -2230,24 +1295,17 @@
         seen.add(key);
         output.push(raw);
       });
-
       return output;
     }
 
     function splitMultiValue(raw) {
       return uniqueCleanList(
-        String(raw || "")
-          .split(/\n|,|，|\/|\||、|;/)
-          .map(v => v.trim())
+        String(raw || "").split(/\n|,|，|\/|\||、|;/).map(v => v.trim())
       );
     }
 
     function safeJsonParse(raw) {
-      try {
-        return JSON.parse(raw);
-      } catch {
-        return null;
-      }
+      try { return JSON.parse(raw); } catch { return null; }
     }
 
     function normalizeMultiFieldToArray(value) {
@@ -2271,13 +1329,11 @@
     }
 
     function renderChipSet(values) {
-      return normalizeMultiFieldToArray(values)
-        .map(v => `<span class="badge badge-chip">${escapeHtml(v)}</span>`)
-        .join("");
+      const arr = normalizeMultiFieldToArray(values);
+      return arr.map(v => `<span class="badge badge-chip">${escapeHtml(v)}</span>`).join("");
     }
 
     function renderEditableChips(containerEl, values, removeHandlerName) {
-      if (!containerEl) return;
       containerEl.innerHTML = values.map((v, index) => `
         <span class="chip">
           <span>${escapeHtml(v)}</span>
@@ -2300,14 +1356,12 @@
     }
 
     function renderPresetButtons(containerEl, values, listName) {
-      if (!containerEl) return;
       containerEl.innerHTML = values.map(v => `
         <button class="ghost-tag" type="button" data-preset-value="${escapeHtml(v)}" data-target-list="${escapeHtml(listName)}">${escapeHtml(v)}</button>
       `).join("");
     }
 
     function renderModalChipGroups() {
-      renderEditableChips(followupModal.categoryChipsEl, followupModal.categoryValues, "categoryValues");
       renderEditableChips(followupModal.sourceChipsEl, followupModal.sourceValues, "sourceValues");
       renderEditableChips(followupModal.requestedByChipsEl, followupModal.requestedByValues, "requestedByValues");
     }
@@ -2338,13 +1392,11 @@
     }
 
     function hideSuggestList(el) {
-      if (!el) return;
       el.classList.remove("show");
       el.innerHTML = "";
     }
 
     function showSuggestList(el, html) {
-      if (!el) return;
       el.innerHTML = html;
       el.classList.add("show");
     }
@@ -2352,8 +1404,8 @@
     function findCumcSuggestions(keyword) {
       const key = normalizeCompact(keyword);
       if (!key) return [];
-
       const seen = new Set();
+
       return state.patients
         .map(item => String(item.cumc_no || "").trim())
         .filter(Boolean)
@@ -2480,9 +1532,7 @@
       const currentEncounter = String(followupModal.encounterInputEl.value || "").trim();
       if (!currentEncounter) {
         const firstEncounterNo = detectEncounterNo(list[0]);
-        if (firstEncounterNo) {
-          followupModal.encounterInputEl.value = firstEncounterNo;
-        }
+        if (firstEncounterNo) followupModal.encounterInputEl.value = firstEncounterNo;
       }
 
       syncDoctorDisplayFromEncounterInput();
@@ -2495,7 +1545,6 @@
     function syncDoctorDisplayFromEncounterInput() {
       const raw = String(followupModal.encounterInputEl.value || "").trim();
       const compactRaw = normalizeCompact(raw);
-
       const encounter = getEncounterByIdOrNo(raw);
       if (encounter) {
         followupModal.doctorDisplayEl.value = getEncounterDoctorText(encounter);
@@ -2516,11 +1565,7 @@
         return;
       }
 
-      const looseDoctorMatch = state.encounters.find(enc => {
-        const no = detectEncounterNo(enc);
-        return normalizeCompact(no) === compactRaw;
-      });
-
+      const looseDoctorMatch = state.encounters.find(enc => normalizeCompact(detectEncounterNo(enc)) === compactRaw);
       followupModal.doctorDisplayEl.value = getEncounterDoctorText(looseDoctorMatch);
     }
 
@@ -2542,11 +1587,8 @@
     }
 
     function initChipControls() {
-      renderPresetButtons(followupModal.categoryPresetsEl, PRESET_CATEGORIES, "categoryValues");
       renderPresetButtons(followupModal.sourcePresetsEl, PRESET_SOURCES, "sourceValues");
       renderPresetButtons(followupModal.requestedByPresetsEl, PRESET_REQUESTED_BY, "requestedByValues");
-
-      wireChipInput(followupModal.categoryInputEl, "categoryValues");
       wireChipInput(followupModal.sourceInputEl, "sourceValues");
       wireChipInput(followupModal.requestedByInputEl, "requestedByValues");
 
@@ -2570,13 +1612,6 @@
         if (!followupModal.el.contains(event.target)) {
           hideSuggestList(followupModal.cumcSuggestListEl);
           hideSuggestList(followupModal.encounterSuggestListEl);
-        } else {
-          if (!event.target.closest("#followupPatientInput") && !event.target.closest("#cumcSuggestList")) {
-            hideSuggestList(followupModal.cumcSuggestListEl);
-          }
-          if (!event.target.closest("#followupEncounterInput") && !event.target.closest("#encounterSuggestList")) {
-            hideSuggestList(followupModal.encounterSuggestListEl);
-          }
         }
       });
     }
@@ -2629,9 +1664,7 @@
         renderAll();
       });
 
-      window.addEventListener("resize", () => {
-        applyResponsiveDefaultView(false);
-      });
+      window.addEventListener("resize", () => applyResponsiveDefaultView(false));
 
       document.getElementById("closeFollowupModalBtn").addEventListener("click", closeFollowupModal);
       document.getElementById("cancelFollowupModalBtn").addEventListener("click", closeFollowupModal);
@@ -2681,11 +1714,8 @@
 
     function applyResponsiveDefaultView(force = true) {
       const isNarrow = window.innerWidth <= 980;
-      if (force) {
-        state.listView = isNarrow ? "card" : "table";
-      } else if (isNarrow && state.listView === "table") {
-        state.listView = "card";
-      }
+      if (force) state.listView = isNarrow ? "card" : "table";
+      else if (isNarrow && state.listView === "table") state.listView = "card";
       syncViewButtons();
       renderListViewVisibility();
     }
@@ -2713,7 +1743,6 @@
       const { data, error } = await sb.auth.getUser();
       if (error) throw error;
       state.authUser = data?.user || null;
-      if (!state.authUser) notify("未登入，請先登入系統。", "error", 5000);
       await loadMyProfile();
     }
 
@@ -2736,49 +1765,32 @@
     }
 
     async function loadAll() {
-      await Promise.all([
-        loadStaffProfiles(),
-        loadPatients(),
-        loadEncounters(),
-        loadFollowups()
-      ]);
+      await Promise.all([loadStaffProfiles(), loadPatients(), loadEncounters(), loadFollowups()]);
       await loadFollowupEvents();
       populateAssigneeFilter();
       populateDoctorFilter();
     }
 
     async function loadStaffProfiles() {
-      const { data, error } = await sb
-        .from("staff_profiles")
-        .select("id, email, display_name")
-        .order("display_name", { ascending: true });
+      const { data, error } = await sb.from("staff_profiles").select("id, email, display_name").order("display_name", { ascending: true });
       if (error) throw error;
       state.staffProfiles = Array.isArray(data) ? data : [];
     }
 
     async function loadPatients() {
-      const { data, error } = await sb
-        .from("patients")
-        .select("id, cumc_no, encounter_no, status, room_id, created_at")
-        .order("created_at", { ascending: false });
+      const { data, error } = await sb.from("patients").select("id, cumc_no, encounter_no, status, room_id, created_at").order("created_at", { ascending: false });
       if (error) throw error;
       state.patients = Array.isArray(data) ? data : [];
     }
 
     async function loadEncounters() {
-      const { data, error } = await sb
-        .from("encounters")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await sb.from("encounters").select("*").order("created_at", { ascending: false });
       if (error) throw error;
       state.encounters = Array.isArray(data) ? data : [];
     }
 
     async function loadFollowups() {
-      const { data, error } = await sb
-        .from("followups")
-        .select("*")
-        .order("updated_at", { ascending: false });
+      const { data, error } = await sb.from("followups").select("*").order("updated_at", { ascending: false });
       if (error) throw error;
       state.followups = Array.isArray(data) ? data : [];
 
@@ -2802,6 +1814,7 @@
         .select("*")
         .in("followup_id", ids)
         .order("created_at", { ascending: false });
+
       if (error) throw error;
 
       const map = new Map();
@@ -2824,7 +1837,6 @@
       ui.assigneeFilter.innerHTML = ['<option value="">全部</option>']
         .concat([...values].sort((a,b) => a.localeCompare(b, "zh-Hant")).map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`))
         .join("");
-
       ui.assigneeFilter.value = [...values].includes(current) ? current : "";
     }
 
@@ -2839,7 +1851,6 @@
       ui.doctorFilter.innerHTML = ['<option value="">全部</option>']
         .concat([...values].sort((a,b) => a.localeCompare(b, "zh-Hant")).map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`))
         .join("");
-
       ui.doctorFilter.value = [...values].includes(current) ? current : "";
     }
 
@@ -2854,16 +1865,12 @@
       let list = state.followups.filter(item => {
         if (tabStatus && String(item.status || "") !== tabStatus) return false;
         if (priority && String(item.priority || "") !== priority) return false;
+        if (category && String(item.category || "") !== category) return false;
         if (assignee && getStaffDisplayText(item.assigned_to) !== assignee) return false;
 
         const encounterStored = getPrimaryEncounterStoredValue(item);
         const doctorText = getEncounterDoctorTextByStoredValue(encounterStored);
         if (doctor && doctorText !== doctor) return false;
-
-        const categoryList = normalizeMultiFieldToArray(item.category);
-        if (category && !categoryList.some(c => normalizeText(c) === normalizeText(category) || normalizeText(c) === normalizeText(categoryLabel(category)))) {
-          return false;
-        }
 
         if (q) {
           const haystack = [
@@ -2874,9 +1881,10 @@
             item.created_by,
             item.description,
             item.outcome,
-            multiFieldToDisplay(item.category),
-            multiFieldToDisplay(item.source),
-            multiFieldToDisplay(item.requested_by),
+            item.category,
+            categoryLabel(item.category),
+            item.source,
+            item.requested_by,
             item.encounter_id,
             item.encounter_ref,
             item.encounter_no,
@@ -2952,10 +1960,7 @@
         const patientText = getPatientDisplayTextById(item.patient_id);
         const encounterText = getEncounterDisplayByStoredValue(getPrimaryEncounterStoredValue(item));
         const doctorText = getEncounterDoctorTextByStoredValue(getPrimaryEncounterStoredValue(item));
-        const titleSub = [
-          patientText,
-          encounterText !== "—" ? `求診號碼 ${encounterText}` : ""
-        ].filter(Boolean).join("｜");
+        const titleSub = [patientText, encounterText !== "—" ? `求診號碼 ${encounterText}` : ""].filter(Boolean).join("｜");
 
         return `
           <tr data-followup-id="${escapeHtml(item.id)}" class="${escapeHtml(buildRowClass(item))}">
@@ -2966,7 +1971,7 @@
             </td>
             <td>${statusBadge(item.status)}</td>
             <td>${priorityBadge(item.priority)}</td>
-            <td>${renderChipSet(item.category) || '<span class="muted">—</span>'}</td>
+            <td><span class="badge badge-chip">${escapeHtml(categoryLabel(item.category))}</span></td>
             <td>${doctorText !== "—" ? `<div class="pill pill-doctor"><span>${escapeHtml(doctorText)}</span></div>` : '<span class="muted">—</span>'}</td>
             <td><div class="pill"><span>${escapeHtml(getStaffDisplayText(item.assigned_to))}</span></div></td>
             <td>${renderSla(item)}</td>
@@ -2982,7 +1987,59 @@
         `;
       }).join("");
 
-      ui.followupCards.innerHTML = list.map(item => renderCardItem(item)).join("");
+      ui.followupCards.innerHTML = list.map(item => {
+        const patientText = getPatientDisplayTextById(item.patient_id);
+        const encounterText = getEncounterDisplayByStoredValue(getPrimaryEncounterStoredValue(item));
+        const doctorText = getEncounterDoctorTextByStoredValue(getPrimaryEncounterStoredValue(item));
+        const assignedText = getStaffDisplayText(item.assigned_to);
+        const updatedText = formatDateTime24(item.updated_at || item.created_at);
+
+        return `
+          <div class="followup-card ${escapeHtml(buildRowClass(item))}" data-followup-card-id="${escapeHtml(item.id)}">
+            <div class="followup-card-top">
+              <div>
+                <div class="followup-card-no">${escapeHtml(formatFollowupNo(item))}</div>
+                <div class="followup-card-title">${escapeHtml(item.title || "—")}</div>
+                <div class="followup-card-sub">
+                  CUMC 號碼：${escapeHtml(patientText)}
+                  ${encounterText !== "—" ? `｜求診號碼：${escapeHtml(encounterText)}` : ""}
+                </div>
+              </div>
+            </div>
+
+            <div class="followup-card-badges">
+              ${statusBadge(item.status)}
+              ${priorityBadge(item.priority)}
+              <span class="badge badge-chip">${escapeHtml(categoryLabel(item.category))}</span>
+              ${renderSla(item)}
+            </div>
+
+            <div class="followup-card-grid">
+              <div class="card-meta">
+                <div class="k">求診醫生</div>
+                <div class="v">${escapeHtml(doctorText)}</div>
+              </div>
+              <div class="card-meta">
+                <div class="k">負責人</div>
+                <div class="v">${escapeHtml(assignedText)}</div>
+              </div>
+              <div class="card-meta">
+                <div class="k">到期時間</div>
+                <div class="v">${escapeHtml(formatDateTime24(item.due_at))}</div>
+              </div>
+              <div class="card-meta">
+                <div class="k">更新時間</div>
+                <div class="v">${escapeHtml(updatedText)}</div>
+              </div>
+            </div>
+
+            <div class="row-actions">
+              <button class="mini-btn done" type="button" data-action="quick-done" data-id="${escapeHtml(item.id)}">完成</button>
+              <button class="mini-btn edit" type="button" data-action="edit" data-id="${escapeHtml(item.id)}">編輯</button>
+            </div>
+          </div>
+        `;
+      }).join("");
 
       [...ui.followupTableBody.querySelectorAll("tr[data-followup-id]")].forEach(row => {
         row.addEventListener("click", (event) => {
@@ -3017,60 +2074,6 @@
       });
     }
 
-    function renderCardItem(item) {
-      const patientText = getPatientDisplayTextById(item.patient_id);
-      const encounterText = getEncounterDisplayByStoredValue(getPrimaryEncounterStoredValue(item));
-      const doctorText = getEncounterDoctorTextByStoredValue(getPrimaryEncounterStoredValue(item));
-      const assignedText = getStaffDisplayText(item.assigned_to);
-      const updatedText = formatDateTime24(item.updated_at || item.created_at);
-
-      return `
-        <div class="followup-card ${escapeHtml(buildRowClass(item))}" data-followup-card-id="${escapeHtml(item.id)}">
-          <div class="followup-card-top">
-            <div>
-              <div class="followup-card-no">${escapeHtml(formatFollowupNo(item))}</div>
-              <div class="followup-card-title">${escapeHtml(item.title || "—")}</div>
-              <div class="followup-card-sub">
-                CUMC 號碼：${escapeHtml(patientText)}
-                ${encounterText !== "—" ? `｜求診號碼：${escapeHtml(encounterText)}` : ""}
-              </div>
-            </div>
-          </div>
-
-          <div class="followup-card-badges">
-            ${statusBadge(item.status)}
-            ${priorityBadge(item.priority)}
-            ${renderChipSet(item.category)}
-            ${renderSla(item)}
-          </div>
-
-          <div class="followup-card-grid">
-            <div class="card-meta">
-              <div class="k">求診醫生</div>
-              <div class="v">${escapeHtml(doctorText)}</div>
-            </div>
-            <div class="card-meta">
-              <div class="k">負責人</div>
-              <div class="v">${escapeHtml(assignedText)}</div>
-            </div>
-            <div class="card-meta">
-              <div class="k">到期時間</div>
-              <div class="v">${escapeHtml(formatDateTime24(item.due_at))}</div>
-            </div>
-            <div class="card-meta">
-              <div class="k">更新時間</div>
-              <div class="v">${escapeHtml(updatedText)}</div>
-            </div>
-          </div>
-
-          <div class="row-actions">
-            <button class="mini-btn done" type="button" data-action="quick-done" data-id="${escapeHtml(item.id)}">完成</button>
-            <button class="mini-btn edit" type="button" data-action="edit" data-id="${escapeHtml(item.id)}">編輯</button>
-          </div>
-        </div>
-      `;
-    }
-
     function renderDetail() {
       const item = state.followups.find(f => String(f.id) === String(state.selectedFollowupId));
       if (!item) {
@@ -3089,7 +2092,7 @@
             <div class="detail-badges">
               ${statusBadge(item.status)}
               ${priorityBadge(item.priority)}
-              ${renderChipSet(item.category)}
+              <span class="badge badge-chip">${escapeHtml(categoryLabel(item.category))}</span>
               ${renderSla(item)}
             </div>
             <h3>${escapeHtml(item.title || "—")}</h3>
@@ -3207,10 +2210,8 @@
     }
 
     function resetModalSmartInputs() {
-      followupModal.categoryValues = [];
       followupModal.sourceValues = [];
       followupModal.requestedByValues = [];
-      followupModal.categoryInputEl.value = "";
       followupModal.sourceInputEl.value = "";
       followupModal.requestedByInputEl.value = "";
       renderModalChipGroups();
@@ -3228,11 +2229,10 @@
         followupModal.titleEl.textContent = "新增跟進事項";
         followupModal.patientInputEl.value = "";
         followupModal.patientInputEl.readOnly = false;
-        followupModal.patientInputEl.placeholder = "可輸入或搜尋 CUMC 號碼";
         followupModal.patientNoteEl.textContent = "新增時可輸入 CUMC 號碼；編輯時不可修改。";
         followupModal.encounterInputEl.value = "";
-        followupModal.encounterInputEl.placeholder = "系統會自動帶出相關求診號碼";
         followupModal.encounterNoteEl.textContent = "請先輸入 CUMC 號碼。";
+        followupModal.categoryEl.value = "callback";
         followupModal.statusEl.value = "open";
         followupModal.priorityEl.value = "normal";
         followupModal.dueAtEl.value = "";
@@ -3242,10 +2242,8 @@
         followupModal.outcomeEl.value = "";
         followupModal.doctorDisplayEl.value = "—";
         followupModal.sourceValues = ["手動"];
-        setEncounterMessage({});
         renderModalChipGroups();
-        hideSuggestList(followupModal.cumcSuggestListEl);
-        hideSuggestList(followupModal.encounterSuggestListEl);
+        setEncounterMessage({});
       } else {
         const item = state.followups.find(f => String(f.id) === String(followupId));
         if (!item) {
@@ -3258,9 +2256,9 @@
         followupModal.titleEl.textContent = `編輯跟進事項：${formatFollowupNo(item)}`;
         followupModal.patientInputEl.value = item.patient_id || "";
         followupModal.patientInputEl.readOnly = true;
-        followupModal.patientInputEl.placeholder = "";
         followupModal.patientNoteEl.textContent = "編輯事項時不可修改 CUMC 號碼。";
         followupModal.encounterInputEl.value = getEncounterDisplayByStoredValue(encounterStored) === "—" ? String(encounterStored || "") : getEncounterDisplayByStoredValue(encounterStored);
+        followupModal.categoryEl.value = item.category || "callback";
         followupModal.statusEl.value = item.status || "open";
         followupModal.priorityEl.value = item.priority || "normal";
         followupModal.dueAtEl.value = toDatetimeLocalValue(item.due_at);
@@ -3269,7 +2267,6 @@
         followupModal.descriptionEl.value = item.description || "";
         followupModal.outcomeEl.value = item.outcome || "";
         followupModal.doctorDisplayEl.value = getEncounterDoctorTextByStoredValue(encounterStored);
-        followupModal.categoryValues = normalizeMultiFieldToArray(item.category);
         followupModal.sourceValues = normalizeMultiFieldToArray(item.source);
         followupModal.requestedByValues = normalizeMultiFieldToArray(item.requested_by);
         renderModalChipGroups();
@@ -3293,10 +2290,7 @@
 
     function openStatusModal(followupId) {
       const item = state.followups.find(f => String(f.id) === String(followupId));
-      if (!item) {
-        notify("找不到事項", "error");
-        return;
-      }
+      if (!item) return notify("找不到事項", "error");
 
       const encounterStored = getPrimaryEncounterStoredValue(item);
       statusModal.followupId = followupId;
@@ -3322,10 +2316,7 @@
 
     function openQuickDoneModal(followupId) {
       const item = state.followups.find(f => String(f.id) === String(followupId));
-      if (!item) {
-        notify("找不到事項", "error");
-        return;
-      }
+      if (!item) return notify("找不到事項", "error");
 
       const encounterStored = getPrimaryEncounterStoredValue(item);
       quickDoneModal.followupId = followupId;
@@ -3349,14 +2340,7 @@
     function formatError(error) {
       if (!error) return "Unknown error";
       if (typeof error === "string") return error;
-
-      const parts = [
-        error.message,
-        error.details,
-        error.hint,
-        error.code ? `code: ${error.code}` : ""
-      ].filter(Boolean);
-
+      const parts = [error.message, error.details, error.hint, error.code ? `code: ${error.code}` : ""].filter(Boolean);
       return parts.length ? parts.join("\n") : JSON.stringify(error);
     }
 
@@ -3366,44 +2350,33 @@
       const matchedEncounter = getEncounterByIdOrNo(encounterInput);
       const encounterNo = matchedEncounter ? detectEncounterNo(matchedEncounter) : (encounterInput || null);
       const encounterRef = matchedEncounter ? String(matchedEncounter.id) : null;
-      const encounterId = matchedEncounter?.id && isUuidLike(matchedEncounter.id)
-        ? matchedEncounter.id
-        : null;
+      const encounterId = matchedEncounter?.id && isUuidLike(matchedEncounter.id) ? matchedEncounter.id : null;
 
+      const category = String(followupModal.categoryEl.value || "callback").trim();
       const title = String(followupModal.titleInputEl.value || "").trim();
       const assignedTo = String(followupModal.assignedToEl.value || "").trim() || getCurrentStaffDisplayText();
       const description = String(followupModal.descriptionEl.value || "").trim();
       const outcome = String(followupModal.outcomeEl.value || "").trim() || null;
       const status = String(followupModal.statusEl.value || "open").trim();
       const priority = String(followupModal.priorityEl.value || "normal").trim();
-      const category = uniqueCleanList(followupModal.categoryValues).join("、");
-      const source = uniqueCleanList(followupModal.sourceValues).join("、");
-      const requestedBy = uniqueCleanList(followupModal.requestedByValues).join("、");
+      const source = uniqueCleanList(followupModal.sourceValues).join("、") || null;
+      const requestedBy = uniqueCleanList(followupModal.requestedByValues).join("、") || null;
       const dueAt = localValueToIso(followupModal.dueAtEl.value || "");
       const actor = getCurrentStaffDisplayText();
 
       if (!patientId) {
         notify("請輸入 CUMC 號碼", "warning");
-        followupModal.patientInputEl.focus();
-        return;
+        return followupModal.patientInputEl.focus();
       }
 
       if (followupModal.mode === "create" && !getPatientRecordByCumc(patientId)) {
         notify("輸入的 CUMC 號碼未在病人資料找到，請確認後再儲存", "warning", 4200);
-        followupModal.patientInputEl.focus();
-        return;
+        return followupModal.patientInputEl.focus();
       }
 
       if (!title) {
         notify("請輸入主題", "warning");
-        followupModal.titleInputEl.focus();
-        return;
-      }
-
-      if (!category.length) {
-        notify("請至少輸入一個類別", "warning");
-        followupModal.categoryInputEl.focus();
-        return;
+        return followupModal.titleInputEl.focus();
       }
 
       const payload = {
@@ -3426,37 +2399,30 @@
       if (followupModal.mode === "create") {
         payload.created_by = actor;
 
-        const { data, error } = await sb
-          .from("followups")
-          .insert([payload])
-          .select()
-          .single();
-
+        const { data, error } = await sb.from("followups").insert([payload]).select().single();
         if (error) {
           console.error("新增跟進事項失敗:", error, payload);
           notify("新增跟進事項失敗\n" + formatError(error), "error", 7000);
           return;
         }
 
-        const { error: eventError } = await sb
-          .from("followup_events")
-          .insert([{
-            followup_id: data.id,
-            event_type: "created",
-            event_label: "已建立事項",
-            event_data: {
-              status,
-              priority,
-              assigned_to: assignedTo,
-              source,
-              requested_by: requestedBy,
-              category,
-              encounter_no: encounterNo,
-              encounter_doctor: getEncounterDoctorText(matchedEncounter),
-              outcome: outcome || null
-            },
-            actor
-          }]);
+        const { error: eventError } = await sb.from("followup_events").insert([{
+          followup_id: data.id,
+          event_type: "created",
+          event_label: "已建立事項",
+          event_data: {
+            status,
+            priority,
+            assigned_to: assignedTo,
+            source,
+            requested_by: requestedBy,
+            category,
+            encounter_no: encounterNo,
+            encounter_doctor: getEncounterDoctorText(matchedEncounter),
+            outcome: outcome || null
+          },
+          actor
+        }]);
 
         if (eventError) {
           console.error("新增時間線失敗:", eventError);
@@ -3470,10 +2436,7 @@
         notify(`已新增事項：${formatFollowupNo(data)}`, "success");
       } else {
         const original = state.followups.find(f => String(f.id) === String(followupModal.followupId));
-        if (!original) {
-          notify("找不到原始事項資料", "error");
-          return;
-        }
+        if (!original) return notify("找不到原始事項資料", "error");
 
         payload.patient_id = original.patient_id;
 
@@ -3494,28 +2457,24 @@
         Object.entries(payload).forEach(([k, v]) => {
           const oldVal = original[k] ?? null;
           const newVal = v ?? null;
-          if (JSON.stringify(oldVal) !== JSON.stringify(newVal)) {
-            changed[k] = { from: oldVal, to: newVal };
-          }
+          if (JSON.stringify(oldVal) !== JSON.stringify(newVal)) changed[k] = { from: oldVal, to: newVal };
         });
 
-        const { error: eventError } = await sb
-          .from("followup_events")
-          .insert([{
-            followup_id: data.id,
-            event_type: "updated",
-            event_label: "已更新事項",
-            event_data: {
-              changes: changed,
-              category,
-              source,
-              requested_by: requestedBy,
-              encounter_no: encounterNo,
-              encounter_doctor: getEncounterDoctorText(matchedEncounter),
-              outcome: outcome || null
-            },
-            actor
-          }]);
+        const { error: eventError } = await sb.from("followup_events").insert([{
+          followup_id: data.id,
+          event_type: "updated",
+          event_label: "已更新事項",
+          event_data: {
+            changes: changed,
+            category,
+            source,
+            requested_by: requestedBy,
+            encounter_no: encounterNo,
+            encounter_doctor: getEncounterDoctorText(matchedEncounter),
+            outcome: outcome || null
+          },
+          actor
+        }]);
 
         if (eventError) {
           console.error("更新時間線失敗:", eventError);
@@ -3532,10 +2491,7 @@
 
     async function saveStatusUpdate() {
       const item = state.followups.find(f => String(f.id) === String(statusModal.followupId));
-      if (!item) {
-        notify("找不到事項", "error");
-        return;
-      }
+      if (!item) return notify("找不到事項", "error");
 
       const status = String(statusModal.statusEl.value || "open").trim();
       const priority = String(statusModal.priorityEl.value || "normal").trim();
@@ -3545,58 +2501,35 @@
       const remark = String(statusModal.remarkEl.value || "").trim() || null;
       const actor = getCurrentStaffDisplayText();
 
-      const payload = {
-        status,
-        priority,
-        assigned_to: assignedTo,
-        due_at: dueAt,
-        outcome
-      };
+      const payload = { status, priority, assigned_to: assignedTo, due_at: dueAt, outcome };
 
-      const { data, error } = await sb
-        .from("followups")
-        .update(payload)
-        .eq("id", item.id)
-        .select()
-        .single();
-
+      const { data, error } = await sb.from("followups").update(payload).eq("id", item.id).select().single();
       if (error) {
         console.error("更新狀態失敗:", error, payload);
         notify("更新狀態失敗\n" + formatError(error), "error", 7000);
         return;
       }
 
-      const eventType = status === "done"
-        ? "completed"
-        : status === "cancelled"
-          ? "cancelled"
-          : "status_changed";
+      const eventType = status === "done" ? "completed" : status === "cancelled" ? "cancelled" : "status_changed";
+      const eventLabelText = eventType === "completed" ? "已完成事項" : eventType === "cancelled" ? "已取消事項" : "已更新狀態";
 
-      const eventLabelText = eventType === "completed"
-        ? "已完成事項"
-        : eventType === "cancelled"
-          ? "已取消事項"
-          : "已更新狀態";
-
-      const { error: eventError } = await sb
-        .from("followup_events")
-        .insert([{
-          followup_id: item.id,
-          event_type: eventType,
-          event_label: eventLabelText,
-          event_data: {
-            from_status: item.status || null,
-            to_status: status,
-            priority,
-            assigned_to: assignedTo,
-            due_at: dueAt,
-            encounter_no: item.encounter_no || null,
-            encounter_doctor: getEncounterDoctorTextByStoredValue(getPrimaryEncounterStoredValue(item)),
-            outcome: outcome || null,
-            remark: remark || null
-          },
-          actor
-        }]);
+      const { error: eventError } = await sb.from("followup_events").insert([{
+        followup_id: item.id,
+        event_type: eventType,
+        event_label: eventLabelText,
+        event_data: {
+          from_status: item.status || null,
+          to_status: status,
+          priority,
+          assigned_to: assignedTo,
+          due_at: dueAt,
+          encounter_no: item.encounter_no || null,
+          encounter_doctor: getEncounterDoctorTextByStoredValue(getPrimaryEncounterStoredValue(item)),
+          outcome: outcome || null,
+          remark: remark || null
+        },
+        actor
+      }]);
 
       if (eventError) {
         console.error("更新狀態時間線失敗:", eventError);
@@ -3612,10 +2545,7 @@
 
     async function saveQuickDone() {
       const item = state.followups.find(f => String(f.id) === String(quickDoneModal.followupId));
-      if (!item) {
-        notify("找不到事項", "error");
-        return;
-      }
+      if (!item) return notify("找不到事項", "error");
 
       const outcome = String(quickDoneModal.outcomeEl.value || "").trim();
       const remark = String(quickDoneModal.remarkEl.value || "").trim() || null;
@@ -3623,44 +2553,31 @@
 
       if (!outcome) {
         notify("請輸入處理結果", "warning");
-        quickDoneModal.outcomeEl.focus();
-        return;
+        return quickDoneModal.outcomeEl.focus();
       }
 
-      const payload = {
-        status: "done",
-        outcome
-      };
-
-      const { data, error } = await sb
-        .from("followups")
-        .update(payload)
-        .eq("id", item.id)
-        .select()
-        .single();
-
+      const payload = { status: "done", outcome };
+      const { data, error } = await sb.from("followups").update(payload).eq("id", item.id).select().single();
       if (error) {
         console.error("快捷完成失敗:", error, payload);
         notify("快捷完成失敗\n" + formatError(error), "error", 7000);
         return;
       }
 
-      const { error: eventError } = await sb
-        .from("followup_events")
-        .insert([{
-          followup_id: item.id,
-          event_type: "completed",
-          event_label: "快捷完成事項",
-          event_data: {
-            from_status: item.status || null,
-            to_status: "done",
-            encounter_no: item.encounter_no || null,
-            encounter_doctor: getEncounterDoctorTextByStoredValue(getPrimaryEncounterStoredValue(item)),
-            outcome,
-            remark: remark || null
-          },
-          actor
-        }]);
+      const { error: eventError } = await sb.from("followup_events").insert([{
+        followup_id: item.id,
+        event_type: "completed",
+        event_label: "快捷完成事項",
+        event_data: {
+          from_status: item.status || null,
+          to_status: "done",
+          encounter_no: item.encounter_no || null,
+          encounter_doctor: getEncounterDoctorTextByStoredValue(getPrimaryEncounterStoredValue(item)),
+          outcome,
+          remark: remark || null
+        },
+        actor
+      }]);
 
       if (eventError) {
         console.error("快捷完成時間線失敗:", eventError);
@@ -3678,29 +2595,24 @@
       cleanupRealtime();
 
       const channel1 = sb.channel("followups-live")
-        .on("postgres_changes", { event: "*", schema: "public", table: "followups" }, async () => {
-          await refreshSilent();
-        }).subscribe();
+        .on("postgres_changes", { event: "*", schema: "public", table: "followups" }, async () => { await refreshSilent(); })
+        .subscribe();
 
       const channel2 = sb.channel("followup-events-live")
-        .on("postgres_changes", { event: "*", schema: "public", table: "followup_events" }, async () => {
-          await refreshSilent();
-        }).subscribe();
+        .on("postgres_changes", { event: "*", schema: "public", table: "followup_events" }, async () => { await refreshSilent(); })
+        .subscribe();
 
       const channel3 = sb.channel("staff-profiles-live")
-        .on("postgres_changes", { event: "*", schema: "public", table: "staff_profiles" }, async () => {
-          await refreshSilent();
-        }).subscribe();
+        .on("postgres_changes", { event: "*", schema: "public", table: "staff_profiles" }, async () => { await refreshSilent(); })
+        .subscribe();
 
       const channel4 = sb.channel("patients-live")
-        .on("postgres_changes", { event: "*", schema: "public", table: "patients" }, async () => {
-          await refreshSilent();
-        }).subscribe();
+        .on("postgres_changes", { event: "*", schema: "public", table: "patients" }, async () => { await refreshSilent(); })
+        .subscribe();
 
       const channel5 = sb.channel("encounters-live")
-        .on("postgres_changes", { event: "*", schema: "public", table: "encounters" }, async () => {
-          await refreshSilent();
-        }).subscribe();
+        .on("postgres_changes", { event: "*", schema: "public", table: "encounters" }, async () => { await refreshSilent(); })
+        .subscribe();
 
       state.subscriptions = [channel1, channel2, channel3, channel4, channel5];
     }
