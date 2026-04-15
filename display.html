@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EMC Queue Status Display</title>
+  <link rel="icon" href="data:," />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --board-bg: #06101f;
+      --board-panel: #0b1528;
+      --board-line: rgba(255,255,255,0.12);
+      --board-text: #f8fafc;
+      --board-sub: #cbd5e1;
+      --board-blue: #60a5fa;
+      --board-blue-strong: #2563eb;
+      --board-blue-soft: #93c5fd;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --shadow: 0 12px 30px rgba(0,0,0,0.28);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      font-family: Arial, "Microsoft JhengHei", "PingFang TC", sans-serif;
+      background: var(--board-bg);
+      color: var(--board-text);
+      overflow: hidden;
+    }
+
+    body.tv-mode {
+      cursor: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .app {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 14px 18px 14px;
+      background: var(--board-bg);
+      overflow: hidden;
+      gap: 0;
+    }
+
+    .board-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      color: var(--board-text);
+      flex: 0 0 auto;
+    }
+
+    .board-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .board-title {
+      font-size: 2.6rem;
+      font-weight: 900;
+      color: var(--board-text);
+      letter-spacing: 0.02em;
+      line-height: 1.05;
+    }
+
+    .board-subtitle {
+      font-size: 1.1rem;
+      color: var(--board-sub);
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      line-height: 1.1;
+    }
+
+    .board-toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .board-time {
+      font-size: 1.6rem;
+      color: var(--board-sub);
+      font-weight: 900;
+      letter-spacing: 0.03em;
+    }
+
+    .toolbar-chip-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .toolbar-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      border-radius: 999px;
+      padding: 8px 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(15,23,42,0.9);
+      color: #e2e8f0;
+      font-size: 0.92rem;
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .toolbar-chip.status-ok {
+      border-color: rgba(34,197,94,0.35);
+      color: #bbf7d0;
+    }
+
+    .toolbar-chip.status-warn {
+      border-color: rgba(245,158,11,0.4);
+      color: #fde68a;
+    }
+
+    .toolbar-chip.status-error {
+      border-color: rgba(239,68,68,0.45);
+      color: #fecaca;
+    }
+
+    .toolbar-btn {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(30,41,59,0.92);
+      color: #fff;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 900;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .toolbar-btn:hover {
+      background: rgba(37,99,235,0.95);
+      border-color: rgba(96,165,250,0.5);
+    }
+
+    .info-card {
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(15,23,42,0.95);
+      border-radius: 16px;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      flex: 0 0 auto;
+    }
+
+    .inline-note {
+      font-size: 1.12rem;
+      color: #dbeafe;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    #displayBoard {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .board-pagination-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex: 0 0 auto;
+      color: var(--board-text);
+    }
+
+    .board-page-indicator {
+      font-size: 1.28rem;
+      font-weight: 900;
+      color: #bfdbfe;
+      letter-spacing: 0.04em;
+    }
+
+    .board-page-dots {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .board-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.22);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+    }
+
+    .board-dot.active {
+      background: #60a5fa;
+      box-shadow: 0 0 0 3px rgba(96,165,250,0.18);
+    }
+
+    .board-wrap {
+      background: var(--board-panel);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      width: 100%;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+    }
+
+    .board-head {
+      display: grid;
+      grid-template-columns: 0.7fr 1.1fr 1.1fr 2.2fr 1.9fr 1.5fr;
+      background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%);
+      color: #fff;
+      font-weight: 900;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .board-head div {
+      padding: 18px 12px 16px;
+      border-right: 1px solid rgba(255,255,255,0.16);
+      text-align: center;
+    }
+
+    .board-head div:last-child { border-right: none; }
+
+    .board-head-zh {
+      display: block;
+      font-size: 1.55rem;
+      line-height: 1.04;
+      margin-bottom: 6px;
+      font-weight: 900;
+    }
+
+    .board-head-en {
+      display: block;
+      font-size: 0.9rem;
+      line-height: 1.08;
+      opacity: 0.96;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+    }
+
+    .board-body { background: var(--board-panel); }
+
+    .board-row {
+      display: grid;
+      grid-template-columns: 0.7fr 1.1fr 1.1fr 2.2fr 1.9fr 1.5fr;
+      align-items: stretch;
+      border-top: 1px solid var(--board-line);
+      min-height: 148px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0));
+    }
+
+    .board-cell {
+      padding: 16px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      font-weight: 800;
+      color: var(--board-text);
+    }
+
+    .board-cell:last-child { border-right: none; }
+
+    .board-room {
+      font-size: 4rem;
+      color: #93c5fd;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      line-height: 1;
+    }
+
+    .board-doctor {
+      color: var(--board-text);
+      font-weight: 900;
+      line-height: 1.25;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-start;
+      text-align: left;
+      justify-content: center;
+    }
+
+    .board-doctor-zh {
+      font-size: 1.45rem;
+      color: #ffffff;
+      font-weight: 900;
+      line-height: 1.15;
+      word-break: break-word;
+    }
+
+    .board-doctor-en {
+      font-size: 0.98rem;
+      color: var(--board-sub);
+      font-weight: 800;
+      line-height: 1.2;
+      word-break: break-word;
+    }
+
+    .board-current {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .board-current-ticket {
+      font-size: 2.1rem;
+      font-weight: 900;
+      line-height: 1.04;
+      letter-spacing: 0.03em;
+    }
+
+    .board-current-ticket-red { color: #fca5a5; }
+    .board-current-ticket-yellow { color: #fde68a; }
+    .board-current-ticket-green { color: #4ade80; }
+
+    .board-meta {
+      font-size: 1rem;
+      color: var(--board-sub);
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .board-paused {
+      color: #fbbf24;
+      font-size: 1.9rem;
+      line-height: 1.18;
+      word-break: break-word;
+      font-weight: 900;
+    }
+
+    .board-queue, .board-skip, .board-review {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      text-align: left;
+    }
+
+    .board-tag {
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 1.18rem;
+      font-weight: 900;
+      min-width: 110px;
+      text-align: center;
+      line-height: 1.04;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+    }
+
+    .tag-wait {
+      background: rgba(37,99,235,0.16);
+      color: #bfdbfe;
+      border: 1px solid rgba(96,165,250,0.42);
+    }
+
+    .tag-review {
+      background: rgba(245,158,11,0.14);
+      color: #fde68a;
+      border: 1px solid rgba(245,158,11,0.45);
+    }
+
+    .tag-skip {
+      background: rgba(239,68,68,0.12);
+      color: #fecaca;
+      border: 1px solid rgba(248,113,113,0.4);
+    }
+
+    .tag-priority {
+      background: rgba(185,28,28,0.2);
+      color: #fee2e2;
+      border: 2px solid #ef4444;
+      box-shadow: 0 0 0 2px rgba(239,68,68,0.12) inset;
+    }
+
+    .tag-yellow {
+      background: rgba(234,179,8,0.22);
+      color: #fef9c3;
+      border: 2px solid #eab308;
+      box-shadow: 0 0 0 2px rgba(234,179,8,0.08) inset;
+    }
+
+    .board-empty {
+      color: #94a3b8;
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .board-cutoff-tag {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      min-width: 150px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(245,158,11,0.14);
+      border: 2px solid rgba(245,158,11,0.72);
+      line-height: 1.08;
+      text-align: center;
+    }
+
+    .board-cutoff-zh {
+      color: #facc15;
+      font-size: 1.02rem;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+
+    .board-cutoff-en {
+      color: #fde68a;
+      font-size: 0.74rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      text-transform: uppercase;
+    }
+
+    .board-footer {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+      flex: 0 0 auto;
+    }
+
+    .board-footer-tip {
+      color: #93c5fd;
+      font-size: 0.96rem;
+      font-weight: 800;
+      opacity: 0.95;
+      text-align: right;
+      margin-left: auto;
+    }
+
+    .overlay-status {
+      position: fixed;
+      left: 18px;
+      bottom: 18px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: min(420px, calc(100vw - 36px));
+      pointer-events: none;
+    }
+
+    .overlay-card {
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-weight: 900;
+      line-height: 1.45;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,0.12);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .overlay-card.info {
+      background: rgba(15,23,42,0.92);
+      color: #dbeafe;
+    }
+
+    .overlay-card.warn {
+      background: rgba(120,53,15,0.92);
+      color: #fde68a;
+      border-color: rgba(245,158,11,0.35);
+    }
+
+    .overlay-card.error {
+      background: rgba(127,29,29,0.94);
+      color: #fee2e2;
+      border-color: rgba(239,68,68,0.4);
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1600px) {
+      .board-title { font-size: 2.15rem; }
+      .board-time { font-size: 1.35rem; }
+      .inline-note { font-size: 0.98rem; }
+      .board-head-zh { font-size: 1.35rem; }
+      .board-head-en { font-size: 0.84rem; }
+      .board-room { font-size: 3rem; }
+      .board-doctor-zh { font-size: 1.25rem; }
+      .board-doctor-en { font-size: 0.9rem; }
+      .board-tag { font-size: 1.02rem; min-width: 96px; }
+      .board-row { min-height: 126px; }
+    }
+
+    @media (max-width: 1200px) {
+      .board-head, .board-row { grid-template-columns: 1fr; }
+      .board-head div, .board-cell {
+        border-right: none;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+      .board-cell:last-child, .board-head div:last-child { border-bottom: none; }
+      .board-room { font-size: 2.5rem; }
+      .board-wrap { min-height: auto; }
+    }
+
+    @media (max-width: 900px) {
+      .app { padding: 10px; }
+      .board-toolbar { align-items: flex-start; }
+      .board-toolbar-right { justify-content: flex-start; }
+      .toolbar-chip-row { justify-content: flex-start; }
+      .overlay-status {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="board-toolbar">
+      <div class="board-title-wrap">
+        <div class="board-title" id="boardTitle">候診情況</div>
+        <div class="board-subtitle" id="boardSubtitle">Queue Status</div>
+      </div>
+
+      <div class="board-toolbar-right">
+        <div class="toolbar-chip-row">
+          <div class="toolbar-chip status-ok" id="connectionChip">連線正常</div>
+          <div class="toolbar-chip" id="roomsChip">診室：—</div>
+          <div class="toolbar-chip" id="pageSizeChip">每頁：—</div>
+        </div>
+        <button class="toolbar-btn" id="fullscreenBtn" type="button">全螢幕</button>
+        <div class="board-time" id="boardTime"></div>
+      </div>
+    </div>
+
+    <div class="info-card" id="disclaimerCard">
+      <div class="inline-note" id="disclaimerText">
+        輪候情況只供參考，會因應病人臨床需要及現場實際運作而作出調整，敬請見諒。<br>
+        This queue is for reference only and may be adjusted at any time according to patients' clinical needs and operational requirements. Thank you for your understanding.
+      </div>
+    </div>
+
+    <div id="displayBoard"></div>
+
+    <div class="board-footer">
+      <div></div>
+      <div class="board-footer-tip" id="footerText">急症醫學中心<br>Emergency Medicine Centre</div>
+    </div>
+  </div>
+
+  <div class="overlay-status" id="overlayStatus">
+    <div class="overlay-card info hidden" id="loadingOverlay">正在讀取看板資料…</div>
+    <div class="overlay-card warn hidden" id="offlineOverlay">網絡可能中斷，系統正嘗試重新連線…</div>
+    <div class="overlay-card error hidden" id="errorOverlay"></div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://dvyberdrmmfgutjqnpjr.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const HKT_TIMEZONE = "Asia/Hong_Kong";
+
+    const DEFAULTS = {
+      mode: "tv",
+      pageSize: 4,
+      rotateMs: 8000,
+      pollingMs: 5000,
+      title: "候診情況",
+      subtitle: "Queue Status",
+      footer: "急症醫學中心<br>Emergency Medicine Centre",
+      disclaimer:
+        "輪候情況只供參考，會因應病人臨床需要及現場實際運作而作出調整，敬請見諒。<br>" +
+        "This queue is for reference only and may be adjusted at any time according to patients' clinical needs and operational requirements. Thank you for your understanding.",
+      hideDisclaimer: false,
+      disableContextMenu: true,
+      disableTextSelection: true
+    };
+
+    const state = {
+      rooms: [],
+      patients: [],
+      displayPageIndex: 0,
+      lastBoardRenderKey: "",
+      loading: false,
+      online: true,
+      lastSuccessAt: null,
+      roomFilterList: [],
+      config: { ...DEFAULTS }
+    };
+
+    let liveRefreshTimer = null;
+    let boardClockTimer = null;
+    let boardPageRotateTimer = null;
+    let realtimeChannel = null;
+    let refreshInFlight = false;
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function parseQuery() {
+      const params = new URLSearchParams(window.location.search);
+
+      const mode = String(params.get("mode") || DEFAULTS.mode).trim().toLowerCase();
+      const pageSize = Math.max(1, Math.min(12, parseInt(params.get("pageSize") || DEFAULTS.pageSize, 10) || DEFAULTS.pageSize));
+      const rotateMs = Math.max(3000, parseInt(params.get("rotateMs") || DEFAULTS.rotateMs, 10) || DEFAULTS.rotateMs);
+      const pollingMs = Math.max(2000, parseInt(params.get("pollingMs") || DEFAULTS.pollingMs, 10) || DEFAULTS.pollingMs);
+
+      const title = String(params.get("title") || DEFAULTS.title).trim();
+      const subtitle = String(params.get("subtitle") || DEFAULTS.subtitle).trim();
+      const footer = String(params.get("footer") || DEFAULTS.footer).trim();
+      const disclaimer = String(params.get("disclaimer") || DEFAULTS.disclaimer).trim();
+
+      const hideDisclaimer = ["1", "true", "yes"].includes(String(params.get("hideDisclaimer") || "").toLowerCase());
+
+      const roomsRaw = String(params.get("rooms") || "").trim();
+      const roomFilterList = roomsRaw
+        ? roomsRaw.split(",").map(s => s.trim()).filter(Boolean)
+        : [];
+
+      return {
+        mode,
+        pageSize,
+        rotateMs,
+        pollingMs,
+        title,
+        subtitle,
+        footer,
+        disclaimer,
+        hideDisclaimer,
+        roomFilterList
+      };
+    }
+
+    function applyConfigFromQuery() {
+      const cfg = parseQuery();
+      state.config = { ...DEFAULTS, ...cfg };
+      state.roomFilterList = cfg.roomFilterList;
+
+      document.getElementById("boardTitle").innerHTML = escapeHtml(cfg.title);
+      document.getElementById("boardSubtitle").innerHTML = escapeHtml(cfg.subtitle);
+      document.getElementById("footerText").innerHTML = cfg.footer;
+      document.getElementById("disclaimerText").innerHTML = cfg.disclaimer;
+
+      const disclaimerCard = document.getElementById("disclaimerCard");
+      if (cfg.hideDisclaimer) disclaimerCard.classList.add("hidden");
+      else disclaimerCard.classList.remove("hidden");
+
+      document.getElementById("pageSizeChip").textContent = `每頁：${cfg.pageSize}`;
+
+      if (cfg.mode === "tv" || cfg.mode === "kiosk") {
+        document.body.classList.add("tv-mode");
+      } else {
+        document.body.classList.remove("tv-mode");
+      }
+
+      if (DEFAULTS.disableContextMenu) {
+        document.addEventListener("contextmenu", (e) => e.preventDefault());
+      }
+
+      if (DEFAULTS.disableTextSelection) {
+        document.addEventListener("selectstart", (e) => {
+          if (state.config.mode === "tv" || state.config.mode === "kiosk") e.preventDefault();
+        });
+      }
+    }
+
+    function setLoading(loading) {
+      state.loading = !!loading;
+      document.getElementById("loadingOverlay").classList.toggle("hidden", !state.loading);
+    }
+
+    function setOnlineStatus(ok, message = "") {
+      state.online = !!ok;
+      const chip = document.getElementById("connectionChip");
+
+      chip.classList.remove("status-ok", "status-warn", "status-error");
+      if (ok) {
+        chip.classList.add("status-ok");
+        chip.textContent = "連線正常";
+        document.getElementById("offlineOverlay").classList.add("hidden");
+      } else {
+        chip.classList.add("status-warn");
+        chip.textContent = "重新連線中";
+        document.getElementById("offlineOverlay").classList.remove("hidden");
+      }
+
+      if (message) {
+        showError(message);
+      }
+    }
+
+    function showError(message) {
+      const el = document.getElementById("errorOverlay");
+      if (!message) {
+        el.classList.add("hidden");
+        el.textContent = "";
+        return;
+      }
+      el.textContent = message;
+      el.classList.remove("hidden");
+    }
+
+    function clearError() {
+      showError("");
+    }
+
+    function getHktDateParts(date = new Date()) {
+      const formatter = new Intl.DateTimeFormat("en-CA", {
+        timeZone: HKT_TIMEZONE,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hourCycle: "h23"
+      });
+      const parts = formatter.formatToParts(date);
+      const map = {};
+      for (const p of parts) {
+        if (p.type !== "literal") map[p.type] = p.value;
+      }
+      return map;
+    }
+
+    function formatBoardNow(date = new Date()) {
+      const p = getHktDateParts(date);
+      return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second}`;
+    }
+
+    function formatDateTime(iso) {
+      if (!iso) return "—";
+      const date = new Date(iso);
+      if (Number.isNaN(date.getTime())) return "—";
+      return new Intl.DateTimeFormat("zh-HK", {
+        timeZone: HKT_TIMEZONE,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hourCycle: "h23"
+      }).format(date);
+    }
+
+    function formatRegisteredInline(iso) {
+      const text = formatDateTime(iso);
+      return text === "—" ? "—" : `${text}｜登記`;
+    }
+
+    function sortedRooms() {
+      return [...state.rooms].sort((a, b) => a.roomNo.localeCompare(b.roomNo, "zh-HK", { numeric: true }));
+    }
+
+    function getRoom(roomId) {
+      return state.rooms.find(room => room.id === roomId) || null;
+    }
+
+    function getPatient(patientId) {
+      return state.patients.find(patient => patient.id === patientId) || null;
+    }
+
+    function getPatientDisplayNo(patient) {
+      return String(patient?.cumcNo || patient?.ticketNo || "").trim();
+    }
+
+    function getRoomDisplayShort(roomNo) {
+      return String(roomNo || "").replace(/號房/g, "").trim() || String(roomNo || "");
+    }
+
+    function getPatientTypeWeight(patient) {
+      if (patient.sourceType === "appointment") return 1;
+      if (patient.sourceType === "onlineTicket") return 2;
+      return 3;
+    }
+
+    function compareWaitingBase(a, b) {
+      if (!!a.priority !== !!b.priority) return a.priority ? -1 : 1;
+
+      const aTime = new Date(a.registeredAt || a.createdAt).getTime();
+      const bTime = new Date(b.registeredAt || b.createdAt).getTime();
+      if (aTime !== bTime) return aTime - bTime;
+
+      const aType = getPatientTypeWeight(a);
+      const bType = getPatientTypeWeight(b);
+      if (aType !== bType) return aType - bType;
+
+      const aCreated = new Date(a.createdAt).getTime();
+      const bCreated = new Date(b.createdAt).getTime();
+      if (aCreated !== bCreated) return aCreated - bCreated;
+
+      return getPatientDisplayNo(a).localeCompare(getPatientDisplayNo(b), "zh-HK");
+    }
+
+    function getOrderedWaitingPatients(room) {
+      const waiting = state.patients
+        .filter(patient => patient.roomId === room.id && patient.status === "waiting");
+
+      waiting.sort((a, b) => {
+        const aOrder = Number.isFinite(a.queueOrder) ? a.queueOrder : null;
+        const bOrder = Number.isFinite(b.queueOrder) ? b.queueOrder : null;
+        if (aOrder !== null && bOrder !== null && aOrder !== bOrder) return aOrder - bOrder;
+        if (aOrder !== null && bOrder === null) return -1;
+        if (aOrder === null && bOrder !== null) return 1;
+        return compareWaitingBase(a, b);
+      });
+
+      return waiting;
+    }
+
+    function getReviewWaitingPatients(room) {
+      return state.patients
+        .filter(patient => patient.roomId === room.id && patient.status === "review_waiting")
+        .sort(compareWaitingBase);
+    }
+
+    function getSkippedPatients(room) {
+      return state.patients
+        .filter(patient => patient.roomId === room.id && patient.status === "skipped")
+        .sort((a, b) => {
+          const aTime = new Date(a.skippedAt || a.createdAt).getTime();
+          const bTime = new Date(b.skippedAt || b.createdAt).getTime();
+          if (aTime !== bTime) return aTime - bTime;
+          return getPatientDisplayNo(a).localeCompare(getPatientDisplayNo(b), "zh-HK");
+        });
+    }
+
+    function splitDoctorName(fullName) {
+      const text = String(fullName || "").trim();
+      const match = text.match(/^(.*?醫生)\s*(Dr\..*)$/i);
+      if (match) return { zh: match[1].trim(), en: match[2].trim() };
+      return { zh: text, en: "" };
+    }
+
+    function getBoardPatientColorClass(patient) {
+      if (!patient) return "";
+      if (patient.priority) return "tag-priority";
+      if (patient.sourceType === "appointment" || patient.sourceType === "onlineTicket") return "tag-yellow";
+      return "";
+    }
+
+    function renderBoardTag(patient, type = "wait") {
+      let baseClass = "tag-wait";
+      if (type === "skip") baseClass = "tag-skip";
+      if (type === "review") baseClass = "tag-review";
+      const extraClass = getBoardPatientColorClass(patient);
+      return `<span class="board-tag ${baseClass} ${extraClass}">${escapeHtml(getPatientDisplayNo(patient))}</span>`;
+    }
+
+    function getVisibleBoardRooms() {
+      let rooms = sortedRooms().filter(room => room.status !== "closed");
+
+      if (state.roomFilterList.length) {
+        const allow = new Set(state.roomFilterList);
+        rooms = rooms.filter(room => allow.has(room.roomNo) || allow.has(getRoomDisplayShort(room.roomNo)));
+      }
+
+      return rooms;
+    }
+
+    function getBoardTotalPages(rooms) {
+      return Math.max(1, Math.ceil(rooms.length / state.config.pageSize));
+    }
+
+    function normalizeBoardPageIndex(totalPages) {
+      if (totalPages <= 0) {
+        state.displayPageIndex = 0;
+        return;
+      }
+      if (state.displayPageIndex >= totalPages) state.displayPageIndex = 0;
+      if (state.displayPageIndex < 0) state.displayPageIndex = 0;
+    }
+
+    function getBoardRenderModel() {
+      const visibleRooms = getVisibleBoardRooms();
+      const totalPages = getBoardTotalPages(visibleRooms);
+      normalizeBoardPageIndex(totalPages);
+      const startIndex = state.displayPageIndex * state.config.pageSize;
+      const pageRooms = visibleRooms.slice(startIndex, startIndex + state.config.pageSize);
+      return { visibleRooms, totalPages, pageRooms };
+    }
+
+    function updateTopChips(visibleRooms) {
+      const roomsChip = document.getElementById("roomsChip");
+      roomsChip.textContent = `診室：${visibleRooms.length}`;
+    }
+
+    function renderDisplayBoard(force = false) {
+      const container = document.getElementById("displayBoard");
+      const timeEl = document.getElementById("boardTime");
+      if (!container || !timeEl) return;
+
+      const nextTimeText = formatBoardNow(new Date());
+      if (timeEl.textContent !== nextTimeText) timeEl.textContent = nextTimeText;
+
+      const { visibleRooms, totalPages, pageRooms } = getBoardRenderModel();
+      updateTopChips(visibleRooms);
+
+      if (!visibleRooms.length) {
+        const html = `
+          <div class="board-wrap">
+            <div class="board-body">
+              <div class="board-row">
+                <div class="board-cell" style="grid-column: 1 / -1; min-height: 320px;">
+                  <div class="board-empty" style="font-size:1.8rem; line-height:1.6;">
+                    目前沒有顯示中的診室<br>No rooms currently displayed
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        if (force || state.lastBoardRenderKey !== html) {
+          container.innerHTML = html;
+          state.lastBoardRenderKey = html;
+        }
+        return;
+      }
+
+      const dotsHtml = Array.from({ length: totalPages }, (_, i) => `
+        <span class="board-dot ${i === state.displayPageIndex ? "active" : ""}"></span>
+      `).join("");
+
+      const rows = pageRooms.map(room => {
+        const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
+        const doctorParts = splitDoctorName(room.doctorName);
+
+        const waitingAll = getOrderedWaitingPatients(room);
+        const waitingPatients = waitingAll.slice(0, 8);
+        const waitingMore = Math.max(0, waitingAll.length - waitingPatients.length);
+
+        const reviewAll = getReviewWaitingPatients(room);
+        const reviewPatients = reviewAll.slice(0, 6);
+        const reviewMore = Math.max(0, reviewAll.length - reviewPatients.length);
+
+        const skippedAll = getSkippedPatients(room);
+        const skippedPatients = skippedAll.slice(0, 5);
+        const skippedMore = Math.max(0, skippedAll.length - skippedPatients.length);
+
+        const currentBoardContent = room.status === "paused"
+          ? `
+            <div class="board-paused">暫停 Paused</div>
+            ${room.pauseReason ? `<div class="board-meta">原因 Reason: ${escapeHtml(room.pauseReason)}</div>` : ""}
+          `
+          : `
+            ${
+              currentPatient
+                ? `
+                  <div class="board-current-ticket ${
+                    currentPatient.priority
+                      ? "board-current-ticket-red"
+                      : (currentPatient.sourceType === "appointment" || currentPatient.sourceType === "onlineTicket")
+                        ? "board-current-ticket-yellow"
+                        : "board-current-ticket-green"
+                  }">
+                    ${escapeHtml(getPatientDisplayNo(currentPatient))}
+                  </div>
+                  <div class="board-meta">${escapeHtml(formatRegisteredInline(currentPatient.registeredAt))}</div>
+                `
+                : `<div class="board-current-ticket">—</div>`
+            }
+          `;
+
+        return `
+          <div class="board-row">
+            <div class="board-cell board-room">${escapeHtml(getRoomDisplayShort(room.roomNo))}</div>
+            <div class="board-cell board-doctor">
+              <div class="board-doctor-zh">${escapeHtml(doctorParts.zh)}</div>
+              ${doctorParts.en ? `<div class="board-doctor-en">${escapeHtml(doctorParts.en)}</div>` : ""}
+            </div>
+            <div class="board-cell board-current">${currentBoardContent}</div>
+            <div class="board-cell">
+              <div class="board-queue">
+                ${
+                  waitingPatients.length
+                    ? waitingPatients.map(patient => renderBoardTag(patient, "wait")).join("") +
+                      (waitingMore > 0 ? `<span class="board-empty">+${waitingMore}</span>` : "")
+                    : `<span class="board-empty">—</span>`
+                }
+                ${
+                  (room.status === "open" && room.acceptingNew === false)
+                    ? `
+                      <span class="board-cutoff-tag">
+                        <span class="board-cutoff-zh">停收新症</span>
+                        <span class="board-cutoff-en">No New Patients</span>
+                      </span>
+                    `
+                    : ""
+                }
+              </div>
+            </div>
+            <div class="board-cell">
+              <div class="board-review">
+                ${
+                  reviewPatients.length
+                    ? reviewPatients.map(patient => renderBoardTag(patient, "review")).join("") +
+                      (reviewMore > 0 ? `<span class="board-empty">+${reviewMore}</span>` : "")
+                    : `<span class="board-empty">—</span>`
+                }
+              </div>
+            </div>
+            <div class="board-cell">
+              <div class="board-skip">
+                ${
+                  skippedPatients.length
+                    ? skippedPatients.map(patient => renderBoardTag(patient, "skip")).join("") +
+                      (skippedMore > 0 ? `<span class="board-empty">+${skippedMore}</span>` : "")
+                    : `<span class="board-empty">—</span>`
+                }
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      const html = `
+        <div class="board-pagination-bar">
+          <div class="board-page-indicator">第 ${state.displayPageIndex + 1} 頁 / 共 ${totalPages} 頁</div>
+          <div class="board-page-dots">${dotsHtml}</div>
+        </div>
+
+        <div class="board-wrap">
+          <div class="board-head">
+            <div><span class="board-head-zh">診室</span><span class="board-head-en">ROOM</span></div>
+            <div><span class="board-head-zh">醫生</span><span class="board-head-en">DOCTOR</span></div>
+            <div><span class="board-head-zh">現正診症</span><span class="board-head-en">NOW SERVING</span></div>
+            <div><span class="board-head-zh">候診</span><span class="board-head-en">WAITING</span></div>
+            <div><span class="board-head-zh">回診</span><span class="board-head-en">REVIEW</span></div>
+            <div><span class="board-head-zh">過號</span><span class="board-head-en">MISSED</span></div>
+          </div>
+          <div class="board-body">${rows}</div>
+        </div>
+      `;
+
+      if (force || state.lastBoardRenderKey !== html) {
+        container.innerHTML = html;
+        state.lastBoardRenderKey = html;
+      }
+    }
+
+    function mapRpcRows(rows) {
+      const roomMap = new Map();
+      const patientList = [];
+
+      for (const row of rows || []) {
+        if (!roomMap.has(row.room_id)) {
+          roomMap.set(row.room_id, {
+            id: row.room_id,
+            roomNo: row.room_no,
+            doctorName: row.doctor_name || "",
+            status: row.room_status || "open",
+            pauseReason: row.pause_reason || "",
+            acceptingNew: row.accepting_new !== false,
+            currentPatientId: row.current_patient_id || null
+          });
+        }
+
+        if (row.patient_id) {
+          patientList.push({
+            id: row.patient_id,
+            roomId: row.patient_room_id || "",
+            cumcNo: row.cumc_no,
+            ticketNo: row.ticket_no,
+            sourceType: row.source_type || "walkin",
+            priority: !!row.priority,
+            registeredAt: row.registered_at || null,
+            createdAt: row.created_at || null,
+            status: row.patient_status || "waiting",
+            queueOrder: Number.isFinite(row.queue_order) ? row.queue_order : row.queue_order,
+            skippedAt: row.skipped_at || null
+          });
+        }
+      }
+
+      state.rooms = [...roomMap.values()];
+      state.patients = patientList;
+    }
+
+    async function loadBoardData() {
+      const { data, error } = await sb.rpc("get_public_queue_board");
+      if (error) throw error;
+      mapRpcRows(data || []);
+    }
+
+    async function refreshBoard(showLoader = false) {
+      if (refreshInFlight) return;
+      refreshInFlight = true;
+
+      try {
+        if (showLoader) setLoading(true);
+        clearError();
+
+        await loadBoardData();
+
+        state.lastSuccessAt = new Date().toISOString();
+        setOnlineStatus(true);
+        renderDisplayBoard(false);
+      } catch (error) {
+        console.error("Failed to refresh board:", error);
+        setOnlineStatus(false);
+        showError("讀取看板資料失敗，系統會自動重試。");
+      } finally {
+        setLoading(false);
+        refreshInFlight = false;
+      }
+    }
+
+    function startBoardPageRotation() {
+      if (boardPageRotateTimer) clearInterval(boardPageRotateTimer);
+      boardPageRotateTimer = setInterval(() => {
+        const visibleRooms = getVisibleBoardRooms();
+        const totalPages = getBoardTotalPages(visibleRooms);
+
+        if (totalPages <= 1) {
+          state.displayPageIndex = 0;
+          renderDisplayBoard(false);
+          return;
+        }
+
+        state.displayPageIndex = (state.displayPageIndex + 1) % totalPages;
+        renderDisplayBoard(true);
+      }, state.config.rotateMs);
+    }
+
+    async function setupRealtimeAndPolling() {
+      if (realtimeChannel) {
+        try { await sb.removeChannel(realtimeChannel); } catch (_) {}
+      }
+
+      realtimeChannel = sb
+        .channel("emc-public-display-live")
+        .on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, () => refreshBoard(false))
+        .on("postgres_changes", { event: "*", schema: "public", table: "patients" }, () => refreshBoard(false))
+        .subscribe((status) => {
+          if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+            setOnlineStatus(false);
+          }
+        });
+
+      if (liveRefreshTimer) clearInterval(liveRefreshTimer);
+      liveRefreshTimer = setInterval(() => refreshBoard(false), state.config.pollingMs);
+
+      if (boardClockTimer) clearInterval(boardClockTimer);
+      boardClockTimer = setInterval(() => {
+        const timeEl = document.getElementById("boardTime");
+        if (timeEl) timeEl.textContent = formatBoardNow(new Date());
+      }, 1000);
+
+      startBoardPageRotation();
+    }
+
+    function initFullscreen() {
+      document.getElementById("fullscreenBtn").addEventListener("click", async () => {
+        try {
+          if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+          } else {
+            await document.exitFullscreen();
+          }
+        } catch (error) {
+          console.warn("Fullscreen failed:", error);
+        }
+      });
+    }
+
+    function initWindowEvents() {
+      window.addEventListener("online", () => {
+        setOnlineStatus(true);
+        refreshBoard(false);
+      });
+
+      window.addEventListener("offline", () => {
+        setOnlineStatus(false);
+      });
+
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowRight") {
+          const visibleRooms = getVisibleBoardRooms();
+          const totalPages = getBoardTotalPages(visibleRooms);
+          state.displayPageIndex = (state.displayPageIndex + 1) % totalPages;
+          renderDisplayBoard(true);
+        } else if (event.key === "ArrowLeft") {
+          const visibleRooms = getVisibleBoardRooms();
+          const totalPages = getBoardTotalPages(visibleRooms);
+          state.displayPageIndex = (state.displayPageIndex - 1 + totalPages) % totalPages;
+          renderDisplayBoard(true);
+        } else if (event.key.toLowerCase() === "r") {
+          refreshBoard(true);
+        }
+      });
+    }
+
+    async function initApp() {
+      applyConfigFromQuery();
+      initFullscreen();
+      initWindowEvents();
+
+      document.getElementById("boardTime").textContent = formatBoardNow(new Date());
+
+      await refreshBoard(true);
+      await setupRealtimeAndPolling();
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
