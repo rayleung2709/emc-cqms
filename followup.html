@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -2523,6 +2524,10 @@
       followupModal.doctorDisplayEl.value = getEncounterDoctorText(looseDoctorMatch);
     }
 
+    function isUuidLike(value) {
+      return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(String(value || "").trim());
+    }
+
     async function init() {
       bindEvents();
       initChipControls();
@@ -3341,13 +3346,29 @@
       document.body.classList.remove("modal-open");
     }
 
+    function formatError(error) {
+      if (!error) return "Unknown error";
+      if (typeof error === "string") return error;
+
+      const parts = [
+        error.message,
+        error.details,
+        error.hint,
+        error.code ? `code: ${error.code}` : ""
+      ].filter(Boolean);
+
+      return parts.length ? parts.join("\n") : JSON.stringify(error);
+    }
+
     async function saveFollowupFromModal() {
       const patientId = String(followupModal.patientInputEl.value || "").trim();
       const encounterInput = String(followupModal.encounterInputEl.value || "").trim();
       const matchedEncounter = getEncounterByIdOrNo(encounterInput);
       const encounterNo = matchedEncounter ? detectEncounterNo(matchedEncounter) : (encounterInput || null);
       const encounterRef = matchedEncounter ? String(matchedEncounter.id) : null;
-      const encounterId = matchedEncounter?.id || null;
+      const encounterId = matchedEncounter?.id && isUuidLike(matchedEncounter.id)
+        ? matchedEncounter.id
+        : null;
 
       const title = String(followupModal.titleInputEl.value || "").trim();
       const assignedTo = String(followupModal.assignedToEl.value || "").trim() || getCurrentStaffDisplayText();
@@ -3355,9 +3376,9 @@
       const outcome = String(followupModal.outcomeEl.value || "").trim() || null;
       const status = String(followupModal.statusEl.value || "open").trim();
       const priority = String(followupModal.priorityEl.value || "normal").trim();
-      const category = uniqueCleanList(followupModal.categoryValues);
-      const source = uniqueCleanList(followupModal.sourceValues);
-      const requestedBy = uniqueCleanList(followupModal.requestedByValues);
+      const category = uniqueCleanList(followupModal.categoryValues).join("、");
+      const source = uniqueCleanList(followupModal.sourceValues).join("、");
+      const requestedBy = uniqueCleanList(followupModal.requestedByValues).join("、");
       const dueAt = localValueToIso(followupModal.dueAtEl.value || "");
       const actor = getCurrentStaffDisplayText();
 
@@ -3410,7 +3431,12 @@
           .insert([payload])
           .select()
           .single();
-        if (error) throw error;
+
+        if (error) {
+          console.error("新增跟進事項失敗:", error, payload);
+          notify("新增跟進事項失敗\n" + formatError(error), "error", 7000);
+          return;
+        }
 
         const { error: eventError } = await sb
           .from("followup_events")
@@ -3431,7 +3457,11 @@
             },
             actor
           }]);
-        if (eventError) throw eventError;
+
+        if (eventError) {
+          console.error("新增時間線失敗:", eventError);
+          notify("事項已新增，但時間線寫入失敗\n" + formatError(eventError), "warning", 7000);
+        }
 
         await loadAll();
         state.selectedFollowupId = data.id;
@@ -3440,7 +3470,10 @@
         notify(`已新增事項：${formatFollowupNo(data)}`, "success");
       } else {
         const original = state.followups.find(f => String(f.id) === String(followupModal.followupId));
-        if (!original) throw new Error("FOLLOWUP_NOT_FOUND");
+        if (!original) {
+          notify("找不到原始事項資料", "error");
+          return;
+        }
 
         payload.patient_id = original.patient_id;
 
@@ -3450,7 +3483,12 @@
           .eq("id", followupModal.followupId)
           .select()
           .single();
-        if (error) throw error;
+
+        if (error) {
+          console.error("更新跟進事項失敗:", error, payload);
+          notify("更新跟進事項失敗\n" + formatError(error), "error", 7000);
+          return;
+        }
 
         const changed = {};
         Object.entries(payload).forEach(([k, v]) => {
@@ -3478,7 +3516,11 @@
             },
             actor
           }]);
-        if (eventError) throw eventError;
+
+        if (eventError) {
+          console.error("更新時間線失敗:", eventError);
+          notify("事項已更新，但時間線寫入失敗\n" + formatError(eventError), "warning", 7000);
+        }
 
         await loadAll();
         state.selectedFollowupId = data.id;
@@ -3490,7 +3532,10 @@
 
     async function saveStatusUpdate() {
       const item = state.followups.find(f => String(f.id) === String(statusModal.followupId));
-      if (!item) throw new Error("FOLLOWUP_NOT_FOUND");
+      if (!item) {
+        notify("找不到事項", "error");
+        return;
+      }
 
       const status = String(statusModal.statusEl.value || "open").trim();
       const priority = String(statusModal.priorityEl.value || "normal").trim();
@@ -3514,7 +3559,12 @@
         .eq("id", item.id)
         .select()
         .single();
-      if (error) throw error;
+
+      if (error) {
+        console.error("更新狀態失敗:", error, payload);
+        notify("更新狀態失敗\n" + formatError(error), "error", 7000);
+        return;
+      }
 
       const eventType = status === "done"
         ? "completed"
@@ -3547,7 +3597,11 @@
           },
           actor
         }]);
-      if (eventError) throw eventError;
+
+      if (eventError) {
+        console.error("更新狀態時間線失敗:", eventError);
+        notify("狀態已更新，但時間線寫入失敗\n" + formatError(eventError), "warning", 7000);
+      }
 
       await loadAll();
       state.selectedFollowupId = data.id;
@@ -3558,7 +3612,10 @@
 
     async function saveQuickDone() {
       const item = state.followups.find(f => String(f.id) === String(quickDoneModal.followupId));
-      if (!item) throw new Error("FOLLOWUP_NOT_FOUND");
+      if (!item) {
+        notify("找不到事項", "error");
+        return;
+      }
 
       const outcome = String(quickDoneModal.outcomeEl.value || "").trim();
       const remark = String(quickDoneModal.remarkEl.value || "").trim() || null;
@@ -3581,7 +3638,12 @@
         .eq("id", item.id)
         .select()
         .single();
-      if (error) throw error;
+
+      if (error) {
+        console.error("快捷完成失敗:", error, payload);
+        notify("快捷完成失敗\n" + formatError(error), "error", 7000);
+        return;
+      }
 
       const { error: eventError } = await sb
         .from("followup_events")
@@ -3599,7 +3661,11 @@
           },
           actor
         }]);
-      if (eventError) throw eventError;
+
+      if (eventError) {
+        console.error("快捷完成時間線失敗:", eventError);
+        notify("事項已完成，但時間線寫入失敗\n" + formatError(eventError), "warning", 7000);
+      }
 
       await loadAll();
       state.selectedFollowupId = data.id;
@@ -3658,12 +3724,6 @@
       } finally {
         refreshSilentLock = false;
       }
-    }
-
-    function formatError(error) {
-      if (!error) return "Unknown error";
-      if (typeof error === "string") return error;
-      return error.message || JSON.stringify(error);
     }
 
     window.addEventListener("beforeunload", cleanupRealtime);
