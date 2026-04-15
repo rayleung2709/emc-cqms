@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>跟進事項管理</title>
+  <title>急症醫學中心跟進管理系統 EMCFMS</title>
   <style>
     :root{
       --bg:#f5f7fb;
@@ -811,6 +811,16 @@
     const PRESET_SOURCES = ["手動","系統","電話","WhatsApp","前台","護士站","醫生口頭通知","電郵"];
     const PRESET_REQUESTED_BY = ["醫生","護士","病人","家屬","前台","保險","化驗所","系統"];
 
+    const ALLOWED_CATEGORIES = [
+      "callback",
+      "abnormal_result",
+      "document_request",
+      "return_visit",
+      "insurance_form",
+      "admin",
+      "other"
+    ];
+
     const state = {
       authUser: null,
       profile: null,
@@ -1199,8 +1209,14 @@
       return zh.priority[String(priority || "").trim()] || String(priority || "—");
     }
 
+    function normalizeCategoryValue(category) {
+      const raw = String(category || "").trim();
+      return ALLOWED_CATEGORIES.includes(raw) ? raw : "other";
+    }
+
     function categoryLabel(category) {
-      return zh.category[String(category || "").trim()] || String(category || "—");
+      const normalized = normalizeCategoryValue(category);
+      return zh.category[normalized] || String(normalized || "—");
     }
 
     function eventLabel(eventType, fallbackLabel) {
@@ -1326,11 +1342,6 @@
     function multiFieldToDisplay(value) {
       const arr = normalizeMultiFieldToArray(value);
       return arr.length ? arr.join("、") : "—";
-    }
-
-    function renderChipSet(values) {
-      const arr = normalizeMultiFieldToArray(values);
-      return arr.map(v => `<span class="badge badge-chip">${escapeHtml(v)}</span>`).join("");
     }
 
     function renderEditableChips(containerEl, values, removeHandlerName) {
@@ -1792,7 +1803,10 @@
     async function loadFollowups() {
       const { data, error } = await sb.from("followups").select("*").order("updated_at", { ascending: false });
       if (error) throw error;
-      state.followups = Array.isArray(data) ? data : [];
+      state.followups = Array.isArray(data) ? data.map(item => ({
+        ...item,
+        category: normalizeCategoryValue(item.category)
+      })) : [];
 
       if (state.selectedFollowupId && !state.followups.some(item => String(item.id) === String(state.selectedFollowupId))) {
         state.selectedFollowupId = null;
@@ -1865,7 +1879,7 @@
       let list = state.followups.filter(item => {
         if (tabStatus && String(item.status || "") !== tabStatus) return false;
         if (priority && String(item.priority || "") !== priority) return false;
-        if (category && String(item.category || "") !== category) return false;
+        if (category && normalizeCategoryValue(item.category) !== category) return false;
         if (assignee && getStaffDisplayText(item.assigned_to) !== assignee) return false;
 
         const encounterStored = getPrimaryEncounterStoredValue(item);
@@ -1881,7 +1895,7 @@
             item.created_by,
             item.description,
             item.outcome,
-            item.category,
+            normalizeCategoryValue(item.category),
             categoryLabel(item.category),
             item.source,
             item.requested_by,
@@ -2258,7 +2272,7 @@
         followupModal.patientInputEl.readOnly = true;
         followupModal.patientNoteEl.textContent = "編輯事項時不可修改 CUMC 號碼。";
         followupModal.encounterInputEl.value = getEncounterDisplayByStoredValue(encounterStored) === "—" ? String(encounterStored || "") : getEncounterDisplayByStoredValue(encounterStored);
-        followupModal.categoryEl.value = item.category || "callback";
+        followupModal.categoryEl.value = normalizeCategoryValue(item.category);
         followupModal.statusEl.value = item.status || "open";
         followupModal.priorityEl.value = item.priority || "normal";
         followupModal.dueAtEl.value = toDatetimeLocalValue(item.due_at);
@@ -2352,7 +2366,13 @@
       const encounterRef = matchedEncounter ? String(matchedEncounter.id) : null;
       const encounterId = matchedEncounter?.id && isUuidLike(matchedEncounter.id) ? matchedEncounter.id : null;
 
-      const category = String(followupModal.categoryEl.value || "callback").trim();
+      let category = String(followupModal.categoryEl.value || "callback").trim();
+      if (!ALLOWED_CATEGORIES.includes(category)) {
+        console.warn("Invalid category from UI:", category);
+        category = "other";
+      }
+      console.log("category to insert =", category);
+
       const title = String(followupModal.titleInputEl.value || "").trim();
       const assignedTo = String(followupModal.assignedToEl.value || "").trim() || getCurrentStaffDisplayText();
       const description = String(followupModal.descriptionEl.value || "").trim();
