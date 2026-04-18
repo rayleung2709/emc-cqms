@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EMCFUS 急症醫學中心跟進系統</title>
+  <style>
+    :root{
+      --bg:#f4f7fb;
+      --panel:#ffffff;
+      --panel-2:#f8fbff;
+      --line:#dbe5f0;
+      --line-2:#e9eff6;
+      --text:#17324d;
+      --muted:#5f748c;
+      --subtle:#8ca0b6;
+      --primary:#1f6feb;
+      --primary-2:#e8f1ff;
+      --primary-3:#d7e7ff;
+      --success:#0f9f6e;
+      --success-bg:#e9fbf4;
+      --warning:#b7791f;
+      --warning-bg:#fff7e7;
+      --danger:#d83a52;
+      --danger-bg:#fff0f3;
+      --purple:#7a52cc;
+      --purple-bg:#f3edff;
+      --teal:#1597a5;
+      --teal-bg:#eafcff;
+      --gray-bg:#eef3f8;
+      --shadow:0 12px 40px rgba(18, 51, 84, 0.08);
+      --radius:18px;
+      --radius-sm:12px;
+      --header-h:72px;
+      --detail-w:400px;
+      --max:1600px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    button,input,select,textarea{font:inherit}
+    body{min-height:100vh}
+    .app{max-width:var(--max);margin:0 auto;padding:20px}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      background:var(--panel);border:1px solid var(--line);border-radius:24px;
+      padding:16px 18px;box-shadow:var(--shadow);position:sticky;top:12px;z-index:30
+    }
+    .brand{display:flex;align-items:center;gap:14px;min-width:0}
+    .brand-badge{
+      width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#1f6feb,#4aa3ff);
+      display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;flex:0 0 auto
+    }
+    .brand-text{min-width:0}
+    .brand-title{font-weight:800;font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .brand-sub{font-size:12px;color:var(--muted);margin-top:2px}
+    .top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .search-wrap{
+      display:flex;align-items:center;gap:10px;background:var(--panel-2);border:1px solid var(--line);
+      border-radius:14px;padding:0 12px;min-width:320px;height:44px
+    }
+    .search-wrap input{border:none;background:transparent;outline:none;width:100%;color:var(--text)}
+    .icon{width:18px;height:18px;display:inline-block;vertical-align:middle}
+    .btn{
+      height:42px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--text);
+      padding:0 14px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:600
+    }
+    .btn:hover{background:#f8fbff}
+    .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+    .btn.primary:hover{filter:brightness(0.97)}
+    .btn.ghost{background:transparent}
+    .btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
+    .btn.small{height:34px;padding:0 12px;font-size:13px;border-radius:10px}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:7px 12px;
+      background:var(--panel-2);border:1px solid var(--line);font-size:13px;color:var(--muted);font-weight:600
+    }
+    .user-chip{
+      display:flex;align-items:center;gap:10px;background:var(--panel-2);border:1px solid var(--line);
+      border-radius:14px;padding:8px 10px
+    }
+    .avatar{
+      width:32px;height:32px;border-radius:50%;background:#dbeafe;color:#184b9b;font-weight:800;
+      display:flex;align-items:center;justify-content:center;font-size:13px
+    }
+
+    .section{margin-top:18px}
+    .dashboard{
+      display:grid;grid-template-columns:repeat(12,1fr);gap:14px
+    }
+    .card{
+      background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)
+    }
+    .metric{
+      padding:18px;min-height:132px;display:flex;flex-direction:column;justify-content:space-between
+    }
+    .metric-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .metric-label{font-size:13px;color:var(--muted);font-weight:700}
+    .metric-value{font-size:34px;font-weight:800;line-height:1;margin-top:10px}
+    .metric-foot{display:flex;align-items:center;justify-content:space-between;margin-top:14px;font-size:12px;color:var(--subtle)}
+    .trend-up{color:var(--success);font-weight:700}
+    .trend-down{color:var(--danger);font-weight:700}
+    .span-3{grid-column:span 3}
+    .span-4{grid-column:span 4}
+    .span-6{grid-column:span 6}
+    .span-8{grid-column:span 8}
+    .span-12{grid-column:span 12}
+
+    .panel-head{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px 0 18px
+    }
+    .panel-title{font-weight:800;font-size:16px}
+    .panel-sub{font-size:12px;color:var(--muted);margin-top:3px}
+    .panel-body{padding:16px 18px 18px 18px}
+    .mini-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .mini-box{
+      border:1px solid var(--line);background:var(--panel-2);border-radius:16px;padding:14px
+    }
+    .mini-box .k{font-size:12px;color:var(--muted);font-weight:700}
+    .mini-box .v{margin-top:8px;font-size:24px;font-weight:800}
+    .queue-list,.attention-list,.activity-list,.timeline-list,.attachment-list{display:flex;flex-direction:column;gap:10px}
+    .queue-row,.attention-item,.activity-item,.timeline-item,.attachment-item{
+      border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 14px
+    }
+    .queue-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .queue-left{display:flex;align-items:center;gap:10px}
+    .team-dot{width:10px;height:10px;border-radius:50%}
+    .team-reception{background:#1f6feb}
+    .team-nursing{background:#1597a5}
+    .team-doctor{background:#7a52cc}
+    .queue-metrics{display:flex;gap:10px;flex-wrap:wrap}
+    .tiny{
+      font-size:12px;color:var(--muted);background:var(--panel-2);padding:6px 8px;border-radius:999px;border:1px solid var(--line)
+    }
+
+    .toolbar{
+      display:flex;flex-direction:column;gap:12px
+    }
+    .tabs{
+      display:flex;gap:8px;overflow:auto;padding-bottom:2px
+    }
+    .tab{
+      border:none;background:#eef4fb;color:var(--muted);padding:10px 14px;border-radius:999px;font-weight:700;cursor:pointer;white-space:nowrap
+    }
+    .tab.active{background:var(--primary);color:#fff}
+    .filters.card{padding:14px 16px}
+    .filter-grid{
+      display:grid;grid-template-columns:2fr repeat(6,1fr);gap:10px;align-items:end
+    }
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field label{font-size:12px;color:var(--muted);font-weight:700}
+    .field input,.field select,.field textarea{
+      border:1px solid var(--line);background:#fff;border-radius:12px;min-height:42px;padding:10px 12px;outline:none;color:var(--text)
+    }
+    .field textarea{min-height:90px;resize:vertical}
+    .toolbar-actions{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:12px;flex-wrap:wrap}
+    .toolbar-left,.toolbar-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+    .bulkbar{
+      display:none;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;
+      background:#0f2740;color:#fff;border-radius:18px;box-shadow:var(--shadow)
+    }
+    .bulkbar.active{display:flex}
+    .bulk-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .bulkbar .btn{background:rgba(255,255,255,0.08);color:#fff;border-color:rgba(255,255,255,0.16)}
+    .bulkbar .btn:hover{background:rgba(255,255,255,0.14)}
+
+    .workspace{
+      display:grid;grid-template-columns:minmax(0,1fr) var(--detail-w);gap:16px;align-items:start
+    }
+    .worklist.card{overflow:hidden}
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:separate;border-spacing:0}
+    th,td{padding:14px 12px;border-bottom:1px solid var(--line-2);text-align:left;font-size:13px;vertical-align:middle}
+    th{
+      position:sticky;top:0;background:#f9fbfe;z-index:2;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em
+    }
+    tbody tr{background:#fff;cursor:pointer}
+    tbody tr:hover{background:#f9fcff}
+    tbody tr.selected{background:#eef6ff}
+    tbody tr.urgent-row td:first-child{box-shadow:inset 4px 0 0 var(--danger)}
+    .title-cell{min-width:220px}
+    .title-main{font-weight:700;color:var(--text)}
+    .title-sub{font-size:12px;color:var(--muted);margin-top:4px}
+    .muted{color:var(--muted)}
+    .subtle{color:var(--subtle)}
+    .badge{
+      display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;border:1px solid transparent;white-space:nowrap
+    }
+    .b-status-new{background:#eef4fb;color:#4e6782;border-color:#d6e2ef}
+    .b-status-assigned{background:#e8f1ff;color:#1f5fbf;border-color:#cfe0ff}
+    .b-status-in_progress{background:#eaf3ff;color:#224e9e;border-color:#cfe1ff}
+    .b-status-waiting_patient{background:#fff7e7;color:#9b6a16;border-color:#f6dfaa}
+    .b-status-waiting_doctor{background:#f3edff;color:#7245c0;border-color:#dfd2ff}
+    .b-status-completed{background:#e9fbf4;color:#0a8a5d;border-color:#c6f2df}
+    .b-status-closed{background:#eef3f8;color:#627385;border-color:#dde6ef}
+
+    .b-priority-normal{background:#eef4fb;color:#4e6782;border-color:#d7e2ef}
+    .b-priority-urgent{background:#fff0f3;color:#c22f49;border-color:#ffc8d2}
+
+    .b-team-Reception{background:#e9f1ff;color:#1f5fbf;border-color:#d1e1ff}
+    .b-team-Nursing{background:#eafcff;color:#147f8b;border-color:#c9f6fb}
+    .b-team-Doctor{background:#f3edff;color:#7245c0;border-color:#e0d1ff}
+
+    .attach-chip{
+      display:inline-flex;align-items:center;gap:6px;background:var(--panel-2);border:1px solid var(--line);
+      padding:6px 8px;border-radius:999px;color:var(--muted);font-size:12px;font-weight:700
+    }
+    .action-row{display:flex;gap:6px;flex-wrap:wrap}
+    .icon-btn{
+      width:32px;height:32px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center
+    }
+    .icon-btn:hover{background:#f7fbff}
+    .due.overdue{color:var(--danger);font-weight:800}
+    .due.today{color:var(--warning);font-weight:800}
+    .check{width:16px;height:16px}
+
+    .detail{
+      position:sticky;top:100px;max-height:calc(100vh - 120px);overflow:auto
+    }
+    .detail-empty{padding:30px;text-align:center;color:var(--muted)}
+    .detail-section{padding:16px 18px;border-top:1px solid var(--line-2)}
+    .detail-hero{padding:18px}
+    .detail-title{font-size:20px;font-weight:800;line-height:1.35}
+    .detail-id{margin-top:6px;color:var(--muted);font-size:12px;font-weight:700}
+    .stack{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .quick-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .kv-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .kv{
+      border:1px solid var(--line);background:var(--panel-2);border-radius:14px;padding:12px
+    }
+    .kv .k{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:800}
+    .kv .v{margin-top:8px;font-weight:700;font-size:14px}
+    .detail-block-title{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+    .desc{white-space:pre-wrap;line-height:1.6;font-size:14px}
+    .timeline-item,.attachment-item{display:flex;gap:12px}
+    .timeline-icon,.attachment-icon{
+      width:34px;height:34px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line);
+      display:flex;align-items:center;justify-content:center;flex:0 0 auto
+    }
+    .timeline-content,.attachment-content{min-width:0;flex:1}
+    .timeline-title,.attachment-name{font-weight:800;font-size:14px}
+    .timeline-meta,.attachment-meta{font-size:12px;color:var(--muted);margin-top:4px}
+    .timeline-note{font-size:13px;color:var(--text);margin-top:8px;line-height:1.5;white-space:pre-wrap}
+    .attachment-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .upload-box{
+      border:1.5px dashed #b9cde5;background:#f8fbff;border-radius:16px;padding:16px;text-align:center
+    }
+    .upload-queue{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+    .upload-item{
+      display:flex;justify-content:space-between;gap:10px;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px
+    }
+    .progress{
+      width:120px;height:8px;background:#edf2f7;border-radius:999px;overflow:hidden
+    }
+    .progress > span{display:block;height:100%;background:var(--primary)}
+
+    .drawer-backdrop,.modal-backdrop{
+      position:fixed;inset:0;background:rgba(10,23,38,.44);backdrop-filter:blur(2px);display:none;z-index:60
+    }
+    .drawer-backdrop.active,.modal-backdrop.active{display:block}
+    .mobile-drawer{
+      position:fixed;right:0;top:0;height:100%;width:min(100%,560px);background:#fff;box-shadow:-12px 0 30px rgba(0,0,0,.18);
+      transform:translateX(100%);transition:.25s ease;z-index:70;overflow:auto
+    }
+    .mobile-drawer.active{transform:translateX(0)}
+    .drawer-head{
+      position:sticky;top:0;background:#fff;padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;z-index:2
+    }
+
+    .modal{
+      position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.98);width:min(980px,94vw);max-height:90vh;overflow:auto;
+      background:#fff;border-radius:24px;box-shadow:0 30px 80px rgba(7,20,33,.25);display:none;z-index:80;border:1px solid var(--line)
+    }
+    .modal.active{display:block;transform:translate(-50%,-50%) scale(1)}
+    .modal-head{
+      position:sticky;top:0;background:#fff;padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:2
+    }
+    .modal-title{font-size:18px;font-weight:800}
+    .modal-body{padding:18px 20px 22px}
+    .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .form-grid .full{grid-column:1 / -1}
+    .modal-foot{
+      position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);padding:14px 20px;display:flex;justify-content:flex-end;gap:10px
+    }
+
+    .toast-wrap{
+      position:fixed;right:18px;bottom:18px;z-index:100;display:flex;flex-direction:column;gap:10px
+    }
+    .toast{
+      background:#0f2740;color:#fff;padding:12px 14px;border-radius:14px;box-shadow:var(--shadow);font-size:14px;font-weight:700
+    }
+
+    .hidden{display:none !important}
+
+    @media (max-width: 1280px){
+      .span-3{grid-column:span 6}
+      .span-4{grid-column:span 6}
+      .span-6,.span-8{grid-column:span 12}
+      .workspace{grid-template-columns:minmax(0,1fr) 360px}
+      .filter-grid{grid-template-columns:repeat(4,1fr)}
+      .filter-grid .field:first-child{grid-column:1 / -1}
+    }
+    @media (max-width: 980px){
+      .app{padding:14px}
+      .topbar{padding:14px}
+      .search-wrap{min-width:0;width:100%}
+      .top-actions{width:100%;justify-content:stretch}
+      .top-actions > *{flex:1 1 auto}
+      .dashboard{grid-template-columns:repeat(6,1fr)}
+      .span-3,.span-4,.span-6,.span-8,.span-12{grid-column:span 6}
+      .mini-stats{grid-template-columns:repeat(2,1fr)}
+      .workspace{grid-template-columns:1fr}
+      .detail.desktop-only{display:none}
+      .form-grid{grid-template-columns:1fr}
+      .filter-grid{grid-template-columns:repeat(2,1fr)}
+      .toolbar-actions{align-items:flex-start}
+    }
+    @media (max-width: 640px){
+      .brand-title{font-size:16px}
+      .brand-sub{display:none}
+      .dashboard{grid-template-columns:1fr}
+      .span-3,.span-4,.span-6,.span-8,.span-12{grid-column:span 1}
+      .mini-stats{grid-template-columns:1fr 1fr}
+      .filter-grid{grid-template-columns:1fr}
+      .table-wrap{display:none}
+      .mobile-list{display:flex !important}
+      .bulkbar{flex-direction:column;align-items:flex-start}
+    }
+
+    .mobile-list{display:none;flex-direction:column;gap:12px;padding:14px}
+    .mobile-card{
+      border:1px solid var(--line);background:#fff;border-radius:18px;padding:14px;box-shadow:var(--shadow)
+    }
+    .mobile-card.selected{outline:2px solid #bcd6ff;background:#f5faff}
+    .mobile-card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .mobile-title{font-weight:800;font-size:15px;line-height:1.4}
+    .mobile-meta{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;color:var(--muted)}
+    .mobile-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+    .sr-only{
+      position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-badge">E</div>
+        <div class="brand-text">
+          <div class="brand-title">EMCFUS 急症醫學中心跟進系統</div>
+          <div class="brand-sub">Follow-up Operations Workspace</div>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <div class="search-wrap">
+          <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35M10.8 18a7.2 7.2 0 100-14.4 7.2 7.2 0 000 14.4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input id="globalSearch" type="text" placeholder="搜尋 Follow-up ID / CUMC / Encounter / Doctor / Title" />
+        </div>
+        <div class="pill" id="todayPill">今天</div>
+        <button class="btn" id="refreshBtn">
+          <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M20 11a8 8 0 10-2.34 5.66M20 4v7h-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Refresh
+        </button>
+        <button class="btn primary" id="newBtn">
+          <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          新增事項
+        </button>
+        <div class="user-chip">
+          <div class="avatar">CW</div>
+          <div>
+            <div style="font-size:13px;font-weight:800">Carmen Wong</div>
+            <div style="font-size:12px;color:var(--muted)">Nursing</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="section dashboard" id="dashboard"></section>
+
+    <section class="section toolbar">
+      <div class="tabs card" style="padding:12px 14px" id="quickTabs"></div>
+
+      <div class="filters card">
+        <div class="filter-grid">
+          <div class="field">
+            <label>搜尋</label>
+            <input id="filterSearch" type="text" placeholder="輸入關鍵字..." />
+          </div>
+          <div class="field">
+            <label>狀態</label>
+            <select id="filterStatus"></select>
+          </div>
+          <div class="field">
+            <label>優先級</label>
+            <select id="filterPriority"></select>
+          </div>
+          <div class="field">
+            <label>類別</label>
+            <select id="filterCategory"></select>
+          </div>
+          <div class="field">
+            <label>Team</label>
+            <select id="filterTeam"></select>
+          </div>
+          <div class="field">
+            <label>Owner</label>
+            <select id="filterOwner"></select>
+          </div>
+          <div class="field">
+            <label>附件</label>
+            <select id="filterAttachment"></select>
+          </div>
+        </div>
+        <div class="toolbar-actions">
+          <div class="toolbar-left">
+            <button class="btn small" id="toggleOverdueBtn">只看逾期</button>
+            <button class="btn small" id="toggleDueTodayBtn">只看今日到期</button>
+            <button class="btn small" id="savePresetBtn">儲存篩選</button>
+            <span class="pill" id="resultPill">0 results</span>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn small" id="clearFiltersBtn">清除篩選</button>
+            <button class="btn small" id="sortDueBtn">依到期排序</button>
+            <button class="btn small" id="sortUpdatedBtn">依更新排序</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bulkbar" id="bulkBar">
+        <div><strong id="bulkCount">0</strong> 項已選取</div>
+        <div class="bulk-actions">
+          <button class="btn small" data-bulk="assign">Assign owner</button>
+          <button class="btn small" data-bulk="team">Change team</button>
+          <button class="btn small" data-bulk="status">Change status</button>
+          <button class="btn small" data-bulk="due">Change due date</button>
+          <button class="btn small" data-bulk="complete">Complete</button>
+          <button class="btn small" data-bulk="close">Close</button>
+          <button class="btn small" id="clearSelectedBtn">Clear</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section workspace">
+      <div class="worklist card">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">Follow-up Worklist</div>
+            <div class="panel-sub">工作單中心 · 支援多負責人、批量操作與附件管理</div>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn small" id="toggleViewBtn">手機卡片預覽</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll" class="check" /></th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Follow-up ID</th>
+                <th>CUMC</th>
+                <th>Encounter</th>
+                <th>Doctor</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Team</th>
+                <th>Owner</th>
+                <th>Due</th>
+                <th>Updated</th>
+                <th>Attachments</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="mobile-list" id="mobileList"></div>
+      </div>
+
+      <aside class="detail card desktop-only" id="desktopDetail"></aside>
+    </section>
+  </div>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="mobile-drawer" id="mobileDrawer">
+    <div class="drawer-head">
+      <strong>跟進事項詳情</strong>
+      <button class="icon-btn" id="closeDrawerBtn" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div id="mobileDetail"></div>
+  </aside>
+
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+
+  <section class="modal" id="formModal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="formModalTitle">新增跟進事項</div>
+        <div class="panel-sub">建立或編輯 follow-up</div>
+      </div>
+      <button class="icon-btn" data-close-modal="formModal">
+        <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="followupForm">
+        <input type="hidden" id="formId" />
+        <div class="form-grid">
+          <div class="field">
+            <label>CUMC No</label>
+            <input id="fCumc" required />
+          </div>
+          <div class="field">
+            <label>Encounter No</label>
+            <input id="fEncounter" required />
+          </div>
+          <div class="field">
+            <label>Doctor</label>
+            <select id="fDoctor" required></select>
+          </div>
+          <div class="field">
+            <label>Category</label>
+            <select id="fCategory" required></select>
+          </div>
+          <div class="field full">
+            <label>Title</label>
+            <input id="fTitle" required />
+          </div>
+          <div class="field full">
+            <label>Description</label>
+            <textarea id="fDescription"></textarea>
+          </div>
+          <div class="field">
+            <label>Priority</label>
+            <select id="fPriority" required></select>
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select id="fStatus" required></select>
+          </div>
+          <div class="field">
+            <label>Due Date & Time</label>
+            <input id="fDueAt" type="datetime-local" required />
+          </div>
+          <div class="field">
+            <label>Next Action</label>
+            <input id="fNextAction" />
+          </div>
+          <div class="field">
+            <label>Team</label>
+            <select id="fTeam" required></select>
+          </div>
+          <div class="field">
+            <label>Primary Owner</label>
+            <select id="fOwner" required></select>
+          </div>
+          <div class="field full">
+            <label>Collaborators</label>
+            <select id="fCollaborators" multiple size="4"></select>
+          </div>
+          <div class="field">
+            <label>Source</label>
+            <input id="fSource" placeholder="ER desk / nurse station / doctor round..." />
+          </div>
+          <div class="field">
+            <label>Requested By</label>
+            <input id="fRequestedBy" />
+          </div>
+          <div class="field full">
+            <label>Outcome Summary</label>
+            <textarea id="fOutcome"></textarea>
+          </div>
+          <div class="field full">
+            <label>Attachments</label>
+            <div class="upload-box">
+              <div style="font-weight:800">按 Supabase Storage 思維設計的附件上載 UI</div>
+              <div class="panel-sub" style="margin-top:4px">選擇檔案後會加入 upload queue（原型模式，不作真實上載）</div>
+              <div style="margin-top:12px">
+                <input id="fAttachments" type="file" multiple />
+              </div>
+              <div class="upload-queue" id="formUploadQueue"></div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close-modal="formModal">取消</button>
+      <button class="btn primary" id="saveFollowupBtn">儲存事項</button>
+    </div>
+  </section>
+
+  <section class="modal" id="statusModal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">更新狀態</div>
+        <div class="panel-sub">記錄 remark、下一步與結果摘要</div>
+      </div>
+      <button class="icon-btn" data-close-modal="statusModal">
+        <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="statusItemId" />
+      <div class="form-grid">
+        <div class="field">
+          <label>New Status</label>
+          <select id="sStatus"></select>
+        </div>
+        <div class="field">
+          <label>Reassign Owner</label>
+          <select id="sOwner"></select>
+        </div>
+        <div class="field">
+          <label>Change Team</label>
+          <select id="sTeam"></select>
+        </div>
+        <div class="field">
+          <label>Due Date</label>
+          <input id="sDueAt" type="datetime-local" />
+        </div>
+        <div class="field full">
+          <label>Remark</label>
+          <textarea id="sRemark"></textarea>
+        </div>
+        <div class="field full">
+          <label>Outcome Summary</label>
+          <textarea id="sOutcome"></textarea>
+        </div>
+        <div class="field full">
+          <label>Next Action</label>
+          <input id="sNextAction" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close-modal="statusModal">取消</button>
+      <button class="btn primary" id="confirmStatusBtn">更新狀態</button>
+    </div>
+  </section>
+
+  <section class="modal" id="bulkModal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="bulkModalTitle">批量操作</div>
+        <div class="panel-sub" id="bulkModalSub">套用到已選取項目</div>
+      </div>
+      <button class="icon-btn" data-close-modal="bulkModal">
+        <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="bulkActionType" />
+      <div class="form-grid" id="bulkDynamicFields"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close-modal="bulkModal">取消</button>
+      <button class="btn primary" id="confirmBulkBtn">確認套用</button>
+    </div>
+  </section>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script>
+    const STATUS_LABELS = {
+      new: '新建立',
+      assigned: '已分派',
+      in_progress: '跟進中',
+      waiting_patient: '等待病人',
+      waiting_doctor: '等待醫生',
+      completed: '已完成',
+      closed: '已結案',
+    };
+
+    const CATEGORY_LABELS = {
+      callback: '回電跟進',
+      abnormal_result: '異常結果',
+      return_visit: '安排覆診',
+      document_request: '文件補交',
+      insurance_form: '保險表格',
+      admin: '行政事項',
+      doctor_instruction: '醫生指示',
+      other: '其他',
+    };
+
+    const PRIORITY_LABELS = {
+      normal: 'Normal',
+      urgent: 'Urgent',
+    };
+
+    const TEAMS = ['Reception', 'Nursing', 'Doctor'];
+
+    const STAFF = [
+      { id:'u1', name:'Amy Chan', team:'Reception' },
+      { id:'u2', name:'Brian Lee', team:'Reception' },
+      { id:'u3', name:'Carmen Wong', team:'Nursing' },
+      { id:'u4', name:'Daniel Yip', team:'Nursing' },
+      { id:'u5', name:'Dr. Kelvin Chu', team:'Doctor' },
+      { id:'u6', name:'Dr. Ada Lam', team:'Doctor' },
+      { id:'u7', name:'Eva Ho', team:'Nursing' },
+      { id:'u8', name:'Frank Ma', team:'Reception' },
+    ];
+
+    const DOCTORS = ['Dr. Kelvin Chu', 'Dr. Ada Lam', 'Dr. Irene Ng', 'Dr. Michael To'];
+
+    const CURRENT_USER = { id:'u3', name:'Carmen Wong', team:'Nursing' };
+
+    const seedData = [
+      ['FU-240801','CUMC-884201','ENC-20260418-001','Dr. Kelvin Chu','abnormal_result','Troponin repeat follow-up required','Second troponin pending. Notify doctor once result available and document callback if patient discharged.','urgent','waiting_doctor','2026-04-18T09:30','Check repeat lab and notify doctor','Nursing','u3',['u5'],'ER lab','Dr. Kelvin Chu'],
+      ['FU-240802','CUMC-884202','ENC-20260418-002','Dr. Ada Lam','callback','Callback after discharge for symptom review','Patient discharged with dizziness advice. Nursing to call back within 4 hours.','normal','assigned','2026-04-18T14:00','Call patient for symptom review','Nursing','u4',['u6'],'Discharge desk','Dr. Ada Lam'],
+      ['FU-240803','CUMC-884203','ENC-20260417-021','Dr. Irene Ng','document_request','Insurance claim form missing signature','Need signed page 2 before processing insurance letter.','normal','waiting_patient','2026-04-19T11:00','Request patient to return signed page','Reception','u1',['u2'],'Reception counter','Amy Chan'],
+      ['FU-240804','CUMC-884204','ENC-20260418-006','Dr. Kelvin Chu','return_visit','Arrange urgent return visit for wound check','Doctor requested wound check revisit within 24 hours.','urgent','in_progress','2026-04-18T17:00','Book return visit slot and confirm with patient','Reception','u8',['u3'],'Doctor round','Dr. Kelvin Chu'],
+      ['FU-240805','CUMC-884205','ENC-20260416-017','Dr. Michael To','doctor_instruction','Confirm medication adjustment instruction','Nursing to clarify revised dosage with covering doctor.','urgent','waiting_doctor','2026-04-18T12:00','Obtain dosage clarification','Nursing','u7',['u5'],'Nurse station','Eva Ho'],
+      ['FU-240806','CUMC-884206','ENC-20260418-008','Dr. Ada Lam','admin','Update follow-up note in encounter summary','Administrative note missing from discharge summary.','normal','new','2026-04-20T10:00','Add note to summary','Reception','u2',[],'System audit','Admin'],
+      ['FU-240807','CUMC-884207','ENC-20260417-031','Dr. Kelvin Chu','callback','Unable to reach patient after abnormal ECG alert','Two calls attempted, no answer. Escalate if still unreachable.','urgent','waiting_patient','2026-04-18T10:30','Retry call and log result','Nursing','u3',['u4','u5'],'ECG desk','Dr. Kelvin Chu'],
+      ['FU-240808','CUMC-884208','ENC-20260417-015','Dr. Ada Lam','insurance_form','Upload insurance supporting document to storage bucket','Pending attachment upload and verification.','normal','assigned','2026-04-19T16:00','Collect files and upload','Reception','u1',['u8'],'Insurance counter','Brian Lee'],
+      ['FU-240809','CUMC-884209','ENC-20260418-010','Dr. Michael To','other','Patient requested work certificate correction','Correct employer name and reissue PDF copy.','normal','completed','2026-04-18T08:00','Verify corrected certificate sent','Reception','u2',[],'Front desk','Amy Chan'],
+      ['FU-240810','CUMC-884210','ENC-20260415-014','Dr. Irene Ng','abnormal_result','Review delayed urine culture callback','Positive result requires callback and doctor review.','urgent','overdue_placeholder','2026-04-17T10:00','Escalate delayed callback','Nursing','u4',['u6'],'Lab inbox','Dr. Irene Ng'],
+      ['FU-240811','CUMC-884211','ENC-20260418-013','Dr. Michael To','return_visit','Arrange splint review follow-up','Return visit within 3 days requested.','normal','assigned','2026-04-21T09:00','Book ortho review','Reception','u8',['u5'],'Doctor round','Dr. Michael To'],
+      ['FU-240812','CUMC-884212','ENC-20260418-014','Dr. Kelvin Chu','document_request','Collect missing referral document','External referral sheet incomplete.','normal','in_progress','2026-04-18T15:30','Contact clinic for missing page','Reception','u1',['u2'],'Referral desk','Amy Chan'],
+      ['FU-240813','CUMC-884213','ENC-20260418-015','Dr. Ada Lam','doctor_instruction','Doctor requested observation callback tonight','Need symptoms check at 9 PM.','urgent','assigned','2026-04-18T21:00','Schedule outbound callback','Nursing','u7',['u3'],'Doctor order','Dr. Ada Lam'],
+      ['FU-240814','CUMC-884214','ENC-20260414-007','Dr. Kelvin Chu','callback','Post-procedure callback completed','Patient stable; no red flag symptoms reported.','normal','closed','2026-04-16T09:00','No further action','Nursing','u3',['u5'],'Procedure room','Carmen Wong'],
+      ['FU-240815','CUMC-884215','ENC-20260418-016','Dr. Irene Ng','admin','Verify duplicate encounter follow-up linkage','Potential duplicate task needs review.','normal','new','2026-04-19T12:30','Confirm correct encounter number','Reception','u2',[],'System queue','Admin'],
+      ['FU-240816','CUMC-884216','ENC-20260417-040','Dr. Ada Lam','abnormal_result','Review X-ray discrepancy note','Radiology discrepancy note pending doctor comment.','urgent','waiting_doctor','2026-04-18T11:00','Doctor to review discrepancy','Doctor','u6',['u3'],'Radiology discrepancy','Dr. Ada Lam'],
+      ['FU-240817','CUMC-884217','ENC-20260418-017','Dr. Michael To','insurance_form','Prepare employer insurance certificate','Need doctor's signature before release.','normal','waiting_doctor','2026-04-19T13:00','Send to doctor for sign-off','Reception','u8',['u5'],'Insurance desk','Frank Ma'],
+      ['FU-240818','CUMC-884218','ENC-20260418-018','Dr. Kelvin Chu','other','Upload bedside photo to secure storage','Attachment required for wound progression record.','normal','in_progress','2026-04-18T18:00','Upload and tag wound photo','Nursing','u4',['u3'],'Nurse station','Daniel Yip'],
+      ['FU-240819','CUMC-884219','ENC-20260417-045','Dr. Irene Ng','return_visit','Reschedule missed revisit slot','Patient missed yesterday revisit booking.','urgent','waiting_patient','2026-04-18T13:30','Call patient for new slot','Reception','u1',['u4'],'Booking desk','Amy Chan'],
+      ['FU-240820','CUMC-884220','ENC-20260418-020','Dr. Ada Lam','document_request','Need updated photo ID copy','ID copy unreadable in prior upload.','normal','assigned','2026-04-20T15:00','Ask patient to resend clearer copy','Reception','u2',[],'Document desk','Brian Lee'],
+      ['FU-240821','CUMC-884221','ENC-20260418-021','Dr. Kelvin Chu','callback','Check fever progression after discharge','Urgent callback due to persistent fever concern.','urgent','in_progress','2026-04-18T10:00','Call patient and assess escalation need','Nursing','u3',['u5'],'Discharge follow-up','Dr. Kelvin Chu'],
+      ['FU-240822','CUMC-884222','ENC-20260418-022','Dr. Michael To','doctor_instruction','Awaiting senior review before closure','Completed by nursing; doctor to confirm closure.','normal','completed','2026-04-18T09:00','Await doctor sign-off','Doctor','u5',['u3'],'Review queue','Dr. Michael To'],
+      ['FU-240823','CUMC-884223','ENC-20260418-023','Dr. Irene Ng','admin','Move scanned form into correct bucket path','Storage path mismatch detected.','normal','assigned','2026-04-19T17:30','Re-upload into correct folder','Reception','u8',['u1'],'Storage audit','Admin'],
+      ['FU-240824','CUMC-884224','ENC-20260417-050','Dr. Ada Lam','abnormal_result','Critical lab callback documented and done','Doctor informed, patient recalled for reassessment.','urgent','closed','2026-04-17T18:00','Closed after patient returned','Nursing','u7',['u6'],'Lab callback','Dr. Ada Lam'],
+      ['FU-240825','CUMC-884225','ENC-20260418-025','Dr. Kelvin Chu','other','Prepare discharge instruction translation note','Need translated note attached before print.','normal','new','2026-04-18T16:30','Draft translation note','Reception','u2',['u1'],'Discharge station','Amy Chan'],
+    ];
+
+    function randomInt(min, max){
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function getStaffName(id){
+      return STAFF.find(s => s.id === id)?.name || '-';
+    }
+
+    function createAttachments(i, title){
+      const count = randomInt(0,3);
+      const types = ['pdf','jpg','png','docx'];
+      const arr = [];
+      for(let n=0;n<count;n++){
+        const ext = types[randomInt(0, types.length-1)];
+        arr.push({
+          id: `att-${i}-${n}-${Date.now()}-${Math.random().toString(16).slice(2,6)}`,
+          name: `${title.replace(/\s+/g,'_').slice(0,18)}_${n+1}.${ext}`,
+          type: ext,
+          size: `${randomInt(120, 2800)} KB`,
+          uploadedBy: STAFF[randomInt(0, STAFF.length-1)].name,
+          uploadedAt: addHoursISO('2026-04-18T08:00', randomInt(0, 36)),
+          storageStatus: 'stored',
+          path: `followups/${2026}/04/${ext}/${Math.random().toString(36).slice(2,10)}.${ext}`
+        });
+      }
+      return arr;
+    }
+
+    function createTimeline(item){
+      const base = [
+        {
+          id: cryptoId(),
+          type:'created',
+          title:'建立跟進事項',
+          actor:item.requestedBy,
+          at:addHoursISO(item.createdAt,0),
+          note:`建立事項：${item.title}`
+        },
+        {
+          id: cryptoId(),
+          type:'assigned',
+          title:'已分派',
+          actor:getStaffName(item.ownerId),
+          at:addHoursISO(item.createdAt,1),
+          note:`分派至 ${item.team} · Primary owner: ${getStaffName(item.ownerId)}`
+        }
+      ];
+
+      if(item.attachments.length){
+        base.push({
+          id: cryptoId(),
+          type:'attachment_uploaded',
+          title:'附件已上載',
+          actor:item.attachments[0].uploadedBy,
+          at:item.attachments[0].uploadedAt,
+          note:`已上載 ${item.attachments[0].name} 至 secure bucket`
+        });
+      }
+
+      const statusTitleMap = {
+        assigned:'狀態更新為已分派',
+        in_progress:'狀態更新為跟進中',
+        waiting_patient:'狀態更新為等待病人',
+        waiting_doctor:'狀態更新為等待醫生',
+        completed:'狀態更新為已完成',
+        closed:'已結案',
+        new:'保持新建立'
+      };
+
+      base.push({
+        id: cryptoId(),
+        type:'status_changed',
+        title:statusTitleMap[item.status] || '狀態已更新',
+        actor:getStaffName(item.ownerId),
+        at:addHoursISO(item.updatedAt,-1),
+        note:`目前狀態：${STATUS_LABELS[item.status]}`
+      });
+
+      if(item.status === 'waiting_patient'){
+        base.push({
+          id: cryptoId(),
+          type:'patient_contacted',
+          title:'已聯絡病人',
+          actor:getStaffName(item.ownerId),
+          at:addHoursISO(item.updatedAt,-0.5),
+          note:'已嘗試致電病人，等待回覆。'
+        });
+      }
+
+      if(item.status === 'waiting_doctor'){
+        base.push({
+          id: cryptoId(),
+          type:'doctor_notified',
+          title:'已通知醫生',
+          actor:getStaffName(item.ownerId),
+          at:addHoursISO(item.updatedAt,-0.4),
+          note:`已通知 ${item.doctor}，等待回覆。`
+        });
+      }
+
+      if(item.status === 'completed' || item.status === 'closed'){
+        base.push({
+          id: cryptoId(),
+          type:'completed',
+          title:'事項已完成',
+          actor:getStaffName(item.ownerId),
+          at:addHoursISO(item.updatedAt,-0.2),
+          note:item.outcomeSummary || '已完成主要跟進工作。'
+        });
+      }
+
+      if(item.status === 'closed'){
+        base.push({
+          id: cryptoId(),
+          type:'closed',
+          title:'事項已結案',
+          actor:item.doctor,
+          at:item.closedAt || item.updatedAt,
+          note:'最終結案，無需後續動作。'
+        });
+      }
+
+      return base.sort((a,b)=> new Date(b.at) - new Date(a.at));
+    }
+
+    function addHoursISO(iso, hours){
+      const d = new Date(iso);
+      d.setMinutes(d.getMinutes() + Math.round(hours*60));
+      return d.toISOString().slice(0,16);
+    }
+
+    function cryptoId(){
+      return Math.random().toString(36).slice(2,10);
+    }
+
+    function normalizeStatus(raw){
+      return raw === 'overdue_placeholder' ? 'waiting_doctor' : raw;
+    }
+
+    let items = seedData.map((row, idx) => {
+      const createdAt = addHoursISO('2026-04-17T07:00', idx * 0.7);
+      const updatedAt = addHoursISO(createdAt, randomInt(1, 20));
+      const status = normalizeStatus(row[8]);
+      const closedAt = status === 'closed' ? addHoursISO(updatedAt, 1) : '';
+      const completedAt = ['completed','closed'].includes(status) ? addHoursISO(updatedAt, -0.2) : '';
+      const item = {
+        id: row[0],
+        cumcNo: row[1],
+        encounterNo: row[2],
+        doctor: row[3],
+        category: row[4],
+        title: row[5],
+        description: row[6],
+        priority: row[7],
+        status,
+        dueAt: row[9],
+        nextAction: row[10],
+        team: row[11],
+        ownerId: row[12],
+        collaborators: row[13],
+        source: row[14],
+        requestedBy: row[15],
+        tags: [],
+        createdBy: row[15],
+        createdAt,
+        updatedBy: getStaffName(row[12]),
+        updatedAt,
+        outcomeSummary: ['completed','closed'].includes(status) ? '已記錄處理結果並完成後續安排。' : '',
+        completedAt,
+        closedAt,
+      };
+      item.attachments = createAttachments(idx, item.title);
+      item.timeline = createTimeline(item);
+      return item;
+    });
+
+    const state = {
+      search:'',
+      status:'all',
+      priority:'all',
+      category:'all',
+      team:'all',
+      owner:'all',
+      attachment:'all',
+      quickTab:'all',
+      onlyOverdue:false,
+      onlyDueToday:false,
+      sort:'due',
+      selected:new Set(),
+      currentDetailId: items[0]?.id || null,
+      mobilePreview:false,
+      formUploads:[]
+    };
+
+    const el = id => document.getElementById(id);
+    const tbody = el('tbody');
+    const mobileList = el('mobileList');
+    const desktopDetail = el('desktopDetail');
+    const mobileDetail = el('mobileDetail');
+    const dashboard = el('dashboard');
+    const quickTabs = el('quickTabs');
+    const bulkBar = el('bulkBar');
+    const bulkCount = el('bulkCount');
+
+    function formatDateTime(v){
+      if(!v) return '-';
+      const d = new Date(v);
+      return new Intl.DateTimeFormat('zh-HK', {
+        month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit'
+      }).format(d);
+    }
+
+    function formatDateOnly(v){
+      if(!v) return '-';
+      const d = new Date(v);
+      return new Intl.DateTimeFormat('zh-HK', { year:'numeric', month:'2-digit', day:'2-digit' }).format(d);
+    }
+
+    function isOverdue(item){
+      return !['completed','closed'].includes(item.status) && new Date(item.dueAt) < new Date('2026-04-18T12:00');
+    }
+    function isDueToday(item){
+      const d = new Date(item.dueAt);
+      return d.toISOString().slice(0,10) === '2026-04-18' && !['completed','closed'].includes(item.status);
+    }
+
+    function getFilteredItems(){
+      let arr = [...items];
+
+      const q = (state.search || '').trim().toLowerCase();
+      if(q){
+        arr = arr.filter(i =>
+          [i.id,i.cumcNo,i.encounterNo,i.doctor,i.title,CATEGORY_LABELS[i.category],getStaffName(i.ownerId)]
+            .join(' ')
+            .toLowerCase()
+            .includes(q)
+        );
+      }
+
+      if(state.quickTab !== 'all'){
+        arr = arr.filter(i => {
+          switch(state.quickTab){
+            case 'my_items': return i.ownerId === CURRENT_USER.id || i.collaborators.includes(CURRENT_USER.id);
+            case 'team_queue': return i.team === CURRENT_USER.team;
+            case 'overdue': return isOverdue(i);
+            case 'due_today': return isDueToday(i);
+            default: return i.status === state.quickTab;
+          }
+        });
+      }
+
+      if(state.status !== 'all') arr = arr.filter(i => i.status === state.status);
+      if(state.priority !== 'all') arr = arr.filter(i => i.priority === state.priority);
+      if(state.category !== 'all') arr = arr.filter(i => i.category === state.category);
+      if(state.team !== 'all') arr = arr.filter(i => i.team === state.team);
+      if(state.owner !== 'all') arr = arr.filter(i => i.ownerId === state.owner);
+      if(state.attachment === 'yes') arr = arr.filter(i => i.attachments.length > 0);
+      if(state.attachment === 'no') arr = arr.filter(i => i.attachments.length === 0);
+      if(state.onlyOverdue) arr = arr.filter(isOverdue);
+      if(state.onlyDueToday) arr = arr.filter(isDueToday);
+
+      arr.sort((a,b) => {
+        if(state.sort === 'updated') return new Date(b.updatedAt) - new Date(a.updatedAt);
+        return new Date(a.dueAt) - new Date(b.dueAt);
+      });
+
+      return arr;
+    }
+
+    function renderDashboard(){
+      const openItems = items.filter(i => !['completed','closed'].includes(i.status));
+      const dueToday = items.filter(isDueToday);
+      const overdue = items.filter(isOverdue);
+      const urgent = openItems.filter(i => i.priority === 'urgent');
+      const newToday = items.filter(i => i.status === 'new');
+      const waitingPatient = items.filter(i => i.status === 'waiting_patient');
+      const waitingDoctor = items.filter(i => i.status === 'waiting_doctor');
+      const completedToday = items.filter(i => i.status === 'completed');
+
+      const myOpen = openItems.filter(i => i.ownerId === CURRENT_USER.id || i.collaborators.includes(CURRENT_USER.id));
+      const myOverdue = myOpen.filter(isOverdue);
+      const myUrgent = myOpen.filter(i => i.priority === 'urgent');
+      const myToday = myOpen.filter(isDueToday);
+
+      const teamStats = TEAMS.map(team => {
+        const arr = openItems.filter(i => i.team === team);
+        return {
+          team,
+          open: arr.length,
+          overdue: arr.filter(isOverdue).length,
+          urgent: arr.filter(i => i.priority === 'urgent').length,
+        };
+      });
+
+      const attention = [
+        ...items.filter(i => i.status === 'new').slice(0,2).map(i => ({ label:'新事項待分派', text:`${i.id} · ${i.title}`, tone:'warning' })),
+        ...items.filter(i => i.status === 'waiting_doctor').slice(0,2).map(i => ({ label:'等待醫生回覆', text:`${i.id} · ${i.title}`, tone:'purple' })),
+        ...overdue.slice(0,3).map(i => ({ label:'逾期事項', text:`${i.id} · ${i.title}`, tone:'danger' })),
+      ].slice(0,6);
+
+      const recent = [...items]
+        .flatMap(i => i.timeline.slice(0,2).map(t => ({...t, parentId:i.id})))
+        .sort((a,b)=> new Date(b.at)-new Date(a.at))
+        .slice(0,8);
+
+      dashboard.innerHTML = `
+        ${metricCard('Open Follow-ups', openItems.length, '需持續處理', 'team queue active')}
+        ${metricCard('Due Today', dueToday.length, '今日到期', `${dueToday.filter(i=>i.priority==='urgent').length} urgent`, 'warning')}
+        ${metricCard('Overdue', overdue.length, '逾期待處理', `${overdue.length ? '需要優先處理' : '目前穩定'}`, 'danger')}
+        ${metricCard('Urgent', urgent.length, '高優先事項', `${urgent.length} require attention`, 'danger')}
+        ${metricCard('New Today', newToday.length, '待分派 / 待接手', `${newToday.length} newly created`)}
+        ${metricCard('Waiting Patient', waitingPatient.length, '等待病人回覆', `${waitingPatient.length} on hold`, 'warning')}
+        ${metricCard('Waiting Doctor', waitingDoctor.length, '等待醫生指示', `${waitingDoctor.length} pending decision`, 'purple')}
+        ${metricCard('Completed Today', completedToday.length, '今日已完成', `${completedToday.length} done`, 'success')}
+
+        <div class="card span-4">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">My Items</div>
+              <div class="panel-sub">${CURRENT_USER.name} · ${CURRENT_USER.team}</div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="mini-stats">
+              <div class="mini-box"><div class="k">Open</div><div class="v">${myOpen.length}</div></div>
+              <div class="mini-box"><div class="k">Overdue</div><div class="v">${myOverdue.length}</div></div>
+              <div class="mini-box"><div class="k">Urgent</div><div class="v">${myUrgent.length}</div></div>
+              <div class="mini-box"><div class="k">Due Today</div><div class="v">${myToday.length}</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card span-4">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Team Queue</div>
+              <div class="panel-sub">Reception / Nursing / Doctor</div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="queue-list">
+              ${teamStats.map(t => `
+                <div class="queue-row">
+                  <div class="queue-left">
+                    <span class="team-dot team-${t.team.toLowerCase()}"></span>
+                    <strong>${t.team}</strong>
+                  </div>
+                  <div class="queue-metrics">
+                    <span class="tiny">Open ${t.open}</span>
+                    <span class="tiny">Overdue ${t.overdue}</span>
+                    <span class="tiny">Urgent ${t.urgent}</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+
+        <div class="card span-4">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">SLA / Attention</div>
+              <div class="panel-sub">優先留意事項</div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="attention-list">
+              ${attention.map(a => `
+                <div class="attention-item">
+                  <div class="badge ${a.tone === 'danger' ? 'b-priority-urgent' : a.tone === 'warning' ? 'b-status-waiting_patient' : a.tone === 'purple' ? 'b-status-waiting_doctor' : 'b-status-assigned'}">${a.label}</div>
+                  <div style="margin-top:8px;font-weight:700">${a.text}</div>
+                </div>
+              `).join('') || '<div class="attention-item">目前沒有高風險提醒。</div>'}
+            </div>
+          </div>
+        </div>
+
+        <div class="card span-12">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Recent Activity</div>
+              <div class="panel-sub">最近 timeline / communication / attachment events</div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="activity-list">
+              ${recent.map(r => `
+                <div class="activity-item">
+                  <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+                    <div>
+                      <div style="font-weight:800">${r.title}</div>
+                      <div class="timeline-meta">${r.parentId} · ${r.actor} · ${formatDateTime(r.at)}</div>
+                      <div class="timeline-note">${r.note || ''}</div>
+                    </div>
+                    <button class="btn small" onclick="openDetailById('${r.parentId}')">查看</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function metricCard(label, value, footLeft, footRight, tone='default'){
+      const toneBadge = tone === 'danger'
+        ? '<span class="badge b-priority-urgent">Attention</span>'
+        : tone === 'warning'
+        ? '<span class="badge b-status-waiting_patient">Monitor</span>'
+        : tone === 'purple'
+        ? '<span class="badge b-status-waiting_doctor">Doctor</span>'
+        : tone === 'success'
+        ? '<span class="badge b-status-completed">Stable</span>'
+        : '<span class="badge b-status-assigned">Live</span>';
+      return `
+        <div class="card span-3">
+          <div class="metric">
+            <div class="metric-head">
+              <div class="metric-label">${label}</div>
+              ${toneBadge}
+            </div>
+            <div class="metric-value">${value}</div>
+            <div class="metric-foot">
+              <span>${footLeft}</span>
+              <span>${footRight}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderQuickTabs(){
+      const tabs = [
+        ['all','All'],
+        ['my_items','My Items'],
+        ['team_queue','Team Queue'],
+        ['new','New'],
+        ['assigned','Assigned'],
+        ['in_progress','In Progress'],
+        ['waiting_patient','Waiting Patient'],
+        ['waiting_doctor','Waiting Doctor'],
+        ['overdue','Overdue'],
+        ['due_today','Due Today'],
+        ['completed','Completed'],
+        ['closed','Closed'],
+      ];
+
+      quickTabs.innerHTML = tabs.map(([key,label]) => `
+        <button class="tab ${state.quickTab === key ? 'active' : ''}" data-tab="${key}">${label}</button>
+      `).join('');
+
+      quickTabs.querySelectorAll('.tab').forEach(btn => {
+        btn.onclick = () => {
+          state.quickTab = btn.dataset.tab;
+          render();
+        };
+      });
+    }
+
+    function renderTable(){
+      const list = getFilteredItems();
+      el('resultPill').textContent = `${list.length} results`;
+
+      if(!list.find(i => i.id === state.currentDetailId)){
+        state.currentDetailId = list[0]?.id || null;
+      }
+
+      tbody.innerHTML = list.map(item => {
+        const overdue = isOverdue(item);
+        const dueToday = isDueToday(item);
+        return `
+          <tr class="${state.selected.has(item.id) ? 'selected' : ''} ${item.priority === 'urgent' ? 'urgent-row' : ''}" data-id="${item.id}">
+            <td><input type="checkbox" class="check row-check" data-id="${item.id}" ${state.selected.has(item.id) ? 'checked' : ''}></td>
+            <td><span class="badge b-priority-${item.priority}">${PRIORITY_LABELS[item.priority]}</span></td>
+            <td><span class="badge b-status-${item.status}">${STATUS_LABELS[item.status]}</span></td>
+            <td><strong>${item.id}</strong></td>
+            <td>${item.cumcNo}</td>
+            <td>${item.encounterNo}</td>
+            <td>${item.doctor}</td>
+            <td class="title-cell">
+              <div class="title-main">${item.title}</div>
+              <div class="title-sub">${item.nextAction || '—'}</div>
+            </td>
+            <td>${CATEGORY_LABELS[item.category]}</td>
+            <td><span class="badge b-team-${item.team}">${item.team}</span></td>
+            <td>
+              <div>${getStaffName(item.ownerId)}</div>
+              <div class="title-sub">${item.collaborators.length ? `+${item.collaborators.length} collaborators` : 'No collaborator'}</div>
+            </td>
+            <td><span class="due ${overdue ? 'overdue' : dueToday ? 'today' : ''}">${formatDateTime(item.dueAt)}</span></td>
+            <td>${formatDateTime(item.updatedAt)}</td>
+            <td><span class="attach-chip">${item.attachments.length} files</span></td>
+            <td>
+              <div class="action-row">
+                <button class="icon-btn" data-action="detail" data-id="${item.id}" title="Detail">
+                  ${iconEye()}
+                </button>
+                <button class="icon-btn" data-action="status" data-id="${item.id}" title="Update Status">
+                  ${iconEdit()}
+                </button>
+                <button class="icon-btn" data-action="complete" data-id="${item.id}" title="Complete">
+                  ${iconCheck()}
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      mobileList.innerHTML = list.map(item => {
+        const overdue = isOverdue(item);
+        const dueToday = isDueToday(item);
+        return `
+          <div class="mobile-card ${state.selected.has(item.id) ? 'selected' : ''}" data-id="${item.id}">
+            <div class="mobile-card-top">
+              <div>
+                <div class="mobile-title">${item.title}</div>
+                <div class="title-sub" style="margin-top:4px">${item.id} · ${CATEGORY_LABELS[item.category]}</div>
+              </div>
+              <input type="checkbox" class="check row-check" data-id="${item.id}" ${state.selected.has(item.id) ? 'checked' : ''}>
+            </div>
+            <div class="stack">
+              <span class="badge b-status-${item.status}">${STATUS_LABELS[item.status]}</span>
+              <span class="badge b-priority-${item.priority}">${PRIORITY_LABELS[item.priority]}</span>
+              <span class="badge b-team-${item.team}">${item.team}</span>
+            </div>
+            <div class="mobile-meta">
+              <div><strong>CUMC</strong><br>${item.cumcNo}</div>
+              <div><strong>Encounter</strong><br>${item.encounterNo}</div>
+              <div><strong>Owner</strong><br>${getStaffName(item.ownerId)}</div>
+              <div><strong>Due</strong><br><span class="${overdue ? 'trend-down' : dueToday ? 'trend-up' : ''}">${formatDateTime(item.dueAt)}</span></div>
+            </div>
+            <div class="mobile-actions">
+              <button class="btn small" data-action="detail" data-id="${item.id}">查看</button>
+              <button class="btn small" data-action="status" data-id="${item.id}">更新狀態</button>
+              <button class="btn small" data-action="complete" data-id="${item.id}">完成</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.querySelectorAll('[data-action="detail"]').forEach(b => b.onclick = e => {
+        e.stopPropagation();
+        openDetailById(b.dataset.id);
+      });
+
+      document.querySelectorAll('[data-action="status"]').forEach(b => b.onclick = e => {
+        e.stopPropagation();
+        openStatusModal(b.dataset.id);
+      });
+
+      document.querySelectorAll('[data-action="complete"]').forEach(b => b.onclick = e => {
+        e.stopPropagation();
+        quickComplete(b.dataset.id);
+      });
+
+      document.querySelectorAll('tr[data-id]').forEach(row => {
+        row.onclick = ev => {
+          if(ev.target.closest('button') || ev.target.closest('input')) return;
+          openDetailById(row.dataset.id);
+        };
+      });
+
+      document.querySelectorAll('.mobile-card').forEach(card => {
+        card.onclick = ev => {
+          if(ev.target.closest('button') || ev.target.closest('input')) return;
+          openDetailById(card.dataset.id, true);
+        };
+      });
+
+      document.querySelectorAll('.row-check').forEach(chk => {
+        chk.onchange = e => {
+          e.stopPropagation();
+          if(chk.checked) state.selected.add(chk.dataset.id);
+          else state.selected.delete(chk.dataset.id);
+          renderBulkBar();
+          renderTable();
+        };
+      });
+
+      el('selectAll').checked = list.length > 0 && list.every(i => state.selected.has(i.id));
+      renderBulkBar();
+      renderDetail();
+    }
+
+    function renderBulkBar(){
+      const count = state.selected.size;
+      bulkBar.classList.toggle('active', count > 0);
+      bulkCount.textContent = count;
+    }
+
+    function renderDetail(){
+      const item = items.find(i => i.id === state.currentDetailId);
+      const html = item ? detailTemplate(item) : `<div class="detail-empty">請在列表中選擇一項 follow-up。</div>`;
+      desktopDetail.innerHTML = html;
+      mobileDetail.innerHTML = html;
+      bindDetailActions();
+    }
+
+    function detailTemplate(item){
+      return `
+        <div class="detail-hero">
+          <div class="detail-title">${item.title}</div>
+          <div class="detail-id">${item.id}</div>
+          <div class="stack">
+            <span class="badge b-status-${item.status}">${STATUS_LABELS[item.status]}</span>
+            <span class="badge b-priority-${item.priority}">${PRIORITY_LABELS[item.priority]}</span>
+            <span class="badge b-team-${item.team}">${item.team}</span>
+            <span class="badge b-status-${item.category === 'doctor_instruction' ? 'waiting_doctor' : item.category === 'abnormal_result' ? 'waiting_patient' : 'assigned'}">${CATEGORY_LABELS[item.category]}</span>
+          </div>
+          <div class="quick-actions">
+            <button class="btn small" data-detail-action="edit" data-id="${item.id}">編輯</button>
+            <button class="btn small" data-detail-action="status" data-id="${item.id}">更新狀態</button>
+            <button class="btn small" data-detail-action="assign" data-id="${item.id}">重新分派</button>
+            <button class="btn small" data-detail-action="complete" data-id="${item.id}">完成</button>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-block-title">Case Identifiers</div>
+          <div class="kv-grid">
+            <div class="kv"><div class="k">CUMC No</div><div class="v">${item.cumcNo}</div></div>
+            <div class="kv"><div class="k">Encounter No</div><div class="v">${item.encounterNo}</div></div>
+            <div class="kv"><div class="k">Doctor</div><div class="v">${item.doctor}</div></div>
+            <div class="kv"><div class="k">Due Date</div><div class="v ${isOverdue(item)?'trend-down':''}">${formatDateTime(item.dueAt)}</div></div>
+            <div class="kv"><div class="k">Requested By</div><div class="v">${item.requestedBy}</div></div>
+            <div class="kv"><div class="k">Source</div><div class="v">${item.source || '-'}</div></div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-block-title">Ownership</div>
+          <div class="kv-grid">
+            <div class="kv"><div class="k">Team</div><div class="v">${item.team}</div></div>
+            <div class="kv"><div class="k">Primary Owner</div><div class="v">${getStaffName(item.ownerId)}</div></div>
+            <div class="kv" style="grid-column:1 / -1"><div class="k">Collaborators</div><div class="v">${item.collaborators.length ? item.collaborators.map(getStaffName).join(', ') : 'None'}</div></div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-block-title">Action Plan</div>
+          <div class="kv-grid">
+            <div class="kv" style="grid-column:1 / -1">
+              <div class="k">Description</div>
+              <div class="v desc">${item.description || '-'}</div>
+            </div>
+            <div class="kv" style="grid-column:1 / -1">
+              <div class="k">Next Action</div>
+              <div class="v desc">${item.nextAction || '-'}</div>
+            </div>
+            <div class="kv" style="grid-column:1 / -1">
+              <div class="k">Outcome Summary</div>
+              <div class="v desc">${item.outcomeSummary || '-'}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-block-title">Attachments</div>
+          <div class="upload-box">
+            <div style="font-weight:800">Supabase Storage Attachment UI</div>
+            <div class="panel-sub" style="margin-top:4px">模擬 bucket upload / preview / remove / retry</div>
+            <div style="margin-top:10px">
+              <input type="file" multiple data-attach-input="${item.id}">
+            </div>
+          </div>
+          <div class="attachment-list" style="margin-top:12px">
+            ${item.attachments.length ? item.attachments.map(att => `
+              <div class="attachment-item">
+                <div class="attachment-icon">${iconFile()}</div>
+                <div class="attachment-content">
+                  <div class="attachment-name">${att.name}</div>
+                  <div class="attachment-meta">${att.size} · ${att.type.toUpperCase()} · ${att.uploadedBy} · ${formatDateTime(att.uploadedAt)}</div>
+                  <div class="attachment-meta">Path: ${att.path}</div>
+                  <div class="attachment-actions">
+                    <button class="btn small" onclick="toast('Preview ${att.name}')">Preview</button>
+                    <button class="btn small" onclick="toast('Download ${att.name}')">Download</button>
+                    <button class="btn small" onclick="removeAttachment('${item.id}','${att.id}')">Remove</button>
+                  </div>
+                </div>
+              </div>
+            `).join('') : `<div class="attachment-item"><div class="attachment-content">目前沒有附件。</div></div>`}
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-block-title">Timeline</div>
+          <div class="timeline-list">
+            ${item.timeline.map(t => `
+              <div class="timeline-item">
+                <div class="timeline-icon">${timelineIcon(t.type)}</div>
+                <div class="timeline-content">
+                  <div class="timeline-title">${t.title}</div>
+                  <div class="timeline-meta">${t.actor} · ${formatDateTime(t.at)}</div>
+                  <div class="timeline-note">${t.note || ''}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function bindDetailActions(){
+      document.querySelectorAll('[data-detail-action="edit"]').forEach(btn => btn.onclick = () => openFormModal(btn.dataset.id));
+      document.querySelectorAll('[data-detail-action="status"]').forEach(btn => btn.onclick = () => openStatusModal(btn.dataset.id));
+      document.querySelectorAll('[data-detail-action="complete"]').forEach(btn => btn.onclick = () => quickComplete(btn.dataset.id));
+      document.querySelectorAll('[data-detail-action="assign"]').forEach(btn => btn.onclick = () => openBulkModal('assign', [btn.dataset.id]));
+      document.querySelectorAll('[data-attach-input]').forEach(input => {
+        input.onchange = () => addAttachmentsToItem(input.dataset.attachInput, [...input.files]);
+      });
+    }
+
+    function render(){
+      renderDashboard();
+      renderQuickTabs();
+      renderTable();
+    }
+
+    function populateSelects(){
+      fillOptions(el('filterStatus'), [{value:'all',label:'全部'}].concat(Object.entries(STATUS_LABELS).map(([v,l])=>({value:v,label:l}))));
+      fillOptions(el('filterPriority'), [{value:'all',label:'全部'}].concat(Object.entries(PRIORITY_LABELS).map(([v,l])=>({value:v,label:l}))));
+      fillOptions(el('filterCategory'), [{value:'all',label:'全部'}].concat(Object.entries(CATEGORY_LABELS).map(([v,l])=>({value:v,label:l}))));
+      fillOptions(el('filterTeam'), [{value:'all',label:'全部'}].concat(TEAMS.map(v=>({value:v,label:v}))));
+      fillOptions(el('filterOwner'), [{value:'all',label:'全部'}].concat(STAFF.map(s=>({value:s.id,label:s.name}))));
+      fillOptions(el('filterAttachment'), [
+        {value:'all',label:'全部'},
+        {value:'yes',label:'有附件'},
+        {value:'no',label:'無附件'},
+      ]);
+
+      fillOptions(el('fDoctor'), DOCTORS.map(v=>({value:v,label:v})));
+      fillOptions(el('fCategory'), Object.entries(CATEGORY_LABELS).map(([v,l])=>({value:v,label:l})));
+      fillOptions(el('fPriority'), Object.entries(PRIORITY_LABELS).map(([v,l])=>({value:v,label:l})));
+      fillOptions(el('fStatus'), Object.entries(STATUS_LABELS).map(([v,l])=>({value:v,label:l})));
+      fillOptions(el('fTeam'), TEAMS.map(v=>({value:v,label:v})));
+      fillOptions(el('fOwner'), STAFF.map(s=>({value:s.id,label:`${s.name} · ${s.team}`})));
+      fillOptions(el('sStatus'), Object.entries(STATUS_LABELS).map(([v,l])=>({value:v,label:l})));
+      fillOptions(el('sOwner'), [{value:'',label:'不變'}].concat(STAFF.map(s=>({value:s.id,label:`${s.name} · ${s.team}`}))));
+      fillOptions(el('sTeam'), [{value:'',label:'不變'}].concat(TEAMS.map(v=>({value:v,label:v}))));
+
+      const collab = el('fCollaborators');
+      collab.innerHTML = STAFF.map(s => `<option value="${s.id}">${s.name} · ${s.team}</option>`).join('');
+    }
+
+    function fillOptions(select, options){
+      select.innerHTML = options.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+    }
+
+    function setTodayPill(){
+      const fmt = new Intl.DateTimeFormat('zh-HK', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+      el('todayPill').textContent = fmt.format(new Date('2026-04-18T12:00'));
+    }
+
+    function openDetailById(id, mobile = false){
+      state.currentDetailId = id;
+      renderDetail();
+      if(window.innerWidth <= 980 || mobile){
+        el('drawerBackdrop').classList.add('active');
+        el('mobileDrawer').classList.add('active');
+      }
+    }
+    window.openDetailById = openDetailById;
+
+    function closeDrawer(){
+      el('drawerBackdrop').classList.remove('active');
+      el('mobileDrawer').classList.remove('active');
+    }
+
+    function openModal(id){
+      el('modalBackdrop').classList.add('active');
+      el(id).classList.add('active');
+    }
+
+    function closeModal(id){
+      el(id).classList.remove('active');
+      if(!document.querySelector('.modal.active')) el('modalBackdrop').classList.remove('active');
+    }
+
+    function openFormModal(id = null){
+      el('followupForm').reset();
+      el('formUploadQueue').innerHTML = '';
+      state.formUploads = [];
+      el('formId').value = '';
+      el('formModalTitle').textContent = id ? '編輯跟進事項' : '新增跟進事項';
+
+      if(id){
+        const item = items.find(i => i.id === id);
+        el('formId').value = item.id;
+        el('fCumc').value = item.cumcNo;
+        el('fEncounter').value = item.encounterNo;
+        el('fDoctor').value = item.doctor;
+        el('fCategory').value = item.category;
+        el('fTitle').value = item.title;
+        el('fDescription').value = item.description;
+        el('fPriority').value = item.priority;
+        el('fStatus').value = item.status;
+        el('fDueAt').value = item.dueAt;
+        el('fNextAction').value = item.nextAction;
+        el('fTeam').value = item.team;
+        el('fOwner').value = item.ownerId;
+        el('fSource').value = item.source || '';
+        el('fRequestedBy').value = item.requestedBy || '';
+        el('fOutcome').value = item.outcomeSummary || '';
+        [...el('fCollaborators').options].forEach(opt => opt.selected = item.collaborators.includes(opt.value));
+      }
+
+      openModal('formModal');
+    }
+
+    function openStatusModal(id){
+      const item = items.find(i => i.id === id);
+      el('statusItemId').value = id;
+      el('sStatus').value = item.status;
+      el('sOwner').value = '';
+      el('sTeam').value = '';
+      el('sDueAt').value = item.dueAt;
+      el('sRemark').value = '';
+      el('sOutcome').value = item.outcomeSummary || '';
+      el('sNextAction').value = item.nextAction || '';
+      openModal('statusModal');
+    }
+
+    function quickComplete(id){
+      const item = items.find(i => i.id === id);
+      item.status = 'completed';
+      item.completedAt = new Date().toISOString().slice(0,16);
+      item.updatedAt = item.completedAt;
+      item.updatedBy = CURRENT_USER.name;
+      item.outcomeSummary = item.outcomeSummary || '已完成跟進並更新結果摘要。';
+      addTimeline(item, 'completed', '事項已完成', CURRENT_USER.name, item.outcomeSummary || '已完成主要跟進工作。');
+      toast(`${id} 已標記為 completed`);
+      render();
+    }
+
+    function addTimeline(item, type, title, actor, note){
+      item.timeline.unshift({
+        id: cryptoId(),
+        type,
+        title,
+        actor,
+        at: new Date().toISOString().slice(0,16),
+        note
+      });
+    }
+
+    function saveForm(){
+      const id = el('formId').value.trim();
+      const collabVals = [...el('fCollaborators').selectedOptions].map(o => o.value).filter(v => v !== el('fOwner').value);
+
+      const payload = {
+        cumcNo: el('fCumc').value.trim(),
+        encounterNo: el('fEncounter').value.trim(),
+        doctor: el('fDoctor').value,
+        category: el('fCategory').value,
+        title: el('fTitle').value.trim(),
+        description: el('fDescription').value.trim(),
+        priority: el('fPriority').value,
+        status: el('fStatus').value,
+        dueAt: el('fDueAt').value,
+        nextAction: el('fNextAction').value.trim(),
+        team: el('fTeam').value,
+        ownerId: el('fOwner').value,
+        collaborators: collabVals,
+        source: el('fSource').value.trim(),
+        requestedBy: el('fRequestedBy').value.trim() || CURRENT_USER.name,
+        outcomeSummary: el('fOutcome').value.trim(),
+      };
+
+      if(!payload.cumcNo || !payload.encounterNo || !payload.title || !payload.dueAt){
+        toast('請填寫必要欄位');
+        return;
+      }
+
+      if(id){
+        const item = items.find(i => i.id === id);
+        Object.assign(item, payload);
+        item.updatedAt = new Date().toISOString().slice(0,16);
+        item.updatedBy = CURRENT_USER.name;
+        state.formUploads.forEach(file => item.attachments.unshift(file));
+        addTimeline(item, 'edited', '已編輯事項', CURRENT_USER.name, '更新基本資料 / ownership / action plan。');
+        if(state.formUploads.length){
+          state.formUploads.forEach(file => addTimeline(item, 'attachment_uploaded', '附件已上載', CURRENT_USER.name, `已上載 ${file.name} 至 secure bucket。`));
+        }
+        toast(`${id} 已更新`);
+      }else{
+        const newId = `FU-${String(randomInt(240900, 241999))}`;
+        const now = new Date().toISOString().slice(0,16);
+        const item = {
+          id:newId,
+          ...payload,
+          tags:[],
+          createdBy:CURRENT_USER.name,
+          createdAt:now,
+          updatedBy:CURRENT_USER.name,
+          updatedAt:now,
+          completedAt: payload.status === 'completed' ? now : '',
+          closedAt: payload.status === 'closed' ? now : '',
+          attachments:[...state.formUploads],
+          timeline:[]
+        };
+        addTimeline(item, 'created', '建立跟進事項', CURRENT_USER.name, `建立事項：${item.title}`);
+        addTimeline(item, 'assigned', '已分派', CURRENT_USER.name, `分派至 ${item.team} · Primary owner: ${getStaffName(item.ownerId)}`);
+        item.attachments.forEach(file => addTimeline(item, 'attachment_uploaded', '附件已上載', CURRENT_USER.name, `已上載 ${file.name} 至 secure bucket。`));
+        items.unshift(item);
+        state.currentDetailId = newId;
+        toast(`${newId} 已建立`);
+      }
+
+      closeModal('formModal');
+      render();
+    }
+
+    function confirmStatusUpdate(){
+      const id = el('statusItemId').value;
+      const item = items.find(i => i.id === id);
+      const newStatus = el('sStatus').value;
+      const newOwner = el('sOwner').value;
+      const newTeam = el('sTeam').value;
+      const remark = el('sRemark').value.trim();
+      const outcome = el('sOutcome').value.trim();
+      const nextAction = el('sNextAction').value.trim();
+      const dueAt = el('sDueAt').value;
+
+      const parts = [];
+      if(item.status !== newStatus){
+        parts.push(`狀態 ${STATUS_LABELS[item.status]} → ${STATUS_LABELS[newStatus]}`);
+        item.status = newStatus;
+      }
+      if(newOwner){
+        parts.push(`Owner → ${getStaffName(newOwner)}`);
+        item.ownerId = newOwner;
+      }
+      if(newTeam){
+        parts.push(`Team → ${newTeam}`);
+        item.team = newTeam;
+      }
+      if(dueAt){
+        item.dueAt = dueAt;
+      }
+      item.nextAction = nextAction;
+      item.outcomeSummary = outcome;
+      item.updatedAt = new Date().toISOString().slice(0,16);
+      item.updatedBy = CURRENT_USER.name;
+      if(newStatus === 'completed') item.completedAt = item.updatedAt;
+      if(newStatus === 'closed') item.closedAt = item.updatedAt;
+
+      addTimeline(item, 'status_changed', `狀態更新為${STATUS_LABELS[newStatus]}`, CURRENT_USER.name, [parts.join(' · '), remark].filter(Boolean).join('\n'));
+      closeModal('statusModal');
+      toast(`${id} 狀態已更新`);
+      render();
+    }
+
+    function openBulkModal(action, customIds = null){
+      const ids = customIds || [...state.selected];
+      if(!ids.length){
+        toast('請先選取項目');
+        return;
+      }
+
+      el('bulkActionType').value = action;
+      el('bulkModalSub').textContent = `將套用到 ${ids.length} 項 follow-ups`;
+      let title = '批量操作';
+      let html = '';
+
+      if(action === 'assign'){
+        title = '批量分派 Owner';
+        html = `
+          <div class="field full">
+            <label>Primary Owner</label>
+            <select id="bulkOwner">${STAFF.map(s => `<option value="${s.id}">${s.name} · ${s.team}</option>`).join('')}</select>
+          </div>
+          <div class="field full">
+            <label>Remark</label>
+            <textarea id="bulkRemark">批量重新分派。</textarea>
+          </div>
+        `;
+      }
+      if(action === 'team'){
+        title = '批量更改 Team';
+        html = `
+          <div class="field full">
+            <label>Team</label>
+            <select id="bulkTeam">${TEAMS.map(t => `<option value="${t}">${t}</option>`).join('')}</select>
+          </div>
+          <div class="field full">
+            <label>Remark</label>
+            <textarea id="bulkRemark">批量更新 team ownership。</textarea>
+          </div>
+        `;
+      }
+      if(action === 'status'){
+        title = '批量更新狀態';
+        html = `
+          <div class="field full">
+            <label>Status</label>
+            <select id="bulkStatus">${Object.entries(STATUS_LABELS).map(([v,l]) => `<option value="${v}">${l}</option>`).join('')}</select>
+          </div>
+          <div class="field full">
+            <label>Remark</label>
+            <textarea id="bulkRemark">批量更新狀態。</textarea>
+          </div>
+        `;
+      }
+      if(action === 'due'){
+        title = '批量更改 Due Date';
+        html = `
+          <div class="field full">
+            <label>New Due Date</label>
+            <input id="bulkDueAt" type="datetime-local" />
+          </div>
+          <div class="field full">
+            <label>Remark</label>
+            <textarea id="bulkRemark">批量延期 / 更新到期時間。</textarea>
+          </div>
+        `;
+      }
+      if(action === 'complete'){
+        title = '批量完成';
+        html = `
+          <div class="field full">
+            <label>Outcome Summary</label>
+            <textarea id="bulkOutcome">已完成相關跟進工作。</textarea>
+          </div>
+        `;
+      }
+      if(action === 'close'){
+        title = '批量結案';
+        html = `
+          <div class="field full">
+            <label>Close Note</label>
+            <textarea id="bulkOutcome">已確認所有後續完成並正式結案。</textarea>
+          </div>
+        `;
+      }
+
+      el('bulkModalTitle').textContent = title;
+      el('bulkDynamicFields').innerHTML = html;
+      openModal('bulkModal');
+      el('bulkModal').dataset.ids = JSON.stringify(ids);
+    }
+
+    function confirmBulk(){
+      const action = el('bulkActionType').value;
+      const ids = JSON.parse(el('bulkModal').dataset.ids || '[]');
+      const targets = items.filter(i => ids.includes(i.id));
+      const now = new Date().toISOString().slice(0,16);
+
+      if(action === 'assign'){
+        const owner = el('bulkOwner').value;
+        const remark = el('bulkRemark').value.trim();
+        targets.forEach(item => {
+          item.ownerId = owner;
+          item.updatedAt = now;
+          item.updatedBy = CURRENT_USER.name;
+          addTimeline(item, 'reassigned', '批量重新分派', CURRENT_USER.name, `${remark}\nPrimary owner: ${getStaffName(owner)}`);
+        });
+      }
+      if(action === 'team'){
+        const team = el('bulkTeam').value;
+        const remark = el('bulkRemark').value.trim();
+        targets.forEach(item => {
+          item.team = team;
+          item.updatedAt = now;
+          item.updatedBy = CURRENT_USER.name;
+          addTimeline(item, 'assigned', '批量更新 Team', CURRENT_USER.name, `${remark}\nTeam: ${team}`);
+        });
+      }
+      if(action === 'status'){
+        const status = el('bulkStatus').value;
+        const remark = el('bulkRemark').value.trim();
+        targets.forEach(item => {
+          item.status = status;
+          item.updatedAt = now;
+          item.updatedBy = CURRENT_USER.name;
+          if(status === 'completed') item.completedAt = now;
+          if(status === 'closed') item.closedAt = now;
+          addTimeline(item, 'status_changed', '批量更新狀態', CURRENT_USER.name, `${remark}\nStatus → ${STATUS_LABELS[status]}`);
+        });
+      }
+      if(action === 'due'){
+        const dueAt = el('bulkDueAt').value;
+        const remark = el('bulkRemark').value.trim();
+        targets.forEach(item => {
+          item.dueAt = dueAt || item.dueAt;
+          item.updatedAt = now;
+          item.updatedBy = CURRENT_USER.name;
+          addTimeline(item, 'due_changed', '批量更新到期時間', CURRENT_USER.name, `${remark}\nDue → ${formatDateTime(item.dueAt)}`);
+        });
+      }
+      if(action === 'complete'){
+        const outcome = el('bulkOutcome').value.trim();
+        targets.forEach(item => {
+          item.status = 'completed';
+          item.completedAt = now;
+          item.updatedAt = now;
+          item.updatedBy = CURRENT_USER.name;
+          item.outcomeSummary = outcome;
+          addTimeline(item, 'completed', '批量完成事項', CURRENT_USER.name, outcome);
+        });
+      }
+      if(action === 'close'){
+        const note = el('bulkOutcome').value.trim();
+        targets.forEach(item => {
+          item.status = 'closed';
+          item.closedAt = now;
+          item.updatedAt = now;
+          item.updatedBy = CURRENT_USER.name;
+          item.outcomeSummary = note;
+          addTimeline(item, 'closed', '批量結案', CURRENT_USER.name, note);
+        });
+      }
+
+      closeModal('bulkModal');
+      state.selected.clear();
+      toast(`已套用批量操作：${targets.length} 項`);
+      render();
+    }
+
+    function addAttachmentsToItem(itemId, files){
+      const item = items.find(i => i.id === itemId);
+      files.forEach(file => {
+        const att = {
+          id: cryptoId(),
+          name: file.name,
+          type: file.name.split('.').pop() || 'file',
+          size: `${Math.max(1, Math.round(file.size / 1024))} KB`,
+          uploadedBy: CURRENT_USER.name,
+          uploadedAt: new Date().toISOString().slice(0,16),
+          storageStatus: 'stored',
+          path: `followups/2026/04/uploads/${cryptoId()}-${file.name}`
+        };
+        item.attachments.unshift(att);
+        addTimeline(item, 'attachment_uploaded', '附件已上載', CURRENT_USER.name, `已上載 ${att.name} 至 secure bucket。`);
+      });
+      item.updatedAt = new Date().toISOString().slice(0,16);
+      item.updatedBy = CURRENT_USER.name;
+      toast(`已新增 ${files.length} 個附件到 ${itemId}`);
+      render();
+    }
+
+    function removeAttachment(itemId, attId){
+      const item = items.find(i => i.id === itemId);
+      const att = item.attachments.find(a => a.id === attId);
+      item.attachments = item.attachments.filter(a => a.id !== attId);
+      addTimeline(item, 'attachment_removed', '附件已移除', CURRENT_USER.name, `${att?.name || '檔案'} 已從附件清單移除。`);
+      item.updatedAt = new Date().toISOString().slice(0,16);
+      render();
+      toast(`已移除附件`);
+    }
+    window.removeAttachment = removeAttachment;
+
+    function toast(msg){
+      const wrap = el('toastWrap');
+      const node = document.createElement('div');
+      node.className = 'toast';
+      node.textContent = msg;
+      wrap.appendChild(node);
+      setTimeout(() => {
+        node.style.opacity = '0';
+        node.style.transform = 'translateY(8px)';
+      }, 2200);
+      setTimeout(() => node.remove(), 2800);
+    }
+    window.toast = toast;
+
+    function renderFormUploadQueue(){
+      const q = el('formUploadQueue');
+      q.innerHTML = state.formUploads.map(f => `
+        <div class="upload-item">
+          <div>
+            <div style="font-weight:800">${f.name}</div>
+            <div class="attachment-meta">${f.size} · secure bucket ready</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="progress"><span style="width:100%"></span></div>
+            <button class="btn small" onclick="removeFormUpload('${f.id}')">Remove</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function removeFormUpload(id){
+      state.formUploads = state.formUploads.filter(f => f.id !== id);
+      renderFormUploadQueue();
+    }
+    window.removeFormUpload = removeFormUpload;
+
+    function handleFormFiles(files){
+      files.forEach(file => {
+        state.formUploads.push({
+          id: cryptoId(),
+          name: file.name,
+          type: file.name.split('.').pop() || 'file',
+          size: `${Math.max(1, Math.round(file.size / 1024))} KB`,
+          uploadedBy: CURRENT_USER.name,
+          uploadedAt: new Date().toISOString().slice(0,16),
+          storageStatus:'queued',
+          path:`followups/2026/04/uploads/${cryptoId()}-${file.name}`
+        });
+      });
+      renderFormUploadQueue();
+    }
+
+    function iconEye(){return `<svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>`}
+    function iconEdit(){return `<svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 00-4-4L4 16v4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`}
+    function iconCheck(){return `<svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`}
+    function iconFile(){return `<svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`}
+    function timelineIcon(type){
+      const map = {
+        created: iconPlus(),
+        edited: iconEdit(),
+        assigned: iconUser(),
+        reassigned: iconUser(),
+        status_changed: iconFlow(),
+        due_changed: iconClock(),
+        note_added: iconNote(),
+        attachment_uploaded: iconFile(),
+        attachment_removed: iconTrash(),
+        patient_contacted: iconPhone(),
+        patient_unreachable: iconPhone(),
+        doctor_notified: iconBell(),
+        doctor_responded: iconBell(),
+        completed: iconCheck(),
+        closed: iconLock()
+      };
+      return map[type] || iconNote();
+    }
+    function iconPlus(){return `<svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`}
+    function iconUser(){return `<svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M20 21a8 8 0 00-16 0M12 11a4 4 0 100-8 4 4 0 000 8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`}
+    function iconFlow(){return `<svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M7 7h10v4M17 17H7v-4M17 7l-2 2m2-2l-2-2M7 17l2 2m-2-2l2-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`}
+    function iconClock(){return `<svg class="icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`}
+    function iconNote(){return `<svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M5 4h14v16H5z" stroke="currentColor" stroke-width="1.8"/><path d="M8 9h8M8 13h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`}
+    function iconTrash(){return `<svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V4h6v3m-8 0l1 13h8l1-13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`}
+    function iconPhone(){return `<svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M22 16.9v3a2 2 0 01-2.2 2A19.8 19.8 0 012 4.2 2 2 0 014 2h3a2 2 0 012 1.7l.4 3a2 2 0 01-.6 1.8l-1.3 1.3a16 16 0 006.8 6.8l1.3-1.3a2 2 0 011.8-.6l3 .4A2 2 0 0122 16.9z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`}
+    function iconBell(){return `<svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M15 17H5l1.4-1.4A2 2 0 007 14.2V10a5 5 0 0110 0v4.2a2 2 0 00.6 1.4L19 17h-4zm0 0a3 3 0 11-6 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`}
+    function iconLock(){return `<svg class="icon" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 11V8a4 4 0 118 0v3" stroke="currentColor" stroke-width="1.8"/></svg>`}
+
+    function bindEvents(){
+      el('globalSearch').oninput = e => { state.search = e.target.value; render(); };
+      el('filterSearch').oninput = e => { state.search = e.target.value; el('globalSearch').value = e.target.value; render(); };
+      el('filterStatus').onchange = e => { state.status = e.target.value; render(); };
+      el('filterPriority').onchange = e => { state.priority = e.target.value; render(); };
+      el('filterCategory').onchange = e => { state.category = e.target.value; render(); };
+      el('filterTeam').onchange = e => { state.team = e.target.value; render(); };
+      el('filterOwner').onchange = e => { state.owner = e.target.value; render(); };
+      el('filterAttachment').onchange = e => { state.attachment = e.target.value; render(); };
+
+      el('toggleOverdueBtn').onclick = () => {
+        state.onlyOverdue = !state.onlyOverdue;
+        el('toggleOverdueBtn').style.background = state.onlyOverdue ? '#e8f1ff' : '';
+        render();
+      };
+      el('toggleDueTodayBtn').onclick = () => {
+        state.onlyDueToday = !state.onlyDueToday;
+        el('toggleDueTodayBtn').style.background = state.onlyDueToday ? '#e8f1ff' : '';
+        render();
+      };
+      el('clearFiltersBtn').onclick = () => {
+        state.search = '';
+        state.status = 'all';
+        state.priority = 'all';
+        state.category = 'all';
+        state.team = 'all';
+        state.owner = 'all';
+        state.attachment = 'all';
+        state.quickTab = 'all';
+        state.onlyOverdue = false;
+        state.onlyDueToday = false;
+        ['globalSearch','filterSearch'].forEach(id => el(id).value = '');
+        ['filterStatus','filterPriority','filterCategory','filterTeam','filterOwner','filterAttachment'].forEach(id => el(id).value = 'all');
+        el('toggleOverdueBtn').style.background = '';
+        el('toggleDueTodayBtn').style.background = '';
+        render();
+      };
+      el('sortDueBtn').onclick = () => { state.sort = 'due'; render(); };
+      el('sortUpdatedBtn').onclick = () => { state.sort = 'updated'; render(); };
+      el('savePresetBtn').onclick = () => toast('篩選 preset 已儲存（原型模式）');
+
+      el('newBtn').onclick = () => openFormModal();
+      el('refreshBtn').onclick = () => { toast('資料已刷新（原型模式）'); render(); };
+      el('saveFollowupBtn').onclick = saveForm;
+      el('confirmStatusBtn').onclick = confirmStatusUpdate;
+      el('confirmBulkBtn').onclick = confirmBulk;
+
+      el('fAttachments').onchange = e => handleFormFiles([...e.target.files]);
+
+      el('selectAll').onchange = e => {
+        const list = getFilteredItems();
+        if(e.target.checked) list.forEach(i => state.selected.add(i.id));
+        else list.forEach(i => state.selected.delete(i.id));
+        renderTable();
+      };
+
+      document.querySelectorAll('[data-bulk]').forEach(btn => {
+        btn.onclick = () => openBulkModal(btn.dataset.bulk);
+      });
+
+      el('clearSelectedBtn').onclick = () => {
+        state.selected.clear();
+        renderTable();
+      };
+
+      document.querySelectorAll('[data-close-modal]').forEach(btn => {
+        btn.onclick = () => closeModal(btn.dataset.closeModal);
+      });
+
+      el('modalBackdrop').onclick = () => {
+        document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+        el('modalBackdrop').classList.remove('active');
+      };
+
+      el('drawerBackdrop').onclick = closeDrawer;
+      el('closeDrawerBtn').onclick = closeDrawer;
+
+      el('toggleViewBtn').onclick = () => {
+        state.mobilePreview = !state.mobilePreview;
+        if(state.mobilePreview){
+          document.querySelector('.table-wrap').style.display = 'none';
+          mobileList.style.display = 'flex';
+          el('toggleViewBtn').textContent = '返回表格';
+        }else{
+          document.querySelector('.table-wrap').style.display = '';
+          mobileList.style.display = '';
+          el('toggleViewBtn').textContent = '手機卡片預覽';
+        }
+      };
+    }
+
+    populateSelects();
+    setTodayPill();
+    bindEvents();
+    render();
+  </script>
+</body>
+</html>
