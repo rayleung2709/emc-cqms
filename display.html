@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EMC Queue Status Display</title>
+  <title>急症醫學中心候診看板 | Emergency Medicine Centre Queue Status Display</title>
   <link rel="icon" href="data:," />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -559,6 +559,7 @@
           <div class="toolbar-chip status-ok" id="connectionChip">連線正常</div>
           <div class="toolbar-chip" id="roomsChip">診室：—</div>
           <div class="toolbar-chip" id="pageSizeChip">每頁：—</div>
+          <div class="toolbar-chip" id="updatedChip">更新：—</div>
         </div>
         <button class="toolbar-btn" id="fullscreenBtn" type="button">全螢幕</button>
         <div class="board-time" id="boardTime"></div>
@@ -600,9 +601,9 @@
       pollingMs: 5000,
       title: "候診情況",
       subtitle: "Queue Status",
-      footer: "急症醫學中心<br>Emergency Medicine Centre",
+      footer: "急症醫學中心\nEmergency Medicine Centre",
       disclaimer:
-        "輪候情況只供參考，會因應病人臨床需要及現場實際運作而作出調整，敬請見諒。<br>" +
+        "輪候情況只供參考，會因應病人臨床需要及現場實際運作而作出調整，敬請見諒。\n" +
         "This queue is for reference only and may be adjusted at any time according to patients' clinical needs and operational requirements. Thank you for your understanding.",
       hideDisclaimer: false,
       disableContextMenu: true,
@@ -626,6 +627,8 @@
     let boardPageRotateTimer = null;
     let realtimeChannel = null;
     let refreshInFlight = false;
+    let hasBoundContextMenu = false;
+    let hasBoundSelectStart = false;
 
     function escapeHtml(value) {
       return String(value ?? "")
@@ -636,10 +639,21 @@
         .replaceAll("'", "&#039;");
     }
 
+    function escapeHtmlWithBr(value) {
+      return escapeHtml(value).replace(/\r?\n/g, "<br>");
+    }
+
+    function parseBooleanParam(value, fallback = false) {
+      if (value == null || value === "") return fallback;
+      return ["1", "true", "yes", "y", "on"].includes(String(value).trim().toLowerCase());
+    }
+
     function parseQuery() {
       const params = new URLSearchParams(window.location.search);
 
-      const mode = String(params.get("mode") || DEFAULTS.mode).trim().toLowerCase();
+      const rawMode = String(params.get("mode") || DEFAULTS.mode).trim().toLowerCase();
+      const mode = ["tv", "kiosk", "normal"].includes(rawMode) ? rawMode : DEFAULTS.mode;
+
       const pageSize = Math.max(1, Math.min(12, parseInt(params.get("pageSize") || DEFAULTS.pageSize, 10) || DEFAULTS.pageSize));
       const rotateMs = Math.max(3000, parseInt(params.get("rotateMs") || DEFAULTS.rotateMs, 10) || DEFAULTS.rotateMs);
       const pollingMs = Math.max(2000, parseInt(params.get("pollingMs") || DEFAULTS.pollingMs, 10) || DEFAULTS.pollingMs);
@@ -649,7 +663,9 @@
       const footer = String(params.get("footer") || DEFAULTS.footer).trim();
       const disclaimer = String(params.get("disclaimer") || DEFAULTS.disclaimer).trim();
 
-      const hideDisclaimer = ["1", "true", "yes"].includes(String(params.get("hideDisclaimer") || "").toLowerCase());
+      const hideDisclaimer = parseBooleanParam(params.get("hideDisclaimer"), DEFAULTS.hideDisclaimer);
+      const disableContextMenu = parseBooleanParam(params.get("disableContextMenu"), DEFAULTS.disableContextMenu);
+      const disableTextSelection = parseBooleanParam(params.get("disableTextSelection"), DEFAULTS.disableTextSelection);
 
       const roomsRaw = String(params.get("rooms") || "").trim();
       const roomFilterList = roomsRaw
@@ -666,6 +682,8 @@
         footer,
         disclaimer,
         hideDisclaimer,
+        disableContextMenu,
+        disableTextSelection,
         roomFilterList
       };
     }
@@ -675,14 +693,13 @@
       state.config = { ...DEFAULTS, ...cfg };
       state.roomFilterList = cfg.roomFilterList;
 
-      document.getElementById("boardTitle").innerHTML = escapeHtml(cfg.title);
-      document.getElementById("boardSubtitle").innerHTML = escapeHtml(cfg.subtitle);
-      document.getElementById("footerText").innerHTML = cfg.footer;
-      document.getElementById("disclaimerText").innerHTML = cfg.disclaimer;
+      document.getElementById("boardTitle").textContent = cfg.title;
+      document.getElementById("boardSubtitle").textContent = cfg.subtitle;
+      document.getElementById("footerText").innerHTML = escapeHtmlWithBr(cfg.footer);
+      document.getElementById("disclaimerText").innerHTML = escapeHtmlWithBr(cfg.disclaimer);
 
       const disclaimerCard = document.getElementById("disclaimerCard");
-      if (cfg.hideDisclaimer) disclaimerCard.classList.add("hidden");
-      else disclaimerCard.classList.remove("hidden");
+      disclaimerCard.classList.toggle("hidden", !!cfg.hideDisclaimer);
 
       document.getElementById("pageSizeChip").textContent = `每頁：${cfg.pageSize}`;
 
@@ -692,14 +709,16 @@
         document.body.classList.remove("tv-mode");
       }
 
-      if (DEFAULTS.disableContextMenu) {
+      if (state.config.disableContextMenu && !hasBoundContextMenu) {
         document.addEventListener("contextmenu", (e) => e.preventDefault());
+        hasBoundContextMenu = true;
       }
 
-      if (DEFAULTS.disableTextSelection) {
+      if (state.config.disableTextSelection && !hasBoundSelectStart) {
         document.addEventListener("selectstart", (e) => {
           if (state.config.mode === "tv" || state.config.mode === "kiosk") e.preventDefault();
         });
+        hasBoundSelectStart = true;
       }
     }
 
@@ -713,6 +732,7 @@
       const chip = document.getElementById("connectionChip");
 
       chip.classList.remove("status-ok", "status-warn", "status-error");
+
       if (ok) {
         chip.classList.add("status-ok");
         chip.textContent = "連線正常";
@@ -790,10 +810,6 @@
 
     function sortedRooms() {
       return [...state.rooms].sort((a, b) => a.roomNo.localeCompare(b.roomNo, "zh-HK", { numeric: true }));
-    }
-
-    function getRoom(roomId) {
-      return state.rooms.find(room => room.id === roomId) || null;
     }
 
     function getPatient(patientId) {
@@ -921,8 +937,10 @@
     }
 
     function updateTopChips(visibleRooms) {
-      const roomsChip = document.getElementById("roomsChip");
-      roomsChip.textContent = `診室：${visibleRooms.length}`;
+      document.getElementById("roomsChip").textContent = `診室：${visibleRooms.length}`;
+      document.getElementById("updatedChip").textContent = state.lastSuccessAt
+        ? `更新：${formatBoardNow(new Date(state.lastSuccessAt))}`
+        : "更新：—";
     }
 
     function renderDisplayBoard(force = false) {
@@ -1083,6 +1101,8 @@
       const patientList = [];
 
       for (const row of rows || []) {
+        if (!row || !row.room_id) continue;
+
         if (!roomMap.has(row.room_id)) {
           roomMap.set(row.room_id, {
             id: row.room_id,
@@ -1106,7 +1126,7 @@
             registeredAt: row.registered_at || null,
             createdAt: row.created_at || null,
             status: row.patient_status || "waiting",
-            queueOrder: Number.isFinite(row.queue_order) ? row.queue_order : row.queue_order,
+            queueOrder: Number.isFinite(row.queue_order) ? row.queue_order : null,
             skippedAt: row.skipped_at || null
           });
         }
@@ -1134,11 +1154,11 @@
 
         state.lastSuccessAt = new Date().toISOString();
         setOnlineStatus(true);
-        renderDisplayBoard(false);
+        renderDisplayBoard(true);
       } catch (error) {
         console.error("Failed to refresh board:", error);
         setOnlineStatus(false);
-        showError("讀取看板資料失敗，系統會自動重試。");
+        showError("讀取看板資料失敗，系統會自動重試。請檢查網絡或資料服務狀態。");
       } finally {
         setLoading(false);
         refreshInFlight = false;
@@ -1147,6 +1167,7 @@
 
     function startBoardPageRotation() {
       if (boardPageRotateTimer) clearInterval(boardPageRotateTimer);
+
       boardPageRotateTimer = setInterval(() => {
         const visibleRooms = getVisibleBoardRooms();
         const totalPages = getBoardTotalPages(visibleRooms);
@@ -1164,7 +1185,9 @@
 
     async function setupRealtimeAndPolling() {
       if (realtimeChannel) {
-        try { await sb.removeChannel(realtimeChannel); } catch (_) {}
+        try {
+          await sb.removeChannel(realtimeChannel);
+        } catch (_) {}
       }
 
       realtimeChannel = sb
@@ -1172,7 +1195,7 @@
         .on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, () => refreshBoard(false))
         .on("postgres_changes", { event: "*", schema: "public", table: "patients" }, () => refreshBoard(false))
         .subscribe((status) => {
-          if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
             setOnlineStatus(false);
           }
         });
@@ -1190,7 +1213,9 @@
     }
 
     function initFullscreen() {
-      document.getElementById("fullscreenBtn").addEventListener("click", async () => {
+      const btn = document.getElementById("fullscreenBtn");
+
+      btn.addEventListener("click", async () => {
         try {
           if (!document.fullscreenElement) {
             await document.documentElement.requestFullscreen();
@@ -1200,6 +1225,10 @@
         } catch (error) {
           console.warn("Fullscreen failed:", error);
         }
+      });
+
+      document.addEventListener("fullscreenchange", () => {
+        btn.classList.toggle("hidden", !!document.fullscreenElement);
       });
     }
 
@@ -1214,14 +1243,13 @@
       });
 
       window.addEventListener("keydown", (event) => {
-        if (event.key === "ArrowRight") {
-          const visibleRooms = getVisibleBoardRooms();
-          const totalPages = getBoardTotalPages(visibleRooms);
+        const totalPages = getBoardTotalPages(getVisibleBoardRooms());
+        if (totalPages <= 0) return;
+
+        if (event.key === "ArrowRight" && state.config.mode !== "tv" && state.config.mode !== "kiosk") {
           state.displayPageIndex = (state.displayPageIndex + 1) % totalPages;
           renderDisplayBoard(true);
-        } else if (event.key === "ArrowLeft") {
-          const visibleRooms = getVisibleBoardRooms();
-          const totalPages = getBoardTotalPages(visibleRooms);
+        } else if (event.key === "ArrowLeft" && state.config.mode !== "tv" && state.config.mode !== "kiosk") {
           state.displayPageIndex = (state.displayPageIndex - 1 + totalPages) % totalPages;
           renderDisplayBoard(true);
         } else if (event.key.toLowerCase() === "r") {
