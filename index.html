@@ -2502,6 +2502,14 @@ function canAssignPatientToRoom(room, patientType = "walkin") {
   if (patientType === "appointment") return room.status === "open" || room.status === "paused";
   return room.status === "open";
 }
+
+/* 版本 2：paused 房無論 acceptingNew true / false 都可手動轉入 */
+function canTransferPatientToRoom(room) {
+  if (!room) return false;
+  if (room.status === "paused") return true;
+  return room.status === "open" && room.acceptingNew;
+}
+
 function getAssignableRooms(patientType = "walkin") {
   return sortedRooms().filter(room => canAssignPatientToRoom(room, patientType));
 }
@@ -3303,10 +3311,10 @@ function getRoomFingerprint(room) {
 }
 function getTransferOptionsHtml(room) {
   return sortedRooms()
-    .filter(targetRoom => targetRoom.id !== room.id && targetRoom.status === "open" && targetRoom.acceptingNew)
+    .filter(targetRoom => targetRoom.id !== room.id && canTransferPatientToRoom(targetRoom))
     .map(targetRoom => `
       <option value="${targetRoom.id}">
-        ${escapeHtml(targetRoom.roomNo)} / ${escapeHtml(targetRoom.doctorName)}
+        ${escapeHtml(targetRoom.roomNo)} / ${escapeHtml(targetRoom.doctorName)}${targetRoom.status === "paused" ? "（暫停中）" : ""}
       </option>
     `).join("");
 }
@@ -3389,7 +3397,7 @@ function renderRoomCardHtml(room) {
                 </div>
 
                 <div class="more-actions-line">
-                  <select class="transfer-room-select" data-help-title="選擇目標診室" data-help="先選擇想轉去邊一間開放中並接受新症嘅診室。">
+                  <select class="transfer-room-select" data-help-title="選擇目標診室" data-help="先選擇想轉去邊一間可轉入嘅診室；暫停中的診室亦可作手動轉房目標。">
                     <option value="">選擇目標診室</option>
                     ${transferOptions}
                   </select>
@@ -3431,7 +3439,7 @@ function renderRoomCardHtml(room) {
             <div class="more-actions-panel" data-more-panel="${patient.id}">
               <div class="more-actions-grid">
                 <div class="more-actions-line">
-                  <select class="transfer-room-select" data-help-title="選擇目標診室" data-help="先選擇回診病人要轉去邊一間診室。">
+                  <select class="transfer-room-select" data-help-title="選擇目標診室" data-help="先選擇回診病人要轉去邊一間診室；暫停中的診室亦可作手動轉房目標。">
                     <option value="">選擇目標診室</option>
                     ${transferOptions}
                   </select>
@@ -3465,7 +3473,7 @@ function renderRoomCardHtml(room) {
           <div class="more-actions-panel" data-more-panel="${patient.id}">
             <div class="more-actions-grid">
               <div class="more-actions-line">
-                <select class="transfer-room-select" data-help-title="選擇目標診室" data-help="先揀要將過號病人轉去邊一間診室。">
+                <select class="transfer-room-select" data-help-title="選擇目標診室" data-help="先揀要將過號病人轉去邊一間診室；暫停中的診室亦可作手動轉房目標。">
                   <option value="">選擇目標診室</option>
                   ${transferOptions}
                 </select>
@@ -4723,12 +4731,12 @@ async function transferPatient(patientId, mode = "auto", targetRoomId = "") {
       notify("找不到目標診室", "error");
       return;
     }
-    if (newRoom.status !== "open") {
-      notify("目標診室未開放", "warning");
-      return;
-    }
-    if (!newRoom.acceptingNew) {
-      notify("目標診室已停收新症，不能轉入", "warning");
+    if (!canTransferPatientToRoom(newRoom)) {
+      if (newRoom.status === "closed") {
+        notify("目標診室已關閉，不能轉入", "warning");
+      } else {
+        notify("目標診室未開放或不可轉入", "warning");
+      }
       return;
     }
     if (oldRoom && oldRoom.id === newRoom.id) {
@@ -4764,26 +4772,26 @@ async function transferPatient(patientId, mode = "auto", targetRoomId = "") {
       addPatientLog(
         patient,
         "轉往診室",
-        `${fromText} → ${newRoom.roomNo} / ${newRoom.doctorName}（${mode === "front" ? "轉房並排隊首" : mode === "tail" ? "轉房並排隊尾" : "轉往診室"}；現排第 ${actualPosition} 位；已鎖定，不再參與智能平均分流）`
+        `${fromText} → ${newRoom.roomNo} / ${newRoom.doctorName}${newRoom.status === "paused" ? "（目標診室暫停中）" : ""}（${mode === "front" ? "轉房並排隊首" : mode === "tail" ? "轉房並排隊尾" : "轉往診室"}；現排第 ${actualPosition} 位；已鎖定，不再參與智能平均分流）`
       );
     } else if (patient.status === "review_waiting") {
       addPatientLog(
         patient,
         "轉往診室",
-        `${fromText} → ${newRoom.roomNo} / ${newRoom.doctorName}（保留回診等候；已鎖定，不再參與智能平均分流）`
+        `${fromText} → ${newRoom.roomNo} / ${newRoom.doctorName}${newRoom.status === "paused" ? "（目標診室暫停中）" : ""}（保留回診等候；已鎖定，不再參與智能平均分流）`
       );
     } else {
       addPatientLog(
         patient,
         "轉往診室",
-        `${fromText} → ${newRoom.roomNo} / ${newRoom.doctorName}（原狀態：${getStatusLabel(originalStatus)}；已鎖定，不再參與智能平均分流）`
+        `${fromText} → ${newRoom.roomNo} / ${newRoom.doctorName}${newRoom.status === "paused" ? "（目標診室暫停中）" : ""}（原狀態：${getStatusLabel(originalStatus)}；已鎖定，不再參與智能平均分流）`
       );
     }
 
     renderRoomsPair(oldRoomId, newRoomId);
     await persistTransferChanges(oldRoom, newRoom, patient);
 
-    notify(`${getPatientDisplayNo(patient)} 已轉往 ${newRoom.roomNo}`, "success");
+    notify(`${getPatientDisplayNo(patient)} 已轉往 ${newRoom.roomNo}${newRoom.status === "paused" ? "（暫停中）" : ""}`, "success");
     await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
