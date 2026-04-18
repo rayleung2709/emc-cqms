@@ -1500,7 +1500,6 @@ body.display-mode .info-card {
     data-help="呢頁會以大螢幕方式顯示各診室嘅現正診症、候診、回診同過號名單，適合公眾顯示。"
   >公眾看板</button>
 
-
   <label
     class="teach-toggle"
     data-help-title="教學模式"
@@ -1686,6 +1685,7 @@ body.display-mode .info-card {
               <option value="8號房"></option>
               <option value="9號房"></option>
               <option value="10號房"></option>
+              <option value="NS"></option>
             </datalist>
           </div>
           <div
@@ -1920,7 +1920,8 @@ const DOCTOR_SUGGESTIONS = [
   "羅國強醫生 Dr. LAW Kwok Keung Alex",
   "梁子恒醫生 Dr. LEUNG Tsz Hang Ray",
   "謝昭倫醫生 Dr. TSE Chiu Lun Joseph",
-  "黃展鵬醫生 Dr. WONG Chin-Pang Ben"
+  "黃展鵬醫生 Dr. WONG Chin Pang Ben",
+  "護士站 Nursing Station"
 ];
 
 const PAUSE_REASON_OPTIONS = ["急救中 Resus", "小手術 Procedure", "巡房 Ward"];
@@ -2502,8 +2503,6 @@ function canAssignPatientToRoom(room, patientType = "walkin") {
   if (patientType === "appointment") return room.status === "open" || room.status === "paused";
   return room.status === "open";
 }
-
-/* 版本 2：paused 房無論 acceptingNew true / false 都可手動轉入 */
 function canTransferPatientToRoom(room) {
   if (!room) return false;
   if (room.status === "paused") return true;
@@ -3530,6 +3529,11 @@ function renderRoomCardHtml(room) {
 
         <div class="actions" style="margin-bottom:12px;">
           <button class="btn-primary btn-small" data-action="callNext" data-room-id="${room.id}" type="button" data-help-title="叫號" data-help="將候診名單中下一位病人叫入房，設為現正診症。">叫號</button>
+          ${
+            room.currentPatientId
+              ? `<button class="btn-secondary btn-small" data-action="openClinicalActivity" data-patient-id="${room.currentPatientId}" type="button" data-help-title="新增臨床活動" data-help="為現正診症病人新增臨床活動紀錄，例如去抽血、照 X-ray、安排入院等。">臨床活動</button>`
+              : ""
+          }
           <button class="btn-secondary btn-small" data-action="moveCurrentToReview" data-room-id="${room.id}" type="button" data-help-title="轉回診" data-help="將而家現正診症嘅病人轉去回診名單。">轉回診</button>
           <button class="btn-success btn-small" data-action="finishCurrent" data-room-id="${room.id}" type="button" data-help-title="完成" data-help="將而家現正診症嘅病人標記為完成。">完成</button>
           <button class="btn-warning btn-small" data-action="skipCurrent" data-room-id="${room.id}" type="button" data-help-title="過號" data-help="將而家現正診症嘅病人標記為過號，之後可重新叫號或返回隊列。">過號</button>
@@ -4472,7 +4476,6 @@ async function finishReviewPatient(patientId) {
 
     if (room) renderRoomOnly(room.id, true);
     renderDisplayBoard(true);
-
     await savePatientToSupabase(patient);
     if (room) await syncRoomQueuePatients(room);
 
@@ -5443,7 +5446,7 @@ function initClinicalActivityModal() {
     }
   });
 }
-  function openClinicalActivityModal(patientId) {
+function openClinicalActivityModal(patientId) {
   const patient = getPatient(patientId);
   if (!patient) {
     notify("找不到病人", "error");
