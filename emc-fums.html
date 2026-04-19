@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EMCFUS 急症醫學中心跟進系統</title>
+  <title>EMCFUS 急症醫學中心跟進系統 · Polished v2</title>
   <style>
     :root {
       --bg: #f4f7fb;
       --panel: #ffffff;
       --panel-2: #f8fafc;
+      --panel-3: #fbfdff;
       --line: #dbe4ee;
       --line-2: #e8eef5;
       --text: #153047;
@@ -26,17 +27,19 @@
       --red: #d14343;
       --red-soft: #fff0f0;
       --gray-soft: #eef3f8;
+      --danger: #c53636;
       --shadow: 0 10px 28px rgba(21, 48, 71, 0.08);
       --shadow-sm: 0 4px 12px rgba(21, 48, 71, 0.06);
       --radius: 18px;
       --radius-sm: 12px;
       --header-h: 78px;
-      --detail-w: 400px;
+      --detail-w: 416px;
       --transition: 160ms ease;
-      --danger: #c53636;
+      --focus: 0 0 0 3px rgba(45, 108, 223, 0.16);
     }
 
     * { box-sizing: border-box; }
+
     html, body {
       margin: 0;
       padding: 0;
@@ -55,6 +58,14 @@
       background: none;
     }
 
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: none;
+      box-shadow: var(--focus);
+    }
+
     .app {
       min-height: 100vh;
       display: flex;
@@ -65,7 +76,7 @@
       position: sticky;
       top: 0;
       z-index: 40;
-      height: var(--header-h);
+      min-height: var(--header-h);
       background: rgba(255,255,255,0.92);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--line-2);
@@ -93,11 +104,10 @@
       place-items: center;
       font-weight: 800;
       box-shadow: var(--shadow-sm);
+      flex: 0 0 auto;
     }
 
-    .brand-text {
-      min-width: 0;
-    }
+    .brand-text { min-width: 0; }
 
     .brand-title {
       font-size: 20px;
@@ -125,7 +135,7 @@
       border: 1px solid var(--line);
       border-radius: 999px;
       padding: 0 16px;
-      height: 48px;
+      min-height: 48px;
     }
 
     .search-wrap input {
@@ -155,7 +165,7 @@
     }
 
     .btn {
-      height: 42px;
+      min-height: 42px;
       padding: 0 16px;
       border-radius: 12px;
       border: 1px solid var(--line);
@@ -182,8 +192,8 @@
 
     .btn-danger {
       background: var(--danger);
-      border-color: var(--danger);
       color: #fff;
+      border-color: var(--danger);
     }
 
     .btn-soft {
@@ -227,6 +237,12 @@
       font-size: 13px;
       color: var(--muted);
       margin-top: 4px;
+    }
+
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .kpi-grid {
@@ -428,6 +444,36 @@
       flex-wrap: wrap;
     }
 
+    .active-filters {
+      display: none;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding-top: 2px;
+    }
+
+    .active-filters.show {
+      display: flex;
+    }
+
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      border: 1px solid #d7e6ff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .filter-chip button {
+      color: inherit;
+      padding: 0;
+      min-height: auto;
+    }
+
     .workspace {
       display: grid;
       grid-template-columns: minmax(0, 1fr) var(--detail-w);
@@ -501,6 +547,7 @@
       padding: 14px 12px;
       border-bottom: 1px solid var(--line-2);
       white-space: nowrap;
+      box-shadow: inset 0 -1px 0 var(--line-2);
     }
 
     tbody td {
@@ -522,6 +569,11 @@
 
     tbody tr.selected td {
       background: #f3f8ff;
+    }
+
+    tbody tr.selected {
+      outline: 2px solid rgba(45, 108, 223, 0.12);
+      outline-offset: -2px;
     }
 
     tbody tr.urgent-row td:first-child {
@@ -556,7 +608,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      height: 28px;
+      min-height: 28px;
       padding: 0 10px;
       border-radius: 999px;
       font-size: 12px;
@@ -579,6 +631,12 @@
 
     .badge.priority-normal { background: #f1f5f9; color: #567087; border-color: #d9e4ee; }
     .badge.priority-urgent { background: var(--red-soft); color: var(--red); border-color: #ffd0d0; }
+
+    .badge.soft {
+      background: var(--panel-2);
+      color: var(--muted);
+      border-color: var(--line);
+    }
 
     .owner-stack {
       display: flex;
@@ -617,6 +675,12 @@
       display: inline-grid;
       place-items: center;
       background: #fff;
+      transition: var(--transition);
+    }
+
+    .icon-btn:hover {
+      background: var(--panel-2);
+      box-shadow: var(--shadow-sm);
     }
 
     .detail-panel {
@@ -631,13 +695,22 @@
       overflow: auto;
     }
 
-    .empty-detail {
+    .empty-detail, .empty-state {
       min-height: 300px;
       display: grid;
       place-items: center;
       text-align: center;
       color: var(--muted);
       padding: 28px;
+    }
+
+    .empty-state {
+      min-height: 280px;
+    }
+
+    .empty-state .emoji,
+    .empty-detail .emoji {
+      font-size: 42px;
     }
 
     .detail-hero {
@@ -668,10 +741,65 @@
       margin-top: 4px;
     }
 
-    .badge-row, .hero-actions, .chip-row {
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 30px;
+      padding: 0 10px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .hero-actions {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
+    }
+
+    .attention-strip {
+      display: grid;
+      gap: 8px;
+    }
+
+    .attention-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .attention-banner.urgent {
+      background: var(--red-soft);
+      color: var(--red);
+      border-color: #ffd0d0;
+    }
+
+    .attention-banner.overdue {
+      background: #fff4ea;
+      color: #b76800;
+      border-color: #ffd9a7;
+    }
+
+    .attention-banner.waiting {
+      background: var(--purple-soft);
+      color: var(--purple);
+      border-color: #e0d5ff;
     }
 
     .detail-section {
@@ -684,6 +812,9 @@
     .detail-section h4 {
       margin: 0 0 12px;
       font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .info-grid {
@@ -719,7 +850,7 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      margin-top: 10px;
+      margin-top: 2px;
     }
 
     .queue-upload-item {
@@ -743,6 +874,7 @@
       height: 100%;
       background: linear-gradient(90deg, var(--blue), var(--teal));
       border-radius: 999px;
+      transition: width 220ms ease;
     }
 
     .timeline-item .content, .activity-item .content, .attention-item .content, .file-item .content {
@@ -778,6 +910,18 @@
       display: grid;
       gap: 10px;
       box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+
+    .mobile-card.urgent::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 14px;
+      bottom: 14px;
+      width: 4px;
+      background: var(--red);
+      border-radius: 999px;
     }
 
     .mobile-top {
@@ -811,6 +955,16 @@
       overflow: auto;
     }
 
+    .drawer-header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #fff;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--line-2);
+    }
+
     .modal {
       position: absolute;
       inset: 50% auto auto 50%;
@@ -822,6 +976,8 @@
       border-radius: 20px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.22);
       border: 1px solid var(--line-2);
+      display: flex;
+      flex-direction: column;
     }
 
     .modal.small {
@@ -853,6 +1009,10 @@
       justify-content: flex-end;
       gap: 10px;
       flex-wrap: wrap;
+      border-top: 1px solid var(--line-2);
+      background: #fff;
+      position: sticky;
+      bottom: 0;
     }
 
     .form-grid {
@@ -880,6 +1040,7 @@
       user-select: none;
       font-size: 13px;
       color: var(--muted);
+      transition: var(--transition);
     }
 
     .chip-check.active {
@@ -919,7 +1080,7 @@
     @media (max-width: 1180px) {
       .topbar {
         grid-template-columns: 1fr;
-        height: auto;
+        min-height: auto;
       }
       .workspace {
         grid-template-columns: 1fr;
@@ -959,21 +1120,18 @@
     }
 
     @media (max-width: 560px) {
-      .brand-title {
-        font-size: 17px;
-      }
-      .brand-sub {
-        font-size: 12px;
-      }
+      .brand-title { font-size: 17px; }
+      .brand-sub { font-size: 12px; }
       .tabs-wrap {
         overflow: auto;
         flex-wrap: nowrap;
       }
-      .tab-btn {
-        flex: 0 0 auto;
-      }
+      .tab-btn { flex: 0 0 auto; }
       .queue-item {
         grid-template-columns: 1fr;
+      }
+      .hero-actions .btn {
+        width: 100%;
       }
     }
   </style>
@@ -996,7 +1154,7 @@
 
       <div class="top-actions">
         <div class="today-chip" id="todayLabel"></div>
-        <div class="role-chip">Current Role: Nursing</div>
+        <div class="role-chip" id="roleLabel"></div>
         <button class="btn btn-soft" id="refreshBtn">↻ Refresh</button>
         <button class="btn btn-primary" id="newBtn">＋ 新增 Follow-up</button>
       </div>
@@ -1023,7 +1181,7 @@
         <div class="op-grid">
           <div class="subpanel">
             <h3>My Items</h3>
-            <div class="subtext">以目前使用者 Olivia Chan（Nursing）為例</div>
+            <div class="subtext" id="myItemsText"></div>
             <div class="mini-stats" id="myItemsStats"></div>
           </div>
 
@@ -1114,6 +1272,8 @@
             </div>
           </div>
 
+          <div class="active-filters" id="activeFilters"></div>
+
           <div class="filter-actions">
             <div class="chip-row">
               <button class="btn btn-soft" id="savePresetBtn">💾 Save Preset</button>
@@ -1156,7 +1316,7 @@
             <table>
               <thead>
                 <tr>
-                  <th><input type="checkbox" class="checkbox" id="selectAll" /></th>
+                  <th style="width:42px;"><input type="checkbox" class="checkbox" id="selectAll" /></th>
                   <th>Priority</th>
                   <th>Status</th>
                   <th>Follow-up</th>
@@ -1187,9 +1347,11 @@
 
   <div class="mobile-drawer" id="mobileDrawer">
     <div class="drawer-panel">
-      <div class="section-head" style="margin-bottom:12px;">
-        <div class="section-title" style="font-size:16px;">Follow-up Detail</div>
-        <button class="btn" id="closeDrawerBtn">關閉</button>
+      <div class="drawer-header">
+        <div class="section-head">
+          <div class="section-title" style="font-size:16px;">Follow-up Detail</div>
+          <button class="btn" id="closeDrawerBtn">關閉</button>
+        </div>
       </div>
       <div id="mobileDetailContent"></div>
     </div>
@@ -1201,9 +1363,22 @@
   <template id="detailTemplate">
     <div class="empty-detail">
       <div>
-        <div style="font-size:42px;">🩺</div>
+        <div class="emoji">🩺</div>
         <div style="font-weight:800; margin-top:8px;">請選擇一筆 Follow-up</div>
         <div style="margin-top:6px;">桌面版會顯示在右側 detail panel；手機版則以 drawer 開啟。</div>
+      </div>
+    </div>
+  </template>
+
+  <template id="emptyListTemplate">
+    <div class="empty-state">
+      <div>
+        <div class="emoji">📭</div>
+        <div style="font-weight:800; margin-top:8px;">找不到符合條件的 Follow-up</div>
+        <div style="margin-top:6px;">可嘗試清除篩選、切換 tab，或重新搜尋。</div>
+        <div style="margin-top:14px;">
+          <button class="btn btn-soft" id="emptyClearBtn">清除篩選</button>
+        </div>
       </div>
     </div>
   </template>
@@ -1211,7 +1386,7 @@
   <script>
     const CURRENT_USER = "Olivia Chan";
     const CURRENT_ROLE = "Nursing";
-    const NOW = new Date("2026-04-18T10:30:00");
+    const NOW = new Date("2026-04-19T10:30:00");
 
     const statusLabels = {
       all: "全部",
@@ -1273,31 +1448,169 @@
       "Nursing 已更新 next action。"
     ];
 
-    function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-    function pad(n){ return String(n).padStart(2,'0'); }
+    const state = {
+      search: "",
+      status: "all",
+      priority: "all",
+      category: "all",
+      team: "all",
+      owner: "all",
+      doctor: "all",
+      attachment: "all",
+      dueFrom: "",
+      dueTo: "",
+      createdFrom: "",
+      createdTo: ""
+    };
+
+    let followups = [];
+    let selectedId = null;
+    let selectedTab = "all";
+    let sortMode = "due";
+    let selectedIds = new Set();
+
+    const els = {
+      todayLabel: document.getElementById("todayLabel"),
+      roleLabel: document.getElementById("roleLabel"),
+      myItemsText: document.getElementById("myItemsText"),
+      kpiGrid: document.getElementById("kpiGrid"),
+      myItemsStats: document.getElementById("myItemsStats"),
+      teamQueue: document.getElementById("teamQueue"),
+      attentionList: document.getElementById("attentionList"),
+      recentActivity: document.getElementById("recentActivity"),
+      tabsWrap: document.getElementById("tabsWrap"),
+      tableBody: document.getElementById("tableBody"),
+      mobileList: document.getElementById("mobileList"),
+      detailPanel: document.getElementById("detailPanel"),
+      mobileDrawer: document.getElementById("mobileDrawer"),
+      mobileDetailContent: document.getElementById("mobileDetailContent"),
+      closeDrawerBtn: document.getElementById("closeDrawerBtn"),
+      bulkBar: document.getElementById("bulkBar"),
+      bulkCount: document.getElementById("bulkCount"),
+      listMeta: document.getElementById("listMeta"),
+      modalBackdrop: document.getElementById("modalBackdrop"),
+      toastWrap: document.getElementById("toastWrap"),
+      selectAll: document.getElementById("selectAll"),
+      filterBody: document.getElementById("filterBody"),
+      activeFilters: document.getElementById("activeFilters")
+    };
+
+    function rand(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function pad(n) {
+      return String(n).padStart(2, "0");
+    }
+
     function formatDateTime(d) {
       const x = new Date(d);
       return `${x.getFullYear()}-${pad(x.getMonth()+1)}-${pad(x.getDate())} ${pad(x.getHours())}:${pad(x.getMinutes())}`;
     }
-    function formatDateOnly(d){
+
+    function formatDateOnly(d) {
       const x = new Date(d);
       return `${x.getFullYear()}-${pad(x.getMonth()+1)}-${pad(x.getDate())}`;
     }
-    function addHours(date, hrs){ return new Date(date.getTime() + hrs * 3600 * 1000); }
-    function addDays(date, days){ return new Date(date.getTime() + days * 24 * 3600 * 1000); }
-    function isSameDay(a,b){
-      return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
-    }
-    function diffHours(a,b){ return Math.round((a - b) / 36e5); }
-    function escapeHtml(str=""){
-      return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+    function getWeekday(d) {
+      return ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][new Date(d).getDay()];
     }
 
-    function makeAttachments(idx){
+    function addHours(date, hrs) {
+      return new Date(date.getTime() + hrs * 3600 * 1000);
+    }
+
+    function addDays(date, days) {
+      return new Date(date.getTime() + days * 24 * 3600 * 1000);
+    }
+
+    function isSameDay(a, b) {
+      return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    }
+
+    function diffHours(a, b) {
+      return Math.round((a - b) / 36e5);
+    }
+
+    function diffDays(a, b) {
+      return Math.floor((a - b) / 86400000);
+    }
+
+    function escapeHtml(str = "") {
+      return str.replace(/[&<>"']/g, m => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[m]));
+    }
+
+    function toLocalInput(dt) {
+      const d = new Date(dt);
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function isClosedStatus(status) {
+      return ["completed", "closed"].includes(status);
+    }
+
+    function isOpenItem(item) {
+      return !isClosedStatus(item.status);
+    }
+
+    function isOverdue(item) {
+      return isOpenItem(item) && new Date(item.dueAt) < NOW;
+    }
+
+    function getRelativeDueText(item) {
+      const due = new Date(item.dueAt);
+      const hourDiff = diffHours(due, NOW);
+      const dayDiff = diffDays(due, NOW);
+
+      if (isOverdue(item)) {
+        if (Math.abs(hourDiff) < 24) return `Overdue by ${Math.abs(hourDiff)} hour(s)`;
+        return `Overdue by ${Math.abs(dayDiff)} day(s)`;
+      }
+      if (isSameDay(due, NOW)) return `Today ${pad(due.getHours())}:${pad(due.getMinutes())}`;
+      const tomorrow = addDays(NOW, 1);
+      if (isSameDay(due, tomorrow)) return `Tomorrow ${pad(due.getHours())}:${pad(due.getMinutes())}`;
+      if (hourDiff >= 0 && hourDiff < 24) return `Due in ${hourDiff} hour(s)`;
+      return formatDateTime(due);
+    }
+
+    function showToast(msg) {
+      const div = document.createElement("div");
+      div.className = "toast";
+      div.textContent = msg;
+      els.toastWrap.appendChild(div);
+      setTimeout(() => div.remove(), 2600);
+    }
+
+    function safeSavePreset(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function safeLoadPreset(key) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function makeAttachments(idx) {
       const count = idx % 4;
       const files = [];
-      const types = ["pdf","jpg","png","docx"];
-      for(let i=0;i<count;i++){
+      const types = ["pdf", "jpg", "png", "docx"];
+      for (let i = 0; i < count; i++) {
         files.push({
           id: `ATT-${idx}-${i+1}`,
           name: `attachment_${idx}_${i+1}.${types[(idx+i)%types.length]}`,
@@ -1311,9 +1624,10 @@
       return files;
     }
 
-    function makeTimeline(item){
+    function makeTimeline(item) {
       const events = [];
       const createdAt = new Date(item.createdAt);
+
       events.push({
         type: "created",
         icon: "＋",
@@ -1322,6 +1636,7 @@
         at: item.createdAt,
         note: "新事項已建立並加入工作單。"
       });
+
       events.push({
         type: "assigned",
         icon: "⇢",
@@ -1330,7 +1645,8 @@
         at: formatDateTime(addHours(createdAt, 2)),
         note: `Primary owner：${item.owner}`
       });
-      if(item.attachments.length){
+
+      if (item.attachments.length) {
         events.push({
           type: "attachment_uploaded",
           icon: "📎",
@@ -1340,6 +1656,7 @@
           note: `${item.attachments[0].name} 已上載至 secure storage`
         });
       }
+
       events.push({
         type: "status_changed",
         icon: "⟳",
@@ -1348,6 +1665,7 @@
         at: formatDateTime(addHours(createdAt, 8)),
         note: rand(sampleNotes)
       });
+
       events.push({
         type: item.status === "waiting_doctor" ? "doctor_notified" : "note_added",
         icon: item.status === "waiting_doctor" ? "🧑‍⚕️" : "📝",
@@ -1356,7 +1674,8 @@
         at: item.updatedAt,
         note: rand(sampleNotes)
       });
-      if(["completed","closed"].includes(item.status)){
+
+      if (["completed", "closed"].includes(item.status)) {
         events.push({
           type: item.status,
           icon: item.status === "closed" ? "✓" : "✔",
@@ -1366,24 +1685,25 @@
           note: item.outcomeSummary || "已完成跟進處理。"
         });
       }
-      return events.sort((a,b)=> new Date(b.at) - new Date(a.at));
+
+      return events.sort((a, b) => new Date(b.at) - new Date(a.at));
     }
 
     function generateMockData() {
       const list = [];
-      for(let i=1;i<=34;i++){
-        const createdAt = addDays(NOW, -(i % 9) - Math.floor(i/8));
+      for (let i = 1; i <= 34; i++) {
+        const createdAt = addDays(NOW, -(i % 9) - Math.floor(i / 8));
         createdAt.setHours(8 + (i % 8), (i * 7) % 60, 0, 0);
 
         let status = statuses[i % statuses.length];
-        let priority = i % 5 === 0 || i % 11 === 0 ? "urgent" : "normal";
-        let team = teams[i % teams.length];
-        let owner = owners[i % owners.length];
-        let category = categories[i % categories.length];
+        const priority = i % 5 === 0 || i % 11 === 0 ? "urgent" : "normal";
+        const team = teams[i % teams.length];
+        const owner = owners[i % owners.length];
+        const category = categories[i % categories.length];
         let dueAt = addDays(NOW, (i % 7) - 3);
         dueAt.setHours(9 + (i % 7), (i * 11) % 60, 0, 0);
 
-        if(status === "closed"){
+        if (status === "closed") {
           dueAt = addDays(NOW, -(i % 5) - 1);
         }
 
@@ -1405,14 +1725,15 @@
           collaborators: owners.filter(n => n !== owner).slice(0, i % 3),
           source: i % 2 === 0 ? "Walk-in" : "Phone / Result Queue",
           requestedBy: i % 3 === 0 ? "Doctor" : (i % 2 === 0 ? "Reception" : "Nursing"),
-          tags: [priority, category].concat(i%4===0 ? ["lab"] : []).concat(i%6===0 ? ["follow-call"] : []),
-          createdBy: owners[(i+2) % owners.length],
+          tags: [priority, category].concat(i % 4 === 0 ? ["lab"] : []).concat(i % 6 === 0 ? ["follow-call"] : []),
+          createdBy: owners[(i + 2) % owners.length],
           createdAt: formatDateTime(createdAt),
           updatedBy: owner,
           updatedAt: formatDateTime(addHours(createdAt, 12 + (i % 20))),
           completedAt: status === "completed" || status === "closed" ? formatDateTime(addHours(createdAt, 26)) : "",
           closedAt: status === "closed" ? formatDateTime(addHours(createdAt, 36)) : "",
           attachments: makeAttachments(i),
+          uploadQueue: []
         };
         item.timeline = makeTimeline(item);
         list.push(item);
@@ -1420,63 +1741,170 @@
       return list;
     }
 
-    let followups = generateMockData();
-    let selectedId = followups[0]?.id || null;
-    let selectedTab = "all";
-    let sortMode = "due";
-    let selectedIds = new Set();
-
-    const state = {
-      search: "",
-      status: "all",
-      priority: "all",
-      category: "all",
-      team: "all",
-      owner: "all",
-      doctor: "all",
-      attachment: "all",
-      dueFrom: "",
-      dueTo: "",
-      createdFrom: "",
-      createdTo: ""
-    };
-
-    const els = {
-      todayLabel: document.getElementById("todayLabel"),
-      kpiGrid: document.getElementById("kpiGrid"),
-      myItemsStats: document.getElementById("myItemsStats"),
-      teamQueue: document.getElementById("teamQueue"),
-      attentionList: document.getElementById("attentionList"),
-      recentActivity: document.getElementById("recentActivity"),
-      tabsWrap: document.getElementById("tabsWrap"),
-      tableBody: document.getElementById("tableBody"),
-      mobileList: document.getElementById("mobileList"),
-      detailPanel: document.getElementById("detailPanel"),
-      mobileDrawer: document.getElementById("mobileDrawer"),
-      mobileDetailContent: document.getElementById("mobileDetailContent"),
-      closeDrawerBtn: document.getElementById("closeDrawerBtn"),
-      bulkBar: document.getElementById("bulkBar"),
-      bulkCount: document.getElementById("bulkCount"),
-      listMeta: document.getElementById("listMeta"),
-      modalBackdrop: document.getElementById("modalBackdrop"),
-      toastWrap: document.getElementById("toastWrap"),
-      selectAll: document.getElementById("selectAll"),
-      filterBody: document.getElementById("filterBody")
-    };
-
-    function showToast(msg){
-      const div = document.createElement("div");
-      div.className = "toast";
-      div.textContent = msg;
-      els.toastWrap.appendChild(div);
-      setTimeout(() => div.remove(), 2600);
-    }
-
-    function fillSelect(el, items, labelMap=null){
+    function fillSelect(el, items, labelMap = null) {
       el.innerHTML = `<option value="all">All</option>` + items.map(v => `<option value="${v}">${labelMap ? labelMap[v] : v}</option>`).join("");
     }
 
-    function initFilters(){
+    function getFilteredData() {
+      let list = [...followups];
+      const search = (state.search || "").toLowerCase();
+
+      list = list.filter(item => {
+        const due = new Date(item.dueAt);
+        const created = new Date(item.createdAt);
+        const searchable = [
+          item.id, item.title, item.cumcNo, item.encounterNo,
+          item.doctor, item.owner, item.team, item.category
+        ].join(" ").toLowerCase();
+
+        if (search && !searchable.includes(search)) return false;
+        if (state.status !== "all" && item.status !== state.status) return false;
+        if (state.priority !== "all" && item.priority !== state.priority) return false;
+        if (state.category !== "all" && item.category !== state.category) return false;
+        if (state.team !== "all" && item.team !== state.team) return false;
+        if (state.owner !== "all" && item.owner !== state.owner) return false;
+        if (state.doctor !== "all" && item.doctor !== state.doctor) return false;
+        if (state.attachment === "yes" && item.attachments.length === 0) return false;
+        if (state.attachment === "no" && item.attachments.length > 0) return false;
+        if (state.dueFrom && due < new Date(state.dueFrom + "T00:00:00")) return false;
+        if (state.dueTo && due > new Date(state.dueTo + "T23:59:59")) return false;
+        if (state.createdFrom && created < new Date(state.createdFrom + "T00:00:00")) return false;
+        if (state.createdTo && created > new Date(state.createdTo + "T23:59:59")) return false;
+
+        if (selectedTab === "my" && item.owner !== CURRENT_USER) return false;
+        if (selectedTab === "team" && item.team !== CURRENT_ROLE) return false;
+        if (selectedTab === "overdue" && !isOverdue(item)) return false;
+        if (selectedTab === "today" && !isSameDay(due, NOW)) return false;
+        if (statuses.includes(selectedTab) && item.status !== selectedTab) return false;
+
+        return true;
+      });
+
+      if (sortMode === "due") {
+        list.sort((a, b) => new Date(a.dueAt) - new Date(b.dueAt));
+      } else {
+        list.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+      }
+
+      return list;
+    }
+
+    function getSelectedItems() {
+      return followups.filter(f => selectedIds.has(f.id));
+    }
+
+    function ensureSelectedIdValid(list) {
+      if (!list.length) {
+        selectedId = null;
+        return;
+      }
+      if (!selectedId || !list.some(item => item.id === selectedId)) {
+        selectedId = list[0].id;
+      }
+    }
+
+    function renderTabs() {
+      const tabs = [
+        ["all","All"],
+        ["my","My Items"],
+        ["team","Team Queue"],
+        ["new","New"],
+        ["assigned","Assigned"],
+        ["in_progress","In Progress"],
+        ["waiting_patient","Waiting Patient"],
+        ["waiting_doctor","Waiting Doctor"],
+        ["overdue","Overdue"],
+        ["today","Due Today"],
+        ["completed","Completed"],
+        ["closed","Closed"]
+      ];
+
+      els.tabsWrap.innerHTML = tabs.map(([key, label]) => `
+        <button class="tab-btn ${selectedTab === key ? "active" : ""}" data-tab="${key}">${label}</button>
+      `).join("");
+
+      els.tabsWrap.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          selectedTab = btn.dataset.tab;
+          renderAll();
+        });
+      });
+    }
+
+    function renderActiveFilters() {
+      const chips = [];
+      const map = [
+        ["search", "Search", state.search],
+        ["status", "Status", state.status !== "all" ? statusLabels[state.status] : ""],
+        ["priority", "Priority", state.priority !== "all" ? state.priority : ""],
+        ["category", "Category", state.category !== "all" ? categoryLabels[state.category] : ""],
+        ["team", "Team", state.team !== "all" ? state.team : ""],
+        ["owner", "Owner", state.owner !== "all" ? state.owner : ""],
+        ["doctor", "Doctor", state.doctor !== "all" ? state.doctor : ""],
+        ["attachment", "Attachment", state.attachment !== "all" ? state.attachment : ""],
+        ["dueFrom", "Due From", state.dueFrom],
+        ["dueTo", "Due To", state.dueTo],
+        ["createdFrom", "Created From", state.createdFrom],
+        ["createdTo", "Created To", state.createdTo]
+      ];
+
+      map.forEach(([key, label, value]) => {
+        if (!value) return;
+        chips.push(`
+          <span class="filter-chip">
+            ${label}: ${escapeHtml(String(value))}
+            <button type="button" data-clear-filter="${key}" aria-label="Clear ${label}">×</button>
+          </span>
+        `);
+      });
+
+      els.activeFilters.innerHTML = chips.join("");
+      els.activeFilters.classList.toggle("show", chips.length > 0);
+
+      els.activeFilters.querySelectorAll("[data-clear-filter]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          clearSingleFilter(btn.dataset.clearFilter);
+        });
+      });
+    }
+
+    function clearSingleFilter(key) {
+      state[key] = ["status","priority","category","team","owner","doctor","attachment"].includes(key) ? "all" : "";
+      syncFilterInputsFromState();
+      renderAll();
+    }
+
+    function syncFilterInputsFromState() {
+      document.getElementById("searchInput").value = state.search || "";
+      document.getElementById("globalSearch").value = state.search || "";
+      document.getElementById("statusFilter").value = state.status || "all";
+      document.getElementById("priorityFilter").value = state.priority || "all";
+      document.getElementById("categoryFilter").value = state.category || "all";
+      document.getElementById("teamFilter").value = state.team || "all";
+      document.getElementById("ownerFilter").value = state.owner || "all";
+      document.getElementById("doctorFilter").value = state.doctor || "all";
+      document.getElementById("attachmentFilter").value = state.attachment || "all";
+      document.getElementById("dueFromFilter").value = state.dueFrom || "";
+      document.getElementById("dueToFilter").value = state.dueTo || "";
+      document.getElementById("createdFromFilter").value = state.createdFrom || "";
+      document.getElementById("createdToFilter").value = state.createdTo || "";
+    }
+
+    function resetFilters() {
+      Object.keys(state).forEach(k => state[k] = "");
+      state.status = "all";
+      state.priority = "all";
+      state.category = "all";
+      state.team = "all";
+      state.owner = "all";
+      state.doctor = "all";
+      state.attachment = "all";
+      selectedTab = "all";
+      syncFilterInputsFromState();
+      renderAll();
+    }
+
+    function initFilters() {
       fillSelect(document.getElementById("statusFilter"), statuses, statusLabels);
       fillSelect(document.getElementById("priorityFilter"), priorities);
       fillSelect(document.getElementById("categoryFilter"), categories, categoryLabels);
@@ -1499,142 +1927,50 @@
         createdToFilter: "createdTo"
       };
 
-      Object.entries(map).forEach(([id, key])=>{
+      Object.entries(map).forEach(([id, key]) => {
         const el = document.getElementById(id);
-        el.addEventListener("input", ()=>{ state[key] = el.value.trim(); renderAll(); });
-        el.addEventListener("change", ()=>{ state[key] = el.value.trim(); renderAll(); });
+        const handler = () => {
+          state[key] = el.value.trim();
+          renderAll();
+        };
+        el.addEventListener("input", handler);
+        el.addEventListener("change", handler);
       });
 
-      document.getElementById("globalSearch").addEventListener("input", (e)=>{
+      document.getElementById("globalSearch").addEventListener("input", e => {
         state.search = e.target.value.trim();
         document.getElementById("searchInput").value = state.search;
         renderAll();
       });
 
-      document.getElementById("clearFiltersBtn").addEventListener("click", ()=>{
-        Object.keys(state).forEach(k => state[k] = "");
-        state.status = "all";
-        state.priority = "all";
-        state.category = "all";
-        state.team = "all";
-        state.owner = "all";
-        state.doctor = "all";
-        state.attachment = "all";
-        [
-          "searchInput","globalSearch","dueFromFilter","dueToFilter","createdFromFilter","createdToFilter"
-        ].forEach(id => document.getElementById(id).value = "");
-        [
-          "statusFilter","priorityFilter","categoryFilter","teamFilter","ownerFilter","doctorFilter","attachmentFilter"
-        ].forEach(id => document.getElementById(id).value = "all");
-        selectedTab = "all";
-        renderAll();
+      document.getElementById("clearFiltersBtn").addEventListener("click", resetFilters);
+
+      document.getElementById("savePresetBtn").addEventListener("click", () => {
+        const ok = safeSavePreset("emcfus-filters", state);
+        showToast(ok ? "已儲存目前 filter preset" : "此環境未能儲存 preset");
       });
 
-      document.getElementById("savePresetBtn").addEventListener("click", ()=>{
-        localStorage.setItem("emcfus-filters", JSON.stringify(state));
-        showToast("已儲存目前 filter preset");
-      });
-
-      document.getElementById("loadPresetBtn").addEventListener("click", ()=>{
-        const raw = localStorage.getItem("emcfus-filters");
-        if(!raw) return showToast("沒有已儲存的 preset");
-        Object.assign(state, JSON.parse(raw));
-        document.getElementById("searchInput").value = state.search || "";
-        document.getElementById("globalSearch").value = state.search || "";
-        document.getElementById("statusFilter").value = state.status || "all";
-        document.getElementById("priorityFilter").value = state.priority || "all";
-        document.getElementById("categoryFilter").value = state.category || "all";
-        document.getElementById("teamFilter").value = state.team || "all";
-        document.getElementById("ownerFilter").value = state.owner || "all";
-        document.getElementById("doctorFilter").value = state.doctor || "all";
-        document.getElementById("attachmentFilter").value = state.attachment || "all";
-        document.getElementById("dueFromFilter").value = state.dueFrom || "";
-        document.getElementById("dueToFilter").value = state.dueTo || "";
-        document.getElementById("createdFromFilter").value = state.createdFrom || "";
-        document.getElementById("createdToFilter").value = state.createdTo || "";
+      document.getElementById("loadPresetBtn").addEventListener("click", () => {
+        const data = safeLoadPreset("emcfus-filters");
+        if (!data) {
+          showToast("沒有可載入的 preset，或此環境不支援");
+          return;
+        }
+        Object.assign(state, data);
+        syncFilterInputsFromState();
         renderAll();
         showToast("已載入 filter preset");
       });
 
-      document.getElementById("toggleFiltersBtn").addEventListener("click", ()=>{
+      document.getElementById("toggleFiltersBtn").addEventListener("click", () => {
         els.filterBody.classList.toggle("hidden");
       });
     }
 
-    function renderTabs(){
-      const tabs = [
-        ["all","All"],
-        ["my","My Items"],
-        ["team","Team Queue"],
-        ["new","New"],
-        ["assigned","Assigned"],
-        ["in_progress","In Progress"],
-        ["waiting_patient","Waiting Patient"],
-        ["waiting_doctor","Waiting Doctor"],
-        ["overdue","Overdue"],
-        ["today","Due Today"],
-        ["completed","Completed"],
-        ["closed","Closed"]
-      ];
-      els.tabsWrap.innerHTML = tabs.map(([key,label]) => `
-        <button class="tab-btn ${selectedTab===key?'active':''}" data-tab="${key}">${label}</button>
-      `).join("");
-      els.tabsWrap.querySelectorAll(".tab-btn").forEach(btn=>{
-        btn.addEventListener("click", ()=>{
-          selectedTab = btn.dataset.tab;
-          renderAll();
-        });
-      });
-    }
-
-    function filteredData(){
-      let list = [...followups];
-      const search = (state.search || "").toLowerCase();
-
-      list = list.filter(item => {
-        const due = new Date(item.dueAt);
-        const created = new Date(item.createdAt);
-        const searchable = [
-          item.id, item.title, item.cumcNo, item.encounterNo,
-          item.doctor, item.owner, item.team, item.category
-        ].join(" ").toLowerCase();
-
-        if(search && !searchable.includes(search)) return false;
-        if(state.status !== "all" && item.status !== state.status) return false;
-        if(state.priority !== "all" && item.priority !== state.priority) return false;
-        if(state.category !== "all" && item.category !== state.category) return false;
-        if(state.team !== "all" && item.team !== state.team) return false;
-        if(state.owner !== "all" && item.owner !== state.owner) return false;
-        if(state.doctor !== "all" && item.doctor !== state.doctor) return false;
-        if(state.attachment === "yes" && item.attachments.length === 0) return false;
-        if(state.attachment === "no" && item.attachments.length > 0) return false;
-        if(state.dueFrom && due < new Date(state.dueFrom + "T00:00:00")) return false;
-        if(state.dueTo && due > new Date(state.dueTo + "T23:59:59")) return false;
-        if(state.createdFrom && created < new Date(state.createdFrom + "T00:00:00")) return false;
-        if(state.createdTo && created > new Date(state.createdTo + "T23:59:59")) return false;
-
-        if(selectedTab === "my" && item.owner !== CURRENT_USER) return false;
-        if(selectedTab === "team" && item.team !== CURRENT_ROLE) return false;
-        if(selectedTab === "overdue" && !(due < NOW && !["completed","closed"].includes(item.status))) return false;
-        if(selectedTab === "today" && !isSameDay(due, NOW)) return false;
-        if(["new","assigned","in_progress","waiting_patient","waiting_doctor","completed","closed"].includes(selectedTab) && item.status !== selectedTab) return false;
-
-        return true;
-      });
-
-      if(sortMode === "due") {
-        list.sort((a,b) => new Date(a.dueAt) - new Date(b.dueAt));
-      } else {
-        list.sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-      }
-
-      return list;
-    }
-
-    function renderKPIs(list){
-      const open = followups.filter(f => !["completed","closed"].includes(f.status));
+    function renderKPIs() {
+      const open = followups.filter(isOpenItem);
       const dueToday = open.filter(f => isSameDay(new Date(f.dueAt), NOW));
-      const overdue = open.filter(f => new Date(f.dueAt) < NOW);
+      const overdue = open.filter(isOverdue);
       const urgent = open.filter(f => f.priority === "urgent");
       const newToday = followups.filter(f => isSameDay(new Date(f.createdAt), NOW));
       const waitingPatient = open.filter(f => f.status === "waiting_patient");
@@ -1642,34 +1978,37 @@
       const completedToday = followups.filter(f => f.completedAt && isSameDay(new Date(f.completedAt), NOW));
 
       const cards = [
-        ["Open Follow-ups", open.length, "所有未完成 / 未結案事項"],
-        ["Due Today", dueToday.length, "今日需跟進"],
-        ["Overdue", overdue.length, "已超過 due date"],
-        ["Urgent", urgent.length, "高優先跟進"],
-        ["New Today", newToday.length, "今天新建立"],
-        ["Waiting Patient", waitingPatient.length, "等待病人回覆"],
-        ["Waiting Doctor", waitingDoctor.length, "等待醫生決策"],
-        ["Completed Today", completedToday.length, "今天完成"]
+        ["Open Follow-ups", open.length, "所有未完成 / 未結案事項", "📋"],
+        ["Due Today", dueToday.length, "今日需跟進", "🗓"],
+        ["Overdue", overdue.length, "已超過 due date", "⏰"],
+        ["Urgent", urgent.length, "高優先跟進", "🚨"],
+        ["New Today", newToday.length, "今天新建立", "✨"],
+        ["Waiting Patient", waitingPatient.length, "等待病人回覆", "📞"],
+        ["Waiting Doctor", waitingDoctor.length, "等待醫生決策", "🧑‍⚕️"],
+        ["Completed Today", completedToday.length, "今天完成", "✅"]
       ];
 
-      els.kpiGrid.innerHTML = cards.map((c, idx) => `
+      els.kpiGrid.innerHTML = cards.map(c => `
         <div class="kpi-card">
           <div class="kpi-top">
             <div class="kpi-label">${c[0]}</div>
-            <div>${["📋","🗓","⏰","🚨","✨","📞","🧑‍⚕️","✅"][idx]}</div>
+            <div>${c[3]}</div>
           </div>
           <div class="kpi-value">${c[1]}</div>
           <div class="kpi-foot">${c[2]}</div>
         </div>
       `).join("");
 
+      els.myItemsText.textContent = `以目前使用者 ${CURRENT_USER}（${CURRENT_ROLE}）為例`;
+
       const my = open.filter(f => f.owner === CURRENT_USER);
       const myStats = [
         ["My Open", my.length],
-        ["My Overdue", my.filter(f => new Date(f.dueAt) < NOW).length],
+        ["My Overdue", my.filter(isOverdue).length],
         ["My Urgent", my.filter(f => f.priority === "urgent").length],
         ["Due Today", my.filter(f => isSameDay(new Date(f.dueAt), NOW)).length]
       ];
+
       els.myItemsStats.innerHTML = myStats.map(s => `
         <div class="mini-stat">
           <div class="muted">${s[0]}</div>
@@ -1685,9 +2024,9 @@
               <div style="font-weight:800;">${team}</div>
               <div class="muted">目前工作量</div>
             </div>
-            <span class="badge">Open ${t.length}</span>
-            <span class="badge priority-urgent">Urgent ${t.filter(x=>x.priority==='urgent').length}</span>
-            <span class="badge status-new">Overdue ${t.filter(x=>new Date(x.dueAt)<NOW).length}</span>
+            <span class="badge soft">Open ${t.length}</span>
+            <span class="badge priority-urgent">Urgent ${t.filter(x => x.priority === "urgent").length}</span>
+            <span class="badge status-new">Overdue ${t.filter(isOverdue).length}</span>
           </div>
         `;
       }).join("");
@@ -1695,23 +2034,23 @@
       const attention = [
         ...open.filter(f => f.status === "new" && diffHours(NOW, new Date(f.createdAt)) >= 8),
         ...open.filter(f => f.status === "waiting_doctor" && diffHours(NOW, new Date(f.updatedAt)) >= 12),
-        ...open.filter(f => f.priority === "urgent" && new Date(f.dueAt) < NOW),
-      ].slice(0,6);
+        ...open.filter(f => f.priority === "urgent" && isOverdue(f))
+      ].slice(0, 6);
 
       els.attentionList.innerHTML = attention.length ? attention.map(f => `
         <div class="attention-item">
-          <div class="icon-dot">${f.priority === 'urgent' ? '!' : '⏳'}</div>
+          <div class="icon-dot">${f.priority === "urgent" ? "!" : "⏳"}</div>
           <div class="content">
             <div class="activity-title">${f.id} · ${escapeHtml(f.title)}</div>
-            <div class="note">${statusLabels[f.status]} · ${f.team} · due ${escapeHtml(f.dueAt)}</div>
+            <div class="note">${statusLabels[f.status]} · ${f.team} · ${escapeHtml(getRelativeDueText(f))}</div>
           </div>
         </div>
       `).join("") : `<div class="muted">目前沒有高風險 attention item。</div>`;
 
       const activities = [...followups]
-        .flatMap(f => f.timeline.map(t => ({...t, followupId: f.id, title2: f.title})))
-        .sort((a,b) => new Date(b.at) - new Date(a.at))
-        .slice(0,7);
+        .flatMap(f => f.timeline.map(t => ({ ...t, followupId: f.id, title2: f.title })))
+        .sort((a, b) => new Date(b.at) - new Date(a.at))
+        .slice(0, 7);
 
       els.recentActivity.innerHTML = activities.map(a => `
         <div class="activity-item">
@@ -1724,12 +2063,10 @@
       `).join("");
     }
 
-    function rowHTML(item){
-      const due = new Date(item.dueAt);
-      const overdue = due < NOW && !["completed","closed"].includes(item.status);
+    function rowHTML(item) {
       return `
-        <tr class="${item.priority==='urgent' ? 'urgent-row' : ''} ${selectedIds.has(item.id)?'selected':''}" data-id="${item.id}">
-          <td><input type="checkbox" class="checkbox row-check" data-id="${item.id}" ${selectedIds.has(item.id)?'checked':''} /></td>
+        <tr class="${item.priority === "urgent" ? "urgent-row" : ""} ${selectedIds.has(item.id) ? "selected" : ""}" data-id="${item.id}">
+          <td><input type="checkbox" class="checkbox row-check" data-id="${item.id}" ${selectedIds.has(item.id) ? "checked" : ""} /></td>
           <td><span class="badge priority-${item.priority}">${item.priority}</span></td>
           <td><span class="badge status-${item.status}">${statusLabels[item.status]}</span></td>
           <td>
@@ -1750,10 +2087,10 @@
           <td>
             <div class="owner-stack">
               <strong>${item.owner}</strong>
-              <span class="muted">${item.collaborators.length ? '+' + item.collaborators.length + ' collaborators' : 'No collaborator'}</span>
+              <span class="muted">${item.collaborators.length ? "+" + item.collaborators.length + " collaborators" : "No collaborator"}</span>
             </div>
           </td>
-          <td><span class="due ${overdue ? 'overdue':''}">${item.dueAt}</span></td>
+          <td><span class="due ${isOverdue(item) ? "overdue" : ""}">${escapeHtml(getRelativeDueText(item))}</span></td>
           <td>${item.updatedAt}</td>
           <td><span class="attach-pill">📎 ${item.attachments.length}</span></td>
           <td>
@@ -1768,17 +2105,15 @@
       `;
     }
 
-    function cardHTML(item){
-      const due = new Date(item.dueAt);
-      const overdue = due < NOW && !["completed","closed"].includes(item.status);
+    function cardHTML(item) {
       return `
-        <div class="mobile-card" data-id="${item.id}">
+        <div class="mobile-card ${item.priority === "urgent" ? "urgent" : ""}" data-id="${item.id}">
           <div class="mobile-top">
             <div>
               <div class="title-main">${escapeHtml(item.title)}</div>
               <div class="muted">${item.id} · ${item.cumcNo} · ${item.encounterNo}</div>
             </div>
-            <input type="checkbox" class="checkbox row-check" data-id="${item.id}" ${selectedIds.has(item.id)?'checked':''} />
+            <input type="checkbox" class="checkbox row-check" data-id="${item.id}" ${selectedIds.has(item.id) ? "checked" : ""} />
           </div>
           <div class="chip-row">
             <span class="badge status-${item.status}">${statusLabels[item.status]}</span>
@@ -1786,7 +2121,7 @@
             <span class="badge team-${item.team}">${item.team}</span>
           </div>
           <div class="muted">${item.doctor} · ${categoryLabels[item.category]} · Owner: ${item.owner}</div>
-          <div class="muted ${overdue ? 'due overdue':''}">Due: ${item.dueAt}</div>
+          <div class="muted ${isOverdue(item) ? "due overdue" : ""}">Due: ${escapeHtml(getRelativeDueText(item))}</div>
           <div class="chip-row">
             <button class="btn btn-soft action-open" data-id="${item.id}">Open</button>
             <button class="btn btn-soft action-status" data-id="${item.id}">Update Status</button>
@@ -1795,42 +2130,82 @@
       `;
     }
 
-    function renderList(){
-      const list = filteredData();
-      els.listMeta.textContent = `共 ${list.length} 項，排序方式：${sortMode === 'due' ? 'Due Date' : 'Last Update'}。`;
+    function renderList() {
+      const list = getFilteredData();
+      ensureSelectedIdValid(list);
 
-      els.tableBody.innerHTML = list.map(rowHTML).join("");
-      els.mobileList.innerHTML = list.map(cardHTML).join("");
+      els.listMeta.textContent = `共 ${list.length} 項，排序方式：${sortMode === "due" ? "Due Date" : "Last Update"}。`;
+
+      if (!list.length) {
+        els.tableBody.innerHTML = `<tr><td colspan="15">${document.getElementById("emptyListTemplate").innerHTML}</td></tr>`;
+        els.mobileList.innerHTML = document.getElementById("emptyListTemplate").innerHTML;
+        const emptyBtn = document.getElementById("emptyClearBtn");
+        if (emptyBtn) emptyBtn.addEventListener("click", resetFilters);
+      } else {
+        els.tableBody.innerHTML = list.map(rowHTML).join("");
+        els.mobileList.innerHTML = list.map(cardHTML).join("");
+      }
 
       bindListActions();
       syncBulkBar();
     }
 
-    function renderDetail(itemId, intoMobile=false){
-      const container = intoMobile ? els.mobileDetailContent : els.detailPanel;
-      if(!itemId){
-        container.innerHTML = document.getElementById("detailTemplate").innerHTML;
-        return;
+    function getAttentionBanners(item) {
+      const banners = [];
+      if (item.priority === "urgent" && isOpenItem(item)) {
+        banners.push(`<div class="attention-banner urgent">🚨 Urgent priority · 請優先處理此跟進事項。</div>`);
       }
-      const item = followups.find(f => f.id === itemId);
-      if(!item){
-        container.innerHTML = document.getElementById("detailTemplate").innerHTML;
-        return;
+      if (isOverdue(item)) {
+        banners.push(`<div class="attention-banner overdue">⏰ ${escapeHtml(getRelativeDueText(item))} · 已超過既定 due time。</div>`);
+      }
+      if (item.status === "waiting_doctor" && diffHours(NOW, new Date(item.updatedAt)) >= 12) {
+        banners.push(`<div class="attention-banner waiting">🧑‍⚕️ Waiting Doctor ${diffHours(NOW, new Date(item.updatedAt))} 小時以上。</div>`);
+      }
+      return banners.join("");
+    }
+
+    function renderUploadQueue(item) {
+      if (!item.uploadQueue.length) {
+        return `<div class="muted">目前沒有上載中的檔案。</div>`;
       }
 
-      const queueItems = item.attachments.map(file => `
+      return item.uploadQueue.map(file => `
         <div class="queue-upload-item">
-          <div style="display:flex; justify-content:space-between; gap:10px; align-items:center;">
+          <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
             <div>
               <strong>${escapeHtml(file.name)}</strong>
-              <div class="muted">${file.size} · ${file.status} · ${file.path}</div>
+              <div class="muted">${file.size} · ${escapeHtml(file.status)} · ${escapeHtml(file.path)}</div>
             </div>
-            <span class="badge status-completed">stored</span>
+            <span class="badge ${file.status === "failed" ? "priority-urgent" : "status-assigned"}">${escapeHtml(file.status)}</span>
+          </div>
+          <div class="progress"><span style="width:${file.progress || 0}%"></span></div>
+          <div class="chip-row" style="margin-top:8px;">
+            ${file.status === "failed" ? `<button class="btn btn-soft" onclick="retryUpload('${item.id}','${file.id}')">Retry</button>` : ""}
+            <button class="btn btn-soft" onclick="removeQueuedUpload('${item.id}','${file.id}')">Remove</button>
           </div>
         </div>
       `).join("");
+    }
 
-      const timelineHtml = item.timeline.map(t => `
+    function renderStoredAttachments(item) {
+      if (!item.attachments.length) {
+        return `<div class="muted">目前沒有附件。</div>`;
+      }
+
+      return item.attachments.map(file => `
+        <div class="file-item">
+          <div class="icon-dot">📎</div>
+          <div class="content">
+            <div class="file-title">${escapeHtml(file.name)}</div>
+            <div class="note">${file.size} · ${file.uploadedBy} · ${file.uploadedAt}</div>
+            <div class="note">${escapeHtml(file.path)}</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderTimeline(item) {
+      return item.timeline.map(t => `
         <div class="timeline-item">
           <div class="icon-dot">${t.icon}</div>
           <div class="content">
@@ -1840,25 +2215,37 @@
           </div>
         </div>
       `).join("");
+    }
 
-      const html = `
+    function renderDetailContent(item, intoMobile = false) {
+      const closeBtn = intoMobile ? `<button class="btn btn-soft" onclick="closeDrawer()">關閉</button>` : "";
+
+      return `
         <div class="detail-hero">
           <div class="hero-top">
             <div>
               <div class="detail-title">${escapeHtml(item.title)}</div>
               <div class="detail-id">${item.id}</div>
             </div>
-            <button class="btn btn-soft detail-close-mobile ${intoMobile ? '' : 'hidden'}" onclick="closeDrawer()">關閉</button>
+            ${closeBtn}
           </div>
 
-          <div class="badge-row">
+          <div class="attention-strip">
+            ${getAttentionBanners(item)}
+          </div>
+
+          <div class="chip-row">
             <span class="badge status-${item.status}">${statusLabels[item.status]}</span>
             <span class="badge priority-${item.priority}">${item.priority}</span>
-            <span class="badge">${categoryLabels[item.category]}</span>
+            <span class="badge soft">${categoryLabels[item.category]}</span>
             <span class="badge team-${item.team}">${item.team}</span>
           </div>
 
-          <div class="muted">Due: ${item.dueAt}</div>
+          <div class="hero-meta">
+            <span class="meta-chip">🗓 ${escapeHtml(getRelativeDueText(item))}</span>
+            <span class="meta-chip">👤 ${escapeHtml(item.owner)}</span>
+            <span class="meta-chip">🕒 Updated ${escapeHtml(item.updatedAt)}</span>
+          </div>
 
           <div class="hero-actions">
             <button class="btn btn-soft" onclick="openStatusModal('${item.id}')">更新狀態</button>
@@ -1869,7 +2256,7 @@
         </div>
 
         <div class="detail-section">
-          <h4>Case Identifiers</h4>
+          <h4>🧾 Case Identifiers</h4>
           <div class="info-grid">
             <div class="info-item"><div class="k">CUMC No</div><div>${item.cumcNo}</div></div>
             <div class="info-item"><div class="k">Encounter No</div><div>${item.encounterNo}</div></div>
@@ -1881,7 +2268,7 @@
         </div>
 
         <div class="detail-section">
-          <h4>Ownership</h4>
+          <h4>👥 Ownership</h4>
           <div class="info-grid">
             <div class="info-item"><div class="k">Team</div><div>${item.team}</div></div>
             <div class="info-item"><div class="k">Primary Owner</div><div>${item.owner}</div></div>
@@ -1890,14 +2277,14 @@
         </div>
 
         <div class="detail-section">
-          <h4>Action Plan</h4>
+          <h4>📝 Action Plan</h4>
           <div class="info-item" style="margin-bottom:10px;">
             <div class="k">Description</div>
             <div>${escapeHtml(item.description)}</div>
           </div>
           <div class="info-item" style="margin-bottom:10px;">
             <div class="k">Next Action</div>
-            <div>${escapeHtml(item.nextAction)}</div>
+            <div>${escapeHtml(item.nextAction || "尚未填寫")}</div>
           </div>
           <div class="info-item">
             <div class="k">Outcome Summary</div>
@@ -1906,202 +2293,230 @@
         </div>
 
         <div class="detail-section">
-          <h4>Attachments</h4>
+          <h4>📎 Attachments</h4>
           <div class="upload-zone">
             <div style="font-weight:700;">Supabase Storage 模擬上載區</div>
             <div class="muted">支援多檔案、secure path、upload queue、retry / remove / preview 的產品化 UI 思維。</div>
             <div class="chip-row">
               <button class="btn btn-soft" onclick="simulateUpload('${item.id}')">選擇檔案</button>
-              <button class="btn btn-soft">Preview Bucket Path</button>
+              <button class="btn btn-soft" onclick="showToast('secure/followups/${item.id}/')">Preview Bucket Path</button>
             </div>
-            <div class="upload-queue" id="uploadQueue">
-              <div class="queue-upload-item">
-                <div style="display:flex; justify-content:space-between; gap:10px;">
-                  <div>
-                    <strong>upload_queue_demo.pdf</strong>
-                    <div class="muted">pending · secure/followups/${item.id}/upload_queue_demo.pdf</div>
-                  </div>
-                  <span class="badge status-assigned">uploading</span>
-                </div>
-                <div class="progress"><span style="width:68%"></span></div>
-              </div>
-            </div>
+            <div class="upload-queue">${renderUploadQueue(item)}</div>
           </div>
 
           <div class="attachment-list" style="margin-top:12px;">
-            ${queueItems || `<div class="muted">目前沒有附件。</div>`}
+            ${renderStoredAttachments(item)}
           </div>
         </div>
 
         <div class="detail-section">
-          <h4>Timeline</h4>
-          <div class="timeline-list">${timelineHtml}</div>
+          <h4>🕒 Timeline</h4>
+          <div class="timeline-list">${renderTimeline(item)}</div>
         </div>
       `;
-      container.innerHTML = html;
     }
 
-    function bindListActions(){
-      document.querySelectorAll("[data-id]").forEach(el=>{
-        if(el.classList.contains("row-check")) return;
-      });
+    function renderDetail(itemId, intoMobile = false) {
+      const container = intoMobile ? els.mobileDetailContent : els.detailPanel;
+      if (!itemId) {
+        container.innerHTML = document.getElementById("detailTemplate").innerHTML;
+        return;
+      }
 
-      document.querySelectorAll("#tableBody tr").forEach(tr=>{
-        tr.addEventListener("click", (e)=>{
-          if(e.target.closest(".row-check, .action-open, .action-status, .action-assign, .action-complete")) return;
+      const item = followups.find(f => f.id === itemId);
+      if (!item) {
+        container.innerHTML = document.getElementById("detailTemplate").innerHTML;
+        return;
+      }
+
+      container.innerHTML = renderDetailContent(item, intoMobile);
+    }
+
+    function bindListActions() {
+      document.querySelectorAll("#tableBody tr[data-id]").forEach(tr => {
+        tr.addEventListener("click", e => {
+          if (e.target.closest(".row-check, .action-open, .action-status, .action-assign, .action-complete")) return;
           selectedId = tr.dataset.id;
           renderDetail(selectedId);
         });
       });
 
-      document.querySelectorAll(".mobile-card").forEach(card=>{
-        card.addEventListener("click", (e)=>{
-          if(e.target.closest(".row-check, .action-open, .action-status")) return;
+      document.querySelectorAll(".mobile-card").forEach(card => {
+        card.addEventListener("click", e => {
+          if (e.target.closest(".row-check, .action-open, .action-status")) return;
           selectedId = card.dataset.id;
           openDrawer(selectedId);
         });
       });
 
-      document.querySelectorAll(".action-open").forEach(btn=>{
-        btn.addEventListener("click", (e)=>{
+      document.querySelectorAll(".action-open").forEach(btn => {
+        btn.addEventListener("click", e => {
           e.stopPropagation();
           selectedId = btn.dataset.id;
-          if(window.innerWidth <= 1180) openDrawer(selectedId);
+          if (window.innerWidth <= 1180) openDrawer(selectedId);
           else renderDetail(selectedId);
         });
       });
 
-      document.querySelectorAll(".action-status").forEach(btn=>{
-        btn.addEventListener("click", (e)=>{
+      document.querySelectorAll(".action-status").forEach(btn => {
+        btn.addEventListener("click", e => {
           e.stopPropagation();
           openStatusModal(btn.dataset.id);
         });
       });
 
-      document.querySelectorAll(".action-assign").forEach(btn=>{
-        btn.addEventListener("click", (e)=>{
+      document.querySelectorAll(".action-assign").forEach(btn => {
+        btn.addEventListener("click", e => {
           e.stopPropagation();
           openAssignModal(btn.dataset.id);
         });
       });
 
-      document.querySelectorAll(".action-complete").forEach(btn=>{
-        btn.addEventListener("click", (e)=>{
+      document.querySelectorAll(".action-complete").forEach(btn => {
+        btn.addEventListener("click", e => {
           e.stopPropagation();
           openCompleteModal(btn.dataset.id);
         });
       });
 
-      document.querySelectorAll(".row-check").forEach(chk=>{
-        chk.addEventListener("click", (e)=>{
+      document.querySelectorAll(".row-check").forEach(chk => {
+        chk.addEventListener("click", e => {
           e.stopPropagation();
           const id = chk.dataset.id;
-          if(chk.checked) selectedIds.add(id);
+          if (chk.checked) selectedIds.add(id);
           else selectedIds.delete(id);
+
           document.querySelectorAll(`.row-check[data-id="${id}"]`).forEach(x => x.checked = chk.checked);
           syncBulkBar();
           renderList();
-          if(window.innerWidth > 1180) renderDetail(selectedId);
+          if (window.innerWidth > 1180) renderDetail(selectedId);
         });
       });
+
+      const emptyClearBtn = document.getElementById("emptyClearBtn");
+      if (emptyClearBtn) emptyClearBtn.addEventListener("click", resetFilters);
     }
 
-    function syncBulkBar(){
+    function syncBulkBar() {
       els.bulkBar.classList.toggle("show", selectedIds.size > 0);
       els.bulkCount.textContent = selectedIds.size;
-      els.selectAll.checked = filteredData().length > 0 && filteredData().every(i => selectedIds.has(i.id));
+      const list = getFilteredData();
+      els.selectAll.checked = list.length > 0 && list.every(i => selectedIds.has(i.id));
     }
 
-    function renderAll(){
+    function renderAll() {
+      const list = getFilteredData();
+      ensureSelectedIdValid(list);
       renderTabs();
-      renderKPIs(filteredData());
+      renderActiveFilters();
+      renderKPIs();
       renderList();
       renderDetail(selectedId);
-      if(els.mobileDrawer.classList.contains("show")) renderDetail(selectedId, true);
+      if (els.mobileDrawer.classList.contains("show")) renderDetail(selectedId, true);
     }
 
-    function openDrawer(id){
+    function openDrawer(id) {
       selectedId = id;
       renderDetail(id, true);
       els.mobileDrawer.classList.add("show");
     }
 
-    function closeDrawer(){
+    function closeDrawer() {
       els.mobileDrawer.classList.remove("show");
     }
     window.closeDrawer = closeDrawer;
 
-    function openModal(html){
-      els.modalBackdrop.innerHTML = html;
-      els.modalBackdrop.classList.add("show");
-    }
-
-    function closeModal(){
-      els.modalBackdrop.classList.remove("show");
-      els.modalBackdrop.innerHTML = "";
-    }
-
-    function modalShell(title, body, small=false){
-      return `
-        <div class="modal ${small ? 'small' : ''}" onclick="event.stopPropagation()">
+    function openModal({ title, body, footer, small = false }) {
+      els.modalBackdrop.innerHTML = `
+        <div class="modal ${small ? "small" : ""}" onclick="event.stopPropagation()">
           <div class="modal-header">
-            <div>
-              <div class="section-title" style="font-size:18px;">${title}</div>
-            </div>
+            <div class="section-title" style="font-size:18px;">${title}</div>
             <button class="btn" onclick="closeModal()">關閉</button>
           </div>
           <div class="modal-body">${body}</div>
+          <div class="modal-footer">${footer}</div>
         </div>
       `;
+      els.modalBackdrop.classList.add("show");
     }
 
-    function ownerOptions(selected=""){
-      return owners.map(o => `<option value="${o}" ${o===selected?'selected':''}>${o}</option>`).join("");
+    function closeModal() {
+      els.modalBackdrop.classList.remove("show");
+      els.modalBackdrop.innerHTML = "";
     }
-    function teamOptions(selected=""){
-      return teams.map(t => `<option value="${t}" ${t===selected?'selected':''}>${t}</option>`).join("");
-    }
-    function statusOptions(selected=""){
-      return statuses.map(s => `<option value="${s}" ${s===selected?'selected':''}>${statusLabels[s]}</option>`).join("");
-    }
-    function categoryOptions(selected=""){
-      return categories.map(c => `<option value="${c}" ${c===selected?'selected':''}>${categoryLabels[c]}</option>`).join("");
+    window.closeModal = closeModal;
+
+    function ownerOptions(selected = "") {
+      return owners.map(o => `<option value="${o}" ${o === selected ? "selected" : ""}>${o}</option>`).join("");
     }
 
-    function openNewModal(){
-      const body = `
-        <div class="form-grid">
-          <div class="field"><label>CUMC No</label><input class="input" id="mCumc" /></div>
-          <div class="field"><label>Encounter No</label><input class="input" id="mEncounter" /></div>
-          <div class="field"><label>Doctor</label><select class="select" id="mDoctor">${doctors.map(d=>`<option>${d}</option>`).join("")}</select></div>
-          <div class="field"><label>Category</label><select class="select" id="mCategory">${categoryOptions()}</select></div>
-          <div class="field full"><label>Title</label><input class="input" id="mTitle" /></div>
-          <div class="field full"><label>Description</label><textarea class="textarea" id="mDescription"></textarea></div>
-          <div class="field"><label>Priority</label>
-            <select class="select" id="mPriority">
-              <option value="normal">normal</option>
-              <option value="urgent">urgent</option>
-            </select>
+    function teamOptions(selected = "") {
+      return teams.map(t => `<option value="${t}" ${t === selected ? "selected" : ""}>${t}</option>`).join("");
+    }
+
+    function statusOptions(selected = "") {
+      return statuses.map(s => `<option value="${s}" ${s === selected ? "selected" : ""}>${statusLabels[s]}</option>`).join("");
+    }
+
+    function categoryOptions(selected = "") {
+      return categories.map(c => `<option value="${c}" ${c === selected ? "selected" : ""}>${categoryLabels[c]}</option>`).join("");
+    }
+
+    function addTimelineEvent(item, event) {
+      item.timeline.unshift(event);
+    }
+
+    function normalizeStatusDates(item) {
+      if (item.status === "completed") {
+        item.completedAt = item.completedAt || formatDateTime(NOW);
+        item.closedAt = "";
+      } else if (item.status === "closed") {
+        item.completedAt = item.completedAt || formatDateTime(NOW);
+        item.closedAt = item.closedAt || formatDateTime(NOW);
+      } else {
+        item.completedAt = "";
+        item.closedAt = "";
+      }
+    }
+
+    function openNewModal() {
+      openModal({
+        title: "新增 Follow-up",
+        small: false,
+        body: `
+          <div class="form-grid">
+            <div class="field"><label>CUMC No</label><input class="input" id="mCumc" /></div>
+            <div class="field"><label>Encounter No</label><input class="input" id="mEncounter" /></div>
+            <div class="field"><label>Doctor</label><select class="select" id="mDoctor">${doctors.map(d => `<option>${d}</option>`).join("")}</select></div>
+            <div class="field"><label>Category</label><select class="select" id="mCategory">${categoryOptions()}</select></div>
+            <div class="field full"><label>Title</label><input class="input" id="mTitle" /></div>
+            <div class="field full"><label>Description</label><textarea class="textarea" id="mDescription"></textarea></div>
+            <div class="field"><label>Priority</label>
+              <select class="select" id="mPriority">
+                <option value="normal">normal</option>
+                <option value="urgent">urgent</option>
+              </select>
+            </div>
+            <div class="field"><label>Status</label><select class="select" id="mStatus">${statusOptions("new")}</select></div>
+            <div class="field"><label>Due Date</label><input class="input" id="mDueDate" type="datetime-local" value="${toLocalInput(addHours(NOW, 4))}" /></div>
+            <div class="field"><label>Team</label><select class="select" id="mTeam">${teamOptions("Reception")}</select></div>
+            <div class="field"><label>Primary Owner</label><select class="select" id="mOwner">${ownerOptions("Mandy Lee")}</select></div>
+            <div class="field"><label>Requested By</label><input class="input" id="mRequestedBy" value="Reception" /></div>
+            <div class="field full"><label>Next Action</label><input class="input" id="mNextAction" /></div>
+            <div class="field full"><label>Tags</label><input class="input" id="mTags" placeholder="例如 urgent, lab, callback" /></div>
           </div>
-          <div class="field"><label>Status</label><select class="select" id="mStatus">${statusOptions("new")}</select></div>
-          <div class="field"><label>Due Date</label><input class="input" id="mDueDate" type="datetime-local" /></div>
-          <div class="field"><label>Team</label><select class="select" id="mTeam">${teamOptions("Reception")}</select></div>
-          <div class="field"><label>Primary Owner</label><select class="select" id="mOwner">${ownerOptions("Mandy Lee")}</select></div>
-          <div class="field"><label>Requested By</label><input class="input" id="mRequestedBy" value="Reception" /></div>
-          <div class="field full"><label>Next Action</label><input class="input" id="mNextAction" /></div>
-          <div class="field full"><label>Tags</label><input class="input" id="mTags" placeholder="例如 urgent, lab, callback" /></div>
-        </div>
-        <div class="modal-footer">
+        `,
+        footer: `
           <button class="btn" onclick="closeModal()">取消</button>
           <button class="btn btn-primary" onclick="submitNewFollowup()">建立 Follow-up</button>
-        </div>
-      `;
-      openModal(modalShell("新增 Follow-up", body));
+        `
+      });
     }
 
-    function submitNewFollowup(){
+    function submitNewFollowup() {
       const title = document.getElementById("mTitle").value.trim();
-      if(!title) return showToast("請填寫 title");
+      if (!title) return showToast("請填寫 title");
+
       const idNum = followups.length + 1;
       const item = {
         id: `FU-2026-${pad(idNum)}`,
@@ -2121,7 +2536,7 @@
         collaborators: [],
         source: "Manual Entry",
         requestedBy: document.getElementById("mRequestedBy").value.trim() || "Reception",
-        tags: (document.getElementById("mTags").value.trim() || "").split(",").map(s=>s.trim()).filter(Boolean),
+        tags: (document.getElementById("mTags").value.trim() || "").split(",").map(s => s.trim()).filter(Boolean),
         createdBy: CURRENT_USER,
         createdAt: formatDateTime(NOW),
         updatedBy: CURRENT_USER,
@@ -2129,15 +2544,21 @@
         completedAt: "",
         closedAt: "",
         attachments: [],
-        timeline: [{
-          type: "created",
-          icon: "＋",
-          title: "建立 follow-up",
-          actor: CURRENT_USER,
-          at: formatDateTime(NOW),
-          note: "由新增表單建立。"
-        }]
+        uploadQueue: [],
+        timeline: []
       };
+
+      addTimelineEvent(item, {
+        type: "created",
+        icon: "＋",
+        title: "建立 follow-up",
+        actor: CURRENT_USER,
+        at: formatDateTime(NOW),
+        note: "由新增表單建立。"
+      });
+
+      normalizeStatusDates(item);
+
       followups.unshift(item);
       selectedId = item.id;
       closeModal();
@@ -2146,35 +2567,50 @@
     }
     window.submitNewFollowup = submitNewFollowup;
 
-    function openStatusModal(id){
+    function openStatusModal(id) {
       const item = followups.find(f => f.id === id);
-      const body = `
-        <div class="form-grid">
-          <div class="field"><label>New Status</label><select class="select" id="statusNew">${statusOptions(item.status)}</select></div>
-          <div class="field"><label>Due Date</label><input class="input" id="statusDue" type="datetime-local" value="${toLocalInput(item.dueAt)}" /></div>
-          <div class="field full"><label>Remark</label><textarea class="textarea" id="statusRemark">${item.nextAction}</textarea></div>
-          <div class="field full"><label>Outcome Summary</label><textarea class="textarea" id="statusOutcome">${item.outcomeSummary}</textarea></div>
-        </div>
-        <div class="modal-footer">
+      openModal({
+        title: `更新狀態 · ${id}`,
+        small: true,
+        body: `
+          <div class="form-grid">
+            <div class="field"><label>New Status</label><select class="select" id="statusNew">${statusOptions(item.status)}</select></div>
+            <div class="field"><label>Due Date</label><input class="input" id="statusDue" type="datetime-local" value="${toLocalInput(item.dueAt)}" /></div>
+            <div class="field full"><label>Remark</label><textarea class="textarea" id="statusRemark">${escapeHtml(item.nextAction)}</textarea></div>
+            <div class="field full"><label>Outcome Summary</label><textarea class="textarea" id="statusOutcome">${escapeHtml(item.outcomeSummary)}</textarea></div>
+          </div>
+        `,
+        footer: `
           <button class="btn" onclick="closeModal()">取消</button>
           <button class="btn btn-primary" onclick="submitStatus('${id}')">儲存狀態更新</button>
-        </div>
-      `;
-      openModal(modalShell(`更新狀態 · ${id}`, body, true));
+        `
+      });
     }
     window.openStatusModal = openStatusModal;
 
-    function submitStatus(id){
+    function submitStatus(id) {
       const item = followups.find(f => f.id === id);
-      item.status = document.getElementById("statusNew").value;
+      const newStatus = document.getElementById("statusNew").value;
+      const remark = document.getElementById("statusRemark").value.trim();
+      const outcome = document.getElementById("statusOutcome").value.trim();
+
+      if (newStatus === "completed" && !outcome) {
+        return showToast("completed 建議填寫 outcome summary");
+      }
+      if (newStatus === "closed" && !outcome) {
+        return showToast("closed 前請填寫 outcome summary");
+      }
+
+      item.status = newStatus;
       item.dueAt = formatDateTime(new Date(document.getElementById("statusDue").value || item.dueAt));
-      item.nextAction = document.getElementById("statusRemark").value.trim();
-      item.outcomeSummary = document.getElementById("statusOutcome").value.trim();
+      item.nextAction = remark;
+      item.outcomeSummary = outcome;
       item.updatedBy = CURRENT_USER;
       item.updatedAt = formatDateTime(NOW);
-      if(item.status === "completed") item.completedAt = formatDateTime(NOW);
-      if(item.status === "closed") item.closedAt = formatDateTime(NOW);
-      item.timeline.unshift({
+
+      normalizeStatusDates(item);
+
+      addTimelineEvent(item, {
         type: "status_changed",
         icon: "⟳",
         title: `狀態更新為 ${statusLabels[item.status]}`,
@@ -2182,47 +2618,68 @@
         at: formatDateTime(NOW),
         note: item.nextAction || "已更新狀態。"
       });
+
       closeModal();
       renderAll();
       showToast(`${id} 狀態已更新`);
     }
     window.submitStatus = submitStatus;
 
-    function openAssignModal(id){
+    function buildCollaboratorChips(activeOwner, selectedValues) {
+      return owners
+        .filter(o => o !== activeOwner)
+        .map(o => `<div class="chip-check ${selectedValues.includes(o) ? "active" : ""}" data-value="${o}">${o}</div>`)
+        .join("");
+    }
+
+    function bindCollaboratorChips() {
+      document.querySelectorAll("#collabWrap .chip-check").forEach(chip => {
+        chip.addEventListener("click", () => chip.classList.toggle("active"));
+      });
+    }
+
+    function openAssignModal(id) {
       const item = followups.find(f => f.id === id);
-      const body = `
-        <div class="form-grid">
-          <div class="field"><label>Team</label><select class="select" id="assignTeam">${teamOptions(item.team)}</select></div>
-          <div class="field"><label>Primary Owner</label><select class="select" id="assignOwner">${ownerOptions(item.owner)}</select></div>
-          <div class="field full"><label>Collaborators</label>
-            <div class="chip-checks" id="collabWrap">
-              ${owners.filter(o => o !== item.owner).map(o => `
-                <div class="chip-check ${item.collaborators.includes(o)?'active':''}" data-value="${o}">${o}</div>
-              `).join("")}
+      openModal({
+        title: `Assign / Reassign · ${id}`,
+        small: true,
+        body: `
+          <div class="form-grid">
+            <div class="field"><label>Team</label><select class="select" id="assignTeam">${teamOptions(item.team)}</select></div>
+            <div class="field"><label>Primary Owner</label><select class="select" id="assignOwner">${ownerOptions(item.owner)}</select></div>
+            <div class="field full"><label>Collaborators</label>
+              <div class="chip-checks" id="collabWrap">${buildCollaboratorChips(item.owner, item.collaborators)}</div>
             </div>
+            <div class="field full"><label>Assignment Note</label><textarea class="textarea" id="assignNote">重新分派 follow-up ownership。</textarea></div>
           </div>
-          <div class="field full"><label>Assignment Note</label><textarea class="textarea" id="assignNote">重新分派 follow-up ownership。</textarea></div>
-        </div>
-        <div class="modal-footer">
+        `,
+        footer: `
           <button class="btn" onclick="closeModal()">取消</button>
           <button class="btn btn-primary" onclick="submitAssign('${id}')">儲存分派</button>
-        </div>
-      `;
-      openModal(modalShell(`Assign / Reassign · ${id}`, body, true));
-      document.querySelectorAll("#collabWrap .chip-check").forEach(chip=>{
-        chip.addEventListener("click", ()=> chip.classList.toggle("active"));
+        `
+      });
+
+      bindCollaboratorChips();
+
+      document.getElementById("assignOwner").addEventListener("change", e => {
+        const currentSelected = [...document.querySelectorAll("#collabWrap .chip-check.active")].map(x => x.dataset.value);
+        const nextOwner = e.target.value;
+        const filteredSelected = currentSelected.filter(x => x !== nextOwner);
+        document.getElementById("collabWrap").innerHTML = buildCollaboratorChips(nextOwner, filteredSelected);
+        bindCollaboratorChips();
       });
     }
     window.openAssignModal = openAssignModal;
 
-    function submitAssign(id){
+    function submitAssign(id) {
       const item = followups.find(f => f.id === id);
       item.team = document.getElementById("assignTeam").value;
       item.owner = document.getElementById("assignOwner").value;
-      item.collaborators = [...document.querySelectorAll("#collabWrap .chip-check.active")].map(x=>x.dataset.value);
+      item.collaborators = [...document.querySelectorAll("#collabWrap .chip-check.active")].map(x => x.dataset.value).filter(x => x !== item.owner);
       item.updatedAt = formatDateTime(NOW);
       item.updatedBy = CURRENT_USER;
-      item.timeline.unshift({
+
+      addTimelineEvent(item, {
         type: "reassigned",
         icon: "⇢",
         title: `重新分派至 ${item.team}`,
@@ -2230,39 +2687,50 @@
         at: formatDateTime(NOW),
         note: `Primary owner：${item.owner}`
       });
+
       closeModal();
       renderAll();
       showToast(`${id} 已重新分派`);
     }
     window.submitAssign = submitAssign;
 
-    function openCompleteModal(id){
+    function openCompleteModal(id) {
       const item = followups.find(f => f.id === id);
-      const body = `
-        <div class="form-grid">
-          <div class="field full"><label>Outcome Summary</label><textarea class="textarea" id="completeOutcome">${item.outcomeSummary || "已完成跟進，已通知相關團隊。"}</textarea></div>
-          <div class="field full"><label>Completion Note</label><textarea class="textarea" id="completeNote">完成跟進並更新時間線。</textarea></div>
-          <div class="field full">
-            <label><input type="checkbox" id="completeClose" /> Close immediately</label>
+      openModal({
+        title: `Complete · ${id}`,
+        small: true,
+        body: `
+          <div class="form-grid">
+            <div class="field full"><label>Outcome Summary</label><textarea class="textarea" id="completeOutcome">${escapeHtml(item.outcomeSummary || "已完成跟進，已通知相關團隊。")}</textarea></div>
+            <div class="field full"><label>Completion Note</label><textarea class="textarea" id="completeNote">完成跟進並更新時間線。</textarea></div>
+            <div class="field full">
+              <label><input type="checkbox" id="completeClose" /> Close immediately</label>
+            </div>
           </div>
-        </div>
-        <div class="modal-footer">
+        `,
+        footer: `
           <button class="btn" onclick="closeModal()">取消</button>
           <button class="btn btn-primary" onclick="submitComplete('${id}')">完成事項</button>
-        </div>
-      `;
-      openModal(modalShell(`Complete · ${id}`, body, true));
+        `
+      });
     }
     window.openCompleteModal = openCompleteModal;
 
-    function submitComplete(id){
+    function submitComplete(id) {
       const item = followups.find(f => f.id === id);
+      if (item.status === "closed") return showToast("closed item 不可再 complete");
+
+      const outcome = document.getElementById("completeOutcome").value.trim();
+      if (!outcome) return showToast("請填寫 outcome summary");
+
       item.status = document.getElementById("completeClose").checked ? "closed" : "completed";
-      item.outcomeSummary = document.getElementById("completeOutcome").value.trim();
-      item.completedAt = formatDateTime(NOW);
-      if(item.status === "closed") item.closedAt = formatDateTime(NOW);
+      item.outcomeSummary = outcome;
       item.updatedAt = formatDateTime(NOW);
-      item.timeline.unshift({
+      item.updatedBy = CURRENT_USER;
+      item.completedAt = formatDateTime(NOW);
+      if (item.status === "closed") item.closedAt = formatDateTime(NOW);
+
+      addTimelineEvent(item, {
         type: item.status,
         icon: item.status === "closed" ? "✓" : "✔",
         title: item.status === "closed" ? "個案已結案" : "事項已完成",
@@ -2270,132 +2738,158 @@
         at: formatDateTime(NOW),
         note: document.getElementById("completeNote").value.trim()
       });
+
       closeModal();
       renderAll();
-      showToast(`${id} 已${item.status === 'closed' ? '結案' : '完成'}`);
+      showToast(`${id} 已${item.status === "closed" ? "結案" : "完成"}`);
     }
     window.submitComplete = submitComplete;
 
-    function openCloseModal(id){
-      const body = `
-        <div class="form-grid">
-          <div class="field full"><label>Close Note</label><textarea class="textarea" id="closeNote">已完成最終處理，正式結案。</textarea></div>
-        </div>
-        <div class="modal-footer">
+    function openCloseModal(id) {
+      openModal({
+        title: `Close · ${id}`,
+        small: true,
+        body: `
+          <div class="form-grid">
+            <div class="field full"><label>Close Note</label><textarea class="textarea" id="closeNote">已完成最終處理，正式結案。</textarea></div>
+          </div>
+        `,
+        footer: `
           <button class="btn" onclick="closeModal()">取消</button>
           <button class="btn btn-danger" onclick="submitClose('${id}')">確認結案</button>
-        </div>
-      `;
-      openModal(modalShell(`Close · ${id}`, body, true));
+        `
+      });
     }
     window.openCloseModal = openCloseModal;
 
-    function submitClose(id){
+    function submitClose(id) {
       const item = followups.find(f => f.id === id);
+      const note = document.getElementById("closeNote").value.trim();
+      if (!note) return showToast("請填寫 close note");
+
       item.status = "closed";
       item.closedAt = formatDateTime(NOW);
+      item.completedAt = item.completedAt || formatDateTime(NOW);
       item.updatedAt = formatDateTime(NOW);
-      item.timeline.unshift({
+      item.updatedBy = CURRENT_USER;
+
+      addTimelineEvent(item, {
         type: "closed",
         icon: "✓",
         title: "個案已結案",
         actor: CURRENT_USER,
         at: formatDateTime(NOW),
-        note: document.getElementById("closeNote").value.trim()
+        note
       });
+
       closeModal();
       renderAll();
       showToast(`${id} 已結案`);
     }
     window.submitClose = submitClose;
 
-    function openBulkModal(type){
-      if(selectedIds.size === 0) return showToast("請先選擇至少一項");
+    function openBulkModal(type) {
+      if (selectedIds.size === 0) return showToast("請先選擇至少一項");
       const count = selectedIds.size;
       let body = "";
+      let footer = "";
 
-      if(type === "assign"){
+      if (type === "assign") {
         body = `
           <div class="form-grid">
             <div class="field"><label>Team</label><select class="select" id="bulkTeam">${teamOptions()}</select></div>
             <div class="field"><label>Primary Owner</label><select class="select" id="bulkOwner">${ownerOptions()}</select></div>
             <div class="field full"><label>Note</label><textarea class="textarea" id="bulkNote">批量重新分派。</textarea></div>
           </div>
-          <div class="modal-footer">
-            <button class="btn" onclick="closeModal()">取消</button>
-            <button class="btn btn-primary" onclick="submitBulk('assign')">更新 ${count} 項</button>
-          </div>
         `;
-      } else if(type === "team"){
+        footer = `
+          <button class="btn" onclick="closeModal()">取消</button>
+          <button class="btn btn-primary" onclick="submitBulk('assign')">更新 ${count} 項</button>
+        `;
+      } else if (type === "team") {
         body = `
           <div class="form-grid">
             <div class="field"><label>Team</label><select class="select" id="bulkTeamOnly">${teamOptions()}</select></div>
             <div class="field full"><label>Note</label><textarea class="textarea" id="bulkNote">批量更改 team。</textarea></div>
           </div>
-          <div class="modal-footer">
-            <button class="btn" onclick="closeModal()">取消</button>
-            <button class="btn btn-primary" onclick="submitBulk('team')">更新 ${count} 項</button>
-          </div>
         `;
-      } else if(type === "status"){
+        footer = `
+          <button class="btn" onclick="closeModal()">取消</button>
+          <button class="btn btn-primary" onclick="submitBulk('team')">更新 ${count} 項</button>
+        `;
+      } else if (type === "status") {
         body = `
           <div class="form-grid">
             <div class="field"><label>Status</label><select class="select" id="bulkStatus">${statusOptions()}</select></div>
             <div class="field full"><label>Remark</label><textarea class="textarea" id="bulkNote">批量更新狀態。</textarea></div>
           </div>
-          <div class="modal-footer">
-            <button class="btn" onclick="closeModal()">取消</button>
-            <button class="btn btn-primary" onclick="submitBulk('status')">更新 ${count} 項</button>
-          </div>
         `;
-      } else if(type === "due"){
+        footer = `
+          <button class="btn" onclick="closeModal()">取消</button>
+          <button class="btn btn-primary" onclick="submitBulk('status')">更新 ${count} 項</button>
+        `;
+      } else if (type === "due") {
         body = `
           <div class="form-grid">
             <div class="field"><label>New Due Date</label><input class="input" id="bulkDue" type="datetime-local" /></div>
             <div class="field full"><label>Remark</label><textarea class="textarea" id="bulkNote">批量延期 due date。</textarea></div>
           </div>
-          <div class="modal-footer">
-            <button class="btn" onclick="closeModal()">取消</button>
-            <button class="btn btn-primary" onclick="submitBulk('due')">更新 ${count} 項</button>
-          </div>
         `;
-      } else if(type === "complete"){
+        footer = `
+          <button class="btn" onclick="closeModal()">取消</button>
+          <button class="btn btn-primary" onclick="submitBulk('due')">更新 ${count} 項</button>
+        `;
+      } else if (type === "complete") {
         body = `
           <div class="form-grid">
             <div class="field full"><label>Outcome Summary</label><textarea class="textarea" id="bulkOutcome">批量完成 follow-up。</textarea></div>
           </div>
-          <div class="modal-footer">
-            <button class="btn" onclick="closeModal()">取消</button>
-            <button class="btn btn-primary" onclick="submitBulk('complete')">完成 ${count} 項</button>
-          </div>
         `;
-      } else if(type === "close"){
+        footer = `
+          <button class="btn" onclick="closeModal()">取消</button>
+          <button class="btn btn-primary" onclick="submitBulk('complete')">完成 ${count} 項</button>
+        `;
+      } else if (type === "close") {
         body = `
           <div class="form-grid">
             <div class="field full"><label>Close Note</label><textarea class="textarea" id="bulkCloseNote">批量結案。</textarea></div>
           </div>
-          <div class="modal-footer">
-            <button class="btn" onclick="closeModal()">取消</button>
-            <button class="btn btn-danger" onclick="submitBulk('close')">結案 ${count} 項</button>
-          </div>
+        `;
+        footer = `
+          <button class="btn" onclick="closeModal()">取消</button>
+          <button class="btn btn-danger" onclick="submitBulk('close')">結案 ${count} 項</button>
         `;
       }
 
-      openModal(modalShell(`Bulk Action · ${type}`, body, true));
+      openModal({
+        title: `Bulk Action · ${type}`,
+        body,
+        footer,
+        small: true
+      });
     }
 
-    function submitBulk(type){
-      const ids = [...selectedIds];
-      ids.forEach(id => {
-        const item = followups.find(f => f.id === id);
-        if(!item) return;
+    function submitBulk(type) {
+      const items = getSelectedItems();
+
+      if (type === "complete") {
+        const outcome = document.getElementById("bulkOutcome").value.trim();
+        if (!outcome) return showToast("請填寫 outcome summary");
+      }
+
+      if (type === "close") {
+        const note = document.getElementById("bulkCloseNote").value.trim();
+        if (!note) return showToast("請填寫 close note");
+      }
+
+      items.forEach(item => {
         item.updatedAt = formatDateTime(NOW);
         item.updatedBy = CURRENT_USER;
 
-        if(type === "assign"){
+        if (type === "assign") {
           item.team = document.getElementById("bulkTeam").value;
           item.owner = document.getElementById("bulkOwner").value;
-          item.timeline.unshift({
+          addTimelineEvent(item, {
             type: "reassigned",
             icon: "⇢",
             title: `批量重新分派至 ${item.team}`,
@@ -2403,9 +2897,9 @@
             at: formatDateTime(NOW),
             note: document.getElementById("bulkNote").value.trim()
           });
-        } else if(type === "team"){
+        } else if (type === "team") {
           item.team = document.getElementById("bulkTeamOnly").value;
-          item.timeline.unshift({
+          addTimelineEvent(item, {
             type: "reassigned",
             icon: "⇢",
             title: `批量更改 team 至 ${item.team}`,
@@ -2413,9 +2907,10 @@
             at: formatDateTime(NOW),
             note: document.getElementById("bulkNote").value.trim()
           });
-        } else if(type === "status"){
+        } else if (type === "status") {
           item.status = document.getElementById("bulkStatus").value;
-          item.timeline.unshift({
+          normalizeStatusDates(item);
+          addTimelineEvent(item, {
             type: "status_changed",
             icon: "⟳",
             title: `批量更新狀態為 ${statusLabels[item.status]}`,
@@ -2423,9 +2918,9 @@
             at: formatDateTime(NOW),
             note: document.getElementById("bulkNote").value.trim()
           });
-        } else if(type === "due"){
+        } else if (type === "due") {
           item.dueAt = formatDateTime(new Date(document.getElementById("bulkDue").value || item.dueAt));
-          item.timeline.unshift({
+          addTimelineEvent(item, {
             type: "due_changed",
             icon: "🗓",
             title: "批量更新 due date",
@@ -2433,11 +2928,12 @@
             at: formatDateTime(NOW),
             note: document.getElementById("bulkNote").value.trim()
           });
-        } else if(type === "complete"){
+        } else if (type === "complete") {
+          if (item.status === "closed") return;
           item.status = "completed";
           item.completedAt = formatDateTime(NOW);
           item.outcomeSummary = document.getElementById("bulkOutcome").value.trim();
-          item.timeline.unshift({
+          addTimelineEvent(item, {
             type: "completed",
             icon: "✔",
             title: "批量完成事項",
@@ -2445,10 +2941,11 @@
             at: formatDateTime(NOW),
             note: item.outcomeSummary
           });
-        } else if(type === "close"){
+        } else if (type === "close") {
           item.status = "closed";
           item.closedAt = formatDateTime(NOW);
-          item.timeline.unshift({
+          item.completedAt = item.completedAt || formatDateTime(NOW);
+          addTimelineEvent(item, {
             type: "closed",
             icon: "✓",
             title: "批量結案",
@@ -2466,65 +2963,143 @@
     }
     window.submitBulk = submitBulk;
 
-    function simulateUpload(id){
-      const item = followups.find(f => f.id === id);
-      const file = {
-        id: `ATT-${id}-${Date.now()}`,
-        name: `new_upload_${item.attachments.length + 1}.pdf`,
-        size: "1.2 MB",
+    function finishQueuedUpload(item, queueId) {
+      const index = item.uploadQueue.findIndex(f => f.id === queueId);
+      if (index === -1) return;
+
+      const queued = item.uploadQueue[index];
+      const storedFile = {
+        id: queued.id,
+        name: queued.name,
+        size: queued.size,
         uploadedBy: CURRENT_USER,
         uploadedAt: formatDateTime(NOW),
-        path: `secure/followups/${id}/new_upload_${item.attachments.length + 1}.pdf`,
+        path: queued.path,
         status: "stored"
       };
-      item.attachments.unshift(file);
+
+      item.uploadQueue.splice(index, 1);
+      item.attachments.unshift(storedFile);
       item.updatedAt = formatDateTime(NOW);
-      item.timeline.unshift({
+      item.updatedBy = CURRENT_USER;
+
+      addTimelineEvent(item, {
         type: "attachment_uploaded",
         icon: "📎",
         title: "上載附件",
         actor: CURRENT_USER,
         at: formatDateTime(NOW),
-        note: `${file.name} 已上載至 secure storage`
+        note: `${storedFile.name} 已上載至 secure storage`
       });
+
       renderAll();
-      if(window.innerWidth <= 1180 && els.mobileDrawer.classList.contains("show")) renderDetail(id, true);
-      showToast(`已模擬上載 ${file.name}`);
+    }
+
+    function simulateUpload(id) {
+      const item = followups.find(f => f.id === id);
+      const queueId = `UP-${Date.now()}`;
+      const ext = rand(["pdf", "jpg", "png", "docx"]);
+      const queued = {
+        id: queueId,
+        name: `new_upload_${item.attachments.length + item.uploadQueue.length + 1}.${ext}`,
+        size: `${(0.8 + Math.random() * 1.4).toFixed(1)} MB`,
+        path: `secure/followups/${id}/new_upload_${item.attachments.length + item.uploadQueue.length + 1}.${ext}`,
+        status: "uploading",
+        progress: 0
+      };
+
+      item.uploadQueue.unshift(queued);
+      renderAll();
+      showToast(`開始上載 ${queued.name}`);
+
+      const steps = [18, 42, 68, 88, 100];
+      steps.forEach((p, idx) => {
+        setTimeout(() => {
+          const target = item.uploadQueue.find(x => x.id === queueId);
+          if (!target) return;
+          target.progress = p;
+          renderAll();
+          if (p === 100) {
+            setTimeout(() => finishQueuedUpload(item, queueId), 240);
+          }
+        }, 220 * (idx + 1));
+      });
     }
     window.simulateUpload = simulateUpload;
 
-    function toLocalInput(dt){
-      const d = new Date(dt);
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    function retryUpload(id, queueId) {
+      const item = followups.find(f => f.id === id);
+      const target = item.uploadQueue.find(x => x.id === queueId);
+      if (!target) return;
+      target.status = "uploading";
+      target.progress = 12;
+      renderAll();
+      showToast(`重新上載 ${target.name}`);
+      setTimeout(() => {
+        target.progress = 100;
+        renderAll();
+        setTimeout(() => finishQueuedUpload(item, queueId), 240);
+      }, 700);
+    }
+    window.retryUpload = retryUpload;
+
+    function removeQueuedUpload(id, queueId) {
+      const item = followups.find(f => f.id === id);
+      item.uploadQueue = item.uploadQueue.filter(x => x.id !== queueId);
+      renderAll();
+      showToast("已移除 upload queue item");
+    }
+    window.removeQueuedUpload = removeQueuedUpload;
+
+    function initHeader() {
+      els.todayLabel.textContent = `Today: ${formatDateOnly(NOW)} ${getWeekday(NOW)}`;
+      els.roleLabel.textContent = `Current Role: ${CURRENT_ROLE}`;
     }
 
-    document.getElementById("newBtn").addEventListener("click", openNewModal);
-    document.getElementById("refreshBtn").addEventListener("click", ()=>{ renderAll(); showToast("資料已重新整理"); });
-    document.getElementById("sortDueBtn").addEventListener("click", ()=>{ sortMode = "due"; renderAll(); });
-    document.getElementById("sortUpdatedBtn").addEventListener("click", ()=>{ sortMode = "updated"; renderAll(); });
-    document.getElementById("clearSelectionBtn").addEventListener("click", ()=>{ selectedIds.clear(); renderAll(); });
-    document.getElementById("closeDrawerBtn").addEventListener("click", closeDrawer);
+    function initEvents() {
+      document.getElementById("newBtn").addEventListener("click", openNewModal);
+      document.getElementById("refreshBtn").addEventListener("click", () => {
+        renderAll();
+        showToast("資料已重新整理");
+      });
+      document.getElementById("sortDueBtn").addEventListener("click", () => {
+        sortMode = "due";
+        renderAll();
+      });
+      document.getElementById("sortUpdatedBtn").addEventListener("click", () => {
+        sortMode = "updated";
+        renderAll();
+      });
+      document.getElementById("clearSelectionBtn").addEventListener("click", () => {
+        selectedIds.clear();
+        renderAll();
+      });
+      document.getElementById("closeDrawerBtn").addEventListener("click", closeDrawer);
 
-    els.modalBackdrop.addEventListener("click", closeModal);
-    els.mobileDrawer.addEventListener("click", (e)=>{ if(e.target === els.mobileDrawer) closeDrawer(); });
+      els.modalBackdrop.addEventListener("click", closeModal);
+      els.mobileDrawer.addEventListener("click", e => {
+        if (e.target === els.mobileDrawer) closeDrawer();
+      });
 
-    els.selectAll.addEventListener("change", ()=>{
-      const list = filteredData();
-      if(els.selectAll.checked) list.forEach(i => selectedIds.add(i.id));
-      else list.forEach(i => selectedIds.delete(i.id));
-      renderAll();
-    });
+      els.selectAll.addEventListener("change", () => {
+        const list = getFilteredData();
+        if (els.selectAll.checked) list.forEach(i => selectedIds.add(i.id));
+        else list.forEach(i => selectedIds.delete(i.id));
+        renderAll();
+      });
 
-    document.addEventListener("click", (e)=>{
-      const btn = e.target.closest("[data-bulk]");
-      if(btn) openBulkModal(btn.dataset.bulk);
-    });
+      document.addEventListener("click", e => {
+        const btn = e.target.closest("[data-bulk]");
+        if (btn) openBulkModal(btn.dataset.bulk);
+      });
+    }
 
-    window.closeModal = closeModal;
-
-    function init(){
-      els.todayLabel.textContent = `Today: ${formatDateOnly(NOW)} Saturday`;
+    function init() {
+      followups = generateMockData();
+      selectedId = followups[0]?.id || null;
+      initHeader();
       initFilters();
+      initEvents();
       renderAll();
     }
 
