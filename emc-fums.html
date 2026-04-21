@@ -22,6 +22,7 @@
     }
 
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Inter, Arial, Helvetica, sans-serif;
@@ -570,7 +571,7 @@
     const SUPABASE_URL = 'https://tvwqbjqhrnpeulsoacdh.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2d3FianFocm5wZXVsc29hY2RoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NDMyNTUsImV4cCI6MjA5MjMxOTI1NX0.SVqyxJ7OYQ--eaXf6qsMfgGYrbTMcz3Q-1kwmxCH-Zk';
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let currentUser = null;
     let currentProfile = null;
@@ -633,81 +634,85 @@
         const email = document.getElementById('authEmail').value.trim();
         const password = document.getElementById('authPassword').value.trim();
 
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { error } = await sb.auth.signUp({ email, password });
         if (error) throw error;
 
         setAuthMsg('Sign up success. 如果開咗 email confirm，請先確認電郵。');
       } catch (err) {
+        console.error('signUp error:', err);
         setAuthMsg(err.message, true);
       }
     }
 
-async function login() {
-  try {
-    setAuthMsg('Logging in...');
-    const email = document.getElementById('authEmail').value.trim();
-    const password = document.getElementById('authPassword').value.trim();
+    async function login() {
+      try {
+        setAuthMsg('Logging in...');
+        const email = document.getElementById('authEmail').value.trim();
+        const password = document.getElementById('authPassword').value.trim();
 
-    console.log('login email:', email);
+        console.log('login email:', email);
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    console.log('login result:', { data, error });
+        const { data, error } = await sb.auth.signInWithPassword({ email, password });
+        console.log('login result:', { data, error });
 
-    if (error) throw error;
+        if (error) throw error;
 
-    setAuthMsg('Login success.');
-  } catch (err) {
-    console.error('login error:', err);
-    setAuthMsg(err.message, true);
-  }
-}
+        setAuthMsg('Login success.');
+        await boot();
+      } catch (err) {
+        console.error('login error:', err);
+        setAuthMsg(err.message, true);
+      }
+    }
 
     async function logout() {
-      await supabase.auth.signOut();
+      await sb.auth.signOut();
       currentUser = null;
       currentProfile = null;
+      profiles = [];
+      followups = [];
+      selectedFollowupId = null;
       showAuth();
     }
 
     async function loadSession() {
-      const { data, error } = await supabase.auth.getSession();
+      const { data, error } = await sb.auth.getSession();
       if (error) throw error;
       currentUser = data.session?.user || null;
       return currentUser;
     }
 
-async function loadMyProfile() {
-  if (!currentUser) return null;
+    async function loadMyProfile() {
+      if (!currentUser) return null;
 
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', currentUser.id)
-    .maybeSingle();
+      const { data, error } = await sb
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .maybeSingle();
 
-  if (error) throw error;
+      if (error) throw error;
 
-  if (!data) {
-    currentProfile = {
-      id: currentUser.id,
-      email: currentUser.email,
-      full_name: currentUser.email,
-      role: 'user',
-      team: '-'
-    };
-  } else {
-    currentProfile = data;
-  }
+      if (!data) {
+        currentProfile = {
+          id: currentUser.id,
+          email: currentUser.email || '-',
+          full_name: currentUser.email || 'Unknown User',
+          role: 'user',
+          team: '-'
+        };
+      } else {
+        currentProfile = data;
+      }
 
-  document.getElementById('meName').textContent = currentProfile.full_name || '-';
-  document.getElementById('meMeta').textContent = `${currentProfile.email || '-'} · ${currentProfile.team || '-'}`;
-  document.getElementById('meRole').textContent = currentProfile.role || '-';
-
-  return currentProfile;
-}
+      document.getElementById('meName').textContent = currentProfile.full_name || '-';
+      document.getElementById('meMeta').textContent = `${currentProfile.email || '-'} · ${currentProfile.team || '-'}`;
+      document.getElementById('meRole').textContent = currentProfile.role || '-';
+      return currentProfile;
+    }
 
     async function loadProfilesForOwnerSelect() {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('profiles')
         .select('id, full_name, email, role, team, is_active')
         .order('full_name', { ascending: true });
@@ -717,6 +722,9 @@ async function loadMyProfile() {
         profiles = currentProfile ? [currentProfile] : [];
       } else {
         profiles = data || [];
+        if (!profiles.length && currentProfile) {
+          profiles = [currentProfile];
+        }
       }
 
       const ownerSelect = document.getElementById('fOwner');
@@ -730,7 +738,7 @@ async function loadMyProfile() {
       for (const p of profiles) {
         const opt = document.createElement('option');
         opt.value = p.id;
-        opt.textContent = `${p.full_name} (${p.team} / ${p.role})`;
+        opt.textContent = `${p.full_name || p.email || 'Unknown'} (${p.team || '-'} / ${p.role || '-'})`;
         if (currentProfile && p.id === currentProfile.id) {
           opt.selected = true;
         }
@@ -748,7 +756,9 @@ async function loadMyProfile() {
           priority: document.getElementById('fPriority').value,
           status: document.getElementById('fStatus').value,
           team: document.getElementById('fTeam').value,
-          due_at: document.getElementById('fDueAt').value ? new Date(document.getElementById('fDueAt').value).toISOString() : null,
+          due_at: document.getElementById('fDueAt').value
+            ? new Date(document.getElementById('fDueAt').value).toISOString()
+            : null,
           doctor_name: document.getElementById('fDoctorName').value.trim() || null,
           cumc_no: document.getElementById('fCumcNo').value.trim() || null,
           encounter_no: document.getElementById('fEncounterNo').value.trim() || null,
@@ -763,7 +773,7 @@ async function loadMyProfile() {
           throw new Error('Title is required');
         }
 
-        const { data, error } = await supabase
+        const { data, error } = await sb
           .from('followups')
           .insert(payload)
           .select('*')
@@ -771,7 +781,7 @@ async function loadMyProfile() {
 
         if (error) throw error;
 
-        setCreateMsg(`Created: ${data.followup_no}`);
+        setCreateMsg(`Created: ${data.followup_no || data.id}`);
         document.getElementById('fTitle').value = '';
         document.getElementById('fDescription').value = '';
         document.getElementById('fDoctorName').value = '';
@@ -785,6 +795,7 @@ async function loadMyProfile() {
         selectedFollowupId = data.id;
         await renderDetail();
       } catch (err) {
+        console.error('createFollowup error:', err);
         setCreateMsg(err.message, true);
       }
     }
@@ -794,7 +805,7 @@ async function loadMyProfile() {
       const status = document.getElementById('filterStatus').value;
       const priority = document.getElementById('filterPriority').value;
 
-      let query = supabase
+      let query = sb
         .from('followups')
         .select('*')
         .order('created_at', { ascending: false });
@@ -856,7 +867,7 @@ async function loadMyProfile() {
             <div>
               <div class="title">${escapeHtml(item.title)}</div>
               <div class="meta">
-                <span>${escapeHtml(item.followup_no)}</span>
+                <span>${escapeHtml(item.followup_no || item.id)}</span>
                 <span>Team: ${escapeHtml(item.team || '-')}</span>
                 <span>Doctor: ${escapeHtml(item.doctor_name || '-')}</span>
                 <span>Due: ${escapeHtml(fmtDate(item.due_at))}</span>
@@ -878,7 +889,7 @@ async function loadMyProfile() {
     }
 
     async function getFollowupDetail(id) {
-      const { data: followup, error: e1 } = await supabase
+      const { data: followup, error: e1 } = await sb
         .from('followups')
         .select('*')
         .eq('id', id)
@@ -886,7 +897,7 @@ async function loadMyProfile() {
 
       if (e1) throw e1;
 
-      const { data: timeline, error: e2 } = await supabase
+      const { data: timeline, error: e2 } = await sb
         .from('followup_timeline')
         .select('*')
         .eq('followup_id', id)
@@ -894,7 +905,7 @@ async function loadMyProfile() {
 
       if (e2) throw e2;
 
-      const { data: attachments, error: e3 } = await supabase
+      const { data: attachments, error: e3 } = await sb
         .from('attachments')
         .select('*')
         .eq('followup_id', id)
@@ -916,7 +927,9 @@ async function loadMyProfile() {
       const ownerId = document.getElementById('dOwner').value || null;
       const outcome = document.getElementById('dOutcome').value.trim() || null;
       const nextAction = document.getElementById('dNextAction').value.trim() || null;
-      const dueAt = document.getElementById('dDueAt').value ? new Date(document.getElementById('dDueAt').value).toISOString() : null;
+      const dueAt = document.getElementById('dDueAt').value
+        ? new Date(document.getElementById('dDueAt').value).toISOString()
+        : null;
 
       const payload = {
         status,
@@ -936,7 +949,7 @@ async function loadMyProfile() {
         payload.closed_at = new Date().toISOString();
       }
 
-      const { error } = await supabase
+      const { error } = await sb
         .from('followups')
         .update(payload)
         .eq('id', id);
@@ -948,14 +961,15 @@ async function loadMyProfile() {
       if (!file) throw new Error('No file selected');
 
       const safeName = `${followupId}/${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
-      const { error: uploadError } = await supabase
+
+      const { error: uploadError } = await sb
         .storage
         .from('followup-files')
         .upload(safeName, file, { upsert: false });
 
       if (uploadError) throw uploadError;
 
-      const { error: insertError } = await supabase
+      const { error: insertError } = await sb
         .from('attachments')
         .insert({
           followup_id: followupId,
@@ -968,7 +982,7 @@ async function loadMyProfile() {
 
       if (insertError) throw insertError;
 
-      await supabase.from('followup_timeline').insert({
+      await sb.from('followup_timeline').insert({
         followup_id: followupId,
         event_type: 'attachment_uploaded',
         title: 'Attachment uploaded',
@@ -978,7 +992,7 @@ async function loadMyProfile() {
     }
 
     async function getAttachmentSignedUrl(filePath) {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .storage
         .from('followup-files')
         .createSignedUrl(filePath, 60 * 10);
@@ -1005,7 +1019,7 @@ async function loadMyProfile() {
 
         let ownerOptions = '<option value="">Unassigned</option>';
         for (const p of profiles) {
-          ownerOptions += `<option value="${p.id}" ${f.owner_id === p.id ? 'selected' : ''}>${escapeHtml(p.full_name)} (${escapeHtml(p.team)})</option>`;
+          ownerOptions += `<option value="${p.id}" ${f.owner_id === p.id ? 'selected' : ''}>${escapeHtml(p.full_name || p.email || 'Unknown')} (${escapeHtml(p.team || '-')} / ${escapeHtml(p.role || '-')})</option>`;
         }
 
         const attachmentHtml = detail.attachments.length
@@ -1015,7 +1029,7 @@ async function loadMyProfile() {
                   <div style="font-weight:700;">${escapeHtml(a.file_name)}</div>
                   <div class="small muted">${escapeHtml(a.mime_type || '-')} · ${a.file_size || 0} bytes · ${fmtDate(a.uploaded_at)}</div>
                 </div>
-                <button class="btn-secondary small" onclick="window.openAttachment('${a.file_path}')">Open</button>
+                <button class="btn-secondary small" onclick="window.openAttachment('${String(a.file_path).replaceAll("'", "\\'")}')">Open</button>
               </div>
             `).join('')
           : '<div class="muted">No attachments</div>';
@@ -1031,7 +1045,7 @@ async function loadMyProfile() {
           : '<div class="muted">No timeline yet</div>';
 
         const dueLocal = f.due_at
-          ? new Date(new Date(f.due_at).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0,16)
+          ? new Date(new Date(f.due_at).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16)
           : '';
 
         container.innerHTML = `
@@ -1040,7 +1054,7 @@ async function loadMyProfile() {
               <div>
                 <div class="title">${escapeHtml(f.title)}</div>
                 <div class="meta">
-                  <span>${escapeHtml(f.followup_no)}</span>
+                  <span>${escapeHtml(f.followup_no || f.id)}</span>
                   <span>CUMC: ${escapeHtml(f.cumc_no || '-')}</span>
                   <span>Encounter: ${escapeHtml(f.encounter_no || '-')}</span>
                 </div>
@@ -1135,11 +1149,13 @@ async function loadMyProfile() {
           const msg = document.getElementById('detailMsg');
           try {
             msg.textContent = 'Saving...';
+            msg.style.color = '';
             await updateFollowup(f.id);
             msg.textContent = 'Saved.';
             await loadFollowups();
             await renderDetail();
           } catch (err) {
+            console.error('updateFollowup error:', err);
             msg.textContent = err.message;
             msg.style.color = '#b91c1c';
           }
@@ -1149,17 +1165,20 @@ async function loadMyProfile() {
           const msg = document.getElementById('attachmentMsg');
           try {
             msg.textContent = 'Uploading...';
+            msg.style.color = '';
             const file = document.getElementById('fileInput').files[0];
             await uploadAttachment(f.id, file);
             msg.textContent = 'Uploaded.';
             await renderDetail();
           } catch (err) {
+            console.error('uploadAttachment error:', err);
             msg.textContent = err.message;
             msg.style.color = '#b91c1c';
           }
         });
 
       } catch (err) {
+        console.error('renderDetail error:', err);
         container.className = 'empty';
         container.textContent = err.message;
       }
@@ -1170,51 +1189,66 @@ async function loadMyProfile() {
         const url = await getAttachmentSignedUrl(filePath);
         window.open(url, '_blank');
       } catch (err) {
+        console.error('openAttachment error:', err);
         alert(err.message);
       }
     };
 
     async function boot() {
-  try {
-    await loadSession();
+      try {
+        console.log('boot start');
+        await loadSession();
+        console.log('currentUser after loadSession:', currentUser);
 
-    if (!currentUser) {
-      showAuth();
-      return;
+        if (!currentUser) {
+          console.log('no currentUser');
+          showAuth();
+          return;
+        }
+
+        showApp();
+
+        console.log('loading profile...');
+        await loadMyProfile();
+        console.log('profile loaded:', currentProfile);
+
+        console.log('loading profiles...');
+        await loadProfilesForOwnerSelect();
+
+        console.log('loading followups...');
+        await loadFollowups();
+
+        if (followups.length && !selectedFollowupId) {
+          selectedFollowupId = followups[0].id;
+        }
+
+        await renderDetail();
+        console.log('boot done');
+      } catch (err) {
+        console.error('boot error:', err);
+        showApp();
+        document.getElementById('detailContainer').innerHTML =
+          `<div class="empty">Boot error: ${escapeHtml(err.message)}</div>`;
+      }
     }
-
-    showApp();
-    await loadMyProfile();
-    await loadProfilesForOwnerSelect();
-    await loadFollowups();
-
-    if (followups.length && !selectedFollowupId) {
-      selectedFollowupId = followups[0].id;
-    }
-
-    await renderDetail();
-  } catch (err) {
-    console.error('boot error:', err);
-    showApp(); // 保持喺 app view，方便見錯
-    document.getElementById('detailContainer').innerHTML =
-      `<div class="empty">Boot error: ${escapeHtml(err.message)}</div>`;
-  }
-}
-    
 
     document.getElementById('loginBtn').addEventListener('click', login);
     document.getElementById('signupBtn').addEventListener('click', signUp);
     document.getElementById('logoutBtn').addEventListener('click', logout);
     document.getElementById('createBtn').addEventListener('click', createFollowup);
     document.getElementById('refreshBtn').addEventListener('click', async () => {
-      await loadFollowups();
-      await renderDetail();
+      try {
+        await loadFollowups();
+        await renderDetail();
+      } catch (err) {
+        console.error('refresh error:', err);
+      }
     });
     document.getElementById('searchInput').addEventListener('input', loadFollowups);
     document.getElementById('filterStatus').addEventListener('change', loadFollowups);
     document.getElementById('filterPriority').addEventListener('change', loadFollowups);
 
-    supabase.auth.onAuthStateChange(async (_event, session) => {
+    sb.auth.onAuthStateChange(async (_event, session) => {
       currentUser = session?.user || null;
       if (currentUser) {
         showApp();
