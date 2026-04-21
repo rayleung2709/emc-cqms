@@ -642,20 +642,25 @@
       }
     }
 
-    async function login() {
-      try {
-        setAuthMsg('Logging in...');
-        const email = document.getElementById('authEmail').value.trim();
-        const password = document.getElementById('authPassword').value.trim();
+async function login() {
+  try {
+    setAuthMsg('Logging in...');
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value.trim();
 
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+    console.log('login email:', email);
 
-        setAuthMsg('Login success.');
-      } catch (err) {
-        setAuthMsg(err.message, true);
-      }
-    }
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    console.log('login result:', { data, error });
+
+    if (error) throw error;
+
+    setAuthMsg('Login success.');
+  } catch (err) {
+    console.error('login error:', err);
+    setAuthMsg(err.message, true);
+  }
+}
 
     async function logout() {
       await supabase.auth.signOut();
@@ -671,23 +676,35 @@
       return currentUser;
     }
 
-    async function loadMyProfile() {
-      if (!currentUser) return null;
+async function loadMyProfile() {
+  if (!currentUser) return null;
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', currentUser.id)
-        .single();
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', currentUser.id)
+    .maybeSingle();
 
-      if (error) throw error;
-      currentProfile = data;
+  if (error) throw error;
 
-      document.getElementById('meName').textContent = data.full_name || '-';
-      document.getElementById('meMeta').textContent = `${data.email || '-'} · ${data.team || '-'}`;
-      document.getElementById('meRole').textContent = data.role || '-';
-      return data;
-    }
+  if (!data) {
+    currentProfile = {
+      id: currentUser.id,
+      email: currentUser.email,
+      full_name: currentUser.email,
+      role: 'user',
+      team: '-'
+    };
+  } else {
+    currentProfile = data;
+  }
+
+  document.getElementById('meName').textContent = currentProfile.full_name || '-';
+  document.getElementById('meMeta').textContent = `${currentProfile.email || '-'} · ${currentProfile.team || '-'}`;
+  document.getElementById('meRole').textContent = currentProfile.role || '-';
+
+  return currentProfile;
+}
 
     async function loadProfilesForOwnerSelect() {
       const { data, error } = await supabase
@@ -1158,27 +1175,32 @@
     };
 
     async function boot() {
-      try {
-        await loadSession();
+  try {
+    await loadSession();
 
-        if (!currentUser) {
-          showAuth();
-          return;
-        }
-
-        showApp();
-        await loadMyProfile();
-        await loadProfilesForOwnerSelect();
-        await loadFollowups();
-        if (followups.length && !selectedFollowupId) {
-          selectedFollowupId = followups[0].id;
-        }
-        await renderDetail();
-      } catch (err) {
-        console.error(err);
-        showAuth();
-      }
+    if (!currentUser) {
+      showAuth();
+      return;
     }
+
+    showApp();
+    await loadMyProfile();
+    await loadProfilesForOwnerSelect();
+    await loadFollowups();
+
+    if (followups.length && !selectedFollowupId) {
+      selectedFollowupId = followups[0].id;
+    }
+
+    await renderDetail();
+  } catch (err) {
+    console.error('boot error:', err);
+    showApp(); // 保持喺 app view，方便見錯
+    document.getElementById('detailContainer').innerHTML =
+      `<div class="empty">Boot error: ${escapeHtml(err.message)}</div>`;
+  }
+}
+    
 
     document.getElementById('loginBtn').addEventListener('click', login);
     document.getElementById('signupBtn').addEventListener('click', signUp);
