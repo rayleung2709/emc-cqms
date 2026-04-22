@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
-<head> 
+<head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>EMCQMS 急症醫學中心輪候系統</title>
@@ -805,19 +805,17 @@ body.display-mode .info-card {
   flex-direction: column;
   gap: 8px;
 }
+
+/* FIX #11: 合併三個重複嘅 CSS class */
 .board-current-priority-ticket,
-.board-current-normal-ticket {
-  font-size: 2.1rem;
-  font-weight: 900;
-  line-height: 1.04;
-  letter-spacing: 0.03em;
-}
+.board-current-normal-ticket,
 .board-current-ticket {
   font-size: 2.1rem;
   font-weight: 900;
   line-height: 1.04;
   letter-spacing: 0.03em;
 }
+
 .board-current-ticket-red { color: #fca5a5; }
 .board-current-ticket-yellow { color: #fde68a; }
 .board-current-ticket-green { color: #4ade80; }
@@ -1383,7 +1381,7 @@ body.display-mode .info-card {
         <label for="clinicalActivityDetails">補充說明（可留空）</label>
         <input id="clinicalActivityDetails" type="text" placeholder="例如：已送往 X-ray、等候內科病房、等候抽血結果" />
       </div>
-<div
+      <div
         class="form-row"
         style="margin-top:14px;"
         data-help-title="建立跟進事項"
@@ -1467,6 +1465,24 @@ body.display-mode .info-card {
   </div>
 </div>
 
+<!-- FIX #3: 新增自訂確認 modal，取代 window.confirm() -->
+<div class="modal-backdrop" id="confirmModal" aria-hidden="true">
+  <div class="modal-card" style="width:min(520px,100%);" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="confirmModalTitle">確認操作</div>
+        <div class="modal-subtitle" id="confirmModalMessage" style="white-space:pre-wrap;">—</div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-actions">
+        <button class="btn-secondary" id="confirmModalCancelBtn" type="button">取消</button>
+        <button class="btn-danger" id="confirmModalOkBtn" type="button">確認</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="app">
  <div class="topbar">
   <div
@@ -1530,9 +1546,13 @@ body.display-mode .info-card {
       </div>
     </div>
 
+    <!-- FIX #1: 加入 currentStaffEmail 同 currentStaffRole -->
     <div id="loggedInView" style="display:none;">
-      <div style="font-weight:800; margin-bottom:6px;">
+      <div style="font-weight:800; margin-bottom:4px;">
         已登入：<span id="currentStaffName">—</span>
+      </div>
+      <div style="font-weight:700; font-size:0.86rem; color:#475569; margin-bottom:6px;">
+        <span id="currentStaffEmail">—</span>｜角色：<span id="currentStaffRole">—</span>
       </div>
       <div class="actions" style="justify-content:flex-end;">
         <button class="btn-secondary" id="logoutBtn" type="button">登出</button>
@@ -2008,12 +2028,14 @@ function debugLog(...args) {
   if (DEBUG) console.log("[CQMS DEBUG]", ...args);
 }
 
+/* FIX #10: formatSupabaseError 加入 status field */
 function formatSupabaseError(error) {
   if (!error) return "unknown error";
   if (typeof error === "string") return error;
   const parts = [];
   if (error.message) parts.push(`message: ${error.message}`);
   if (error.code) parts.push(`code: ${error.code}`);
+  if (error.status) parts.push(`status: ${error.status}`);
   if (error.details) parts.push(`details: ${error.details}`);
   if (error.hint) parts.push(`hint: ${error.hint}`);
   return parts.join(" | ") || JSON.stringify(error);
@@ -2128,6 +2150,46 @@ function notify(message, type = "info") {
   setTimeout(() => el.remove(), 4200);
 }
 
+/* FIX #3: customConfirm 取代 window.confirm() */
+function customConfirm(title, message) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById("confirmModal");
+    const titleEl = document.getElementById("confirmModalTitle");
+    const messageEl = document.getElementById("confirmModalMessage");
+    const okBtn = document.getElementById("confirmModalOkBtn");
+    const cancelBtn = document.getElementById("confirmModalCancelBtn");
+
+    titleEl.textContent = title || "確認操作";
+    messageEl.textContent = message || "";
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
+
+    function cleanup(result) {
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("modal-open");
+      okBtn.removeEventListener("click", onOk);
+      cancelBtn.removeEventListener("click", onCancel);
+      modal.removeEventListener("click", onBackdrop);
+      document.removeEventListener("keydown", onEscape);
+      resolve(result);
+    }
+
+    function onOk() { cleanup(true); }
+    function onCancel() { cleanup(false); }
+    function onBackdrop(e) { if (e.target === modal) cleanup(false); }
+    function onEscape(e) { if (e.key === "Escape") cleanup(false); }
+
+    okBtn.addEventListener("click", onOk);
+    cancelBtn.addEventListener("click", onCancel);
+    modal.addEventListener("click", onBackdrop);
+    document.addEventListener("keydown", onEscape);
+
+    okBtn.focus();
+  });
+}
+
 function mapSupabasePatientRow(patient) {
   return {
     id: patient.id,
@@ -2153,6 +2215,7 @@ function mapSupabasePatientRow(patient) {
   };
 }
 
+/* FIX #1: updateAuthUi 現在可以正確更新 email 同 role */
 function updateAuthUi() {
   const loggedOutView = document.getElementById("loggedOutView");
   const loggedInView = document.getElementById("loggedInView");
@@ -3274,17 +3337,19 @@ function renderDisplayBoard(force = false) {
   }
 }
 
+/* FIX #7: 優化 getRoomFingerprint，用 count + latest timestamp 取代完整 serialize */
 function getRoomFingerprint(room) {
   const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
   const waitingPatients = getOrderedWaitingPatients(room);
   const reviewPatients = getReviewWaitingPatients(room);
   const skippedPatients = getSkippedPatients(room);
 
-  const clinicalPreview = patient => getPreviewClinicalLogs(patient, 10).map(log => ({
-    t: log.time || null,
-    a: log.activity || null,
-    d: log.details || null
-  }));
+  const clinicalSummary = patient => {
+    const logs = Array.isArray(patient.clinicalLogs) ? patient.clinicalLogs : [];
+    const count = Math.min(logs.length, 10);
+    if (count === 0) return { n: 0 };
+    return { n: count, t0: logs[0].time, a0: logs[0].activity, d0: logs[0].details };
+  };
 
   return JSON.stringify({
     roomId: room.id,
@@ -3296,16 +3361,17 @@ function getRoomFingerprint(room) {
     currentPatientId: room.currentPatientId,
     currentPatientTicket: currentPatient ? getPatientDisplayNo(currentPatient) : null,
     waiting: waitingPatients.map(p => ({
-      id: p.id, t: getPatientDisplayNo(p), q: p.queueOrder, pr: p.priority, s: p.status, src: p.sourceType, reg: p.registeredAt, cl: clinicalPreview(p)
+      id: p.id, t: getPatientDisplayNo(p), q: p.queueOrder, pr: p.priority, s: p.status, src: p.sourceType, reg: p.registeredAt, cl: clinicalSummary(p)
     })),
     review: reviewPatients.map(p => ({
-      id: p.id, t: getPatientDisplayNo(p), pr: p.priority, s: p.status, src: p.sourceType, reg: p.registeredAt, cl: clinicalPreview(p)
+      id: p.id, t: getPatientDisplayNo(p), pr: p.priority, s: p.status, src: p.sourceType, reg: p.registeredAt, cl: clinicalSummary(p)
     })),
     skipped: skippedPatients.map(p => ({
-      id: p.id, t: getPatientDisplayNo(p), pr: p.priority, s: p.status, sk: p.skippedAt, cl: clinicalPreview(p)
+      id: p.id, t: getPatientDisplayNo(p), pr: p.priority, s: p.status, sk: p.skippedAt, cl: clinicalSummary(p)
     }))
   });
 }
+
 function getTransferOptionsHtml(room) {
   return sortedRooms()
     .filter(targetRoom => targetRoom.id !== room.id && canTransferPatientToRoom(targetRoom))
@@ -3777,6 +3843,7 @@ function renderAll(force = false, options = {}) {
   renderDisplayBoard(force);
 }
 
+/* FIX #2: persistTransferChanges 加入 room persistence */
 async function persistTransferChanges(oldRoom, newRoom, movedPatient) {
   const affectedPatients = [];
   const seen = new Set();
@@ -3809,6 +3876,10 @@ async function persistTransferChanges(oldRoom, newRoom, movedPatient) {
   }
 
   await savePatientsBatchToSupabase(affectedPatients);
+
+  /* FIX #2: 同步 room 狀態到 Supabase */
+  if (oldRoom) await updateRoomInSupabase(oldRoom);
+  if (newRoom) await updateRoomInSupabase(newRoom);
 }
 
 async function withButtonLoading(button, fn) {
@@ -3943,7 +4014,7 @@ function toPatientPayload(patient) {
     clinical_logs_json: Array.isArray(patient.clinicalLogs) ? patient.clinicalLogs : []
   };
 }
-  
+
 async function savePatientToSupabase(patient) {
   const payload = toPatientPayload(patient);
   const { data, error } = await sb.from("patients").upsert(payload).select();
@@ -4925,6 +4996,7 @@ async function deleteRoom(roomId) {
   }
 }
 
+/* FIX #3: rebalanceWaitingPatients 改用 customConfirm 取代 window.confirm */
 async function rebalanceWaitingPatients() {
   try {
     markUiBusy(5000);
@@ -4945,12 +5017,11 @@ async function rebalanceWaitingPatients() {
       return;
     }
 
-    const confirmText =
-      `將重新智能平均分流 ${movablePatients.length} 位候診病人。\n\n` +
-      `只會處理：候診中、非預約、非手動派房或轉房病人。\n` +
-      `是否繼續？`;
-
-    if (!window.confirm(confirmText)) return;
+    const confirmed = await customConfirm(
+      "確認重新分流",
+      `將重新智能平均分流 ${movablePatients.length} 位候診病人。\n\n只會處理：候診中、非預約、非手動派房或轉房病人。\n是否繼續？`
+    );
+    if (!confirmed) return;
 
     movablePatients.sort(compareWaitingBase);
     const movablePatientIdSet = new Set(movablePatients.map(p => p.id));
@@ -5388,7 +5459,7 @@ async function createFollowupFromClinicalActivity(patient, activity, details) {
 
   return insertedFollowup;
 }
-  
+
 function initClinicalActivityModal() {
   clinicalActivityModal.el = document.getElementById("clinicalActivityModal");
   clinicalActivityModal.patientInfoEl = document.getElementById("clinicalActivityPatientInfo");
@@ -5490,7 +5561,7 @@ function closeClinicalActivityModal() {
   if (clinicalActivityModal.followupTitleEl) clinicalActivityModal.followupTitleEl.value = "";
   if (clinicalActivityModal.followupAssignedToEl) clinicalActivityModal.followupAssignedToEl.value = "";
 }
-  
+
 async function saveClinicalActivityFromModal() {
   try {
     markUiBusy(2600);
@@ -5638,7 +5709,13 @@ document.addEventListener("click", (event) => {
   if (action === "moveToFront") return withButtonLoading(btn, () => moveToFront(patientId));
   if (action === "insertAtPosition") return withButtonLoading(btn, () => insertWaitingPatientAtPosition(patientId));
   if (action === "moveWaitingToReview") return withButtonLoading(btn, () => moveWaitingToReview(patientId));
-  if (action === "openClinicalActivity") return openClinicalActivityModal(patientId);
+
+  /* FIX #4: openClinicalActivity 加入 auth check */
+  if (action === "openClinicalActivity") {
+    if (!requireStaffLogin()) return;
+    return openClinicalActivityModal(patientId);
+  }
+
   if (action === "callReviewPatient") return withButtonLoading(btn, () => callReviewPatient(patientId));
   if (action === "returnReviewToWaiting") return withButtonLoading(btn, () => returnReviewToWaiting(patientId));
   if (action === "finishReviewPatient") return withButtonLoading(btn, () => finishReviewPatient(patientId));
@@ -5861,149 +5938,38 @@ async function initApp() {
   await setupRealtimeAndPolling();
 }
 
-const _addRoom = addRoom;
-addRoom = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _addRoom.apply(this, args);
-};
+/* FIX #5: 用 withAuth helper 取代重複 reassignment pattern */
+function withAuth(fn) {
+  return async function (...args) {
+    if (!requireStaffLogin()) return;
+    return fn.apply(this, args);
+  };
+}
 
-const _addPatient = addPatient;
-addPatient = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _addPatient.apply(this, args);
-};
-
-const _callNextPatient = callNextPatient;
-callNextPatient = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _callNextPatient.apply(this, args);
-};
-
-const _finishCurrent = finishCurrent;
-finishCurrent = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _finishCurrent.apply(this, args);
-};
-
-const _skipCurrent = skipCurrent;
-skipCurrent = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _skipCurrent.apply(this, args);
-};
-
-const _moveCurrentToReview = moveCurrentToReview;
-moveCurrentToReview = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _moveCurrentToReview.apply(this, args);
-};
-
-const _moveWaitingToReview = moveWaitingToReview;
-moveWaitingToReview = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _moveWaitingToReview.apply(this, args);
-};
-
-const _callReviewPatient = callReviewPatient;
-callReviewPatient = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _callReviewPatient.apply(this, args);
-};
-
-const _returnReviewToWaiting = returnReviewToWaiting;
-returnReviewToWaiting = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _returnReviewToWaiting.apply(this, args);
-};
-
-const _finishReviewPatient = finishReviewPatient;
-finishReviewPatient = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _finishReviewPatient.apply(this, args);
-};
-
-const _recallSkipped = recallSkipped;
-recallSkipped = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _recallSkipped.apply(this, args);
-};
-
-const _requeueSkipped = requeueSkipped;
-requeueSkipped = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _requeueSkipped.apply(this, args);
-};
-
-const _cancelPatient = cancelPatient;
-cancelPatient = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _cancelPatient.apply(this, args);
-};
-
-const _togglePriority = togglePriority;
-togglePriority = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _togglePriority.apply(this, args);
-};
-
-const _moveToFront = moveToFront;
-moveToFront = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _moveToFront.apply(this, args);
-};
-
-const _insertWaitingPatientAtPosition = insertWaitingPatientAtPosition;
-insertWaitingPatientAtPosition = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _insertWaitingPatientAtPosition.apply(this, args);
-};
-
-const _transferPatient = transferPatient;
-transferPatient = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _transferPatient.apply(this, args);
-};
-
-const _changeRoomStatus = changeRoomStatus;
-changeRoomStatus = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _changeRoomStatus.apply(this, args);
-};
-
-const _setRoomPaused = setRoomPaused;
-setRoomPaused = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _setRoomPaused.apply(this, args);
-};
-
-const _toggleAcceptingNew = toggleAcceptingNew;
-toggleAcceptingNew = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _toggleAcceptingNew.apply(this, args);
-};
-
-const _updateDoctorName = updateDoctorName;
-updateDoctorName = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _updateDoctorName.apply(this, args);
-};
-
-const _deleteRoom = deleteRoom;
-deleteRoom = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _deleteRoom.apply(this, args);
-};
-
-const _rebalanceWaitingPatients = rebalanceWaitingPatients;
-rebalanceWaitingPatients = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _rebalanceWaitingPatients.apply(this, args);
-};
-
-const _saveClinicalActivityFromModal = saveClinicalActivityFromModal;
-saveClinicalActivityFromModal = async function (...args) {
-  if (!requireStaffLogin()) return;
-  return _saveClinicalActivityFromModal.apply(this, args);
-};
+addRoom = withAuth(addRoom);
+addPatient = withAuth(addPatient);
+callNextPatient = withAuth(callNextPatient);
+finishCurrent = withAuth(finishCurrent);
+skipCurrent = withAuth(skipCurrent);
+moveCurrentToReview = withAuth(moveCurrentToReview);
+moveWaitingToReview = withAuth(moveWaitingToReview);
+callReviewPatient = withAuth(callReviewPatient);
+returnReviewToWaiting = withAuth(returnReviewToWaiting);
+finishReviewPatient = withAuth(finishReviewPatient);
+recallSkipped = withAuth(recallSkipped);
+requeueSkipped = withAuth(requeueSkipped);
+cancelPatient = withAuth(cancelPatient);
+togglePriority = withAuth(togglePriority);
+moveToFront = withAuth(moveToFront);
+insertWaitingPatientAtPosition = withAuth(insertWaitingPatientAtPosition);
+transferPatient = withAuth(transferPatient);
+changeRoomStatus = withAuth(changeRoomStatus);
+setRoomPaused = withAuth(setRoomPaused);
+toggleAcceptingNew = withAuth(toggleAcceptingNew);
+updateDoctorName = withAuth(updateDoctorName);
+deleteRoom = withAuth(deleteRoom);
+rebalanceWaitingPatients = withAuth(rebalanceWaitingPatients);
+saveClinicalActivityFromModal = withAuth(saveClinicalActivityFromModal);
 
 document.getElementById("loginBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, loginStaff));
 document.getElementById("logoutBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, logoutStaff));
