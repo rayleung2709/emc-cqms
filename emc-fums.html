@@ -331,6 +331,63 @@
       text-align: left;
     }
 
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 9999;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+      max-width: 400px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast.toast-error {
+      background: #991b1b;
+    }
+
+    .toast.toast-success {
+      background: #166534;
+    }
+
+    /* ── Loading spinner ── */
+    .loading-text {
+      text-align: center;
+      padding: 24px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 3px solid var(--line);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
     @media (max-width: 980px) {
       .app {
         grid-template-columns: 1fr;
@@ -349,6 +406,10 @@
   </style>
 </head>
 <body>
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Auth View -->
   <div id="authView" class="auth-wrap">
     <div class="card">
       <div class="brand">Follow-up System</div>
@@ -370,6 +431,7 @@
     </div>
   </div>
 
+  <!-- App View -->
   <div id="appView" class="app hidden">
     <aside class="sidebar">
       <div class="brand">Follow-up System</div>
@@ -568,20 +630,48 @@
   </div>
 
   <script>
+    /* ══════════════════════════════════════
+       Supabase Init
+    ══════════════════════════════════════ */
     const SUPABASE_URL = 'https://tvwqbjqhrnpeulsoacdh.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2d3FianFocm5wZXVsc29hY2RoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NDMyNTUsImV4cCI6MjA5MjMxOTI1NX0.SVqyxJ7OYQ--eaXf6qsMfgGYrbTMcz3Q-1kwmxCH-Zk';
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    /* ══════════════════════════════════════
+       State
+    ══════════════════════════════════════ */
     let currentUser = null;
     let currentProfile = null;
     let profiles = [];
     let followups = [];
     let selectedFollowupId = null;
+    let isBooting = false;
 
     const authView = document.getElementById('authView');
     const appView = document.getElementById('appView');
 
+    /* ══════════════════════════════════════
+       Toast（取代 alert）
+    ══════════════════════════════════════ */
+    let toastTimer = null;
+
+    function showToast(msg, type = 'info', duration = 3500) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.className = 'toast';
+      if (type === 'error') el.classList.add('toast-error');
+      if (type === 'success') el.classList.add('toast-success');
+      clearTimeout(toastTimer);
+      requestAnimationFrame(() => el.classList.add('show'));
+      toastTimer = setTimeout(() => {
+        el.classList.remove('show');
+      }, duration);
+    }
+
+    /* ══════════════════════════════════════
+       Helpers
+    ══════════════════════════════════════ */
     function showAuth() {
       authView.classList.remove('hidden');
       appView.classList.add('hidden');
@@ -628,6 +718,13 @@
       el.style.color = isError ? '#b91c1c' : '';
     }
 
+    function loadingHtml(text) {
+      return `<div class="loading-text"><span class="spinner"></span>${escapeHtml(text || 'Loading...')}</div>`;
+    }
+
+    /* ══════════════════════════════════════
+       Auth
+    ══════════════════════════════════════ */
     async function signUp() {
       try {
         setAuthMsg('Signing up...');
@@ -650,15 +747,11 @@
         const email = document.getElementById('authEmail').value.trim();
         const password = document.getElementById('authPassword').value.trim();
 
-        console.log('login email:', email);
-
         const { data, error } = await sb.auth.signInWithPassword({ email, password });
-        console.log('login result:', { data, error });
-
         if (error) throw error;
 
         setAuthMsg('Login success.');
-        await boot();
+        // onAuthStateChange 會自動觸發 boot()，呢度唔需要手動 call
       } catch (err) {
         console.error('login error:', err);
         setAuthMsg(err.message, true);
@@ -682,6 +775,9 @@
       return currentUser;
     }
 
+    /* ══════════════════════════════════════
+       Profile
+    ══════════════════════════════════════ */
     async function loadMyProfile() {
       if (!currentUser) return null;
 
@@ -733,19 +829,90 @@
       const emptyOpt = document.createElement('option');
       emptyOpt.value = '';
       emptyOpt.textContent = 'Unassigned';
+      emptyOpt.selected = true;           // ← 預設 Unassigned
       ownerSelect.appendChild(emptyOpt);
 
       for (const p of profiles) {
         const opt = document.createElement('option');
         opt.value = p.id;
         opt.textContent = `${p.full_name || p.email || 'Unknown'} (${p.team || '-'} / ${p.role || '-'})`;
-        if (currentProfile && p.id === currentProfile.id) {
-          opt.selected = true;
-        }
+        // 不再自動選中 currentProfile
         ownerSelect.appendChild(opt);
       }
     }
 
+    /* ══════════════════════════════════════
+       KPIs（獨立於 filter，始終顯示全域數據）
+    ══════════════════════════════════════ */
+    async function loadKPIs() {
+      try {
+        const { data, error } = await sb
+          .from('followups')
+          .select('status, priority');
+
+        if (error) throw error;
+
+        const all = data || [];
+        const total = all.length;
+        const open = all.filter(f => !['completed', 'closed'].includes(f.status)).length;
+        const urgent = all.filter(f => f.priority === 'urgent').length;
+        const done = all.filter(f => ['completed', 'closed'].includes(f.status)).length;
+
+        document.getElementById('kpiTotal').textContent = total;
+        document.getElementById('kpiOpen').textContent = open;
+        document.getElementById('kpiUrgent').textContent = urgent;
+        document.getElementById('kpiDone').textContent = done;
+      } catch (err) {
+        console.error('loadKPIs error:', err);
+      }
+    }
+
+    /* ══════════════════════════════════════
+       Follow-ups（List）
+    ══════════════════════════════════════ */
+    async function loadFollowups() {
+      const container = document.getElementById('listContainer');
+      container.innerHTML = loadingHtml('載入中...');
+
+      const search = document.getElementById('searchInput').value.trim().toLowerCase();
+      const status = document.getElementById('filterStatus').value;
+      const priority = document.getElementById('filterPriority').value;
+
+      let query = sb
+        .from('followups')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (status) query = query.eq('status', status);
+      if (priority) query = query.eq('priority', priority);
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      let rows = data || [];
+
+      if (search) {
+        rows = rows.filter(r => {
+          const bag = [
+            r.followup_no,
+            r.title,
+            r.description,
+            r.doctor_name,
+            r.cumc_no,
+            r.encounter_no
+          ].join(' ').toLowerCase();
+
+          return bag.includes(search);
+        });
+      }
+
+      followups = rows;
+      renderList();
+    }
+
+    /* ══════════════════════════════════════
+       Create Follow-up
+    ══════════════════════════════════════ */
     async function createFollowup() {
       try {
         setCreateMsg('Creating...');
@@ -782,6 +949,8 @@
         if (error) throw error;
 
         setCreateMsg(`Created: ${data.followup_no || data.id}`);
+        showToast(`已建立 Follow-up: ${data.followup_no || data.id}`, 'success');
+
         document.getElementById('fTitle').value = '';
         document.getElementById('fDescription').value = '';
         document.getElementById('fDoctorName').value = '';
@@ -791,65 +960,20 @@
         document.getElementById('fNextAction').value = '';
         document.getElementById('fDueAt').value = '';
 
-        await loadFollowups();
+        await Promise.all([loadFollowups(), loadKPIs()]);
         selectedFollowupId = data.id;
+        renderList();
         await renderDetail();
       } catch (err) {
         console.error('createFollowup error:', err);
         setCreateMsg(err.message, true);
+        showToast(err.message, 'error');
       }
     }
 
-    async function loadFollowups() {
-      const search = document.getElementById('searchInput').value.trim().toLowerCase();
-      const status = document.getElementById('filterStatus').value;
-      const priority = document.getElementById('filterPriority').value;
-
-      let query = sb
-        .from('followups')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (status) query = query.eq('status', status);
-      if (priority) query = query.eq('priority', priority);
-
-      const { data, error } = await query;
-      if (error) throw error;
-
-      let rows = data || [];
-
-      if (search) {
-        rows = rows.filter(r => {
-          const bag = [
-            r.followup_no,
-            r.title,
-            r.description,
-            r.doctor_name,
-            r.cumc_no,
-            r.encounter_no
-          ].join(' ').toLowerCase();
-
-          return bag.includes(search);
-        });
-      }
-
-      followups = rows;
-      renderKPIs();
-      renderList();
-    }
-
-    function renderKPIs() {
-      const total = followups.length;
-      const open = followups.filter(f => !['completed', 'closed'].includes(f.status)).length;
-      const urgent = followups.filter(f => f.priority === 'urgent').length;
-      const done = followups.filter(f => ['completed', 'closed'].includes(f.status)).length;
-
-      document.getElementById('kpiTotal').textContent = total;
-      document.getElementById('kpiOpen').textContent = open;
-      document.getElementById('kpiUrgent').textContent = urgent;
-      document.getElementById('kpiDone').textContent = done;
-    }
-
+    /* ══════════════════════════════════════
+       Render List
+    ══════════════════════════════════════ */
     function renderList() {
       const container = document.getElementById('listContainer');
       container.innerHTML = '';
@@ -888,6 +1012,9 @@
       }
     }
 
+    /* ══════════════════════════════════════
+       Detail
+    ══════════════════════════════════════ */
     async function getFollowupDetail(id) {
       const { data: followup, error: e1 } = await sb
         .from('followups')
@@ -931,6 +1058,13 @@
         ? new Date(document.getElementById('dDueAt').value).toISOString()
         : null;
 
+      // 先取得舊資料用作比較
+      const { data: oldData } = await sb
+        .from('followups')
+        .select('status, team, owner_id')
+        .eq('id', id)
+        .single();
+
       const payload = {
         status,
         team,
@@ -955,6 +1089,26 @@
         .eq('id', id);
 
       if (error) throw error;
+
+      // ── 寫 timeline 記錄 ──
+      const changes = [];
+      if (oldData) {
+        if (oldData.status !== status) changes.push(`Status: ${oldData.status} → ${status}`);
+        if (oldData.team !== team) changes.push(`Team: ${oldData.team} → ${team}`);
+        if (oldData.owner_id !== ownerId) changes.push('Owner updated');
+      }
+
+      const timelineNote = changes.length
+        ? changes.join('; ')
+        : 'Fields updated';
+
+      await sb.from('followup_timeline').insert({
+        followup_id: id,
+        event_type: 'updated',
+        title: 'Follow-up updated',
+        note: timelineNote,
+        actor_id: currentUser.id
+      });
     }
 
     async function uploadAttachment(followupId, file) {
@@ -1012,7 +1166,7 @@
 
       try {
         container.className = '';
-        container.innerHTML = 'Loading...';
+        container.innerHTML = loadingHtml('載入詳情...');
 
         const detail = await getFollowupDetail(selectedFollowupId);
         const f = detail.followup;
@@ -1029,7 +1183,7 @@
                   <div style="font-weight:700;">${escapeHtml(a.file_name)}</div>
                   <div class="small muted">${escapeHtml(a.mime_type || '-')} · ${a.file_size || 0} bytes · ${fmtDate(a.uploaded_at)}</div>
                 </div>
-                <button class="btn-secondary small" onclick="window.openAttachment('${String(a.file_path).replaceAll("'", "\\'")}')">Open</button>
+                <button class="btn-secondary small open-att-btn" data-path="${escapeHtml(a.file_path)}">Open</button>
               </div>
             `).join('')
           : '<div class="muted">No attachments</div>';
@@ -1044,6 +1198,8 @@
             `).join('')
           : '<div class="muted">No timeline yet</div>';
 
+        // due_at 係 UTC，需要轉成本地時間先可以填入 datetime-local input
+        // getTimezoneOffset() 回傳嘅係 UTC − local（分鐘），所以要減去 offset
         const dueLocal = f.due_at
           ? new Date(new Date(f.due_at).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16)
           : '';
@@ -1145,6 +1301,7 @@
           </div>
         `;
 
+        /* ── Detail: Save ── */
         document.getElementById('saveDetailBtn').addEventListener('click', async () => {
           const msg = document.getElementById('detailMsg');
           try {
@@ -1152,15 +1309,18 @@
             msg.style.color = '';
             await updateFollowup(f.id);
             msg.textContent = 'Saved.';
-            await loadFollowups();
+            showToast('已儲存更新', 'success');
+            await Promise.all([loadFollowups(), loadKPIs()]);
             await renderDetail();
           } catch (err) {
             console.error('updateFollowup error:', err);
             msg.textContent = err.message;
             msg.style.color = '#b91c1c';
+            showToast(err.message, 'error');
           }
         });
 
+        /* ── Detail: Upload ── */
         document.getElementById('uploadBtn').addEventListener('click', async () => {
           const msg = document.getElementById('attachmentMsg');
           try {
@@ -1169,12 +1329,28 @@
             const file = document.getElementById('fileInput').files[0];
             await uploadAttachment(f.id, file);
             msg.textContent = 'Uploaded.';
+            showToast('附件已上傳', 'success');
             await renderDetail();
           } catch (err) {
             console.error('uploadAttachment error:', err);
             msg.textContent = err.message;
             msg.style.color = '#b91c1c';
+            showToast(err.message, 'error');
           }
+        });
+
+        /* ── Detail: Open Attachment（用 data attribute + event delegation，避免 inline onclick 注入風險）── */
+        container.querySelectorAll('.open-att-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            try {
+              const url = await getAttachmentSignedUrl(btn.dataset.path);
+              window.open(url, '_blank');
+            } catch (err) {
+              console.error('openAttachment error:', err);
+              showToast('無法開啟附件：' + err.message, 'error');
+            }
+          });
         });
 
       } catch (err) {
@@ -1184,17 +1360,13 @@
       }
     }
 
-    window.openAttachment = async function(filePath) {
-      try {
-        const url = await getAttachmentSignedUrl(filePath);
-        window.open(url, '_blank');
-      } catch (err) {
-        console.error('openAttachment error:', err);
-        alert(err.message);
-      }
-    };
-
+    /* ══════════════════════════════════════
+       Boot（加 guard 防止重複執行）
+    ══════════════════════════════════════ */
     async function boot() {
+      if (isBooting) return;
+      isBooting = true;
+
       try {
         console.log('boot start');
         await loadSession();
@@ -1215,13 +1387,14 @@
         console.log('loading profiles...');
         await loadProfilesForOwnerSelect();
 
-        console.log('loading followups...');
-        await loadFollowups();
+        console.log('loading followups & KPIs...');
+        await Promise.all([loadFollowups(), loadKPIs()]);
 
         if (followups.length && !selectedFollowupId) {
           selectedFollowupId = followups[0].id;
         }
 
+        renderList();
         await renderDetail();
         console.log('boot done');
       } catch (err) {
@@ -1229,36 +1402,65 @@
         showApp();
         document.getElementById('detailContainer').innerHTML =
           `<div class="empty">Boot error: ${escapeHtml(err.message)}</div>`;
+      } finally {
+        isBooting = false;
       }
     }
 
+    /* ══════════════════════════════════════
+       Event Listeners
+    ══════════════════════════════════════ */
     document.getElementById('loginBtn').addEventListener('click', login);
     document.getElementById('signupBtn').addEventListener('click', signUp);
     document.getElementById('logoutBtn').addEventListener('click', logout);
     document.getElementById('createBtn').addEventListener('click', createFollowup);
+
     document.getElementById('refreshBtn').addEventListener('click', async () => {
       try {
-        await loadFollowups();
+        await Promise.all([loadFollowups(), loadKPIs()]);
         await renderDetail();
+        showToast('已重新整理', 'success');
       } catch (err) {
         console.error('refresh error:', err);
+        showToast('重新整理失敗：' + err.message, 'error');
       }
     });
-    document.getElementById('searchInput').addEventListener('input', loadFollowups);
-    document.getElementById('filterStatus').addEventListener('change', loadFollowups);
-    document.getElementById('filterPriority').addEventListener('change', loadFollowups);
 
-    sb.auth.onAuthStateChange(async (_event, session) => {
+    // Search：加 debounce，300ms 內只觸發一次，避免每個 keystroke 都 query Supabase
+    let searchTimer = null;
+    document.getElementById('searchInput').addEventListener('input', () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        loadFollowups().catch(err => console.error('search error:', err));
+      }, 300);
+    });
+
+    // Filter：正確 catch async error
+    document.getElementById('filterStatus').addEventListener('change', () => {
+      loadFollowups().catch(err => console.error('filter status error:', err));
+    });
+
+    document.getElementById('filterPriority').addEventListener('change', () => {
+      loadFollowups().catch(err => console.error('filter priority error:', err));
+    });
+
+    /* ══════════════════════════════════════
+       Auth State Change（唯一觸發 boot 嘅入口）
+    ══════════════════════════════════════ */
+    sb.auth.onAuthStateChange(async (event, session) => {
+      console.log('onAuthStateChange:', event);
       currentUser = session?.user || null;
-      if (currentUser) {
+
+      if (currentUser && (event === 'INITIAL_SESSION' || event === 'SIGNED_IN')) {
         showApp();
         await boot();
-      } else {
+      } else if (!currentUser) {
         showAuth();
       }
+      // TOKEN_REFRESHED 等其他 event 唔需要重新 boot
     });
 
-    boot();
+    // 不再直接 call boot() — 由 onAuthStateChange (INITIAL_SESSION) 負責
   </script>
 </body>
 </html>
