@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
-<head>
+<head> 
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>EMCQMS 急症醫學中心輪候系統</title>
@@ -43,6 +43,7 @@
 }
 
 * { box-sizing: border-box; }
+
 html, body {
   margin: 0;
   padding: 0;
@@ -50,10 +51,12 @@ html, body {
   background: var(--bg);
   color: var(--text);
 }
+
 body.display-mode {
   background: var(--board-bg);
   overflow: auto;
 }
+
 body.modal-open {
   overflow: hidden;
 }
@@ -63,6 +66,7 @@ body.modal-open {
   margin: 0 auto;
   padding: 20px;
 }
+
 body.display-mode .app {
   max-width: none;
   width: 100vw;
@@ -80,6 +84,7 @@ body.display-mode .app {
   align-items: center;
   margin-bottom: 18px;
 }
+
 body.display-mode .topbar { display: none !important; }
 
 .title {
@@ -94,6 +99,7 @@ body.display-mode .topbar { display: none !important; }
   flex-wrap: wrap;
   align-items: center;
 }
+
 body.display-mode .tabs { display: none !important; }
 
 .tab-btn {
@@ -132,12 +138,14 @@ body.display-mode .tabs { display: none !important; }
   color: #0f172a;
   white-space: nowrap;
 }
+
 .teach-toggle input[type="checkbox"] {
   width: 18px;
   height: 18px;
   accent-color: var(--primary);
   cursor: pointer;
 }
+
 .teach-badge {
   display: inline-flex;
   align-items: center;
@@ -158,6 +166,7 @@ body.display-mode #staffPage,
 body.display-mode #patientPage {
   display: none !important;
 }
+
 body.display-mode #displayPage {
   display: flex !important;
   flex-direction: column;
@@ -175,6 +184,7 @@ body.display-mode #displayPage {
   padding: 18px;
   margin-bottom: 18px;
 }
+
 .panel-title {
   font-size: 1.1rem;
   font-weight: 900;
@@ -192,11 +202,13 @@ body.display-mode #displayPage {
   flex-direction: column;
   gap: 6px;
 }
+
 label {
   font-size: 0.92rem;
   font-weight: 800;
   color: #334155;
 }
+
 input, select, textarea, datalist {
   width: 100%;
   padding: 10px 12px;
@@ -207,21 +219,25 @@ input, select, textarea, datalist {
   color: var(--text);
   font-family: inherit;
 }
+
 input[disabled], select[disabled], textarea[disabled] {
   background: #f1f5f9;
   color: #94a3b8;
   cursor: not-allowed;
 }
+
 textarea {
   min-height: 82px;
   resize: vertical;
 }
+
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
 }
+
 button {
   border: none;
   border-radius: 12px;
@@ -230,6 +246,7 @@ button {
   font-weight: 800;
   font-size: 0.94rem;
 }
+
 .btn-primary { background: var(--primary); color: #fff; }
 .btn-secondary { background: #e2e8f0; color: #0f172a; }
 .btn-success { background: var(--success); color: #fff; }
@@ -249,12 +266,14 @@ button {
   grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
   gap: 16px;
 }
+
 .room-card {
   border: 1px solid var(--line);
   border-radius: 18px;
   background: #fff;
   overflow: hidden;
 }
+
 .room-card-header {
   display: flex;
   justify-content: space-between;
@@ -264,23 +283,27 @@ button {
   border-bottom: 1px solid #edf2f7;
   background: #f8fafc;
 }
+
 .room-no {
   font-size: 1.3rem;
   font-weight: 900;
   color: var(--primary-dark);
 }
+
 .doctor-name {
   font-size: 1rem;
   font-weight: 700;
   color: #334155;
   margin-top: 4px;
 }
+
 .status-stack {
   display: flex;
   flex-direction: column;
   gap: 6px;
   align-items: flex-end;
 }
+
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -292,6 +315,7 @@ button {
   white-space: nowrap;
   border: 1px solid transparent;
 }
+
 .status-open { background: #ecfdf5; color: #047857; border-color: #86efac; }
 .status-paused { background: #fffbeb; color: #b45309; border-color: #fcd34d; }
 .status-closed { background: #f3f4f6; color: #6b7280; border-color: #d1d5db; }
@@ -307,12 +331,14 @@ button {
   padding: 12px;
   margin-bottom: 12px;
 }
+
 .current-label {
   font-size: 0.88rem;
   font-weight: 800;
   color: #475569;
   margin-bottom: 8px;
 }
+
 .current-ticket {
   font-size: 1.82rem;
   font-weight: 900;
@@ -320,6 +346,7 @@ button {
   line-height: 1.12;
   letter-spacing: 0.03em;
 }
+
 .current-subtext {
   margin-top: 6px;
   color: #64748b;
@@ -333,6 +360,7 @@ button {
   margin: 16px 0 10px;
   color: #0f172a;
 }
+
 .review-box {
   margin-top: 12px;
   border: 1px solid #fde68a;
@@ -340,6 +368,7 @@ button {
   border-radius: 14px;
   padding: 10px 12px;
 }
+
 .review-box-title {
   font-size: 0.95rem;
   font-weight: 900;
@@ -353,6 +382,7 @@ table {
   border-spacing: 0 8px;
   background: transparent;
 }
+
 thead th {
   text-align: left;
   padding: 0 10px 4px 10px;
@@ -363,6 +393,7 @@ thead th {
   border-bottom: none;
   vertical-align: top;
 }
+
 tbody td {
   background: #fff;
   padding: 10px 10px;
@@ -371,11 +402,13 @@ tbody td {
   border-bottom: 1px solid var(--line-soft);
   font-size: 0.9rem;
 }
+
 tbody tr td:first-child {
   border-left: 1px solid var(--line-soft);
   border-top-left-radius: 14px;
   border-bottom-left-radius: 14px;
 }
+
 tbody tr td:last-child {
   border-right: 1px solid var(--line-soft);
   border-top-right-radius: 14px;
@@ -394,17 +427,20 @@ tbody tr td:last-child {
   font-size: 0.78rem;
   font-weight: 900;
 }
+
 .ticket-block {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
+
 .queue-ticket-row {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
 }
+
 .queue-ticket-text {
   font-size: 1.18rem;
   font-weight: 900;
@@ -412,6 +448,7 @@ tbody tr td:last-child {
   letter-spacing: 0.03em;
   line-height: 1.05;
 }
+
 .hover-log-anchor {
   display: inline-flex;
   align-items: center;
@@ -419,6 +456,7 @@ tbody tr td:last-child {
   cursor: default;
   position: relative;
 }
+
 .hover-log-hint {
   display: inline-flex;
   align-items: center;
@@ -432,23 +470,27 @@ tbody tr td:last-child {
   font-weight: 900;
   line-height: 1;
 }
+
 .queue-meta-stack {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
+
 .queue-badges-row {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
   align-items: center;
 }
+
 .queue-time {
   color: #64748b;
   font-size: 0.8rem;
   font-weight: 800;
   line-height: 1.25;
 }
+
 .main-actions {
   display: flex;
   flex-wrap: wrap;
@@ -457,13 +499,16 @@ tbody tr td:last-child {
   justify-content: flex-end;
   margin-bottom: 0;
 }
+
 .more-actions-wrap {
   display: flex;
   flex-direction: column;
   gap: 6px;
   align-items: flex-end;
 }
+
 .more-toggle-btn { min-width: 70px; }
+
 .more-actions-panel {
   display: none;
   width: 100%;
@@ -472,19 +517,23 @@ tbody tr td:last-child {
   background: #f8fafc;
   border: 1px dashed #cbd5e1;
 }
+
 .more-actions-panel.open { display: block; }
+
 .more-actions-grid {
   display: flex;
   flex-direction: column;
   gap: 8px;
   align-items: stretch;
 }
+
 .more-actions-line {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   align-items: center;
 }
+
 .more-actions-line.single { grid-template-columns: 1fr; }
 
 .pill {
@@ -498,46 +547,55 @@ tbody tr td:last-child {
   border: 1px solid transparent;
   white-space: nowrap;
 }
+
 .pill-priority {
   background: #fff7ed;
   color: #c2410c;
   border-color: #fdba74;
 }
+
 .pill-normal {
   background: #eff6ff;
   color: #1d4ed8;
   border-color: #93c5fd;
 }
+
 .pill-appointment {
   background: #f5f3ff;
   color: #6d28d9;
   border-color: #c4b5fd;
 }
+
 .pill-online {
   background: #ecfeff;
   color: #0f766e;
   border-color: #67e8f9;
 }
+
 .pill-walkin {
   background: #f1f5f9;
   color: #334155;
   border-color: #cbd5e1;
 }
+
 .pill-manual {
   background: #fef2f2;
   color: #b91c1c;
   border-color: #fca5a5;
 }
+
 .pill-auto-assign {
   background: #ecfdf5;
   color: #047857;
   border-color: #86efac;
 }
+
 .pill-locked {
   background: #111827;
   color: #fff;
   border-color: #374151;
 }
+
 .pill-review {
   background: #fff7ed;
   color: #9a3412;
@@ -560,11 +618,13 @@ tbody tr td:last-child {
   padding: 16px;
   background: #fff;
 }
+
 .history-list {
   margin-top: 16px;
   border-top: 1px solid #e2e8f0;
   padding-top: 14px;
 }
+
 .history-item {
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -572,12 +632,14 @@ tbody tr td:last-child {
   margin-bottom: 10px;
   background: #f8fafc;
 }
+
 .history-time {
   font-size: 0.86rem;
   color: #475569;
   font-weight: 800;
   margin-bottom: 4px;
 }
+
 .history-text {
   font-size: 0.95rem;
   color: #0f172a;
@@ -594,6 +656,7 @@ tbody tr td:last-child {
   gap: 10px;
   z-index: 9999;
 }
+
 .toast {
   min-width: 240px;
   max-width: 520px;
@@ -605,6 +668,7 @@ tbody tr td:last-child {
   white-space: pre-wrap;
   word-break: break-word;
 }
+
 .toast.success { background: #16a34a; }
 .toast.warning { background: #d97706; }
 .toast.error { background: #dc2626; }
@@ -620,19 +684,100 @@ tbody tr td:last-child {
   color: var(--board-text);
   flex: 0 0 auto;
 }
+
+.board-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .board-title {
   font-size: 2.6rem;
   font-weight: 900;
   color: var(--board-text);
   letter-spacing: 0.02em;
+  line-height: 1.08;
+}
+
+.board-subtitle {
+  font-size: 1.05rem;
+  color: var(--board-sub);
+  font-weight: 800;
+  letter-spacing: 0.06em;
   line-height: 1.1;
 }
+
+.board-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.toolbar-chip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.toolbar-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  border-radius: 999px;
+  padding: 8px 14px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(15,23,42,0.9);
+  color: #e2e8f0;
+  font-size: 0.92rem;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.toolbar-chip.status-ok {
+  border-color: rgba(34,197,94,0.35);
+  color: #bbf7d0;
+}
+
+.toolbar-chip.status-warn {
+  border-color: rgba(245,158,11,0.4);
+  color: #fde68a;
+}
+
+.toolbar-chip.status-error {
+  border-color: rgba(239,68,68,0.45);
+  color: #fecaca;
+}
+
+.toolbar-btn {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(30,41,59,0.92);
+  color: #fff;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 900;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.toolbar-btn:hover {
+  background: rgba(37,99,235,0.95);
+  border-color: rgba(96,165,250,0.5);
+}
+
 .board-time {
   font-size: 1.6rem;
   color: var(--board-sub);
   font-weight: 900;
   letter-spacing: 0.03em;
 }
+
 .board-disclaimer { margin-bottom: 12px; }
 
 .info-card {
@@ -642,6 +787,7 @@ tbody tr td:last-child {
   padding: 14px 18px;
   margin-top: 10px;
 }
+
 body.display-mode .info-card {
   margin-top: 0;
   margin-bottom: 12px;
@@ -649,12 +795,14 @@ body.display-mode .info-card {
   border-color: rgba(255,255,255,0.12);
   flex: 0 0 auto;
 }
+
 .inline-note {
   font-size: 1.12rem;
   color: #dbeafe;
   font-weight: 800;
   line-height: 1.55;
 }
+
 .toolbar-row {
   display: flex;
   flex-wrap: wrap;
@@ -671,6 +819,7 @@ body.display-mode .info-card {
   flex-direction: column;
   overflow: hidden;
 }
+
 .board-pagination-bar {
   display: flex;
   justify-content: space-between;
@@ -680,12 +829,14 @@ body.display-mode .info-card {
   flex: 0 0 auto;
   color: var(--board-text);
 }
+
 .board-page-indicator {
   font-size: 1.28rem;
   font-weight: 900;
   color: #bfdbfe;
   letter-spacing: 0.04em;
 }
+
 .board-page-dots {
   display: flex;
   gap: 10px;
@@ -693,6 +844,7 @@ body.display-mode .info-card {
   flex-wrap: wrap;
   justify-content: flex-end;
 }
+
 .board-dot {
   width: 14px;
   height: 14px;
@@ -700,6 +852,7 @@ body.display-mode .info-card {
   background: rgba(255,255,255,0.22);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
 }
+
 .board-dot.active {
   background: #60a5fa;
   box-shadow: 0 0 0 3px rgba(96,165,250,0.18);
@@ -715,6 +868,7 @@ body.display-mode .info-card {
   min-height: 0;
   overflow: auto;
 }
+
 .board-head {
   display: grid;
   grid-template-columns: 0.7fr 1.1fr 1.1fr 2.2fr 1.9fr 1.5fr;
@@ -726,11 +880,13 @@ body.display-mode .info-card {
   top: 0;
   z-index: 5;
 }
+
 .board-head div {
   padding: 18px 12px 16px;
   border-right: 1px solid rgba(255,255,255,0.16);
   text-align: center;
 }
+
 .board-head div:last-child { border-right: none; }
 
 .board-head-zh {
@@ -740,6 +896,7 @@ body.display-mode .info-card {
   margin-bottom: 6px;
   font-weight: 900;
 }
+
 .board-head-en {
   display: block;
   font-size: 0.9rem;
@@ -748,6 +905,7 @@ body.display-mode .info-card {
   font-weight: 800;
   letter-spacing: 0.06em;
 }
+
 .board-body { background: var(--board-panel); }
 
 .board-row {
@@ -758,6 +916,7 @@ body.display-mode .info-card {
   min-height: 148px;
   background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0));
 }
+
 .board-cell {
   padding: 16px 14px;
   display: flex;
@@ -768,6 +927,7 @@ body.display-mode .info-card {
   font-weight: 800;
   color: var(--board-text);
 }
+
 .board-cell:last-child { border-right: none; }
 
 .board-room {
@@ -777,6 +937,7 @@ body.display-mode .info-card {
   letter-spacing: 0.03em;
   line-height: 1;
 }
+
 .board-doctor {
   color: var(--board-text);
   font-weight: 900;
@@ -787,6 +948,7 @@ body.display-mode .info-card {
   text-align: left;
   justify-content: center;
 }
+
 .board-doctor-zh {
   font-size: 1.45rem;
   color: #ffffff;
@@ -794,6 +956,7 @@ body.display-mode .info-card {
   line-height: 1.15;
   word-break: break-word;
 }
+
 .board-doctor-en {
   font-size: 0.98rem;
   color: var(--board-sub);
@@ -801,12 +964,12 @@ body.display-mode .info-card {
   line-height: 1.2;
   word-break: break-word;
 }
+
 .board-current {
   flex-direction: column;
   gap: 8px;
 }
 
-/* FIX #11: 合併三個重複嘅 CSS class */
 .board-current-priority-ticket,
 .board-current-normal-ticket,
 .board-current-ticket {
@@ -819,12 +982,14 @@ body.display-mode .info-card {
 .board-current-ticket-red { color: #fca5a5; }
 .board-current-ticket-yellow { color: #fde68a; }
 .board-current-ticket-green { color: #4ade80; }
+
 .board-meta {
   font-size: 1rem;
   color: var(--board-sub);
   font-weight: 800;
   line-height: 1.3;
 }
+
 .board-paused {
   color: #fbbf24;
   font-size: 1.9rem;
@@ -842,6 +1007,7 @@ body.display-mode .info-card {
   width: 100%;
   text-align: left;
 }
+
 .board-tag {
   border-radius: 999px;
   padding: 12px 18px;
@@ -852,33 +1018,39 @@ body.display-mode .info-card {
   line-height: 1.04;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
 }
+
 .tag-wait {
   background: rgba(37,99,235,0.16);
   color: #bfdbfe;
   border: 1px solid rgba(96,165,250,0.42);
 }
+
 .tag-review {
   background: rgba(245,158,11,0.14);
   color: #fde68a;
   border: 1px solid rgba(245,158,11,0.45);
 }
+
 .tag-skip {
   background: rgba(239,68,68,0.12);
   color: #fecaca;
   border: 1px solid rgba(248,113,113,0.4);
 }
+
 .tag-priority {
   background: rgba(185,28,28,0.2);
   color: #fee2e2;
   border: 2px solid #ef4444;
   box-shadow: 0 0 0 2px rgba(239,68,68,0.12) inset;
 }
+
 .tag-yellow {
   background: rgba(234,179,8,0.22);
   color: #fef9c3;
   border: 2px solid #eab308;
   box-shadow: 0 0 0 2px rgba(234,179,8,0.08) inset;
 }
+
 .board-empty {
   color: #94a3b8;
   font-size: 1.1rem;
@@ -899,6 +1071,7 @@ body.display-mode .info-card {
   line-height: 1.08;
   text-align: center;
 }
+
 .board-cutoff-zh {
   color: #facc15;
   font-size: 1.02rem;
@@ -906,6 +1079,7 @@ body.display-mode .info-card {
   letter-spacing: 0.03em;
   white-space: nowrap;
 }
+
 .board-cutoff-en {
   color: #fde68a;
   font-size: 0.74rem;
@@ -914,6 +1088,7 @@ body.display-mode .info-card {
   white-space: nowrap;
   text-transform: uppercase;
 }
+
 .board-footer-tip {
   margin-top: 8px;
   color: #93c5fd;
@@ -929,6 +1104,7 @@ body.display-mode .info-card {
   outline-offset: 3px;
   transition: outline-color 0.15s ease;
 }
+
 .teach-tooltip,
 .hover-log-tooltip {
   position: fixed;
@@ -944,17 +1120,20 @@ body.display-mode .info-card {
   transition: opacity 0.1s ease, visibility 0.1s ease;
   backdrop-filter: blur(8px);
 }
+
 .teach-tooltip {
   background: var(--teach-bg);
   border: 1px solid var(--teach-border);
   box-shadow: var(--teach-glow);
   color: var(--teach-text);
 }
+
 .teach-tooltip.show,
 .hover-log-tooltip.show {
   opacity: 1;
   visibility: visible;
 }
+
 .teach-tooltip-title,
 .hover-log-title {
   font-weight: 900;
@@ -962,8 +1141,10 @@ body.display-mode .info-card {
   margin-bottom: 8px;
   line-height: 1.3;
 }
+
 .teach-tooltip-title { color: var(--teach-title); }
 .hover-log-title { color: var(--logtip-title); }
+
 .teach-tooltip-body {
   color: var(--teach-text);
   font-size: 0.96rem;
@@ -972,25 +1153,30 @@ body.display-mode .info-card {
   white-space: pre-wrap;
   word-break: break-word;
 }
+
 .hover-log-tooltip {
   background: var(--logtip-bg);
   border: 1px solid var(--logtip-border);
   box-shadow: 0 16px 36px rgba(2, 6, 23, 0.38);
   color: var(--logtip-text);
 }
+
 .hover-log-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
+
 .hover-log-item {
   border-top: 1px solid rgba(255,255,255,0.08);
   padding-top: 8px;
 }
+
 .hover-log-item:first-child {
   border-top: none;
   padding-top: 0;
 }
+
 .hover-log-time {
   color: var(--logtip-time);
   font-size: 0.8rem;
@@ -998,6 +1184,7 @@ body.display-mode .info-card {
   line-height: 1.2;
   margin-bottom: 4px;
 }
+
 .hover-log-text {
   color: var(--logtip-text);
   font-size: 0.9rem;
@@ -1006,6 +1193,7 @@ body.display-mode .info-card {
   white-space: pre-wrap;
   word-break: break-word;
 }
+
 .hover-log-empty {
   color: #cbd5e1;
   font-size: 0.88rem;
@@ -1018,6 +1206,7 @@ body.display-mode .info-card {
   gap: 12px;
   align-items: end;
 }
+
 .search-active-row {
   display: flex;
   flex-wrap: wrap;
@@ -1025,6 +1214,7 @@ body.display-mode .info-card {
   align-items: center;
   margin-top: 12px;
 }
+
 .search-checkbox {
   display: inline-flex;
   align-items: center;
@@ -1036,6 +1226,7 @@ body.display-mode .info-card {
   font-weight: 800;
   color: #334155;
 }
+
 .search-checkbox input[type="checkbox"] {
   width: auto;
   accent-color: var(--primary);
@@ -1048,6 +1239,7 @@ body.display-mode .info-card {
   align-items: center;
   margin-top: 8px;
 }
+
 .staff-room-filter-empty {
   grid-column: 1 / -1;
   border: 1px dashed #cbd5e1;
@@ -1064,6 +1256,7 @@ body.display-mode .info-card {
   gap: 8px;
   margin-top: 14px;
 }
+
 .search-chip {
   border: 1px solid #cbd5e1;
   background: #fff;
@@ -1074,11 +1267,13 @@ body.display-mode .info-card {
   font-weight: 900;
   cursor: pointer;
 }
+
 .search-chip.active {
   background: var(--primary);
   color: #fff;
   border-color: var(--primary);
 }
+
 .result-summary {
   margin-top: 14px;
   margin-bottom: 10px;
@@ -1086,6 +1281,7 @@ body.display-mode .info-card {
   font-weight: 900;
   font-size: 0.92rem;
 }
+
 .search-room-hero {
   border: 1px solid #dbeafe;
   background: #f8fbff;
@@ -1093,6 +1289,7 @@ body.display-mode .info-card {
   padding: 16px;
   margin-bottom: 14px;
 }
+
 .search-room-hero-top {
   display: flex;
   flex-wrap: wrap;
@@ -1101,40 +1298,47 @@ body.display-mode .info-card {
   align-items: flex-start;
   margin-bottom: 12px;
 }
+
 .search-room-title {
   font-size: 1.35rem;
   font-weight: 900;
   color: #0f172a;
 }
+
 .search-room-sub {
   font-size: 1rem;
   font-weight: 700;
   color: #475569;
   margin-top: 4px;
 }
+
 .search-mini-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;
 }
+
 .search-mini-card {
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
   padding: 12px;
 }
+
 .search-mini-label {
   font-size: 0.82rem;
   color: #64748b;
   font-weight: 800;
   margin-bottom: 6px;
 }
+
 .search-mini-value {
   font-size: 1rem;
   color: #0f172a;
   font-weight: 900;
   line-height: 1.35;
 }
+
 .search-section-card {
   margin-top: 12px;
   border: 1px solid #e2e8f0;
@@ -1142,6 +1346,7 @@ body.display-mode .info-card {
   overflow: hidden;
   background: #fff;
 }
+
 .search-section-head {
   padding: 12px 14px;
   background: #f8fafc;
@@ -1149,17 +1354,20 @@ body.display-mode .info-card {
   font-weight: 900;
   color: #0f172a;
 }
+
 .search-empty {
   padding: 14px;
   color: #64748b;
   font-weight: 800;
 }
+
 .search-inline-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
 }
+
 .search-help-note {
   margin-top: 10px;
   color: #64748b;
@@ -1178,9 +1386,11 @@ body.display-mode .info-card {
   padding: 18px;
   z-index: 30000;
 }
+
 .modal-backdrop.show {
   display: flex;
 }
+
 .modal-card {
   width: min(760px, 100%);
   max-height: min(90vh, 860px);
@@ -1190,6 +1400,7 @@ body.display-mode .info-card {
   box-shadow: 0 22px 60px rgba(15, 23, 42, 0.28);
   border: 1px solid #dbe3ee;
 }
+
 .modal-head {
   display: flex;
   justify-content: space-between;
@@ -1198,17 +1409,20 @@ body.display-mode .info-card {
   padding: 18px 18px 12px;
   border-bottom: 1px solid #e2e8f0;
 }
+
 .modal-title {
   font-size: 1.2rem;
   font-weight: 900;
   color: #0f172a;
 }
+
 .modal-subtitle {
   margin-top: 6px;
   color: #475569;
   font-weight: 800;
   line-height: 1.45;
 }
+
 .modal-close-btn {
   background: #e2e8f0;
   color: #0f172a;
@@ -1218,14 +1432,17 @@ body.display-mode .info-card {
   font-size: 1.1rem;
   line-height: 1;
 }
+
 .modal-body {
   padding: 16px 18px 18px;
 }
+
 .activity-chip-row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
+
 .activity-chip {
   border: 1px solid #cbd5e1;
   background: #fff;
@@ -1236,16 +1453,19 @@ body.display-mode .info-card {
   font-weight: 900;
   cursor: pointer;
 }
+
 .activity-chip:hover {
   background: #eff6ff;
   border-color: #93c5fd;
   color: #1d4ed8;
 }
+
 .activity-chip.active {
   background: #2563eb;
   border-color: #2563eb;
   color: #fff;
 }
+
 .modal-note {
   margin-top: 8px;
   color: #64748b;
@@ -1253,6 +1473,7 @@ body.display-mode .info-card {
   font-weight: 800;
   line-height: 1.45;
 }
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -1260,6 +1481,49 @@ body.display-mode .info-card {
   margin-top: 14px;
   flex-wrap: wrap;
 }
+
+.overlay-status {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: min(420px, calc(100vw - 36px));
+  pointer-events: none;
+}
+
+.overlay-card {
+  border-radius: 16px;
+  padding: 12px 14px;
+  font-weight: 900;
+  line-height: 1.45;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255,255,255,0.12);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.overlay-card.info {
+  background: rgba(15,23,42,0.92);
+  color: #dbeafe;
+}
+
+.overlay-card.warn {
+  background: rgba(120,53,15,0.92);
+  color: #fde68a;
+  border-color: rgba(245,158,11,0.35);
+}
+
+.overlay-card.error {
+  background: rgba(127,29,29,0.94);
+  color: #fee2e2;
+  border-color: rgba(239,68,68,0.4);
+}
+
+.hidden { display: none !important; }
 
 @media (max-width: 1600px) {
   .board-title { font-size: 2.15rem; }
@@ -1279,6 +1543,7 @@ body.display-mode .info-card {
   .search-toolbar-grid { grid-template-columns: 1fr 1fr 1fr; }
   .search-mini-grid { grid-template-columns: 1fr 1fr; }
 }
+
 @media (max-width: 1200px) {
   .board-head, .board-row { grid-template-columns: 1fr; }
   .board-head div, .board-cell {
@@ -1289,41 +1554,55 @@ body.display-mode .info-card {
   .board-room { font-size: 2.5rem; }
   .board-wrap { min-height: auto; }
 }
+
 @media (max-width: 900px) {
   .app { padding: 12px; }
   .room-list { grid-template-columns: 1fr; }
   body.display-mode #displayPage { padding: 10px; }
   .search-toolbar-grid,
   .search-mini-grid { grid-template-columns: 1fr; }
+  .board-toolbar-right { justify-content: flex-start; }
+  .toolbar-chip-row { justify-content: flex-start; }
+  .overlay-status {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    max-width: none;
+  }
 
   table, thead, tbody, tr, th, td {
     display: block;
     width: 100%;
   }
+
   thead { display: none; }
   tbody tr { margin-bottom: 12px; }
+
   tbody td {
     border-left: 1px solid var(--line-soft) !important;
     border-right: 1px solid var(--line-soft) !important;
     border-radius: 0 !important;
   }
+
   tbody tr td:first-child {
     border-top-left-radius: 14px !important;
     border-top-right-radius: 14px !important;
     border-bottom-left-radius: 0 !important;
   }
+
   tbody tr td:last-child {
     border-bottom-left-radius: 14px !important;
     border-bottom-right-radius: 14px !important;
     border-top-right-radius: 0 !important;
   }
+
   .more-actions-line { grid-template-columns: 1fr; }
   .modal-card { width: 100%; }
 }
 </style>
 </head>
 <body>
-<div class="toast-wrap" id="toastWrap"></div>
+<div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
 
 <div class="teach-tooltip" id="teachTooltip" aria-hidden="true">
   <div class="teach-tooltip-title" id="teachTooltipTitle"></div>
@@ -1381,6 +1660,7 @@ body.display-mode .info-card {
         <label for="clinicalActivityDetails">補充說明（可留空）</label>
         <input id="clinicalActivityDetails" type="text" placeholder="例如：已送往 X-ray、等候內科病房、等候抽血結果" />
       </div>
+
       <div
         class="form-row"
         style="margin-top:14px;"
@@ -1397,10 +1677,7 @@ body.display-mode .info-card {
         </label>
       </div>
 
-      <div
-        id="clinicalFollowupFields"
-        style="display:none; margin-top:14px;"
-      >
+      <div id="clinicalFollowupFields" style="display:none; margin-top:14px;">
         <div
           class="grid-3"
           data-help-title="跟進事項設定"
@@ -1445,6 +1722,7 @@ body.display-mode .info-card {
           <input id="clinicalFollowupAssignedTo" type="text" placeholder="預設會自動填入目前登入職員名稱" />
         </div>
       </div>
+
       <div class="modal-actions">
         <button
           class="btn-secondary"
@@ -1465,101 +1743,85 @@ body.display-mode .info-card {
   </div>
 </div>
 
-<!-- FIX #3: 新增自訂確認 modal，取代 window.confirm() -->
-<div class="modal-backdrop" id="confirmModal" aria-hidden="true">
-  <div class="modal-card" style="width:min(520px,100%);" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
-    <div class="modal-head">
-      <div>
-        <div class="modal-title" id="confirmModalTitle">確認操作</div>
-        <div class="modal-subtitle" id="confirmModalMessage" style="white-space:pre-wrap;">—</div>
-      </div>
-    </div>
-    <div class="modal-body">
-      <div class="modal-actions">
-        <button class="btn-secondary" id="confirmModalCancelBtn" type="button">取消</button>
-        <button class="btn-danger" id="confirmModalOkBtn" type="button">確認</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="app">
- <div class="topbar">
-  <div
-    class="title"
-    data-help-title="系統標題"
-    data-help="呢個系統俾職員管理急症醫學中心嘅候診、回診、過號同現正診症病人。上面可以切換唔同頁面。"
-  >
-    急症醫學中心輪候系統<br>Emergency Medicine Centre Queue Management System
-  </div>
-
-<div class="tabs">
-  <button
-    class="tab-btn active"
-    data-tab="staffPage"
-    type="button"
-    data-help-title="職員管理頁"
-    data-help="呢頁俾職員新增病人、建立診室、叫號、完成、過號、轉回診、轉房同管理整體候診流程。"
-  >主頁</button>
-  <button
-    class="tab-btn"
-    data-tab="patientPage"
-    type="button"
-    data-help-title="病人狀態查詢頁"
-    data-help="呢頁用嚟查詢病人狀態。可以按 CUMC 號碼、診室、病人狀態同病人類型搜尋。"
-  >查詢</button>
-  <button
-    class="tab-btn"
-    data-tab="displayPage"
-    type="button"
-    data-help-title="候診看板頁"
-    data-help="呢頁會以大螢幕方式顯示各診室嘅現正診症、候診、回診同過號名單，適合公眾顯示。"
-  >公眾看板</button>
-
-  <label
-    class="teach-toggle"
-    data-help-title="教學模式"
-    data-help="開啟之後，只要滑鼠移到有教學說明嘅位置，就會彈出功能介紹。方便新同事學習操作。"
-  >
-    <input id="teachModeToggle" type="checkbox" />
-    <span>教學模式</span>
-    <span class="teach-badge" id="teachModeBadge">關閉中</span>
-  </label>
-</div>
-
-  <div class="panel" id="authPanel" style="margin-bottom:0; padding:12px 14px; min-width:320px;">
-    <div style="font-size:0.95rem; font-weight:900; margin-bottom:10px;">職員登入</div>
-
-    <div id="loggedOutView">
-      <div class="form-row" style="margin-bottom:8px;">
-        <label for="loginEmail">CUMC 電郵</label>
-        <input id="loginEmail" type="email" placeholder="試玩: petertmchan@cuhkmc.hk" autocomplete="username" />
-      </div>
-
-      <div class="form-row" style="margin-bottom:10px;">
-        <label for="loginPassword">密碼</label>
-        <input id="loginPassword" type="password" placeholder="試玩: 123456" autocomplete="current-password" />
-      </div>
-
-      <div class="actions" style="justify-content:flex-end;">
-        <button class="btn-primary" id="loginBtn" type="button">登入</button>
-      </div>
+  <div class="topbar">
+    <div
+      class="title"
+      data-help-title="系統標題"
+      data-help="呢個系統俾職員管理急症醫學中心嘅候診、回診、過號同現正診症病人。上面可以切換唔同頁面。"
+    >
+      急症醫學中心輪候系統<br>Emergency Medicine Centre Queue Management System
     </div>
 
-    <!-- FIX #1: 加入 currentStaffEmail 同 currentStaffRole -->
-    <div id="loggedInView" style="display:none;">
-      <div style="font-weight:800; margin-bottom:4px;">
-        已登入：<span id="currentStaffName">—</span>
+    <div class="tabs">
+      <button
+        class="tab-btn active"
+        data-tab="staffPage"
+        type="button"
+        data-help-title="職員管理頁"
+        data-help="呢頁俾職員新增病人、建立診室、叫號、完成、過號、轉回診、轉房同管理整體候診流程。"
+      >主頁</button>
+      <button
+        class="tab-btn"
+        data-tab="patientPage"
+        type="button"
+        data-help-title="病人狀態查詢頁"
+        data-help="呢頁用嚟查詢病人狀態。可以按 CUMC 號碼、診室、病人狀態同病人類型搜尋。"
+      >查詢</button>
+      <button
+        class="tab-btn"
+        data-tab="displayPage"
+        type="button"
+        data-help-title="候診看板頁"
+        data-help="呢頁會以大螢幕方式顯示各診室嘅現正診症、候診、回診同過號名單，適合公眾顯示。"
+      >公眾看板</button>
+
+      <label
+        class="teach-toggle"
+        data-help-title="教學模式"
+        data-help="開啟之後，只要滑鼠移到有教學說明嘅位置，就會彈出功能介紹。方便新同事學習操作。"
+      >
+        <input id="teachModeToggle" type="checkbox" />
+        <span>教學模式</span>
+        <span class="teach-badge" id="teachModeBadge">關閉中</span>
+      </label>
+    </div>
+
+    <div class="panel" id="authPanel" style="margin-bottom:0; padding:12px 14px; min-width:320px;">
+      <div style="font-size:0.95rem; font-weight:900; margin-bottom:10px;">職員登入</div>
+
+      <div id="loggedOutView">
+        <div class="form-row" style="margin-bottom:8px;">
+          <label for="loginEmail">CUMC 電郵</label>
+          <input id="loginEmail" type="email" placeholder="試玩: petertmchan@cuhkmc.hk" autocomplete="username" />
+        </div>
+
+        <div class="form-row" style="margin-bottom:10px;">
+          <label for="loginPassword">密碼</label>
+          <input id="loginPassword" type="password" placeholder="試玩: 123456" autocomplete="current-password" />
+        </div>
+
+        <div class="actions" style="justify-content:flex-end;">
+          <button class="btn-primary" id="loginBtn" type="button">登入</button>
+        </div>
       </div>
-      <div style="font-weight:700; font-size:0.86rem; color:#475569; margin-bottom:6px;">
-        <span id="currentStaffEmail">—</span>｜角色：<span id="currentStaffRole">—</span>
-      </div>
-      <div class="actions" style="justify-content:flex-end;">
-        <button class="btn-secondary" id="logoutBtn" type="button">登出</button>
+
+      <div id="loggedInView" style="display:none;">
+        <div style="font-weight:800; margin-bottom:6px;">
+          已登入：<span id="currentStaffName">—</span>
+        </div>
+        <div style="font-weight:800; margin-bottom:6px;">
+          電郵：<span id="currentStaffEmail">—</span>
+        </div>
+        <div style="font-weight:800; margin-bottom:10px;">
+          角色：<span id="currentStaffRole">—</span>
+        </div>
+        <div class="actions" style="justify-content:flex-end;">
+          <button class="btn-secondary" id="logoutBtn" type="button">登出</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
   <div class="page active" id="staffPage">
     <div class="grid-2">
@@ -1894,8 +2156,20 @@ body.display-mode .info-card {
       data-help-title="候診看板"
       data-help="候診看板會顯示目前開放或暫停中的診室。每頁最多顯示 4 間房，系統會自動輪播。"
     >
-      <div class="board-title">候診情況<br>Queue Status</div>
-      <div class="board-time" id="boardTime"></div>
+      <div class="board-title-wrap">
+        <div class="board-title">候診情況</div>
+        <div class="board-subtitle">Queue Status</div>
+      </div>
+
+      <div class="board-toolbar-right">
+        <div class="toolbar-chip-row">
+          <div class="toolbar-chip status-ok" id="connectionChip">連線正常</div>
+          <div class="toolbar-chip" id="roomsChip">診室：—</div>
+          <div class="toolbar-chip" id="updatedChip">更新：—</div>
+        </div>
+        <button class="toolbar-btn" id="fullscreenBtn" type="button">全螢幕</button>
+        <div class="board-time" id="boardTime"></div>
+      </div>
     </div>
 
     <div
@@ -1918,16 +2192,33 @@ body.display-mode .info-card {
   </div>
 </div>
 
+<div class="overlay-status" id="overlayStatus">
+  <div class="overlay-card info hidden" id="loadingOverlay">正在同步資料…</div>
+  <div class="overlay-card warn hidden" id="offlineOverlay">網絡可能中斷，系統正嘗試重新連線…</div>
+  <div class="overlay-card error hidden" id="errorOverlay"></div>
+</div>
+
 <script>
 const SUPABASE_URL = "https://dvyberdrmmfgutjqnpjr.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
+
+if (!window.supabase || typeof window.supabase.createClient !== "function") {
+  document.body.innerHTML = `
+    <div style="padding:24px;font-family:Arial,sans-serif;">
+      <h2 style="margin:0 0 12px;">系統初始化失敗</h2>
+      <div>Supabase SDK 未能載入，請檢查網絡或 CDN 是否可用。</div>
+    </div>
+  `;
+  throw new Error("Supabase SDK not loaded");
+}
+
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const HKT_TIMEZONE = "Asia/Hong_Kong";
 const HKT_OFFSET_MINUTES = 8 * 60;
 const BOARD_ROOMS_PER_PAGE = 4;
 const BOARD_PAGE_ROTATE_MS = 8000;
-const POLLING_MS = 2000;
+const POLLING_MS = 5000;
 const RENDER_DEBOUNCE_MS = 80;
 
 const DOCTOR_SUGGESTIONS = [
@@ -1961,6 +2252,12 @@ const DEBUG = false;
 const authState = {
   user: null,
   profile: null
+};
+
+const cloudState = {
+  loading: false,
+  online: navigator.onLine,
+  lastSuccessAt: null
 };
 
 const state = {
@@ -2028,14 +2325,92 @@ function debugLog(...args) {
   if (DEBUG) console.log("[CQMS DEBUG]", ...args);
 }
 
-/* FIX #10: formatSupabaseError 加入 status field */
+function makeUuid() {
+  if (window.crypto && typeof window.crypto.randomUUID === "function") {
+    return window.crypto.randomUUID();
+  }
+  return "xxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    const v = c === "x" ? r : ((r & 0x3) | 0x8);
+    return v.toString(16);
+  });
+}
+
+function setLoadingState(loading) {
+  cloudState.loading = !!loading;
+  const el = document.getElementById("loadingOverlay");
+  if (!el) return;
+  el.classList.toggle("hidden", !cloudState.loading);
+}
+
+function setBoardError(message = "") {
+  const el = document.getElementById("errorOverlay");
+  if (!el) return;
+  el.textContent = String(message || "").trim();
+  el.classList.toggle("hidden", !message);
+}
+
+function clearBoardError() {
+  setBoardError("");
+}
+
+function setConnectionStatus(ok) {
+  cloudState.online = !!ok;
+
+  const chip = document.getElementById("connectionChip");
+  if (chip) {
+    chip.classList.remove("status-ok", "status-warn", "status-error");
+    if (ok) {
+      chip.classList.add("status-ok");
+      chip.textContent = "連線正常";
+    } else {
+      chip.classList.add("status-warn");
+      chip.textContent = "重新連線中";
+    }
+  }
+
+  const offline = document.getElementById("offlineOverlay");
+  if (offline) {
+    offline.classList.toggle("hidden", !!ok);
+  }
+}
+
+function updateBoardStatusChips(visibleRooms = []) {
+  const roomsChip = document.getElementById("roomsChip");
+  const updatedChip = document.getElementById("updatedChip");
+
+  if (roomsChip) roomsChip.textContent = `診室：${visibleRooms.length}`;
+  if (updatedChip) {
+    updatedChip.textContent = cloudState.lastSuccessAt
+      ? `更新：${formatBoardDateTime(cloudState.lastSuccessAt)}`
+      : "更新：—";
+  }
+}
+
+function initFullscreenButton() {
+  const btn = document.getElementById("fullscreenBtn");
+  if (!btn) return;
+
+  btn.addEventListener("click", async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (error) {
+      console.warn("Fullscreen failed:", error);
+      notify("無法進入全螢幕，請檢查瀏覽器權限", "warning");
+    }
+  });
+}
+
 function formatSupabaseError(error) {
   if (!error) return "unknown error";
   if (typeof error === "string") return error;
   const parts = [];
   if (error.message) parts.push(`message: ${error.message}`);
   if (error.code) parts.push(`code: ${error.code}`);
-  if (error.status) parts.push(`status: ${error.status}`);
   if (error.details) parts.push(`details: ${error.details}`);
   if (error.hint) parts.push(`hint: ${error.hint}`);
   return parts.join(" | ") || JSON.stringify(error);
@@ -2057,12 +2432,15 @@ function formatLogMeta(log) {
 function markUiBusy(ms = 2200) {
   state.uiBusyUntil = Date.now() + ms;
 }
+
 function isUiBusy() {
   return Date.now() < (state.uiBusyUntil || 0);
 }
+
 function getActiveTabId() {
   return state.currentTab || "staffPage";
 }
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -2097,11 +2475,14 @@ function getHktDateParts(date = new Date()) {
     second: map.second
   };
 }
+
 function nowIso() { return new Date().toISOString(); }
+
 function toHktDateTimeLocalValue(date = new Date()) {
   const p = getHktDateParts(date);
   return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
 }
+
 function hktLocalDateTimeToIso(value) {
   if (!value) return null;
   const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
@@ -2110,6 +2491,7 @@ function hktLocalDateTimeToIso(value) {
   const utcMillis = Date.UTC(Number(y), Number(m) - 1, Number(d), Number(hh), Number(mm) - HKT_OFFSET_MINUTES, 0, 0);
   return new Date(utcMillis).toISOString();
 }
+
 function formatDateTime(iso) {
   if (!iso) return "—";
   const date = new Date(iso);
@@ -2125,6 +2507,7 @@ function formatDateTime(iso) {
     hourCycle: "h23"
   }).format(date);
 }
+
 function formatBoardDateTime(iso) {
   if (!iso) return "—";
   const date = new Date(iso);
@@ -2132,10 +2515,12 @@ function formatBoardDateTime(iso) {
   const p = getHktDateParts(date);
   return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second}`;
 }
+
 function formatBoardNow(date = new Date()) {
   const p = getHktDateParts(date);
   return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second}`;
 }
+
 function formatRegisteredInline(iso) {
   const text = formatDateTime(iso);
   return text === "—" ? "—" : `${text}｜登記`;
@@ -2148,46 +2533,6 @@ function notify(message, type = "info") {
   el.textContent = message;
   wrap.appendChild(el);
   setTimeout(() => el.remove(), 4200);
-}
-
-/* FIX #3: customConfirm 取代 window.confirm() */
-function customConfirm(title, message) {
-  return new Promise((resolve) => {
-    const modal = document.getElementById("confirmModal");
-    const titleEl = document.getElementById("confirmModalTitle");
-    const messageEl = document.getElementById("confirmModalMessage");
-    const okBtn = document.getElementById("confirmModalOkBtn");
-    const cancelBtn = document.getElementById("confirmModalCancelBtn");
-
-    titleEl.textContent = title || "確認操作";
-    messageEl.textContent = message || "";
-    modal.classList.add("show");
-    modal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("modal-open");
-
-    function cleanup(result) {
-      modal.classList.remove("show");
-      modal.setAttribute("aria-hidden", "true");
-      document.body.classList.remove("modal-open");
-      okBtn.removeEventListener("click", onOk);
-      cancelBtn.removeEventListener("click", onCancel);
-      modal.removeEventListener("click", onBackdrop);
-      document.removeEventListener("keydown", onEscape);
-      resolve(result);
-    }
-
-    function onOk() { cleanup(true); }
-    function onCancel() { cleanup(false); }
-    function onBackdrop(e) { if (e.target === modal) cleanup(false); }
-    function onEscape(e) { if (e.key === "Escape") cleanup(false); }
-
-    okBtn.addEventListener("click", onOk);
-    cancelBtn.addEventListener("click", onCancel);
-    modal.addEventListener("click", onBackdrop);
-    document.addEventListener("keydown", onEscape);
-
-    okBtn.focus();
-  });
 }
 
 function mapSupabasePatientRow(patient) {
@@ -2215,7 +2560,6 @@ function mapSupabasePatientRow(patient) {
   };
 }
 
-/* FIX #1: updateAuthUi 現在可以正確更新 email 同 role */
 function updateAuthUi() {
   const loggedOutView = document.getElementById("loggedOutView");
   const loggedInView = document.getElementById("loggedInView");
@@ -2333,15 +2677,19 @@ function setDisplayModeByTab(tabId) {
 function sortedRooms() {
   return [...state.rooms].sort((a, b) => a.roomNo.localeCompare(b.roomNo, "zh-HK", { numeric: true }));
 }
+
 function getRoom(roomId) {
   return state.rooms.find(room => room.id === roomId) || null;
 }
+
 function getPatient(patientId) {
   return state.patients.find(patient => patient.id === patientId) || null;
 }
+
 function ensurePatientLogs(patient) {
   if (!Array.isArray(patient.logs)) patient.logs = [];
 }
+
 function addPatientLog(patient, action, details = "") {
   if (!patient) return;
   ensurePatientLogs(patient);
@@ -2358,6 +2706,7 @@ function addPatientLog(patient, action, details = "") {
 function ensureClinicalLogs(patient) {
   if (!Array.isArray(patient.clinicalLogs)) patient.clinicalLogs = [];
 }
+
 function addClinicalLog(patient, activity, details = "") {
   if (!patient) return;
   ensureClinicalLogs(patient);
@@ -2375,36 +2724,44 @@ function getLatestClinicalLog(patient) {
   const logs = Array.isArray(patient?.clinicalLogs) ? patient?.clinicalLogs : [];
   return logs.length ? logs[0] : null;
 }
+
 function getPreviewClinicalLogs(patient, limit = 10) {
   return Array.isArray(patient?.clinicalLogs) ? patient.clinicalLogs.slice(0, limit) : [];
 }
+
 function getRoomDisplayShort(roomNo) {
   return String(roomNo || "").replace(/號房/g, "").trim() || String(roomNo || "");
 }
+
 function getPatientDisplayNo(patient) {
   return String(patient?.cumcNo || patient?.ticketNo || "").trim();
 }
+
 function formatEncounterNoDisplay(encounterNo) {
   const text = String(encounterNo || "").trim();
   if (!text) return "—";
   if (text.length <= 1) return `(${text})`;
   return `${text.slice(0, -1)}(${text.slice(-1)})`;
 }
+
 function getPatientTypeLabel(type) {
   if (type === "walkin") return "即場";
   if (type === "onlineTicket") return "網上取票";
   if (type === "appointment") return "預約";
   return "—";
 }
+
 function getPatientTypePill(type) {
   if (type === "walkin") return "pill-walkin";
   if (type === "onlineTicket") return "pill-online";
   if (type === "appointment") return "pill-appointment";
   return "pill-normal";
 }
+
 function getPriorityLabel(patient) {
   return patient.priority ? "Cat 2（優先）" : "Cat 3（一般）";
 }
+
 function getStatusLabel(status) {
   const statusMap = {
     waiting: "候診中",
@@ -2416,11 +2773,13 @@ function getStatusLabel(status) {
   };
   return statusMap[status] || status;
 }
+
 function getPatientTypeWeight(patient) {
   if (patient.sourceType === "appointment") return 1;
   if (patient.sourceType === "onlineTicket") return 2;
   return 3;
 }
+
 function compareWaitingBase(a, b) {
   if (!!a.priority !== !!b.priority) return a.priority ? -1 : 1;
 
@@ -2448,16 +2807,19 @@ function syncStaffRoomFilterSelection() {
   }
   state.staffRoomFilterRoomIds = (state.staffRoomFilterRoomIds || []).filter(id => roomIds.includes(id));
 }
+
 function ensureNewRoomInStaffFilter(roomId) {
   if (!state.staffRoomFilterInitialized) return;
   if (!state.staffRoomFilterRoomIds.includes(roomId)) {
     state.staffRoomFilterRoomIds.push(roomId);
   }
 }
+
 function getVisibleStaffRooms() {
   const selectedSet = new Set(state.staffRoomFilterRoomIds || []);
   return sortedRooms().filter(room => selectedSet.has(room.id));
 }
+
 function renderStaffRoomFilterControls() {
   const wrap = document.getElementById("staffRoomFilterWrap");
   if (!wrap) return;
@@ -2499,11 +2861,13 @@ function getWaitingPatientsArray(room, excludePatientId = null) {
     .filter(patient => patient.status === "waiting")
     .filter(patient => patient.id !== excludePatientId);
 }
+
 function getReviewWaitingPatients(room) {
   return state.patients
     .filter(patient => patient.roomId === room.id && patient.status === "review_waiting")
     .sort(compareWaitingBase);
 }
+
 function getOrderedWaitingPatients(room, excludePatientId = null) {
   const waiting = getWaitingPatientsArray(room, excludePatientId);
   waiting.sort((a, b) => {
@@ -2516,22 +2880,26 @@ function getOrderedWaitingPatients(room, excludePatientId = null) {
   });
   return waiting;
 }
+
 function rebuildRoomQueue(room, waitingPatients) {
   waitingPatients.forEach((patient, index) => {
     patient.queueOrder = index + 1;
   });
   room.queuePatientIds = waitingPatients.map(patient => patient.id);
 }
+
 function sortRoomQueue(room) {
   const waitingPatients = getOrderedWaitingPatients(room);
   rebuildRoomQueue(room, waitingPatients);
 }
+
 function getAutoInsertIndexFromList(waitingPatients, patient) {
   for (let i = 0; i < waitingPatients.length; i++) {
     if (compareWaitingBase(patient, waitingPatients[i]) < 0) return i;
   }
   return waitingPatients.length;
 }
+
 function insertPatientIntoQueue(room, patient, mode = "tail", positionValue = null) {
   room.queuePatientIds = (room.queuePatientIds || []).filter(id => id !== patient.id);
 
@@ -2564,6 +2932,7 @@ function canAssignPatientToRoom(room, patientType = "walkin") {
   if (patientType === "appointment") return room.status === "open" || room.status === "paused";
   return room.status === "open";
 }
+
 function canTransferPatientToRoom(room) {
   if (!room) return false;
   if (room.status === "paused") return true;
@@ -2573,11 +2942,13 @@ function canTransferPatientToRoom(room) {
 function getAssignableRooms(patientType = "walkin") {
   return sortedRooms().filter(room => canAssignPatientToRoom(room, patientType));
 }
+
 function getWaitingCount(room) {
   const waitingCount = getOrderedWaitingPatients(room).length;
   const currentCount = room.currentPatientId ? 1 : 0;
   return waitingCount + currentCount;
 }
+
 function getSmartScore(room) {
   const waitingPatients = getOrderedWaitingPatients(room);
   const reviewPatients = getReviewWaitingPatients(room);
@@ -2705,6 +3076,7 @@ function toggleManualRoomSelect() {
   assignRoom.style.background = assignMode.value !== "manual" ? "#f1f5f9" : "#fff";
   assignRoom.style.color = assignMode.value !== "manual" ? "#94a3b8" : "#1f2937";
 }
+
 function refreshInsertModeFields() {
   const insertMode = document.getElementById("insertMode").value;
   const insertPosition = document.getElementById("insertPosition");
@@ -2719,6 +3091,7 @@ function refreshInsertModeFields() {
     insertPosition.placeholder = "例如：2";
   }
 }
+
 function refreshRegisteredAtField() {
   const checkbox = document.getElementById("useCustomRegisteredAt");
   const input = document.getElementById("registeredAt");
@@ -2727,6 +3100,7 @@ function refreshRegisteredAtField() {
   if (checkbox.checked && !input.value) input.value = toHktDateTimeLocalValue(new Date());
   if (!checkbox.checked) input.value = toHktDateTimeLocalValue(new Date());
 }
+
 function getInsertModeText(mode, position, actualPosition) {
   if (mode === "front") return "排隊首";
   if (mode === "tail") return "排隊尾";
@@ -2734,15 +3108,18 @@ function getInsertModeText(mode, position, actualPosition) {
   if (mode === "auto") return `自動安排（第 ${actualPosition} 位）`;
   return "排隊尾";
 }
+
 function getTransferTargetRoomIdFromButton(button) {
   const row = button.closest("tr");
   if (!row) return "";
   const select = row.querySelector(".transfer-room-select");
   return String(select?.value || "").trim();
 }
+
 function isPatientLockedFromRebalance(patient) {
   return patient.initialAssignmentMode === "manual" || patient.manualLock === true;
 }
+
 function getSkippedPatients(room) {
   return state.patients
     .filter(patient => patient.roomId === room.id && patient.status === "skipped")
@@ -2753,6 +3130,7 @@ function getSkippedPatients(room) {
       return getPatientDisplayNo(a).localeCompare(getPatientDisplayNo(b), "zh-HK");
     });
 }
+
 function getDynamicRebalanceTargetRoom(eligibleRooms) {
   let bestRoom = eligibleRooms[0];
   let bestScore = getSmartScore(bestRoom);
@@ -2791,6 +3169,7 @@ function getDynamicRebalanceTargetRoom(eligibleRooms) {
 function isActivePatientStatus(status) {
   return ["waiting", "review_waiting", "called", "skipped"].includes(status);
 }
+
 function getSearchStatusWeight(status) {
   if (status === "called") return 1;
   if (status === "review_waiting") return 2;
@@ -2800,6 +3179,7 @@ function getSearchStatusWeight(status) {
   if (status === "cancelled") return 6;
   return 99;
 }
+
 function compareSearchPatients(a, b) {
   const aWeight = getSearchStatusWeight(a.status);
   const bWeight = getSearchStatusWeight(b.status);
@@ -2811,6 +3191,7 @@ function compareSearchPatients(a, b) {
 
   return getPatientDisplayNo(a).localeCompare(getPatientDisplayNo(b), "zh-HK");
 }
+
 function getSearchFiltersFromUi() {
   return {
     ticket: String(document.getElementById("searchTicket")?.value || "").trim(),
@@ -2820,23 +3201,27 @@ function getSearchFiltersFromUi() {
     activeOnly: !!document.getElementById("searchActiveOnly")?.checked
   };
 }
+
 function syncSearchStatusChipUi() {
   const status = document.getElementById("searchStatus")?.value || "all";
   document.querySelectorAll("[data-search-chip]").forEach(btn => {
     btn.classList.toggle("active", btn.getAttribute("data-search-chip") === status);
   });
 }
+
 function adjustSearchActiveOnlyAgainstStatus() {
   const status = document.getElementById("searchStatus")?.value || "all";
   const activeOnly = document.getElementById("searchActiveOnly");
   if (!activeOnly) return;
   if (status === "done" || status === "cancelled") activeOnly.checked = false;
 }
+
 function clearSearchResult() {
   const container = document.getElementById("patientSearchResult");
   if (container) container.innerHTML = "";
   state.lastSearchRenderKey = "";
 }
+
 function clearSearchFilters() {
   const ticket = document.getElementById("searchTicket");
   const room = document.getElementById("searchRoom");
@@ -2893,6 +3278,7 @@ function updateSearchTicketSuggestions(keyword = "") {
 function renderSearchSummary(text) {
   return `<div class="result-summary">${escapeHtml(text)}</div>`;
 }
+
 function renderSearchPatientRows(patients, includeRoom = true) {
   return patients.map(patient => {
     const room = getRoom(patient.roomId);
@@ -2992,6 +3378,7 @@ function renderPatientSearchDetail(patient) {
     state.lastSearchRenderKey = html;
   }
 }
+
 function renderPatientSearchList(patients, title = "找到多項結果") {
   const container = document.getElementById("patientSearchResult");
   const html = `
@@ -3020,6 +3407,7 @@ function renderPatientSearchList(patients, title = "找到多項結果") {
     state.lastSearchRenderKey = html;
   }
 }
+
 function renderRoomSearchSection(title, patients, includeRoom = false) {
   return `
     <div class="search-section-card">
@@ -3046,6 +3434,7 @@ function renderRoomSearchSection(title, patients, includeRoom = false) {
     </div>
   `;
 }
+
 function renderRoomSearchResult(room, filters) {
   const container = document.getElementById("patientSearchResult");
   if (!container || !room) return;
@@ -3119,6 +3508,7 @@ function renderRoomSearchResult(room, filters) {
     state.lastSearchRenderKey = html;
   }
 }
+
 function renderNoSearchResult(message = "找不到符合條件的病人資料") {
   const container = document.getElementById("patientSearchResult");
   const html = `<div class="patient-search-result"><div class="muted">${escapeHtml(message)}</div></div>`;
@@ -3148,7 +3538,6 @@ function renderBoardTag(patient, type = "wait") {
   let baseClass = "tag-wait";
   if (type === "skip") baseClass = "tag-skip";
   if (type === "review") baseClass = "tag-review";
-
   const extraClass = getBoardPatientColorClass(patient);
   return `<span class="board-tag ${baseClass} ${extraClass}">${escapeHtml(getPatientDisplayNo(patient))}</span>`;
 }
@@ -3156,9 +3545,11 @@ function renderBoardTag(patient, type = "wait") {
 function getVisibleBoardRooms() {
   return sortedRooms().filter(room => room.status !== "closed");
 }
+
 function getBoardTotalPages(rooms) {
   return Math.max(1, Math.ceil(rooms.length / BOARD_ROOMS_PER_PAGE));
 }
+
 function normalizeBoardPageIndex(totalPages) {
   if (totalPages <= 0) {
     state.displayPageIndex = 0;
@@ -3167,6 +3558,7 @@ function normalizeBoardPageIndex(totalPages) {
   if (state.displayPageIndex >= totalPages) state.displayPageIndex = 0;
   if (state.displayPageIndex < 0) state.displayPageIndex = 0;
 }
+
 function getBoardRenderModel() {
   const visibleRooms = getVisibleBoardRooms();
   const totalPages = getBoardTotalPages(visibleRooms);
@@ -3185,6 +3577,7 @@ function renderDisplayBoard(force = false) {
   if (timeEl.textContent !== nextTimeText) timeEl.textContent = nextTimeText;
 
   const { visibleRooms, totalPages, pageRooms } = getBoardRenderModel();
+  updateBoardStatusChips(visibleRooms);
 
   if (!visibleRooms.length) {
     const html = `
@@ -3236,22 +3629,16 @@ function renderDisplayBoard(force = false) {
         ${
           currentPatient
             ? `
-              ${
-                (() => {
-                  let currentTicketColorClass = "board-current-ticket-green";
-                  if (currentPatient.priority) currentTicketColorClass = "board-current-ticket-red";
-                  else if (currentPatient.sourceType === "appointment" || currentPatient.sourceType === "onlineTicket") {
-                    currentTicketColorClass = "board-current-ticket-yellow";
-                  }
-
-                  return `
-                    <div class="board-current-ticket ${currentTicketColorClass}">
-                      ${escapeHtml(getPatientDisplayNo(currentPatient))}
-                    </div>
-                    <div class="board-meta">${escapeHtml(formatRegisteredInline(currentPatient.registeredAt))}</div>
-                  `;
-                })()
-              }
+              <div class="board-current-ticket ${
+                currentPatient.priority
+                  ? "board-current-ticket-red"
+                  : (currentPatient.sourceType === "appointment" || currentPatient.sourceType === "onlineTicket")
+                    ? "board-current-ticket-yellow"
+                    : "board-current-ticket-green"
+              }">
+                ${escapeHtml(getPatientDisplayNo(currentPatient))}
+              </div>
+              <div class="board-meta">${escapeHtml(formatRegisteredInline(currentPatient.registeredAt))}</div>
             `
             : `<div class="board-current-normal-ticket">—</div>`
         }
@@ -3337,19 +3724,17 @@ function renderDisplayBoard(force = false) {
   }
 }
 
-/* FIX #7: 優化 getRoomFingerprint，用 count + latest timestamp 取代完整 serialize */
 function getRoomFingerprint(room) {
   const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
   const waitingPatients = getOrderedWaitingPatients(room);
   const reviewPatients = getReviewWaitingPatients(room);
   const skippedPatients = getSkippedPatients(room);
 
-  const clinicalSummary = patient => {
-    const logs = Array.isArray(patient.clinicalLogs) ? patient.clinicalLogs : [];
-    const count = Math.min(logs.length, 10);
-    if (count === 0) return { n: 0 };
-    return { n: count, t0: logs[0].time, a0: logs[0].activity, d0: logs[0].details };
-  };
+  const clinicalPreview = patient => getPreviewClinicalLogs(patient, 10).map(log => ({
+    t: log.time || null,
+    a: log.activity || null,
+    d: log.details || null
+  }));
 
   return JSON.stringify({
     roomId: room.id,
@@ -3361,13 +3746,13 @@ function getRoomFingerprint(room) {
     currentPatientId: room.currentPatientId,
     currentPatientTicket: currentPatient ? getPatientDisplayNo(currentPatient) : null,
     waiting: waitingPatients.map(p => ({
-      id: p.id, t: getPatientDisplayNo(p), q: p.queueOrder, pr: p.priority, s: p.status, src: p.sourceType, reg: p.registeredAt, cl: clinicalSummary(p)
+      id: p.id, t: getPatientDisplayNo(p), q: p.queueOrder, pr: p.priority, s: p.status, src: p.sourceType, reg: p.registeredAt, cl: clinicalPreview(p)
     })),
     review: reviewPatients.map(p => ({
-      id: p.id, t: getPatientDisplayNo(p), pr: p.priority, s: p.status, src: p.sourceType, reg: p.registeredAt, cl: clinicalSummary(p)
+      id: p.id, t: getPatientDisplayNo(p), pr: p.priority, s: p.status, src: p.sourceType, reg: p.registeredAt, cl: clinicalPreview(p)
     })),
     skipped: skippedPatients.map(p => ({
-      id: p.id, t: getPatientDisplayNo(p), pr: p.priority, s: p.status, sk: p.skippedAt, cl: clinicalSummary(p)
+      id: p.id, t: getPatientDisplayNo(p), pr: p.priority, s: p.status, sk: p.skippedAt, cl: clinicalPreview(p)
     }))
   });
 }
@@ -3381,6 +3766,7 @@ function getTransferOptionsHtml(room) {
       </option>
     `).join("");
 }
+
 function renderPatientHoverLogAttrs(patient) {
   const latestLogs = Array.isArray(patient.logs) ? patient.logs.slice(0, 5) : [];
   const payload = encodeURIComponent(JSON.stringify({
@@ -3388,8 +3774,9 @@ function renderPatientHoverLogAttrs(patient) {
     ticketNo: getPatientDisplayNo(patient),
     logs: latestLogs
   }));
-  return `data-hover-log="${payload}" data-help-title="病人資訊" data-help="顯示病人號碼、類型、優先級別、登記時間同最近臨床活動。移到號碼旁邊嘅 i 圖示會顯示最近 5 項排隊活動紀錄。"`
+  return `data-hover-log="${payload}" data-help-title="病人資訊" data-help="顯示病人號碼、類型、優先級別、登記時間同最近臨床活動。移到號碼旁邊嘅 i 圖示會顯示最近 5 項排隊活動紀錄。"`;
 }
+
 function renderPatientClinicalPreview(patient) {
   const logs = getPreviewClinicalLogs(patient, 10);
   if (!logs.length) return "";
@@ -3398,6 +3785,7 @@ function renderPatientClinicalPreview(patient) {
     <div class="queue-time">${escapeHtml(log.activity || "")}${log.details ? `：${escapeHtml(log.details)}` : ""}</div>
   `).join("");
 }
+
 function renderPatientInfoBlock(patient, extraPills = "") {
   return `
     <div class="ticket-block">
@@ -3772,6 +4160,7 @@ function renderRoomsPartial(force = false) {
     if (el) container.appendChild(el);
   });
 }
+
 function renderRoomOnly(roomId, force = true) {
   const room = getRoom(roomId);
   const container = document.getElementById("roomsContainer");
@@ -3807,6 +4196,7 @@ function renderRoomOnly(roomId, force = true) {
     if (el) container.appendChild(el);
   });
 }
+
 function renderLightForRoomChange(roomId) {
   renderRoomOnly(roomId, true);
   renderDisplayBoard(true);
@@ -3814,6 +4204,7 @@ function renderLightForRoomChange(roomId) {
   populateSearchRoomSelect();
   renderDoctorOptionsDatalist();
 }
+
 function renderRoomsPair(roomIdA, roomIdB) {
   if (roomIdA) renderRoomOnly(roomIdA, true);
   if (roomIdB && roomIdB !== roomIdA) renderRoomOnly(roomIdB, true);
@@ -3822,6 +4213,7 @@ function renderRoomsPair(roomIdA, roomIdB) {
   populateSearchRoomSelect();
   renderDoctorOptionsDatalist();
 }
+
 function renderAll(force = false, options = {}) {
   const { resortQueues = false } = options;
   if (resortQueues) state.rooms.forEach(sortRoomQueue);
@@ -3843,7 +4235,6 @@ function renderAll(force = false, options = {}) {
   renderDisplayBoard(force);
 }
 
-/* FIX #2: persistTransferChanges 加入 room persistence */
 async function persistTransferChanges(oldRoom, newRoom, movedPatient) {
   const affectedPatients = [];
   const seen = new Set();
@@ -3876,10 +4267,6 @@ async function persistTransferChanges(oldRoom, newRoom, movedPatient) {
   }
 
   await savePatientsBatchToSupabase(affectedPatients);
-
-  /* FIX #2: 同步 room 狀態到 Supabase */
-  if (oldRoom) await updateRoomInSupabase(oldRoom);
-  if (newRoom) await updateRoomInSupabase(newRoom);
 }
 
 async function withButtonLoading(button, fn) {
@@ -3955,9 +4342,14 @@ async function loadStateFromSupabase(showErrorToast = true) {
         .map(patient => patient.id);
     });
 
+    cloudState.lastSuccessAt = nowIso();
+    setConnectionStatus(true);
+    clearBoardError();
     return true;
   } catch (error) {
     console.error("Failed to load from Supabase:", error);
+    setConnectionStatus(false);
+    setBoardError("讀取雲端資料失敗，系統會自動重試。");
     if (showErrorToast) notify("讀取雲端資料失敗\n" + formatSupabaseError(error), "error");
     return false;
   }
@@ -3977,6 +4369,7 @@ async function saveRoomToSupabase(room) {
   if (error) throw error;
   return data;
 }
+
 async function updateRoomInSupabase(room) {
   const payload = {
     room_no: room.roomNo,
@@ -3990,6 +4383,7 @@ async function updateRoomInSupabase(room) {
   if (error) throw error;
   return data;
 }
+
 function toPatientPayload(patient) {
   return {
     id: patient.id,
@@ -4014,13 +4408,14 @@ function toPatientPayload(patient) {
     clinical_logs_json: Array.isArray(patient.clinicalLogs) ? patient.clinicalLogs : []
   };
 }
-
+  
 async function savePatientToSupabase(patient) {
   const payload = toPatientPayload(patient);
   const { data, error } = await sb.from("patients").upsert(payload).select();
   if (error) throw error;
   return data;
 }
+
 async function savePatientsBatchToSupabase(patients) {
   if (!patients || !patients.length) return;
   const payload = patients.map(toPatientPayload);
@@ -4028,10 +4423,12 @@ async function savePatientsBatchToSupabase(patients) {
   if (error) throw error;
   return data;
 }
+
 async function deleteRoomFromSupabase(roomId) {
   const { error } = await sb.from("rooms").delete().eq("id", roomId);
   if (error) throw error;
 }
+
 async function syncRoomQueuePatients(room) {
   const waitingPatients = getOrderedWaitingPatients(room);
   const reviewPatients = getReviewWaitingPatients(room);
@@ -4045,6 +4442,7 @@ function renderDoctorOptionsHtml() {
   ])).sort((a, b) => a.localeCompare(b, "zh-HK"));
   return uniqueNames.map(name => `<option value="${escapeHtml(name)}"></option>`).join("");
 }
+
 function renderDoctorOptionsDatalist() {
   const datalist = document.getElementById("doctorOptions");
   if (!datalist) return;
@@ -4058,27 +4456,34 @@ function scheduleRenderAll(delay = RENDER_DEBOUNCE_MS, force = false, options = 
     renderAll(force, options);
   }, delay);
 }
-async function refreshFromCloudAndRender(showErrorToast = false) {
+
+async function refreshFromCloudAndRender(showErrorToast = false, showLoader = false) {
   if (refreshInFlight) {
     queuedRefresh = true;
-    return;
+    return false;
   }
+
   refreshInFlight = true;
+  let ok = false;
+
   try {
-    const ok = await loadStateFromSupabase(showErrorToast);
-    if (!ok) return;
+    if (showLoader) setLoadingState(true);
+    ok = await loadStateFromSupabase(showErrorToast);
+    if (!ok) return false;
 
     const activeTab = getActiveTabId();
     if (activeTab === "staffPage" && isUiBusy()) {
       renderDisplayBoard(false);
-      return;
+      return true;
     }
     scheduleRenderAll(RENDER_DEBOUNCE_MS, false, { resortQueues: false });
+    return true;
   } finally {
+    if (showLoader) setLoadingState(false);
     refreshInFlight = false;
     if (queuedRefresh) {
       queuedRefresh = false;
-      refreshFromCloudAndRender(false);
+      refreshFromCloudAndRender(false, false);
     }
   }
 }
@@ -4102,7 +4507,7 @@ async function addRoom() {
     }
 
     const room = {
-      id: crypto.randomUUID(),
+      id: makeUuid(),
       roomNo,
       doctorName,
       status: "open",
@@ -4234,10 +4639,7 @@ async function addPatient() {
     refreshRegisteredAtField();
     populateRoomSelect();
 
-    notify(
-      `已加入輪候：${inserted.cumcNo} → ${room.roomNo}`,
-      "success"
-    );
+    notify(`已加入輪候：${inserted.cumcNo} → ${room.roomNo}`, "success");
   } catch (error) {
     console.error(error);
     const msg = formatSupabaseError(error).toLowerCase();
@@ -4895,6 +5297,7 @@ async function changeRoomStatus(roomId, status) {
     refreshFromCloudAndRender(false);
   }
 }
+
 async function setRoomPaused(roomId) {
   try {
     markUiBusy(2200);
@@ -4921,6 +5324,7 @@ async function setRoomPaused(roomId) {
     refreshFromCloudAndRender(false);
   }
 }
+
 async function toggleAcceptingNew(roomId) {
   try {
     markUiBusy(2200);
@@ -4942,6 +5346,7 @@ async function toggleAcceptingNew(roomId) {
     refreshFromCloudAndRender(false);
   }
 }
+
 async function updateDoctorName(roomId, newName) {
   try {
     markUiBusy(2200);
@@ -4967,6 +5372,7 @@ async function updateDoctorName(roomId, newName) {
     refreshFromCloudAndRender(false);
   }
 }
+
 async function deleteRoom(roomId) {
   try {
     markUiBusy(2600);
@@ -4996,7 +5402,6 @@ async function deleteRoom(roomId) {
   }
 }
 
-/* FIX #3: rebalanceWaitingPatients 改用 customConfirm 取代 window.confirm */
 async function rebalanceWaitingPatients() {
   try {
     markUiBusy(5000);
@@ -5017,11 +5422,12 @@ async function rebalanceWaitingPatients() {
       return;
     }
 
-    const confirmed = await customConfirm(
-      "確認重新分流",
-      `將重新智能平均分流 ${movablePatients.length} 位候診病人。\n\n只會處理：候診中、非預約、非手動派房或轉房病人。\n是否繼續？`
-    );
-    if (!confirmed) return;
+    const confirmText =
+      `將重新智能平均分流 ${movablePatients.length} 位候診病人。\n\n` +
+      `只會處理：候診中、非預約、非手動派房或轉房病人。\n` +
+      `是否繼續？`;
+
+    if (!window.confirm(confirmText)) return;
 
     movablePatients.sort(compareWaitingBase);
     const movablePatientIdSet = new Set(movablePatients.map(p => p.id));
@@ -5148,10 +5554,12 @@ function initTeachingMode() {
   window.addEventListener("scroll", updateTeachTooltipPosition, true);
   window.addEventListener("resize", updateTeachTooltipPosition, true);
 }
+
 function getTeachTarget(el) {
   if (!state.teachMode || !el) return null;
   return el.closest("[data-help], [data-help-title]");
 }
+
 function getTeachContent(target) {
   if (!target) return null;
   const title = target.getAttribute("data-help-title") || "功能說明";
@@ -5159,6 +5567,7 @@ function getTeachContent(target) {
   if (!body) return null;
   return { title, body };
 }
+
 function showTeachTooltip(target) {
   if (!state.teachMode || !target) return;
   const content = getTeachContent(target);
@@ -5174,6 +5583,7 @@ function showTeachTooltip(target) {
   target.classList.add("teach-highlight");
   updateTeachTooltipPosition();
 }
+
 function hideTeachTooltip() {
   teachTooltip.activeTarget = null;
   if (teachTooltip.el) {
@@ -5182,16 +5592,19 @@ function hideTeachTooltip() {
   }
   document.querySelectorAll(".teach-highlight").forEach(el => el.classList.remove("teach-highlight"));
 }
+
 function handleTeachPointerEnter(event) {
   const target = getTeachTarget(event.target);
   if (!target) return;
   showTeachTooltip(target);
 }
+
 function handleTeachFocusEnter(event) {
   const target = getTeachTarget(event.target);
   if (!target) return;
   showTeachTooltip(target);
 }
+
 function handleTeachPointerLeave(event) {
   if (!teachTooltip.activeTarget) return;
   const related = event.relatedTarget;
@@ -5202,6 +5615,7 @@ function handleTeachPointerLeave(event) {
     if (!nextTarget) hideTeachTooltip();
   }
 }
+
 function handleTeachFocusLeave(event) {
   const nextTarget = getTeachTarget(event.relatedTarget);
   if (nextTarget) {
@@ -5210,6 +5624,7 @@ function handleTeachFocusLeave(event) {
   }
   hideTeachTooltip();
 }
+
 function handleTeachMouseMove(event) {
   teachTooltip.lastMouseX = event.clientX;
   teachTooltip.lastMouseY = event.clientY;
@@ -5219,6 +5634,7 @@ function handleTeachMouseMove(event) {
   hoverLogTooltip.lastMouseY = event.clientY;
   if (hoverLogTooltip.activeTarget) updateHoverLogTooltipPosition();
 }
+
 function updateTeachTooltipPosition() {
   if (!teachTooltip.el || !teachTooltip.activeTarget || !state.teachMode) return;
   const pad = 14;
@@ -5250,6 +5666,7 @@ function initHoverLogTooltip() {
   document.addEventListener("scroll", updateHoverLogTooltipPosition, true);
   window.addEventListener("resize", updateHoverLogTooltipPosition, true);
 }
+
 function parseHoverLogData(target) {
   if (!target) return null;
   const raw = target.getAttribute("data-hover-log");
@@ -5261,6 +5678,7 @@ function parseHoverLogData(target) {
     return null;
   }
 }
+
 function showHoverLogTooltip(target) {
   const data = parseHoverLogData(target);
   if (!data || !hoverLogTooltip.el) return;
@@ -5283,6 +5701,7 @@ function showHoverLogTooltip(target) {
   hoverLogTooltip.el.setAttribute("aria-hidden", "false");
   updateHoverLogTooltipPosition();
 }
+
 function hideHoverLogTooltip() {
   hoverLogTooltip.activeTarget = null;
   hoverLogTooltip.activePatientId = null;
@@ -5291,17 +5710,20 @@ function hideHoverLogTooltip() {
     hoverLogTooltip.el.setAttribute("aria-hidden", "true");
   }
 }
+
 function handleHoverLogEnter(event) {
   const target = event.target.closest("[data-hover-log]");
   if (!target) return;
   showHoverLogTooltip(target);
 }
+
 function handleHoverLogLeave(event) {
   if (!hoverLogTooltip.activeTarget) return;
   const related = event.relatedTarget;
   if (related && hoverLogTooltip.activeTarget.contains(related)) return;
   if (event.target && hoverLogTooltip.activeTarget.contains(event.target)) hideHoverLogTooltip();
 }
+
 function updateHoverLogTooltipPosition() {
   if (!hoverLogTooltip.el || !hoverLogTooltip.activeTarget) return;
 
@@ -5331,6 +5753,7 @@ function getClinicalActivityTokens(text) {
       .filter(Boolean)
   ));
 }
+
 function syncClinicalPresetChipStates() {
   if (!clinicalActivityModal.presetWrapEl || !clinicalActivityModal.activityInputEl) return;
   const tokens = new Set(getClinicalActivityTokens(clinicalActivityModal.activityInputEl.value));
@@ -5339,6 +5762,7 @@ function syncClinicalPresetChipStates() {
     btn.classList.toggle("active", tokens.has(value));
   });
 }
+
 function toggleClinicalPresetValue(value) {
   const tokens = getClinicalActivityTokens(clinicalActivityModal.activityInputEl.value);
   const hasValue = tokens.includes(value);
@@ -5358,20 +5782,11 @@ function getCurrentStaffDisplayText() {
 }
 
 function toLocalDateTimeValue(date = new Date()) {
-  const pad = n => String(n).padStart(2, "0");
-  const yyyy = date.getFullYear();
-  const mm = pad(date.getMonth() + 1);
-  const dd = pad(date.getDate());
-  const hh = pad(date.getHours());
-  const mi = pad(date.getMinutes());
-  return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+  return toHktDateTimeLocalValue(date);
 }
 
 function localDateTimeValueToIso(value) {
-  if (!value) return null;
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return null;
-  return d.toISOString();
+  return hktLocalDateTimeToIso(value);
 }
 
 async function resolveEncounterIdByEncounterNo(encounterNo) {
@@ -5459,7 +5874,7 @@ async function createFollowupFromClinicalActivity(patient, activity, details) {
 
   return insertedFollowup;
 }
-
+  
 function initClinicalActivityModal() {
   clinicalActivityModal.el = document.getElementById("clinicalActivityModal");
   clinicalActivityModal.patientInfoEl = document.getElementById("clinicalActivityPatientInfo");
@@ -5515,6 +5930,7 @@ function initClinicalActivityModal() {
     }
   });
 }
+
 function openClinicalActivityModal(patientId) {
   const patient = getPatient(patientId);
   if (!patient) {
@@ -5545,6 +5961,7 @@ function openClinicalActivityModal(patientId) {
     clinicalActivityModal.activityInputEl.focus();
   }, 0);
 }
+
 function closeClinicalActivityModal() {
   clinicalActivityModal.patientId = null;
   clinicalActivityModal.el.classList.remove("show");
@@ -5561,7 +5978,7 @@ function closeClinicalActivityModal() {
   if (clinicalActivityModal.followupTitleEl) clinicalActivityModal.followupTitleEl.value = "";
   if (clinicalActivityModal.followupAssignedToEl) clinicalActivityModal.followupAssignedToEl.value = "";
 }
-
+  
 async function saveClinicalActivityFromModal() {
   try {
     markUiBusy(2600);
@@ -5709,13 +6126,7 @@ document.addEventListener("click", (event) => {
   if (action === "moveToFront") return withButtonLoading(btn, () => moveToFront(patientId));
   if (action === "insertAtPosition") return withButtonLoading(btn, () => insertWaitingPatientAtPosition(patientId));
   if (action === "moveWaitingToReview") return withButtonLoading(btn, () => moveWaitingToReview(patientId));
-
-  /* FIX #4: openClinicalActivity 加入 auth check */
-  if (action === "openClinicalActivity") {
-    if (!requireStaffLogin()) return;
-    return openClinicalActivityModal(patientId);
-  }
-
+  if (action === "openClinicalActivity") return openClinicalActivityModal(patientId);
   if (action === "callReviewPatient") return withButtonLoading(btn, () => callReviewPatient(patientId));
   if (action === "returnReviewToWaiting") return withButtonLoading(btn, () => returnReviewToWaiting(patientId));
   if (action === "finishReviewPatient") return withButtonLoading(btn, () => finishReviewPatient(patientId));
@@ -5818,6 +6229,7 @@ document.getElementById("searchTicket").addEventListener("keydown", (event) => {
     searchPatient();
   }
 });
+
 ["searchRoom", "searchStatus", "searchPatientType"].forEach(id => {
   document.getElementById(id).addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
@@ -5826,6 +6238,7 @@ document.getElementById("searchTicket").addEventListener("keydown", (event) => {
     }
   });
 });
+
 [
   "patientCumcNo",
   "patientType",
@@ -5860,6 +6273,7 @@ document.addEventListener("focusin", (event) => {
     markUiBusy(1800);
   }
 });
+
 document.addEventListener("pointerdown", (event) => {
   const el = event.target;
   if (!el) return;
@@ -5899,7 +6313,14 @@ async function setupRealtimeAndPolling() {
     })
     .subscribe((status, err) => {
       console.log("Realtime subscribe status:", status, err || "");
-      if (status === "CHANNEL_ERROR") notify("Realtime 連線異常，系統改用自動刷新", "warning");
+      if (status === "SUBSCRIBED") {
+        setConnectionStatus(true);
+      }
+      if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
+        setConnectionStatus(false);
+        setBoardError("Realtime 連線異常，系統已切換為自動刷新。");
+        notify("Realtime 連線異常，系統改用自動刷新", "warning");
+      }
     });
 
   if (liveRefreshTimer) clearInterval(liveRefreshTimer);
@@ -5923,6 +6344,19 @@ async function initApp() {
   initTeachingMode();
   initHoverLogTooltip();
   initClinicalActivityModal();
+  initFullscreenButton();
+
+  window.addEventListener("online", () => {
+    setConnectionStatus(true);
+    clearBoardError();
+    refreshFromCloudAndRender(false);
+  });
+
+  window.addEventListener("offline", () => {
+    setConnectionStatus(false);
+    setBoardError("目前網絡離線，系統會在恢復連線後自動同步。");
+  });
+
   await loadCurrentStaffProfile();
   state.currentTab = "staffPage";
   document.getElementById("registeredAt").value = toHktDateTimeLocalValue(new Date());
@@ -5930,46 +6364,158 @@ async function initApp() {
   refreshRegisteredAtField();
   setDisplayModeByTab("staffPage");
 
-  const ok = await loadStateFromSupabase(true);
+  const ok = await refreshFromCloudAndRender(true, true);
   if (ok) renderAll(true, { resortQueues: false });
 
   syncSearchStatusChipUi();
   updateSearchTicketSuggestions("");
+  document.getElementById("boardTime").textContent = formatBoardNow(new Date());
   await setupRealtimeAndPolling();
 }
 
-/* FIX #5: 用 withAuth helper 取代重複 reassignment pattern */
-function withAuth(fn) {
-  return async function (...args) {
-    if (!requireStaffLogin()) return;
-    return fn.apply(this, args);
-  };
-}
+const _addRoom = addRoom;
+addRoom = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _addRoom.apply(this, args);
+};
 
-addRoom = withAuth(addRoom);
-addPatient = withAuth(addPatient);
-callNextPatient = withAuth(callNextPatient);
-finishCurrent = withAuth(finishCurrent);
-skipCurrent = withAuth(skipCurrent);
-moveCurrentToReview = withAuth(moveCurrentToReview);
-moveWaitingToReview = withAuth(moveWaitingToReview);
-callReviewPatient = withAuth(callReviewPatient);
-returnReviewToWaiting = withAuth(returnReviewToWaiting);
-finishReviewPatient = withAuth(finishReviewPatient);
-recallSkipped = withAuth(recallSkipped);
-requeueSkipped = withAuth(requeueSkipped);
-cancelPatient = withAuth(cancelPatient);
-togglePriority = withAuth(togglePriority);
-moveToFront = withAuth(moveToFront);
-insertWaitingPatientAtPosition = withAuth(insertWaitingPatientAtPosition);
-transferPatient = withAuth(transferPatient);
-changeRoomStatus = withAuth(changeRoomStatus);
-setRoomPaused = withAuth(setRoomPaused);
-toggleAcceptingNew = withAuth(toggleAcceptingNew);
-updateDoctorName = withAuth(updateDoctorName);
-deleteRoom = withAuth(deleteRoom);
-rebalanceWaitingPatients = withAuth(rebalanceWaitingPatients);
-saveClinicalActivityFromModal = withAuth(saveClinicalActivityFromModal);
+const _addPatient = addPatient;
+addPatient = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _addPatient.apply(this, args);
+};
+
+const _callNextPatient = callNextPatient;
+callNextPatient = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _callNextPatient.apply(this, args);
+};
+
+const _finishCurrent = finishCurrent;
+finishCurrent = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _finishCurrent.apply(this, args);
+};
+
+const _skipCurrent = skipCurrent;
+skipCurrent = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _skipCurrent.apply(this, args);
+};
+
+const _moveCurrentToReview = moveCurrentToReview;
+moveCurrentToReview = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _moveCurrentToReview.apply(this, args);
+};
+
+const _moveWaitingToReview = moveWaitingToReview;
+moveWaitingToReview = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _moveWaitingToReview.apply(this, args);
+};
+
+const _callReviewPatient = callReviewPatient;
+callReviewPatient = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _callReviewPatient.apply(this, args);
+};
+
+const _returnReviewToWaiting = returnReviewToWaiting;
+returnReviewToWaiting = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _returnReviewToWaiting.apply(this, args);
+};
+
+const _finishReviewPatient = finishReviewPatient;
+finishReviewPatient = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _finishReviewPatient.apply(this, args);
+};
+
+const _recallSkipped = recallSkipped;
+recallSkipped = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _recallSkipped.apply(this, args);
+};
+
+const _requeueSkipped = requeueSkipped;
+requeueSkipped = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _requeueSkipped.apply(this, args);
+};
+
+const _cancelPatient = cancelPatient;
+cancelPatient = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _cancelPatient.apply(this, args);
+};
+
+const _togglePriority = togglePriority;
+togglePriority = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _togglePriority.apply(this, args);
+};
+
+const _moveToFront = moveToFront;
+moveToFront = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _moveToFront.apply(this, args);
+};
+
+const _insertWaitingPatientAtPosition = insertWaitingPatientAtPosition;
+insertWaitingPatientAtPosition = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _insertWaitingPatientAtPosition.apply(this, args);
+};
+
+const _transferPatient = transferPatient;
+transferPatient = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _transferPatient.apply(this, args);
+};
+
+const _changeRoomStatus = changeRoomStatus;
+changeRoomStatus = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _changeRoomStatus.apply(this, args);
+};
+
+const _setRoomPaused = setRoomPaused;
+setRoomPaused = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _setRoomPaused.apply(this, args);
+};
+
+const _toggleAcceptingNew = toggleAcceptingNew;
+toggleAcceptingNew = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _toggleAcceptingNew.apply(this, args);
+};
+
+const _updateDoctorName = updateDoctorName;
+updateDoctorName = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _updateDoctorName.apply(this, args);
+};
+
+const _deleteRoom = deleteRoom;
+deleteRoom = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _deleteRoom.apply(this, args);
+};
+
+const _rebalanceWaitingPatients = rebalanceWaitingPatients;
+rebalanceWaitingPatients = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _rebalanceWaitingPatients.apply(this, args);
+};
+
+const _saveClinicalActivityFromModal = saveClinicalActivityFromModal;
+saveClinicalActivityFromModal = async function (...args) {
+  if (!requireStaffLogin()) return;
+  return _saveClinicalActivityFromModal.apply(this, args);
+};
 
 document.getElementById("loginBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, loginStaff));
 document.getElementById("logoutBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, logoutStaff));
