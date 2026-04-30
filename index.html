@@ -2165,6 +2165,7 @@ body.display-mode .info-card {
         <div class="toolbar-chip-row">
           <div class="toolbar-chip status-ok" id="connectionChip">連線正常</div>
           <div class="toolbar-chip" id="roomsChip">診室：—</div>
+          <div class="toolbar-chip" id="updatedChip">更新：—</div>
         </div>
         <button class="toolbar-btn" id="fullscreenBtn" type="button">全螢幕</button>
         <div class="board-time" id="boardTime"></div>
@@ -2216,9 +2217,9 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const HKT_TIMEZONE = "Asia/Hong_Kong";
 const HKT_OFFSET_MINUTES = 8 * 60;
 const BOARD_ROOMS_PER_PAGE = 4;
-const BOARD_PAGE_ROTATE_MS = 5000;
-const POLLING_MS = 10000;
-const RENDER_DEBOUNCE_MS = 200;
+const BOARD_PAGE_ROTATE_MS = 8000;
+const POLLING_MS = 5000;
+const RENDER_DEBOUNCE_MS = 80;
 
 const DOCTOR_SUGGESTIONS = [
   "林家強醫生 Dr. LAM Ka Keung",
@@ -2376,7 +2377,14 @@ function setConnectionStatus(ok) {
 
 function updateBoardStatusChips(visibleRooms = []) {
   const roomsChip = document.getElementById("roomsChip");
+  const updatedChip = document.getElementById("updatedChip");
+
   if (roomsChip) roomsChip.textContent = `診室：${visibleRooms.length}`;
+  if (updatedChip) {
+    updatedChip.textContent = cloudState.lastSuccessAt
+      ? `更新：${formatBoardDateTime(cloudState.lastSuccessAt)}`
+      : "更新：—";
+  }
 }
 
 function initFullscreenButton() {
@@ -2426,13 +2434,7 @@ function markUiBusy(ms = 2200) {
 }
 
 function isUiBusy() {
-return Date.now() < (state.uiBusyUntil || 0);
-}
-
-  // 如果有展開緊嘅操作面板，亦唔好 re-render
-  if (document.querySelector(".more-actions-panel.open")) return true;
-
-  return false;
+  return Date.now() < (state.uiBusyUntil || 0);
 }
 
 function getActiveTabId() {
@@ -2933,7 +2935,8 @@ function canAssignPatientToRoom(room, patientType = "walkin") {
 
 function canTransferPatientToRoom(room) {
   if (!room) return false;
-  return room.status === "open" || room.status === "paused" || room.status === "closed";
+  if (room.status === "paused") return true;
+  return room.status === "open" && room.acceptingNew;
 }
 
 function getAssignableRooms(patientType = "walkin") {
@@ -3759,15 +3762,7 @@ function getTransferOptionsHtml(room) {
     .filter(targetRoom => targetRoom.id !== room.id && canTransferPatientToRoom(targetRoom))
     .map(targetRoom => `
       <option value="${targetRoom.id}">
-        ${escapeHtml(targetRoom.roomNo)} / ${escapeHtml(targetRoom.doctorName)}${
-          targetRoom.status === "paused"
-            ? "（暫停中）"
-            : targetRoom.status === "closed"
-              ? "（關閉中）"
-              : targetRoom.acceptingNew === false
-                ? "（停收新症）"
-                : ""
-        }
+        ${escapeHtml(targetRoom.roomNo)} / ${escapeHtml(targetRoom.doctorName)}${targetRoom.status === "paused" ? "（暫停中）" : ""}
       </option>
     `).join("");
 }
