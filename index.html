@@ -2165,7 +2165,6 @@ body.display-mode .info-card {
         <div class="toolbar-chip-row">
           <div class="toolbar-chip status-ok" id="connectionChip">連線正常</div>
           <div class="toolbar-chip" id="roomsChip">診室：—</div>
-          <div class="toolbar-chip" id="updatedChip">更新：—</div>
         </div>
         <button class="toolbar-btn" id="fullscreenBtn" type="button">全螢幕</button>
         <div class="board-time" id="boardTime"></div>
@@ -2377,14 +2376,7 @@ function setConnectionStatus(ok) {
 
 function updateBoardStatusChips(visibleRooms = []) {
   const roomsChip = document.getElementById("roomsChip");
-  const updatedChip = document.getElementById("updatedChip");
-
   if (roomsChip) roomsChip.textContent = `診室：${visibleRooms.length}`;
-  if (updatedChip) {
-    updatedChip.textContent = cloudState.lastSuccessAt
-      ? `更新：${formatBoardDateTime(cloudState.lastSuccessAt)}`
-      : "更新：—";
-  }
 }
 
 function initFullscreenButton() {
