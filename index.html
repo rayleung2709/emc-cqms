@@ -2205,7 +2205,7 @@ const HKT_TIMEZONE = "Asia/Hong_Kong";
 const HKT_OFFSET_MINUTES = 8 * 60;
 const BOARD_ROOMS_PER_PAGE = 4;
 const BOARD_PAGE_ROTATE_MS = 8000;
-const POLLING_MS = 10000;
+const POLLING_MS = 20000;
 const RENDER_DEBOUNCE_MS = 80;
 
 const DOCTOR_SUGGESTIONS = [
@@ -4696,7 +4696,6 @@ async function callNextPatient(roomId) {
     await syncRoomQueuePatients(room);
 
     notify(`${room.roomNo} 現正診症：${getPatientDisplayNo(nextPatient)}`, "info");
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("叫號失敗\n" + formatSupabaseError(error), "error");
@@ -4732,7 +4731,7 @@ async function finishCurrent(roomId) {
     await syncRoomQueuePatients(room);
 
     notify("已完成", "success");
-    await refreshFromCloudAndRender(false);
+
   } catch (error) {
     console.error(error);
     notify("完成失敗\n" + formatSupabaseError(error), "error");
@@ -4767,7 +4766,6 @@ async function skipCurrent(roomId) {
     await updateRoomInSupabase(room);
 
     notify("已設為過號", "warning");
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("設定過號失敗\n" + formatSupabaseError(error), "error");
@@ -4802,7 +4800,6 @@ async function moveCurrentToReview(roomId) {
     await syncRoomQueuePatients(room);
 
     notify(`${getPatientDisplayNo(patient)} 已轉去回診等候`, "info");
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("轉去回診等候失敗\n" + formatSupabaseError(error), "error");
@@ -4834,7 +4831,6 @@ async function moveWaitingToReview(patientId) {
     await syncRoomQueuePatients(room);
 
     notify(`${getPatientDisplayNo(patient)} 已轉去回診等候`, "info");
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("轉去回診等候失敗\n" + formatSupabaseError(error), "error");
@@ -4876,7 +4872,6 @@ async function callReviewPatient(patientId) {
     await syncRoomQueuePatients(room);
 
     notify(`已叫回診病人 ${getPatientDisplayNo(patient)}`, "info");
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("回診叫號失敗\n" + formatSupabaseError(error), "error");
@@ -4906,7 +4901,6 @@ async function returnReviewToWaiting(patientId) {
     await syncRoomQueuePatients(room);
 
     notify(`${getPatientDisplayNo(patient)} 已返回候診`, "success");
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("返回候診失敗\n" + formatSupabaseError(error), "error");
@@ -4935,7 +4929,6 @@ async function finishReviewPatient(patientId) {
     if (room) await syncRoomQueuePatients(room);
 
     notify(`${getPatientDisplayNo(patient)} 已完成`, "success");
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("完成回診失敗\n" + formatSupabaseError(error), "error");
@@ -4976,7 +4969,6 @@ async function recallSkipped(patientId) {
     await updateRoomInSupabase(room);
 
     notify(`已重新叫號 ${getPatientDisplayNo(patient)}`, "info");
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("重新叫號失敗\n" + formatSupabaseError(error), "error");
@@ -5006,7 +4998,6 @@ async function requeueSkipped(patientId) {
     await syncRoomQueuePatients(room);
 
     notify(`${getPatientDisplayNo(patient)} 已按登記時間重新排隊`, "success");
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("返回隊列失敗\n" + formatSupabaseError(error), "error");
@@ -5047,7 +5038,6 @@ async function cancelPatient(patientId) {
     }
 
     notify(`${getPatientDisplayNo(patient)} 已取消輪候`, "warning");
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error("cancelPatient error:", error);
     notify("取消輪候失敗\n" + formatSupabaseError(error), "error");
@@ -5095,7 +5085,6 @@ async function togglePriority(patientId) {
     }
 
     notify(patient.priority ? "已改為 Cat 2" : "已改為 Cat 3", "success");
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("更新級別失敗\n" + formatSupabaseError(error), "error");
@@ -5124,7 +5113,6 @@ async function moveToFront(patientId) {
     await syncRoomQueuePatients(room);
 
     notify(`${getPatientDisplayNo(patient)} 已移至隊首`, "success");
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("移至隊首失敗\n" + formatSupabaseError(error), "error");
@@ -5155,7 +5143,6 @@ async function insertWaitingPatientAtPosition(patientId) {
     await syncRoomQueuePatients(room);
 
     notify(`${getPatientDisplayNo(patient)} 已移至第 ${actualPosition} 位`, "success");
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("移至指定位置失敗\n" + formatSupabaseError(error), "error");
@@ -5250,7 +5237,6 @@ async function transferPatient(patientId, mode = "auto", targetRoomId = "") {
     await persistTransferChanges(oldRoom, newRoom, patient);
 
     notify(`${getPatientDisplayNo(patient)} 已轉往 ${newRoom.roomNo}${newRoom.status === "paused" ? "（暫停中）" : ""}`, "success");
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("轉往診室失敗\n" + formatSupabaseError(error), "error");
@@ -5274,7 +5260,6 @@ async function changeRoomStatus(roomId, status) {
     else if (status === "paused") notify(`${room.roomNo} 已設為暫停`, "info");
     else notify(`${room.roomNo} 已設為開放`, "info");
 
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("更新診室狀態失敗\n" + formatSupabaseError(error), "error");
@@ -5301,7 +5286,6 @@ async function setRoomPaused(roomId) {
     await updateRoomInSupabase(room);
 
     notify(reason ? `${room.roomNo} 已暫停：${reason}` : `${room.roomNo} 已暫停`, "warning");
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("設定暫停失敗\n" + formatSupabaseError(error), "error");
@@ -5323,7 +5307,6 @@ async function toggleAcceptingNew(roomId) {
       room.acceptingNew ? `${room.roomNo} 已恢復收新症` : `${room.roomNo} 已停收新症，候診看板仍會顯示`,
       room.acceptingNew ? "success" : "warning"
     );
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("更新新症接收狀態失敗\n" + formatSupabaseError(error), "error");
@@ -5349,7 +5332,6 @@ async function updateDoctorName(roomId, newName) {
     await updateRoomInSupabase(room);
     renderDoctorOptionsDatalist();
     notify("已更新醫生名稱", "success");
-    await refreshFromCloudAndRender(false);
   } catch (error) {
     console.error(error);
     notify("更新醫生名稱失敗\n" + formatSupabaseError(error), "error");
