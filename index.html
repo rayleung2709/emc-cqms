@@ -2217,8 +2217,8 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const HKT_TIMEZONE = "Asia/Hong_Kong";
 const HKT_OFFSET_MINUTES = 8 * 60;
 const BOARD_ROOMS_PER_PAGE = 4;
-const BOARD_PAGE_ROTATE_MS = 8000;
-const POLLING_MS = 15000;
+const BOARD_PAGE_ROTATE_MS = 5000;
+const POLLING_MS = 10000;
 const RENDER_DEBOUNCE_MS = 200;
 
 const DOCTOR_SUGGESTIONS = [
@@ -2434,20 +2434,8 @@ function markUiBusy(ms = 2200) {
 }
 
 function isUiBusy() {
-  // 時間制
-  if (Date.now() < (state.uiBusyUntil || 0)) return true;
-
-  // 如果用戶正 focus 住 staff page 入面嘅 form element，當做忙碌
-  const active = document.activeElement;
-  if (active && active !== document.body && active !== document.documentElement) {
-    const inRoomCard = active.closest(".room-card");
-    const inStaffPanel = active.closest("#staffPage .panel");
-    if (inRoomCard || inStaffPanel) {
-      if (active.matches("select, input, textarea")) {
-        return true;
-      }
-    }
-  }
+return Date.now() < (state.uiBusyUntil || 0);
+}
 
   // 如果有展開緊嘅操作面板，亦唔好 re-render
   if (document.querySelector(".more-actions-panel.open")) return true;
