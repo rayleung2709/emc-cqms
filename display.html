@@ -8,26 +8,18 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
-  --bg: #f3f6fb;
-  --card: #ffffff;
-  --line: #dbe3ee;
-  --line-soft: #e8eef6;
-  --text: #1f2937;
-  --muted: #64748b;
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
-  --success: #16a34a;
-  --warning: #d97706;
-  --danger: #dc2626;
-  --soft: #f8fafc;
-  --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
-  --radius: 18px;
-
   --board-bg: #06101f;
   --board-panel: #0b1528;
+  --board-panel-soft: rgba(15, 23, 42, 0.96);
   --board-line: rgba(255,255,255,0.12);
   --board-text: #f8fafc;
   --board-sub: #cbd5e1;
+  --board-blue: #60a5fa;
+  --board-blue-strong: #2563eb;
+  --board-green: #4ade80;
+  --board-yellow: #fde68a;
+  --board-red: #fca5a5;
+  --shadow: 0 12px 30px rgba(0,0,0,0.28);
 }
 
 * { box-sizing: border-box; }
@@ -40,30 +32,18 @@ html, body {
   color: var(--board-text);
 }
 
-body.display-mode {
-  background: var(--board-bg);
+body {
+  min-height: 100vh;
   overflow: auto;
 }
 
 .app {
-  max-width: none;
-  width: 100vw;
-  min-height: 100vh;
-  padding: 0;
-  margin: 0;
-  background: var(--board-bg);
-}
-
-.page { display: none; }
-.page.active { display: block; }
-
-#displayPage {
-  display: flex !important;
-  flex-direction: column;
+  width: 100%;
   min-height: 100vh;
   padding: 14px 18px 14px;
   background: var(--board-bg);
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .board-toolbar {
@@ -141,11 +121,6 @@ body.display-mode {
   color: #fde68a;
 }
 
-.toolbar-chip.status-error {
-  border-color: rgba(239,68,68,0.45);
-  color: #fecaca;
-}
-
 .toolbar-btn {
   appearance: none;
   border: 1px solid rgba(255,255,255,0.14);
@@ -170,14 +145,11 @@ body.display-mode {
   letter-spacing: 0.03em;
 }
 
-.board-disclaimer { margin-bottom: 12px; }
-
 .info-card {
   border: 1px solid rgba(255,255,255,0.12);
   background: rgba(15,23,42,0.95);
   border-radius: 16px;
   padding: 14px 18px;
-  margin-top: 0;
   margin-bottom: 12px;
   flex: 0 0 auto;
 }
@@ -194,7 +166,6 @@ body.display-mode {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .board-pagination-bar {
@@ -235,11 +206,12 @@ body.display-mode {
   box-shadow: 0 0 0 3px rgba(96,165,250,0.18);
 }
 
-.board-wrap {
+/* desktop / landscape table layout */
+.board-wrap.desktop-layout {
   background: var(--board-panel);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 22px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.28);
+  box-shadow: var(--shadow);
   width: 100%;
   flex: 1 1 auto;
   min-height: 0;
@@ -252,7 +224,6 @@ body.display-mode {
   background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%);
   color: #fff;
   font-weight: 900;
-  padding: 0;
   position: sticky;
   top: 0;
   z-index: 5;
@@ -316,9 +287,6 @@ body.display-mode {
 }
 
 .board-doctor {
-  color: var(--board-text);
-  font-weight: 900;
-  line-height: 1.25;
   flex-direction: column;
   gap: 8px;
   align-items: flex-start;
@@ -347,18 +315,17 @@ body.display-mode {
   gap: 8px;
 }
 
-.board-current-priority-ticket,
-.board-current-normal-ticket,
-.board-current-ticket {
+.board-current-ticket,
+.board-current-normal-ticket {
   font-size: 2.1rem;
   font-weight: 900;
   line-height: 1.04;
   letter-spacing: 0.03em;
 }
 
-.board-current-ticket-red { color: #fca5a5; }
-.board-current-ticket-yellow { color: #fde68a; }
-.board-current-ticket-green { color: #4ade80; }
+.board-current-ticket-red { color: var(--board-red); }
+.board-current-ticket-yellow { color: var(--board-yellow); }
+.board-current-ticket-green { color: var(--board-green); }
 
 .board-meta {
   font-size: 1rem;
@@ -410,12 +377,6 @@ body.display-mode {
   box-shadow: 0 0 0 2px rgba(234,179,8,0.08) inset;
 }
 
-.tag-wait {
-  background: rgba(37,99,235,0.16);
-  color: #bfdbfe;
-  border: 1px solid rgba(96,165,250,0.42);
-}
-
 .board-empty {
   color: #94a3b8;
   font-size: 1.1rem;
@@ -452,6 +413,145 @@ body.display-mode {
   letter-spacing: 0.05em;
   white-space: nowrap;
   text-transform: uppercase;
+}
+
+/* portrait / mobile card layout */
+.board-mobile-list {
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mobile-room-card {
+  background: var(--board-panel);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.mobile-room-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px 16px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(90deg, rgba(29,78,216,0.25), rgba(37,99,235,0.08));
+}
+
+.mobile-room-left {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.mobile-room-no {
+  font-size: 2.5rem;
+  line-height: 1;
+  font-weight: 900;
+  color: #93c5fd;
+  flex: 0 0 auto;
+}
+
+.mobile-room-doctor {
+  min-width: 0;
+}
+
+.mobile-room-doctor .board-doctor-zh {
+  font-size: 1.25rem;
+}
+
+.mobile-room-doctor .board-doctor-en {
+  font-size: 0.92rem;
+}
+
+.mobile-room-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.mobile-status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 900;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.status-open { background: #ecfdf5; color: #047857; border-color: #86efac; }
+.status-paused { background: #fffbeb; color: #b45309; border-color: #fcd34d; }
+.status-closed { background: #f3f4f6; color: #6b7280; border-color: #d1d5db; }
+.status-accepting { background: #eff6ff; color: #1d4ed8; border-color: #93c5fd; }
+.status-stop-assign { background: #fef2f2; color: #b91c1c; border-color: #fca5a5; }
+
+.mobile-room-body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mobile-section {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.mobile-section-title {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #bfdbfe;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.mobile-section-title small {
+  font-size: 0.8rem;
+  color: var(--board-sub);
+  font-weight: 800;
+}
+
+.mobile-current-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.mobile-current-label {
+  font-size: 0.88rem;
+  color: var(--board-sub);
+  font-weight: 800;
+}
+
+.mobile-current-ticket {
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1.05;
+}
+
+.mobile-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mobile-empty {
+  color: #94a3b8;
+  font-size: 1rem;
+  font-weight: 800;
 }
 
 .board-footer-tip {
@@ -520,19 +620,18 @@ body.display-mode {
   .board-row { min-height: 126px; }
 }
 
-@media (max-width: 1200px) {
-  .board-head, .board-row { grid-template-columns: 1fr; }
-  .board-head div, .board-cell {
-    border-right: none;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .board-cell:last-child, .board-head div:last-child { border-bottom: none; }
-  .board-room { font-size: 2.5rem; }
-  .board-wrap { min-height: auto; }
+@media (max-width: 1100px), (orientation: portrait) {
+  .board-wrap.desktop-layout { display: none; }
+  .board-mobile-list { display: flex; }
+}
+
+@media (min-width: 1101px) and (orientation: landscape) {
+  .board-wrap.desktop-layout { display: block; }
+  .board-mobile-list { display: none; }
 }
 
 @media (max-width: 900px) {
-  #displayPage { padding: 10px; }
+  .app { padding: 10px; }
   .board-toolbar-right { justify-content: flex-start; }
   .toolbar-chip-row { justify-content: flex-start; }
   .overlay-status {
@@ -541,38 +640,42 @@ body.display-mode {
     bottom: 10px;
     max-width: none;
   }
+  .board-title { font-size: 1.9rem; }
+  .board-time { font-size: 1.1rem; }
+  .inline-note { font-size: 0.95rem; line-height: 1.5; }
+  .mobile-room-no { font-size: 2.15rem; }
+  .mobile-current-ticket { font-size: 1.7rem; }
+  .board-tag { font-size: 0.98rem; min-width: 88px; padding: 10px 14px; }
 }
 </style>
 </head>
-<body class="display-mode">
+<body>
 <div class="app">
-  <div class="page active" id="displayPage">
-    <div class="board-toolbar">
-      <div class="board-title-wrap">
-        <div class="board-title">候診情況</div>
-        <div class="board-subtitle">Queue Status</div>
-      </div>
-
-      <div class="board-toolbar-right">
-        <div class="toolbar-chip-row">
-          <div class="toolbar-chip status-ok" id="connectionChip">連線正常</div>
-          <div class="toolbar-chip" id="roomsChip">診室：—</div>
-        </div>
-        <button class="toolbar-btn" id="fullscreenBtn" type="button">全螢幕</button>
-        <div class="board-time" id="boardTime"></div>
-      </div>
+  <div class="board-toolbar">
+    <div class="board-title-wrap">
+      <div class="board-title">候診情況</div>
+      <div class="board-subtitle">Queue Status</div>
     </div>
 
-    <div class="info-card board-disclaimer">
-      <div class="inline-note">
-        輪候情況只供參考，會因應病人臨床需要及現場實際運作而作出調整，敬請見諒。<br>
-        This queue is for reference only and may be adjusted at any time according to patients' clinical needs and operational requirements. Thank you for your understanding.
+    <div class="board-toolbar-right">
+      <div class="toolbar-chip-row">
+        <div class="toolbar-chip status-ok" id="connectionChip">連線正常</div>
+        <div class="toolbar-chip" id="roomsChip">診室：—</div>
       </div>
+      <button class="toolbar-btn" id="fullscreenBtn" type="button">全螢幕</button>
+      <div class="board-time" id="boardTime"></div>
     </div>
-
-    <div id="displayBoard"></div>
-    <div class="board-footer-tip">急症醫學中心<br>Emergency Medicine Centre</div>
   </div>
+
+  <div class="info-card">
+    <div class="inline-note">
+      輪候情況只供參考，會因應病人臨床需要及現場實際運作而作出調整，敬請見諒。<br>
+      This queue is for reference only and may be adjusted at any time according to patients' clinical needs and operational requirements. Thank you for your understanding.
+    </div>
+  </div>
+
+  <div id="displayBoard"></div>
+  <div class="board-footer-tip">急症醫學中心<br>Emergency Medicine Centre</div>
 </div>
 
 <div class="overlay-status" id="overlayStatus">
@@ -587,7 +690,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 if (!window.supabase || typeof window.supabase.createClient !== "function") {
   document.body.innerHTML = `
-    <div style="padding:24px;font-family:Arial,sans-serif;">
+    <div style="padding:24px;font-family:Arial,sans-serif;color:#fff;background:#06101f;min-height:100vh;">
       <h2 style="margin:0 0 12px;">系統初始化失敗</h2>
       <div>Supabase SDK 未能載入，請檢查網絡或 CDN 是否可用。</div>
     </div>
@@ -710,7 +813,7 @@ function setConnectionStatus(ok) {
 
   const chip = document.getElementById("connectionChip");
   if (chip) {
-    chip.classList.remove("status-ok", "status-warn", "status-error");
+    chip.classList.remove("status-ok", "status-warn");
     if (ok) {
       chip.classList.add("status-ok");
       chip.textContent = "連線正常";
@@ -775,11 +878,6 @@ function mapSupabasePatientRow(patient) {
     calledAt: patient.called_at || null,
     doneAt: patient.done_at || null,
     cancelledAt: patient.cancelled_at || null,
-    initialAssignmentMode: patient.initial_assignment_mode || "auto",
-    manualLock: !!patient.manual_lock,
-    manualLockReason: patient.manual_lock_reason || "",
-    logs: Array.isArray(patient.logs_json) ? patient.logs_json : [],
-    clinicalLogs: Array.isArray(patient.clinical_logs_json) ? patient.clinical_logs_json : [],
     encounterNo: patient.encounter_no || null
   };
 }
@@ -828,17 +926,9 @@ function compareWaitingBase(a, b) {
   return getPatientDisplayNo(a).localeCompare(getPatientDisplayNo(b), "zh-HK");
 }
 
-function getReviewWaitingPatients(room) {
-  return state.patients
-    .filter(patient => patient.roomId === room.id && patient.status === "review_waiting")
-    .sort(compareWaitingBase);
-}
-
-function getOrderedWaitingPatients(room, excludePatientId = null) {
+function getOrderedWaitingPatients(room) {
   const waiting = state.patients
-    .filter(patient => patient.roomId === room.id)
-    .filter(patient => patient.status === "waiting")
-    .filter(patient => patient.id !== excludePatientId);
+    .filter(patient => patient.roomId === room.id && patient.status === "waiting");
 
   waiting.sort((a, b) => {
     const aOrder = Number.isFinite(a.queueOrder) ? a.queueOrder : null;
@@ -850,6 +940,12 @@ function getOrderedWaitingPatients(room, excludePatientId = null) {
   });
 
   return waiting;
+}
+
+function getReviewWaitingPatients(room) {
+  return state.patients
+    .filter(patient => patient.roomId === room.id && patient.status === "review_waiting")
+    .sort(compareWaitingBase);
 }
 
 function getSkippedPatients(room) {
@@ -910,43 +1006,8 @@ function getBoardRenderModel() {
   return { visibleRooms, totalPages, pageRooms };
 }
 
-function renderDisplayBoard(force = false) {
-  const container = document.getElementById("displayBoard");
-  const timeEl = document.getElementById("boardTime");
-  if (!container || !timeEl) return;
-
-  const nextTimeText = formatBoardNow(new Date());
-  if (timeEl.textContent !== nextTimeText) timeEl.textContent = nextTimeText;
-
-  const { visibleRooms, totalPages, pageRooms } = getBoardRenderModel();
-  updateBoardStatusChips(visibleRooms);
-
-  if (!visibleRooms.length) {
-    const html = `
-      <div class="board-wrap">
-        <div class="board-body">
-          <div class="board-row">
-            <div class="board-cell" style="grid-column: 1 / -1; min-height: 320px;">
-              <div class="board-empty" style="font-size:1.8rem; line-height:1.6;">
-                目前沒有顯示中的診室<br>No rooms currently displayed
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-    if (force || state.lastBoardRenderKey !== html) {
-      container.innerHTML = html;
-      state.lastBoardRenderKey = html;
-    }
-    return;
-  }
-
-  const dotsHtml = Array.from({ length: totalPages }, (_, i) => `
-    <span class="board-dot ${i === state.displayPageIndex ? "active" : ""}"></span>
-  `).join("");
-
-  const rows = pageRooms.map(room => {
+function renderDesktopRows(pageRooms) {
+  return pageRooms.map(room => {
     const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
     const doctorParts = splitDoctorName(room.doctorName);
 
@@ -1040,6 +1101,184 @@ function renderDisplayBoard(force = false) {
       </div>
     `;
   }).join("");
+}
+
+function renderMobileCards(pageRooms) {
+  return pageRooms.map(room => {
+    const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
+    const doctorParts = splitDoctorName(room.doctorName);
+
+    const waitingAll = getOrderedWaitingPatients(room);
+    const waitingPatients = waitingAll.slice(0, 10);
+    const waitingMore = Math.max(0, waitingAll.length - waitingPatients.length);
+
+    const reviewAll = getReviewWaitingPatients(room);
+    const reviewPatients = reviewAll.slice(0, 8);
+    const reviewMore = Math.max(0, reviewAll.length - reviewPatients.length);
+
+    const skippedAll = getSkippedPatients(room);
+    const skippedPatients = skippedAll.slice(0, 8);
+    const skippedMore = Math.max(0, skippedAll.length - skippedPatients.length);
+
+    const statusClass = room.status === "open" ? "status-open" : room.status === "paused" ? "status-paused" : "status-closed";
+    const acceptingClass = room.acceptingNew ? "status-accepting" : "status-stop-assign";
+
+    const currentHtml = room.status === "paused"
+      ? `
+        <div class="mobile-current-box">
+          <div class="mobile-current-label">現正診症 / Now Serving</div>
+          <div class="mobile-current-ticket board-paused">暫停 Paused</div>
+          ${room.pauseReason ? `<div class="board-meta">原因 Reason: ${escapeHtml(room.pauseReason)}</div>` : ""}
+        </div>
+      `
+      : `
+        <div class="mobile-current-box">
+          <div class="mobile-current-label">現正診症 / Now Serving</div>
+          <div class="mobile-current-ticket ${
+            currentPatient
+              ? (currentPatient.priority
+                  ? "board-current-ticket-red"
+                  : (currentPatient.sourceType === "appointment" || currentPatient.sourceType === "onlineTicket")
+                    ? "board-current-ticket-yellow"
+                    : "board-current-ticket-green")
+              : ""
+          }">
+            ${currentPatient ? escapeHtml(getPatientDisplayNo(currentPatient)) : "—"}
+          </div>
+          ${currentPatient ? `<div class="board-meta">${escapeHtml(formatRegisteredInline(currentPatient.registeredAt))}</div>` : ""}
+        </div>
+      `;
+
+    return `
+      <div class="mobile-room-card">
+        <div class="mobile-room-head">
+          <div class="mobile-room-left">
+            <div class="mobile-room-no">${escapeHtml(getRoomDisplayShort(room.roomNo))}</div>
+            <div class="mobile-room-doctor">
+              <div class="board-doctor-zh">${escapeHtml(doctorParts.zh)}</div>
+              ${doctorParts.en ? `<div class="board-doctor-en">${escapeHtml(doctorParts.en)}</div>` : ""}
+            </div>
+          </div>
+          <div class="mobile-room-status">
+            <div class="mobile-status-pill ${statusClass}">
+              ${room.status === "open" ? "開放" : room.status === "paused" ? "暫停" : "關閉"}
+            </div>
+            <div class="mobile-status-pill ${acceptingClass}">
+              ${room.acceptingNew ? "接受新症" : "停收新症"}
+            </div>
+          </div>
+        </div>
+
+        <div class="mobile-room-body">
+          <div class="mobile-section">
+            ${currentHtml}
+          </div>
+
+          <div class="mobile-section">
+            <div class="mobile-section-title">
+              <span>候診 / Waiting</span>
+              <small>${waitingAll.length}</small>
+            </div>
+            <div class="mobile-tag-list">
+              ${
+                waitingPatients.length
+                  ? waitingPatients.map(patient => renderBoardTag(patient)).join("") +
+                    (waitingMore > 0 ? `<span class="mobile-empty">+${waitingMore}</span>` : "") +
+                    ((room.status === "open" && room.acceptingNew === false)
+                      ? `
+                        <span class="board-cutoff-tag">
+                          <span class="board-cutoff-zh">停收新症</span>
+                          <span class="board-cutoff-en">No New Patients</span>
+                        </span>
+                      `
+                      : "")
+                  : `<span class="mobile-empty">—</span>`
+              }
+            </div>
+          </div>
+
+          <div class="mobile-section">
+            <div class="mobile-section-title">
+              <span>回診 / Review</span>
+              <small>${reviewAll.length}</small>
+            </div>
+            <div class="mobile-tag-list">
+              ${
+                reviewPatients.length
+                  ? reviewPatients.map(patient => renderBoardTag(patient)).join("") +
+                    (reviewMore > 0 ? `<span class="mobile-empty">+${reviewMore}</span>` : "")
+                  : `<span class="mobile-empty">—</span>`
+              }
+            </div>
+          </div>
+
+          <div class="mobile-section">
+            <div class="mobile-section-title">
+              <span>過號 / Missed</span>
+              <small>${skippedAll.length}</small>
+            </div>
+            <div class="mobile-tag-list">
+              ${
+                skippedPatients.length
+                  ? skippedPatients.map(patient => renderBoardTag(patient)).join("") +
+                    (skippedMore > 0 ? `<span class="mobile-empty">+${skippedMore}</span>` : "")
+                  : `<span class="mobile-empty">—</span>`
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderDisplayBoard(force = false) {
+  const container = document.getElementById("displayBoard");
+  const timeEl = document.getElementById("boardTime");
+  if (!container || !timeEl) return;
+
+  const nextTimeText = formatBoardNow(new Date());
+  if (timeEl.textContent !== nextTimeText) timeEl.textContent = nextTimeText;
+
+  const { visibleRooms, totalPages, pageRooms } = getBoardRenderModel();
+  updateBoardStatusChips(visibleRooms);
+
+  if (!visibleRooms.length) {
+    const html = `
+      <div class="board-wrap desktop-layout">
+        <div class="board-body">
+          <div class="board-row">
+            <div class="board-cell" style="grid-column: 1 / -1; min-height: 320px;">
+              <div class="board-empty" style="font-size:1.8rem; line-height:1.6;">
+                目前沒有顯示中的診室<br>No rooms currently displayed
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="board-mobile-list">
+        <div class="mobile-room-card">
+          <div class="mobile-room-body">
+            <div class="mobile-empty" style="font-size:1.3rem; line-height:1.7; text-align:center;">
+              目前沒有顯示中的診室<br>No rooms currently displayed
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    if (force || state.lastBoardRenderKey !== html) {
+      container.innerHTML = html;
+      state.lastBoardRenderKey = html;
+    }
+    return;
+  }
+
+  const dotsHtml = Array.from({ length: totalPages }, (_, i) => `
+    <span class="board-dot ${i === state.displayPageIndex ? "active" : ""}"></span>
+  `).join("");
+
+  const desktopRows = renderDesktopRows(pageRooms);
+  const mobileCards = renderMobileCards(pageRooms);
 
   const html = `
     <div class="board-pagination-bar">
@@ -1047,7 +1286,7 @@ function renderDisplayBoard(force = false) {
       <div class="board-page-dots">${dotsHtml}</div>
     </div>
 
-    <div class="board-wrap">
+    <div class="board-wrap desktop-layout">
       <div class="board-head">
         <div><span class="board-head-zh">診室</span><span class="board-head-en">ROOM</span></div>
         <div><span class="board-head-zh">醫生</span><span class="board-head-en">DOCTOR</span></div>
@@ -1056,8 +1295,10 @@ function renderDisplayBoard(force = false) {
         <div><span class="board-head-zh">回診</span><span class="board-head-en">REVIEW</span></div>
         <div><span class="board-head-zh">過號</span><span class="board-head-en">MISSED</span></div>
       </div>
-      <div class="board-body">${rows}</div>
+      <div class="board-body">${desktopRows}</div>
     </div>
+
+    <div class="board-mobile-list">${mobileCards}</div>
   `;
 
   if (force || state.lastBoardRenderKey !== html) {
@@ -1066,7 +1307,7 @@ function renderDisplayBoard(force = false) {
   }
 }
 
-async function loadStateFromSupabase(showErrorToast = false) {
+async function loadStateFromSupabase(showErrorToast = true) {
   try {
     const { data: roomsData, error: roomsError } = await sb.from("rooms").select("*").order("room_no", { ascending: true });
     if (roomsError) throw roomsError;
@@ -1081,27 +1322,10 @@ async function loadStateFromSupabase(showErrorToast = false) {
       status: room.status || "open",
       pauseReason: room.pause_reason || "",
       acceptingNew: room.accepting_new !== false,
-      queuePatientIds: [],
-      skippedPatientIds: [],
       currentPatientId: room.current_patient_id || null
     }));
 
     state.patients = (patientsData || []).map(mapSupabasePatientRow);
-
-    state.rooms.forEach(room => {
-      room.queuePatientIds = state.patients
-        .filter(patient => patient.roomId === room.id && patient.status === "waiting")
-        .sort((a, b) => {
-          const aOrder = Number.isFinite(a.queueOrder) ? a.queueOrder : 999999;
-          const bOrder = Number.isFinite(b.queueOrder) ? b.queueOrder : 999999;
-          return aOrder - bOrder;
-        })
-        .map(patient => patient.id);
-
-      room.skippedPatientIds = state.patients
-        .filter(patient => patient.roomId === room.id && patient.status === "skipped")
-        .map(patient => patient.id);
-    });
 
     cloudState.lastSuccessAt = nowIso();
     setConnectionStatus(true);
@@ -1111,7 +1335,7 @@ async function loadStateFromSupabase(showErrorToast = false) {
     console.error("Failed to load from Supabase:", error);
     setConnectionStatus(false);
     setBoardError("讀取雲端資料失敗，系統會自動重試。");
-    if (showErrorToast) console.warn(formatSupabaseError(error));
+    if (showErrorToast) console.warn("讀取雲端資料失敗\n" + formatSupabaseError(error));
     return false;
   }
 }
@@ -1151,7 +1375,6 @@ function startBoardPageRotation() {
       renderDisplayBoard(false);
       return;
     }
-
     state.displayPageIndex = (state.displayPageIndex + 1) % totalPages;
     renderDisplayBoard(true);
   }, BOARD_PAGE_ROTATE_MS);
