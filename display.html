@@ -1,1275 +1,1225 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>急症醫學中心候診看板 | Emergency Medicine Centre Queue Status Display</title>
-  <link rel="icon" href="data:," />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    :root {
-      --board-bg: #06101f;
-      --board-panel: #0b1528;
-      --board-line: rgba(255,255,255,0.12);
-      --board-text: #f8fafc;
-      --board-sub: #cbd5e1;
-      --board-blue: #60a5fa;
-      --board-blue-strong: #2563eb;
-      --board-blue-soft: #93c5fd;
-      --success: #22c55e;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --shadow: 0 12px 30px rgba(0,0,0,0.28);
-    }
-
-    * { box-sizing: border-box; }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100%;
-      font-family: Arial, "Microsoft JhengHei", "PingFang TC", sans-serif;
-      background: var(--board-bg);
-      color: var(--board-text);
-      overflow: hidden;
-    }
-
-    body.tv-mode {
-      cursor: none;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
-    .app {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      padding: 14px 18px 14px;
-      background: var(--board-bg);
-      overflow: hidden;
-      gap: 0;
-    }
-
-    .board-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-      color: var(--board-text);
-      flex: 0 0 auto;
-    }
-
-    .board-title-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .board-title {
-      font-size: 2.6rem;
-      font-weight: 900;
-      color: var(--board-text);
-      letter-spacing: 0.02em;
-      line-height: 1.05;
-    }
-
-    .board-subtitle {
-      font-size: 1.1rem;
-      color: var(--board-sub);
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      line-height: 1.1;
-    }
-
-    .board-toolbar-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .board-time {
-      font-size: 1.6rem;
-      color: var(--board-sub);
-      font-weight: 900;
-      letter-spacing: 0.03em;
-    }
-
-    .toolbar-chip-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .toolbar-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 38px;
-      border-radius: 999px;
-      padding: 8px 14px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(15,23,42,0.9);
-      color: #e2e8f0;
-      font-size: 0.92rem;
-      font-weight: 900;
-      line-height: 1;
-      white-space: nowrap;
-    }
-
-    .toolbar-chip.status-ok {
-      border-color: rgba(34,197,94,0.35);
-      color: #bbf7d0;
-    }
-
-    .toolbar-chip.status-warn {
-      border-color: rgba(245,158,11,0.4);
-      color: #fde68a;
-    }
-
-    .toolbar-chip.status-error {
-      border-color: rgba(239,68,68,0.45);
-      color: #fecaca;
-    }
-
-    .toolbar-btn {
-      appearance: none;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(30,41,59,0.92);
-      color: #fff;
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-weight: 900;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-
-    .toolbar-btn:hover {
-      background: rgba(37,99,235,0.95);
-      border-color: rgba(96,165,250,0.5);
-    }
-
-    .info-card {
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(15,23,42,0.95);
-      border-radius: 16px;
-      padding: 14px 18px;
-      margin-bottom: 12px;
-      flex: 0 0 auto;
-    }
-
-    .inline-note {
-      font-size: 1.12rem;
-      color: #dbeafe;
-      font-weight: 800;
-      line-height: 1.55;
-    }
-
-    #displayBoard {
-      flex: 1 1 auto;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .board-pagination-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 10px;
-      flex: 0 0 auto;
-      color: var(--board-text);
-    }
-
-    .board-page-indicator {
-      font-size: 1.28rem;
-      font-weight: 900;
-      color: #bfdbfe;
-      letter-spacing: 0.04em;
-    }
-
-    .board-page-dots {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .board-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.22);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
-    }
-
-    .board-dot.active {
-      background: #60a5fa;
-      box-shadow: 0 0 0 3px rgba(96,165,250,0.18);
-    }
-
-    .board-wrap {
-      background: var(--board-panel);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      width: 100%;
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow: auto;
-    }
-
-    .board-head {
-      display: grid;
-      grid-template-columns: 0.7fr 1.1fr 1.1fr 2.2fr 1.9fr 1.5fr;
-      background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%);
-      color: #fff;
-      font-weight: 900;
-      position: sticky;
-      top: 0;
-      z-index: 5;
-    }
-
-    .board-head div {
-      padding: 18px 12px 16px;
-      border-right: 1px solid rgba(255,255,255,0.16);
-      text-align: center;
-    }
-
-    .board-head div:last-child { border-right: none; }
-
-    .board-head-zh {
-      display: block;
-      font-size: 1.55rem;
-      line-height: 1.04;
-      margin-bottom: 6px;
-      font-weight: 900;
-    }
-
-    .board-head-en {
-      display: block;
-      font-size: 0.9rem;
-      line-height: 1.08;
-      opacity: 0.96;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-    }
-
-    .board-body { background: var(--board-panel); }
-
-    .board-row {
-      display: grid;
-      grid-template-columns: 0.7fr 1.1fr 1.1fr 2.2fr 1.9fr 1.5fr;
-      align-items: stretch;
-      border-top: 1px solid var(--board-line);
-      min-height: 148px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0));
-    }
-
-    .board-cell {
-      padding: 16px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      border-right: 1px solid rgba(255,255,255,0.08);
-      font-weight: 800;
-      color: var(--board-text);
-    }
-
-    .board-cell:last-child { border-right: none; }
-
-    .board-room {
-      font-size: 4rem;
-      color: #93c5fd;
-      font-weight: 900;
-      letter-spacing: 0.03em;
-      line-height: 1;
-    }
-
-    .board-doctor {
-      color: var(--board-text);
-      font-weight: 900;
-      line-height: 1.25;
-      flex-direction: column;
-      gap: 8px;
-      align-items: flex-start;
-      text-align: left;
-      justify-content: center;
-    }
-
-    .board-doctor-zh {
-      font-size: 1.45rem;
-      color: #ffffff;
-      font-weight: 900;
-      line-height: 1.15;
-      word-break: break-word;
-    }
-
-    .board-doctor-en {
-      font-size: 0.98rem;
-      color: var(--board-sub);
-      font-weight: 800;
-      line-height: 1.2;
-      word-break: break-word;
-    }
-
-    .board-current {
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .board-current-ticket {
-      font-size: 2.1rem;
-      font-weight: 900;
-      line-height: 1.04;
-      letter-spacing: 0.03em;
-    }
-
-    .board-current-ticket-red { color: #fca5a5; }
-    .board-current-ticket-yellow { color: #fde68a; }
-    .board-current-ticket-green { color: #4ade80; }
-
-    .board-meta {
-      font-size: 1rem;
-      color: var(--board-sub);
-      font-weight: 800;
-      line-height: 1.3;
-    }
-
-    .board-paused {
-      color: #fbbf24;
-      font-size: 1.9rem;
-      line-height: 1.18;
-      word-break: break-word;
-      font-weight: 900;
-    }
-
-    .board-queue, .board-skip, .board-review {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      justify-content: flex-start;
-      width: 100%;
-      text-align: left;
-    }
-
-    .board-tag {
-      border-radius: 999px;
-      padding: 12px 18px;
-      font-size: 1.18rem;
-      font-weight: 900;
-      min-width: 110px;
-      text-align: center;
-      line-height: 1.04;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
-    }
-
-    .tag-wait {
-      background: rgba(37,99,235,0.16);
-      color: #bfdbfe;
-      border: 1px solid rgba(96,165,250,0.42);
-    }
-
-    .tag-review {
-      background: rgba(245,158,11,0.14);
-      color: #fde68a;
-      border: 1px solid rgba(245,158,11,0.45);
-    }
-
-    .tag-skip {
-      background: rgba(239,68,68,0.12);
-      color: #fecaca;
-      border: 1px solid rgba(248,113,113,0.4);
-    }
-
-    .tag-priority {
-      background: rgba(185,28,28,0.2);
-      color: #fee2e2;
-      border: 2px solid #ef4444;
-      box-shadow: 0 0 0 2px rgba(239,68,68,0.12) inset;
-    }
-
-    .tag-yellow {
-      background: rgba(234,179,8,0.22);
-      color: #fef9c3;
-      border: 2px solid #eab308;
-      box-shadow: 0 0 0 2px rgba(234,179,8,0.08) inset;
-    }
-
-    .board-empty {
-      color: #94a3b8;
-      font-size: 1.1rem;
-      font-weight: 800;
-    }
-
-    .board-cutoff-tag {
-      display: inline-flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-      min-width: 150px;
-      padding: 10px 16px;
-      border-radius: 999px;
-      background: rgba(245,158,11,0.14);
-      border: 2px solid rgba(245,158,11,0.72);
-      line-height: 1.08;
-      text-align: center;
-    }
-
-    .board-cutoff-zh {
-      color: #facc15;
-      font-size: 1.02rem;
-      font-weight: 900;
-      letter-spacing: 0.03em;
-      white-space: nowrap;
-    }
-
-    .board-cutoff-en {
-      color: #fde68a;
-      font-size: 0.74rem;
-      font-weight: 900;
-      letter-spacing: 0.05em;
-      white-space: nowrap;
-      text-transform: uppercase;
-    }
-
-    .board-footer {
-      margin-top: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 12px;
-      flex-wrap: wrap;
-      flex: 0 0 auto;
-    }
-
-    .board-footer-tip {
-      color: #93c5fd;
-      font-size: 0.96rem;
-      font-weight: 800;
-      opacity: 0.95;
-      text-align: right;
-      margin-left: auto;
-    }
-
-    .overlay-status {
-      position: fixed;
-      left: 18px;
-      bottom: 18px;
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      max-width: min(420px, calc(100vw - 36px));
-      pointer-events: none;
-    }
-
-    .overlay-card {
-      border-radius: 16px;
-      padding: 12px 14px;
-      font-weight: 900;
-      line-height: 1.45;
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(255,255,255,0.12);
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .overlay-card.info {
-      background: rgba(15,23,42,0.92);
-      color: #dbeafe;
-    }
-
-    .overlay-card.warn {
-      background: rgba(120,53,15,0.92);
-      color: #fde68a;
-      border-color: rgba(245,158,11,0.35);
-    }
-
-    .overlay-card.error {
-      background: rgba(127,29,29,0.94);
-      color: #fee2e2;
-      border-color: rgba(239,68,68,0.4);
-    }
-
-    .hidden { display: none !important; }
-
-    @media (max-width: 1600px) {
-      .board-title { font-size: 2.15rem; }
-      .board-time { font-size: 1.35rem; }
-      .inline-note { font-size: 0.98rem; }
-      .board-head-zh { font-size: 1.35rem; }
-      .board-head-en { font-size: 0.84rem; }
-      .board-room { font-size: 3rem; }
-      .board-doctor-zh { font-size: 1.25rem; }
-      .board-doctor-en { font-size: 0.9rem; }
-      .board-tag { font-size: 1.02rem; min-width: 96px; }
-      .board-row { min-height: 126px; }
-    }
-
-    @media (max-width: 1200px) {
-      .board-head, .board-row { grid-template-columns: 1fr; }
-      .board-head div, .board-cell {
-        border-right: none;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-      }
-      .board-cell:last-child, .board-head div:last-child { border-bottom: none; }
-      .board-room { font-size: 2.5rem; }
-      .board-wrap { min-height: auto; }
-    }
-
-    @media (max-width: 900px) {
-      .app { padding: 10px; }
-      .board-toolbar { align-items: flex-start; }
-      .board-toolbar-right { justify-content: flex-start; }
-      .toolbar-chip-row { justify-content: flex-start; }
-      .overlay-status {
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
-        max-width: none;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EMCQMS 急症醫學中心輪候系統</title>
+<link rel="icon" href="data:," />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --line: #dbe3ee;
+  --line-soft: #e8eef6;
+  --text: #1f2937;
+  --muted: #64748b;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --soft: #f8fafc;
+  --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  --radius: 18px;
+
+  --board-bg: #06101f;
+  --board-panel: #0b1528;
+  --board-line: rgba(255,255,255,0.12);
+  --board-text: #f8fafc;
+  --board-sub: #cbd5e1;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, "Microsoft JhengHei", "PingFang TC", sans-serif;
+  background: var(--board-bg);
+  color: var(--board-text);
+}
+
+body.display-mode {
+  background: var(--board-bg);
+  overflow: auto;
+}
+
+.app {
+  max-width: none;
+  width: 100vw;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  background: var(--board-bg);
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+#displayPage {
+  display: flex !important;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 14px 18px 14px;
+  background: var(--board-bg);
+  overflow: hidden;
+}
+
+.board-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  color: var(--board-text);
+  flex: 0 0 auto;
+}
+
+.board-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.board-title {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: var(--board-text);
+  letter-spacing: 0.02em;
+  line-height: 1.08;
+}
+
+.board-subtitle {
+  font-size: 1.05rem;
+  color: var(--board-sub);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+}
+
+.board-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.toolbar-chip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.toolbar-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  border-radius: 999px;
+  padding: 8px 14px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(15,23,42,0.9);
+  color: #e2e8f0;
+  font-size: 0.92rem;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.toolbar-chip.status-ok {
+  border-color: rgba(34,197,94,0.35);
+  color: #bbf7d0;
+}
+
+.toolbar-chip.status-warn {
+  border-color: rgba(245,158,11,0.4);
+  color: #fde68a;
+}
+
+.toolbar-chip.status-error {
+  border-color: rgba(239,68,68,0.45);
+  color: #fecaca;
+}
+
+.toolbar-btn {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(30,41,59,0.92);
+  color: #fff;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 900;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.toolbar-btn:hover {
+  background: rgba(37,99,235,0.95);
+  border-color: rgba(96,165,250,0.5);
+}
+
+.board-time {
+  font-size: 1.6rem;
+  color: var(--board-sub);
+  font-weight: 900;
+  letter-spacing: 0.03em;
+}
+
+.board-disclaimer { margin-bottom: 12px; }
+
+.info-card {
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(15,23,42,0.95);
+  border-radius: 16px;
+  padding: 14px 18px;
+  margin-top: 0;
+  margin-bottom: 12px;
+  flex: 0 0 auto;
+}
+
+.inline-note {
+  font-size: 1.12rem;
+  color: #dbeafe;
+  font-weight: 800;
+  line-height: 1.55;
+}
+
+#displayBoard {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.board-pagination-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex: 0 0 auto;
+  color: var(--board-text);
+}
+
+.board-page-indicator {
+  font-size: 1.28rem;
+  font-weight: 900;
+  color: #bfdbfe;
+  letter-spacing: 0.04em;
+}
+
+.board-page-dots {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.board-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.22);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+}
+
+.board-dot.active {
+  background: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96,165,250,0.18);
+}
+
+.board-wrap {
+  background: var(--board-panel);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 22px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.28);
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.board-head {
+  display: grid;
+  grid-template-columns: 0.7fr 1fr 1fr 2.8fr 1.5fr 1.2fr;
+  background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%);
+  color: #fff;
+  font-weight: 900;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.board-head div {
+  padding: 18px 12px 16px;
+  border-right: 1px solid rgba(255,255,255,0.16);
+  text-align: center;
+}
+
+.board-head div:last-child { border-right: none; }
+
+.board-head-zh {
+  display: block;
+  font-size: 1.55rem;
+  line-height: 1.04;
+  margin-bottom: 6px;
+  font-weight: 900;
+}
+
+.board-head-en {
+  display: block;
+  font-size: 0.9rem;
+  line-height: 1.08;
+  opacity: 0.96;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.board-body { background: var(--board-panel); }
+
+.board-row {
+  display: grid;
+  grid-template-columns: 0.7fr 1fr 1fr 2.8fr 1.5fr 1.2fr;
+  align-items: stretch;
+  border-top: 1px solid var(--board-line);
+  min-height: 148px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0));
+}
+
+.board-cell {
+  padding: 16px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  font-weight: 800;
+  color: var(--board-text);
+}
+
+.board-cell:last-child { border-right: none; }
+
+.board-room {
+  font-size: 4rem;
+  color: #93c5fd;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  line-height: 1;
+}
+
+.board-doctor {
+  color: var(--board-text);
+  font-weight: 900;
+  line-height: 1.25;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  text-align: left;
+  justify-content: center;
+}
+
+.board-doctor-zh {
+  font-size: 1.45rem;
+  color: #ffffff;
+  font-weight: 900;
+  line-height: 1.15;
+  word-break: break-word;
+}
+
+.board-doctor-en {
+  font-size: 0.98rem;
+  color: var(--board-sub);
+  font-weight: 800;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.board-current {
+  flex-direction: column;
+  gap: 8px;
+}
+
+.board-current-priority-ticket,
+.board-current-normal-ticket,
+.board-current-ticket {
+  font-size: 2.1rem;
+  font-weight: 900;
+  line-height: 1.04;
+  letter-spacing: 0.03em;
+}
+
+.board-current-ticket-red { color: #fca5a5; }
+.board-current-ticket-yellow { color: #fde68a; }
+.board-current-ticket-green { color: #4ade80; }
+
+.board-meta {
+  font-size: 1rem;
+  color: var(--board-sub);
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.board-paused {
+  color: #fbbf24;
+  font-size: 1.9rem;
+  line-height: 1.18;
+  word-break: break-word;
+  font-weight: 900;
+}
+
+.board-queue, .board-skip, .board-review {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  text-align: left;
+}
+
+.board-tag {
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-size: 1.18rem;
+  font-weight: 900;
+  min-width: 110px;
+  text-align: center;
+  line-height: 1.04;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.tag-priority {
+  background: rgba(185,28,28,0.2);
+  color: #fee2e2;
+  border: 2px solid #ef4444;
+  box-shadow: 0 0 0 2px rgba(239,68,68,0.12) inset;
+}
+
+.tag-yellow {
+  background: rgba(234,179,8,0.22);
+  color: #fef9c3;
+  border: 2px solid #eab308;
+  box-shadow: 0 0 0 2px rgba(234,179,8,0.08) inset;
+}
+
+.tag-wait {
+  background: rgba(37,99,235,0.16);
+  color: #bfdbfe;
+  border: 1px solid rgba(96,165,250,0.42);
+}
+
+.board-empty {
+  color: #94a3b8;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.board-cutoff-tag {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 150px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.14);
+  border: 2px solid rgba(245, 158, 11, 0.72);
+  line-height: 1.08;
+  text-align: center;
+}
+
+.board-cutoff-zh {
+  color: #facc15;
+  font-size: 1.02rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.board-cutoff-en {
+  color: #fde68a;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.board-footer-tip {
+  margin-top: 8px;
+  color: #93c5fd;
+  font-size: 0.96rem;
+  font-weight: 800;
+  text-align: right;
+  opacity: 0.95;
+  flex: 0 0 auto;
+}
+
+.overlay-status {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: min(420px, calc(100vw - 36px));
+  pointer-events: none;
+}
+
+.overlay-card {
+  border-radius: 16px;
+  padding: 12px 14px;
+  font-weight: 900;
+  line-height: 1.45;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255,255,255,0.12);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.overlay-card.info {
+  background: rgba(15,23,42,0.92);
+  color: #dbeafe;
+}
+
+.overlay-card.warn {
+  background: rgba(120,53,15,0.92);
+  color: #fde68a;
+  border-color: rgba(245,158,11,0.35);
+}
+
+.overlay-card.error {
+  background: rgba(127,29,29,0.94);
+  color: #fee2e2;
+  border-color: rgba(239,68,68,0.4);
+}
+
+.hidden { display: none !important; }
+
+@media (max-width: 1600px) {
+  .board-title { font-size: 2.15rem; }
+  .board-time { font-size: 1.35rem; }
+  .inline-note { font-size: 0.98rem; }
+  .board-head-zh { font-size: 1.35rem; }
+  .board-head-en { font-size: 0.84rem; }
+  .board-room { font-size: 3rem; }
+  .board-doctor-zh { font-size: 1.25rem; }
+  .board-doctor-en { font-size: 0.9rem; }
+  .board-tag { font-size: 1.02rem; min-width: 96px; }
+  .board-row { min-height: 126px; }
+}
+
+@media (max-width: 1200px) {
+  .board-head, .board-row { grid-template-columns: 1fr; }
+  .board-head div, .board-cell {
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .board-cell:last-child, .board-head div:last-child { border-bottom: none; }
+  .board-room { font-size: 2.5rem; }
+  .board-wrap { min-height: auto; }
+}
+
+@media (max-width: 900px) {
+  #displayPage { padding: 10px; }
+  .board-toolbar-right { justify-content: flex-start; }
+  .toolbar-chip-row { justify-content: flex-start; }
+  .overlay-status {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    max-width: none;
+  }
+}
+</style>
 </head>
-<body>
-  <div class="app">
+<body class="display-mode">
+<div class="app">
+  <div class="page active" id="displayPage">
     <div class="board-toolbar">
       <div class="board-title-wrap">
-        <div class="board-title" id="boardTitle">候診情況</div>
-        <div class="board-subtitle" id="boardSubtitle">Queue Status</div>
+        <div class="board-title">候診情況</div>
+        <div class="board-subtitle">Queue Status</div>
       </div>
 
       <div class="board-toolbar-right">
         <div class="toolbar-chip-row">
           <div class="toolbar-chip status-ok" id="connectionChip">連線正常</div>
           <div class="toolbar-chip" id="roomsChip">診室：—</div>
-          <div class="toolbar-chip" id="pageSizeChip">每頁：—</div>
-          <div class="toolbar-chip" id="updatedChip">更新：—</div>
         </div>
         <button class="toolbar-btn" id="fullscreenBtn" type="button">全螢幕</button>
         <div class="board-time" id="boardTime"></div>
       </div>
     </div>
 
-    <div class="info-card" id="disclaimerCard">
-      <div class="inline-note" id="disclaimerText">
+    <div class="info-card board-disclaimer">
+      <div class="inline-note">
         輪候情況只供參考，會因應病人臨床需要及現場實際運作而作出調整，敬請見諒。<br>
         This queue is for reference only and may be adjusted at any time according to patients' clinical needs and operational requirements. Thank you for your understanding.
       </div>
     </div>
 
     <div id="displayBoard"></div>
+    <div class="board-footer-tip">急症醫學中心<br>Emergency Medicine Centre</div>
+  </div>
+</div>
 
-    <div class="board-footer">
-      <div></div>
-      <div class="board-footer-tip" id="footerText">急症醫學中心<br>Emergency Medicine Centre</div>
+<div class="overlay-status" id="overlayStatus">
+  <div class="overlay-card info hidden" id="loadingOverlay">正在同步資料…</div>
+  <div class="overlay-card warn hidden" id="offlineOverlay">網絡可能中斷，系統正嘗試重新連線…</div>
+  <div class="overlay-card error hidden" id="errorOverlay"></div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://dvyberdrmmfgutjqnpjr.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
+
+if (!window.supabase || typeof window.supabase.createClient !== "function") {
+  document.body.innerHTML = `
+    <div style="padding:24px;font-family:Arial,sans-serif;">
+      <h2 style="margin:0 0 12px;">系統初始化失敗</h2>
+      <div>Supabase SDK 未能載入，請檢查網絡或 CDN 是否可用。</div>
     </div>
-  </div>
+  `;
+  throw new Error("Supabase SDK not loaded");
+}
 
-  <div class="overlay-status" id="overlayStatus">
-    <div class="overlay-card info hidden" id="loadingOverlay">正在讀取看板資料…</div>
-    <div class="overlay-card warn hidden" id="offlineOverlay">網絡可能中斷，系統正嘗試重新連線…</div>
-    <div class="overlay-card error hidden" id="errorOverlay"></div>
-  </div>
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  <script>
-    const SUPABASE_URL = "https://dvyberdrmmfgutjqnpjr.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const HKT_TIMEZONE = "Asia/Hong_Kong";
+const BOARD_ROOMS_PER_PAGE = 4;
+const BOARD_PAGE_ROTATE_MS = 8000;
+const POLLING_MS = 10000;
 
-    const HKT_TIMEZONE = "Asia/Hong_Kong";
+const cloudState = {
+  loading: false,
+  online: navigator.onLine,
+  lastSuccessAt: null
+};
 
-    const DEFAULTS = {
-      mode: "tv",
-      pageSize: 4,
-      rotateMs: 8000,
-      pollingMs: 5000,
-      title: "候診情況",
-      subtitle: "Queue Status",
-      footer: "急症醫學中心\nEmergency Medicine Centre",
-      disclaimer:
-        "輪候情況只供參考，會因應病人臨床需要及現場實際運作而作出調整，敬請見諒。\n" +
-        "This queue is for reference only and may be adjusted at any time according to patients' clinical needs and operational requirements. Thank you for your understanding.",
-      hideDisclaimer: false,
-      disableContextMenu: true,
-      disableTextSelection: true
-    };
+const state = {
+  rooms: [],
+  patients: [],
+  displayPageIndex: 0,
+  lastBoardRenderKey: ""
+};
 
-    const state = {
-      rooms: [],
-      patients: [],
-      displayPageIndex: 0,
-      lastBoardRenderKey: "",
-      loading: false,
-      online: true,
-      lastSuccessAt: null,
-      roomFilterList: [],
-      config: { ...DEFAULTS }
-    };
+let liveRefreshTimer = null;
+let boardClockTimer = null;
+let boardPageRotateTimer = null;
+let realtimeChannel = null;
+let refreshInFlight = false;
+let queuedRefresh = false;
 
-    let liveRefreshTimer = null;
-    let boardClockTimer = null;
-    let boardPageRotateTimer = null;
-    let realtimeChannel = null;
-    let refreshInFlight = false;
-    let hasBoundContextMenu = false;
-    let hasBoundSelectStart = false;
+function nowIso() {
+  return new Date().toISOString();
+}
 
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function getHktDateParts(date = new Date()) {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: HKT_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23"
+  });
+  const parts = formatter.formatToParts(date);
+  const map = {};
+  for (const p of parts) {
+    if (p.type !== "literal") map[p.type] = p.value;
+  }
+  return {
+    year: map.year,
+    month: map.month,
+    day: map.day,
+    hour: map.hour,
+    minute: map.minute,
+    second: map.second
+  };
+}
+
+function formatDateTime(iso) {
+  if (!iso) return "—";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "—";
+  return new Intl.DateTimeFormat("zh-HK", {
+    timeZone: HKT_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23"
+  }).format(date);
+}
+
+function formatBoardNow(date = new Date()) {
+  const p = getHktDateParts(date);
+  return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second}`;
+}
+
+function formatRegisteredInline(iso) {
+  const text = formatDateTime(iso);
+  return text === "—" ? "—" : `${text}｜登記`;
+}
+
+function setLoadingState(loading) {
+  cloudState.loading = !!loading;
+  const el = document.getElementById("loadingOverlay");
+  if (!el) return;
+  el.classList.toggle("hidden", !cloudState.loading);
+}
+
+function setBoardError(message = "") {
+  const el = document.getElementById("errorOverlay");
+  if (!el) return;
+  el.textContent = String(message || "").trim();
+  el.classList.toggle("hidden", !message);
+}
+
+function clearBoardError() {
+  setBoardError("");
+}
+
+function setConnectionStatus(ok) {
+  cloudState.online = !!ok;
+
+  const chip = document.getElementById("connectionChip");
+  if (chip) {
+    chip.classList.remove("status-ok", "status-warn", "status-error");
+    if (ok) {
+      chip.classList.add("status-ok");
+      chip.textContent = "連線正常";
+    } else {
+      chip.classList.add("status-warn");
+      chip.textContent = "重新連線中";
     }
+  }
 
-    function escapeHtmlWithBr(value) {
-      return escapeHtml(value).replace(/\r?\n/g, "<br>");
-    }
+  const offline = document.getElementById("offlineOverlay");
+  if (offline) {
+    offline.classList.toggle("hidden", !!ok);
+  }
+}
 
-    function parseBooleanParam(value, fallback = false) {
-      if (value == null || value === "") return fallback;
-      return ["1", "true", "yes", "y", "on"].includes(String(value).trim().toLowerCase());
-    }
+function updateBoardStatusChips(visibleRooms = []) {
+  const roomsChip = document.getElementById("roomsChip");
+  if (roomsChip) roomsChip.textContent = `診室：${visibleRooms.length}`;
+}
 
-    function parseQuery() {
-      const params = new URLSearchParams(window.location.search);
+function initFullscreenButton() {
+  const btn = document.getElementById("fullscreenBtn");
+  if (!btn) return;
 
-      const rawMode = String(params.get("mode") || DEFAULTS.mode).trim().toLowerCase();
-      const mode = ["tv", "kiosk", "normal"].includes(rawMode) ? rawMode : DEFAULTS.mode;
-
-      const pageSize = Math.max(1, Math.min(12, parseInt(params.get("pageSize") || DEFAULTS.pageSize, 10) || DEFAULTS.pageSize));
-      const rotateMs = Math.max(3000, parseInt(params.get("rotateMs") || DEFAULTS.rotateMs, 10) || DEFAULTS.rotateMs);
-      const pollingMs = Math.max(2000, parseInt(params.get("pollingMs") || DEFAULTS.pollingMs, 10) || DEFAULTS.pollingMs);
-
-      const title = String(params.get("title") || DEFAULTS.title).trim();
-      const subtitle = String(params.get("subtitle") || DEFAULTS.subtitle).trim();
-      const footer = String(params.get("footer") || DEFAULTS.footer).trim();
-      const disclaimer = String(params.get("disclaimer") || DEFAULTS.disclaimer).trim();
-
-      const hideDisclaimer = parseBooleanParam(params.get("hideDisclaimer"), DEFAULTS.hideDisclaimer);
-      const disableContextMenu = parseBooleanParam(params.get("disableContextMenu"), DEFAULTS.disableContextMenu);
-      const disableTextSelection = parseBooleanParam(params.get("disableTextSelection"), DEFAULTS.disableTextSelection);
-
-      const roomsRaw = String(params.get("rooms") || "").trim();
-      const roomFilterList = roomsRaw
-        ? roomsRaw.split(",").map(s => s.trim()).filter(Boolean)
-        : [];
-
-      return {
-        mode,
-        pageSize,
-        rotateMs,
-        pollingMs,
-        title,
-        subtitle,
-        footer,
-        disclaimer,
-        hideDisclaimer,
-        disableContextMenu,
-        disableTextSelection,
-        roomFilterList
-      };
-    }
-
-    function applyConfigFromQuery() {
-      const cfg = parseQuery();
-      state.config = { ...DEFAULTS, ...cfg };
-      state.roomFilterList = cfg.roomFilterList;
-
-      document.getElementById("boardTitle").textContent = cfg.title;
-      document.getElementById("boardSubtitle").textContent = cfg.subtitle;
-      document.getElementById("footerText").innerHTML = escapeHtmlWithBr(cfg.footer);
-      document.getElementById("disclaimerText").innerHTML = escapeHtmlWithBr(cfg.disclaimer);
-
-      const disclaimerCard = document.getElementById("disclaimerCard");
-      disclaimerCard.classList.toggle("hidden", !!cfg.hideDisclaimer);
-
-      document.getElementById("pageSizeChip").textContent = `每頁：${cfg.pageSize}`;
-
-      if (cfg.mode === "tv" || cfg.mode === "kiosk") {
-        document.body.classList.add("tv-mode");
+  btn.addEventListener("click", async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
       } else {
-        document.body.classList.remove("tv-mode");
+        await document.exitFullscreen();
       }
-
-      if (state.config.disableContextMenu && !hasBoundContextMenu) {
-        document.addEventListener("contextmenu", (e) => e.preventDefault());
-        hasBoundContextMenu = true;
-      }
-
-      if (state.config.disableTextSelection && !hasBoundSelectStart) {
-        document.addEventListener("selectstart", (e) => {
-          if (state.config.mode === "tv" || state.config.mode === "kiosk") e.preventDefault();
-        });
-        hasBoundSelectStart = true;
-      }
+    } catch (error) {
+      console.warn("Fullscreen failed:", error);
     }
+  });
+}
 
-    function setLoading(loading) {
-      state.loading = !!loading;
-      document.getElementById("loadingOverlay").classList.toggle("hidden", !state.loading);
-    }
+function formatSupabaseError(error) {
+  if (!error) return "unknown error";
+  if (typeof error === "string") return error;
+  const parts = [];
+  if (error.message) parts.push(`message: ${error.message}`);
+  if (error.code) parts.push(`code: ${error.code}`);
+  if (error.details) parts.push(`details: ${error.details}`);
+  if (error.hint) parts.push(`hint: ${error.hint}`);
+  return parts.join(" | ") || JSON.stringify(error);
+}
 
-    function setOnlineStatus(ok, message = "") {
-      state.online = !!ok;
-      const chip = document.getElementById("connectionChip");
+function mapSupabasePatientRow(patient) {
+  return {
+    id: patient.id,
+    ticketNo: patient.ticket_no,
+    cumcNo: patient.cumc_no,
+    roomId: patient.room_id || "",
+    sourceType: patient.source_type || "walkin",
+    priority: !!patient.priority,
+    registeredAt: patient.registered_at || nowIso(),
+    status: patient.status || "waiting",
+    createdAt: patient.created_at || nowIso(),
+    queueOrder: Number.isFinite(patient.queue_order) ? patient.queue_order : null,
+    skippedAt: patient.skipped_at || null,
+    calledAt: patient.called_at || null,
+    doneAt: patient.done_at || null,
+    cancelledAt: patient.cancelled_at || null,
+    initialAssignmentMode: patient.initial_assignment_mode || "auto",
+    manualLock: !!patient.manual_lock,
+    manualLockReason: patient.manual_lock_reason || "",
+    logs: Array.isArray(patient.logs_json) ? patient.logs_json : [],
+    clinicalLogs: Array.isArray(patient.clinical_logs_json) ? patient.clinical_logs_json : [],
+    encounterNo: patient.encounter_no || null
+  };
+}
 
-      chip.classList.remove("status-ok", "status-warn", "status-error");
+function sortedRooms() {
+  return [...state.rooms].sort((a, b) => a.roomNo.localeCompare(b.roomNo, "zh-HK", { numeric: true }));
+}
 
-      if (ok) {
-        chip.classList.add("status-ok");
-        chip.textContent = "連線正常";
-        document.getElementById("offlineOverlay").classList.add("hidden");
-      } else {
-        chip.classList.add("status-warn");
-        chip.textContent = "重新連線中";
-        document.getElementById("offlineOverlay").classList.remove("hidden");
-      }
+function getRoom(roomId) {
+  return state.rooms.find(room => room.id === roomId) || null;
+}
 
-      if (message) {
-        showError(message);
-      }
-    }
+function getPatient(patientId) {
+  return state.patients.find(patient => patient.id === patientId) || null;
+}
 
-    function showError(message) {
-      const el = document.getElementById("errorOverlay");
-      if (!message) {
-        el.classList.add("hidden");
-        el.textContent = "";
-        return;
-      }
-      el.textContent = message;
-      el.classList.remove("hidden");
-    }
+function getRoomDisplayShort(roomNo) {
+  return String(roomNo || "").replace(/號房/g, "").trim() || String(roomNo || "");
+}
 
-    function clearError() {
-      showError("");
-    }
+function getPatientDisplayNo(patient) {
+  return String(patient?.cumcNo || patient?.ticketNo || "").trim();
+}
 
-    function getHktDateParts(date = new Date()) {
-      const formatter = new Intl.DateTimeFormat("en-CA", {
-        timeZone: HKT_TIMEZONE,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hourCycle: "h23"
-      });
-      const parts = formatter.formatToParts(date);
-      const map = {};
-      for (const p of parts) {
-        if (p.type !== "literal") map[p.type] = p.value;
-      }
-      return map;
-    }
+function getPatientTypeWeight(patient) {
+  if (patient.sourceType === "appointment") return 1;
+  if (patient.sourceType === "onlineTicket") return 2;
+  return 3;
+}
 
-    function formatBoardNow(date = new Date()) {
-      const p = getHktDateParts(date);
-      return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second}`;
-    }
+function compareWaitingBase(a, b) {
+  if (!!a.priority !== !!b.priority) return a.priority ? -1 : 1;
 
-    function formatDateTime(iso) {
-      if (!iso) return "—";
-      const date = new Date(iso);
-      if (Number.isNaN(date.getTime())) return "—";
-      return new Intl.DateTimeFormat("zh-HK", {
-        timeZone: HKT_TIMEZONE,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hourCycle: "h23"
-      }).format(date);
-    }
+  const aTime = new Date(a.registeredAt || a.createdAt).getTime();
+  const bTime = new Date(b.registeredAt || b.createdAt).getTime();
+  if (aTime !== bTime) return aTime - bTime;
 
-    function formatRegisteredInline(iso) {
-      const text = formatDateTime(iso);
-      return text === "—" ? "—" : `${text}｜登記`;
-    }
+  const aType = getPatientTypeWeight(a);
+  const bType = getPatientTypeWeight(b);
+  if (aType !== bType) return aType - bType;
 
-    function sortedRooms() {
-      return [...state.rooms].sort((a, b) => a.roomNo.localeCompare(b.roomNo, "zh-HK", { numeric: true }));
-    }
+  const aCreated = new Date(a.createdAt).getTime();
+  const bCreated = new Date(b.createdAt).getTime();
+  if (aCreated !== bCreated) return aCreated - bCreated;
 
-    function getPatient(patientId) {
-      return state.patients.find(patient => patient.id === patientId) || null;
-    }
+  return getPatientDisplayNo(a).localeCompare(getPatientDisplayNo(b), "zh-HK");
+}
 
-    function getPatientDisplayNo(patient) {
-      return String(patient?.cumcNo || patient?.ticketNo || "").trim();
-    }
+function getReviewWaitingPatients(room) {
+  return state.patients
+    .filter(patient => patient.roomId === room.id && patient.status === "review_waiting")
+    .sort(compareWaitingBase);
+}
 
-    function getRoomDisplayShort(roomNo) {
-      return String(roomNo || "").replace(/號房/g, "").trim() || String(roomNo || "");
-    }
+function getOrderedWaitingPatients(room, excludePatientId = null) {
+  const waiting = state.patients
+    .filter(patient => patient.roomId === room.id)
+    .filter(patient => patient.status === "waiting")
+    .filter(patient => patient.id !== excludePatientId);
 
-    function getPatientTypeWeight(patient) {
-      if (patient.sourceType === "appointment") return 1;
-      if (patient.sourceType === "onlineTicket") return 2;
-      return 3;
-    }
+  waiting.sort((a, b) => {
+    const aOrder = Number.isFinite(a.queueOrder) ? a.queueOrder : null;
+    const bOrder = Number.isFinite(b.queueOrder) ? b.queueOrder : null;
+    if (aOrder !== null && bOrder !== null && aOrder !== bOrder) return aOrder - bOrder;
+    if (aOrder !== null && bOrder === null) return -1;
+    if (aOrder === null && bOrder !== null) return 1;
+    return compareWaitingBase(a, b);
+  });
 
-    function compareWaitingBase(a, b) {
-      if (!!a.priority !== !!b.priority) return a.priority ? -1 : 1;
+  return waiting;
+}
 
-      const aTime = new Date(a.registeredAt || a.createdAt).getTime();
-      const bTime = new Date(b.registeredAt || b.createdAt).getTime();
+function getSkippedPatients(room) {
+  return state.patients
+    .filter(patient => patient.roomId === room.id && patient.status === "skipped")
+    .sort((a, b) => {
+      const aTime = new Date(a.skippedAt || a.createdAt).getTime();
+      const bTime = new Date(b.skippedAt || b.createdAt).getTime();
       if (aTime !== bTime) return aTime - bTime;
-
-      const aType = getPatientTypeWeight(a);
-      const bType = getPatientTypeWeight(b);
-      if (aType !== bType) return aType - bType;
-
-      const aCreated = new Date(a.createdAt).getTime();
-      const bCreated = new Date(b.createdAt).getTime();
-      if (aCreated !== bCreated) return aCreated - bCreated;
-
       return getPatientDisplayNo(a).localeCompare(getPatientDisplayNo(b), "zh-HK");
-    }
+    });
+}
 
-    function getOrderedWaitingPatients(room) {
-      const waiting = state.patients
-        .filter(patient => patient.roomId === room.id && patient.status === "waiting");
+function splitDoctorName(fullName) {
+  const text = String(fullName || "").trim();
+  const match = text.match(/^(.*?醫生)\s*(Dr\..*)$/i);
+  if (match) return { zh: match[1].trim(), en: match[2].trim() };
+  return { zh: text, en: "" };
+}
 
-      waiting.sort((a, b) => {
-        const aOrder = Number.isFinite(a.queueOrder) ? a.queueOrder : null;
-        const bOrder = Number.isFinite(b.queueOrder) ? b.queueOrder : null;
-        if (aOrder !== null && bOrder !== null && aOrder !== bOrder) return aOrder - bOrder;
-        if (aOrder !== null && bOrder === null) return -1;
-        if (aOrder === null && bOrder !== null) return 1;
-        return compareWaitingBase(a, b);
-      });
+function getBoardPatientColorClass(patient) {
+  if (!patient) return "";
+  if (patient.priority) return "tag-priority";
+  if (patient.sourceType === "appointment" || patient.sourceType === "onlineTicket") {
+    return "tag-yellow";
+  }
+  return "";
+}
 
-      return waiting;
-    }
+function renderBoardTag(patient) {
+  const extraClass = getBoardPatientColorClass(patient);
+  return `<span class="board-tag ${extraClass}">${escapeHtml(getPatientDisplayNo(patient))}</span>`;
+}
 
-    function getReviewWaitingPatients(room) {
-      return state.patients
-        .filter(patient => patient.roomId === room.id && patient.status === "review_waiting")
-        .sort(compareWaitingBase);
-    }
+function getVisibleBoardRooms() {
+  return sortedRooms().filter(room => room.status !== "closed");
+}
 
-    function getSkippedPatients(room) {
-      return state.patients
-        .filter(patient => patient.roomId === room.id && patient.status === "skipped")
-        .sort((a, b) => {
-          const aTime = new Date(a.skippedAt || a.createdAt).getTime();
-          const bTime = new Date(b.skippedAt || b.createdAt).getTime();
-          if (aTime !== bTime) return aTime - bTime;
-          return getPatientDisplayNo(a).localeCompare(getPatientDisplayNo(b), "zh-HK");
-        });
-    }
+function getBoardTotalPages(rooms) {
+  return Math.max(1, Math.ceil(rooms.length / BOARD_ROOMS_PER_PAGE));
+}
 
-    function splitDoctorName(fullName) {
-      const text = String(fullName || "").trim();
-      const match = text.match(/^(.*?醫生)\s*(Dr\..*)$/i);
-      if (match) return { zh: match[1].trim(), en: match[2].trim() };
-      return { zh: text, en: "" };
-    }
+function normalizeBoardPageIndex(totalPages) {
+  if (totalPages <= 0) {
+    state.displayPageIndex = 0;
+    return;
+  }
+  if (state.displayPageIndex >= totalPages) state.displayPageIndex = 0;
+  if (state.displayPageIndex < 0) state.displayPageIndex = 0;
+}
 
-    function getBoardPatientColorClass(patient) {
-      if (!patient) return "";
-      if (patient.priority) return "tag-priority";
-      if (patient.sourceType === "appointment" || patient.sourceType === "onlineTicket") return "tag-yellow";
-      return "";
-    }
+function getBoardRenderModel() {
+  const visibleRooms = getVisibleBoardRooms();
+  const totalPages = getBoardTotalPages(visibleRooms);
+  normalizeBoardPageIndex(totalPages);
+  const startIndex = state.displayPageIndex * BOARD_ROOMS_PER_PAGE;
+  const pageRooms = visibleRooms.slice(startIndex, startIndex + BOARD_ROOMS_PER_PAGE);
+  return { visibleRooms, totalPages, pageRooms };
+}
 
-    function renderBoardTag(patient, type = "wait") {
-      let baseClass = "tag-wait";
-      if (type === "skip") baseClass = "tag-skip";
-      if (type === "review") baseClass = "tag-review";
-      const extraClass = getBoardPatientColorClass(patient);
-      return `<span class="board-tag ${baseClass} ${extraClass}">${escapeHtml(getPatientDisplayNo(patient))}</span>`;
-    }
+function renderDisplayBoard(force = false) {
+  const container = document.getElementById("displayBoard");
+  const timeEl = document.getElementById("boardTime");
+  if (!container || !timeEl) return;
 
-    function getVisibleBoardRooms() {
-      let rooms = sortedRooms().filter(room => room.status !== "closed");
+  const nextTimeText = formatBoardNow(new Date());
+  if (timeEl.textContent !== nextTimeText) timeEl.textContent = nextTimeText;
 
-      if (state.roomFilterList.length) {
-        const allow = new Set(state.roomFilterList);
-        rooms = rooms.filter(room => allow.has(room.roomNo) || allow.has(getRoomDisplayShort(room.roomNo)));
-      }
+  const { visibleRooms, totalPages, pageRooms } = getBoardRenderModel();
+  updateBoardStatusChips(visibleRooms);
 
-      return rooms;
-    }
-
-    function getBoardTotalPages(rooms) {
-      return Math.max(1, Math.ceil(rooms.length / state.config.pageSize));
-    }
-
-    function normalizeBoardPageIndex(totalPages) {
-      if (totalPages <= 0) {
-        state.displayPageIndex = 0;
-        return;
-      }
-      if (state.displayPageIndex >= totalPages) state.displayPageIndex = 0;
-      if (state.displayPageIndex < 0) state.displayPageIndex = 0;
-    }
-
-    function getBoardRenderModel() {
-      const visibleRooms = getVisibleBoardRooms();
-      const totalPages = getBoardTotalPages(visibleRooms);
-      normalizeBoardPageIndex(totalPages);
-      const startIndex = state.displayPageIndex * state.config.pageSize;
-      const pageRooms = visibleRooms.slice(startIndex, startIndex + state.config.pageSize);
-      return { visibleRooms, totalPages, pageRooms };
-    }
-
-    function updateTopChips(visibleRooms) {
-      document.getElementById("roomsChip").textContent = `診室：${visibleRooms.length}`;
-      document.getElementById("updatedChip").textContent = state.lastSuccessAt
-        ? `更新：${formatBoardNow(new Date(state.lastSuccessAt))}`
-        : "更新：—";
-    }
-
-    function renderDisplayBoard(force = false) {
-      const container = document.getElementById("displayBoard");
-      const timeEl = document.getElementById("boardTime");
-      if (!container || !timeEl) return;
-
-      const nextTimeText = formatBoardNow(new Date());
-      if (timeEl.textContent !== nextTimeText) timeEl.textContent = nextTimeText;
-
-      const { visibleRooms, totalPages, pageRooms } = getBoardRenderModel();
-      updateTopChips(visibleRooms);
-
-      if (!visibleRooms.length) {
-        const html = `
-          <div class="board-wrap">
-            <div class="board-body">
-              <div class="board-row">
-                <div class="board-cell" style="grid-column: 1 / -1; min-height: 320px;">
-                  <div class="board-empty" style="font-size:1.8rem; line-height:1.6;">
-                    目前沒有顯示中的診室<br>No rooms currently displayed
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-        if (force || state.lastBoardRenderKey !== html) {
-          container.innerHTML = html;
-          state.lastBoardRenderKey = html;
-        }
-        return;
-      }
-
-      const dotsHtml = Array.from({ length: totalPages }, (_, i) => `
-        <span class="board-dot ${i === state.displayPageIndex ? "active" : ""}"></span>
-      `).join("");
-
-      const rows = pageRooms.map(room => {
-        const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
-        const doctorParts = splitDoctorName(room.doctorName);
-
-        const waitingAll = getOrderedWaitingPatients(room);
-        const waitingPatients = waitingAll.slice(0, 8);
-        const waitingMore = Math.max(0, waitingAll.length - waitingPatients.length);
-
-        const reviewAll = getReviewWaitingPatients(room);
-        const reviewPatients = reviewAll.slice(0, 6);
-        const reviewMore = Math.max(0, reviewAll.length - reviewPatients.length);
-
-        const skippedAll = getSkippedPatients(room);
-        const skippedPatients = skippedAll.slice(0, 5);
-        const skippedMore = Math.max(0, skippedAll.length - skippedPatients.length);
-
-        const currentBoardContent = room.status === "paused"
-          ? `
-            <div class="board-paused">暫停 Paused</div>
-            ${room.pauseReason ? `<div class="board-meta">原因 Reason: ${escapeHtml(room.pauseReason)}</div>` : ""}
-          `
-          : `
-            ${
-              currentPatient
-                ? `
-                  <div class="board-current-ticket ${
-                    currentPatient.priority
-                      ? "board-current-ticket-red"
-                      : (currentPatient.sourceType === "appointment" || currentPatient.sourceType === "onlineTicket")
-                        ? "board-current-ticket-yellow"
-                        : "board-current-ticket-green"
-                  }">
-                    ${escapeHtml(getPatientDisplayNo(currentPatient))}
-                  </div>
-                  <div class="board-meta">${escapeHtml(formatRegisteredInline(currentPatient.registeredAt))}</div>
-                `
-                : `<div class="board-current-ticket">—</div>`
-            }
-          `;
-
-        return `
+  if (!visibleRooms.length) {
+    const html = `
+      <div class="board-wrap">
+        <div class="board-body">
           <div class="board-row">
-            <div class="board-cell board-room">${escapeHtml(getRoomDisplayShort(room.roomNo))}</div>
-            <div class="board-cell board-doctor">
-              <div class="board-doctor-zh">${escapeHtml(doctorParts.zh)}</div>
-              ${doctorParts.en ? `<div class="board-doctor-en">${escapeHtml(doctorParts.en)}</div>` : ""}
-            </div>
-            <div class="board-cell board-current">${currentBoardContent}</div>
-            <div class="board-cell">
-              <div class="board-queue">
-                ${
-                  waitingPatients.length
-                    ? waitingPatients.map(patient => renderBoardTag(patient, "wait")).join("") +
-                      (waitingMore > 0 ? `<span class="board-empty">+${waitingMore}</span>` : "")
-                    : `<span class="board-empty">—</span>`
-                }
-                ${
-                  (room.status === "open" && room.acceptingNew === false)
-                    ? `
-                      <span class="board-cutoff-tag">
-                        <span class="board-cutoff-zh">停收新症</span>
-                        <span class="board-cutoff-en">No New Patients</span>
-                      </span>
-                    `
-                    : ""
-                }
-              </div>
-            </div>
-            <div class="board-cell">
-              <div class="board-review">
-                ${
-                  reviewPatients.length
-                    ? reviewPatients.map(patient => renderBoardTag(patient, "review")).join("") +
-                      (reviewMore > 0 ? `<span class="board-empty">+${reviewMore}</span>` : "")
-                    : `<span class="board-empty">—</span>`
-                }
-              </div>
-            </div>
-            <div class="board-cell">
-              <div class="board-skip">
-                ${
-                  skippedPatients.length
-                    ? skippedPatients.map(patient => renderBoardTag(patient, "skip")).join("") +
-                      (skippedMore > 0 ? `<span class="board-empty">+${skippedMore}</span>` : "")
-                    : `<span class="board-empty">—</span>`
-                }
+            <div class="board-cell" style="grid-column: 1 / -1; min-height: 320px;">
+              <div class="board-empty" style="font-size:1.8rem; line-height:1.6;">
+                目前沒有顯示中的診室<br>No rooms currently displayed
               </div>
             </div>
           </div>
-        `;
-      }).join("");
-
-      const html = `
-        <div class="board-pagination-bar">
-          <div class="board-page-indicator">第 ${state.displayPageIndex + 1} 頁 / 共 ${totalPages} 頁</div>
-          <div class="board-page-dots">${dotsHtml}</div>
         </div>
+      </div>
+    `;
+    if (force || state.lastBoardRenderKey !== html) {
+      container.innerHTML = html;
+      state.lastBoardRenderKey = html;
+    }
+    return;
+  }
 
-        <div class="board-wrap">
-          <div class="board-head">
-            <div><span class="board-head-zh">診室</span><span class="board-head-en">ROOM</span></div>
-            <div><span class="board-head-zh">醫生</span><span class="board-head-en">DOCTOR</span></div>
-            <div><span class="board-head-zh">現正診症</span><span class="board-head-en">NOW SERVING</span></div>
-            <div><span class="board-head-zh">候診</span><span class="board-head-en">WAITING</span></div>
-            <div><span class="board-head-zh">回診</span><span class="board-head-en">REVIEW</span></div>
-            <div><span class="board-head-zh">過號</span><span class="board-head-en">MISSED</span></div>
-          </div>
-          <div class="board-body">${rows}</div>
-        </div>
+  const dotsHtml = Array.from({ length: totalPages }, (_, i) => `
+    <span class="board-dot ${i === state.displayPageIndex ? "active" : ""}"></span>
+  `).join("");
+
+  const rows = pageRooms.map(room => {
+    const currentPatient = room.currentPatientId ? getPatient(room.currentPatientId) : null;
+    const doctorParts = splitDoctorName(room.doctorName);
+
+    const waitingAll = getOrderedWaitingPatients(room);
+    const waitingPatients = waitingAll.slice(0, 8);
+    const waitingMore = Math.max(0, waitingAll.length - waitingPatients.length);
+
+    const reviewAll = getReviewWaitingPatients(room);
+    const reviewPatients = reviewAll.slice(0, 6);
+    const reviewMore = Math.max(0, reviewAll.length - reviewPatients.length);
+
+    const skippedAll = getSkippedPatients(room);
+    const skippedPatients = skippedAll.slice(0, 5);
+    const skippedMore = Math.max(0, skippedAll.length - skippedPatients.length);
+
+    const currentBoardContent = room.status === "paused"
+      ? `
+        <div class="board-paused">暫停 Paused</div>
+        ${room.pauseReason ? `<div class="board-meta">原因 Reason: ${escapeHtml(room.pauseReason)}</div>` : ""}
+      `
+      : `
+        ${
+          currentPatient
+            ? `
+              <div class="board-current-ticket ${
+                currentPatient.priority
+                  ? "board-current-ticket-red"
+                  : (currentPatient.sourceType === "appointment" || currentPatient.sourceType === "onlineTicket")
+                    ? "board-current-ticket-yellow"
+                    : "board-current-ticket-green"
+              }">
+                ${escapeHtml(getPatientDisplayNo(currentPatient))}
+              </div>
+              <div class="board-meta">${escapeHtml(formatRegisteredInline(currentPatient.registeredAt))}</div>
+            `
+            : `<div class="board-current-normal-ticket">—</div>`
+        }
       `;
 
-      if (force || state.lastBoardRenderKey !== html) {
-        container.innerHTML = html;
-        state.lastBoardRenderKey = html;
+    return `
+      <div class="board-row">
+        <div class="board-cell board-room">${escapeHtml(getRoomDisplayShort(room.roomNo))}</div>
+        <div class="board-cell board-doctor">
+          <div class="board-doctor-zh">${escapeHtml(doctorParts.zh)}</div>
+          ${doctorParts.en ? `<div class="board-doctor-en">${escapeHtml(doctorParts.en)}</div>` : ""}
+        </div>
+        <div class="board-cell board-current">${currentBoardContent}</div>
+        <div class="board-cell">
+          <div class="board-queue">
+            ${
+              (() => {
+                const waitingHtml = waitingPatients.length
+                  ? waitingPatients.map(patient => renderBoardTag(patient)).join("") +
+                    (waitingMore > 0 ? `<span class="board-empty">+${waitingMore}</span>` : "")
+                  : `<span class="board-empty">—</span>`;
+
+                const cutoffHtml = (room.status === "open" && room.acceptingNew === false)
+                  ? `
+                    <span class="board-cutoff-tag">
+                      <span class="board-cutoff-zh">停收新症</span>
+                      <span class="board-cutoff-en">No New Patients</span>
+                    </span>
+                  `
+                  : "";
+
+                return waitingHtml + cutoffHtml;
+              })()
+            }
+          </div>
+        </div>
+        <div class="board-cell">
+          <div class="board-review">
+            ${
+              reviewPatients.length
+                ? reviewPatients.map(patient => renderBoardTag(patient)).join("") +
+                  (reviewMore > 0 ? `<span class="board-empty">+${reviewMore}</span>` : "")
+                : `<span class="board-empty">—</span>`
+            }
+          </div>
+        </div>
+        <div class="board-cell">
+          <div class="board-skip">
+            ${
+              skippedPatients.length
+                ? skippedPatients.map(patient => renderBoardTag(patient)).join("") +
+                  (skippedMore > 0 ? `<span class="board-empty">+${skippedMore}</span>` : "")
+                : `<span class="board-empty">—</span>`
+            }
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  const html = `
+    <div class="board-pagination-bar">
+      <div class="board-page-indicator">第 ${state.displayPageIndex + 1} 頁 / 共 ${totalPages} 頁</div>
+      <div class="board-page-dots">${dotsHtml}</div>
+    </div>
+
+    <div class="board-wrap">
+      <div class="board-head">
+        <div><span class="board-head-zh">診室</span><span class="board-head-en">ROOM</span></div>
+        <div><span class="board-head-zh">醫生</span><span class="board-head-en">DOCTOR</span></div>
+        <div><span class="board-head-zh">現正診症</span><span class="board-head-en">NOW SERVING</span></div>
+        <div><span class="board-head-zh">候診</span><span class="board-head-en">WAITING</span></div>
+        <div><span class="board-head-zh">回診</span><span class="board-head-en">REVIEW</span></div>
+        <div><span class="board-head-zh">過號</span><span class="board-head-en">MISSED</span></div>
+      </div>
+      <div class="board-body">${rows}</div>
+    </div>
+  `;
+
+  if (force || state.lastBoardRenderKey !== html) {
+    container.innerHTML = html;
+    state.lastBoardRenderKey = html;
+  }
+}
+
+async function loadStateFromSupabase(showErrorToast = false) {
+  try {
+    const { data: roomsData, error: roomsError } = await sb.from("rooms").select("*").order("room_no", { ascending: true });
+    if (roomsError) throw roomsError;
+
+    const { data: patientsData, error: patientsError } = await sb.from("patients").select("*").order("created_at", { ascending: true });
+    if (patientsError) throw patientsError;
+
+    state.rooms = (roomsData || []).map(room => ({
+      id: room.id,
+      roomNo: room.room_no,
+      doctorName: room.doctor_name || "",
+      status: room.status || "open",
+      pauseReason: room.pause_reason || "",
+      acceptingNew: room.accepting_new !== false,
+      queuePatientIds: [],
+      skippedPatientIds: [],
+      currentPatientId: room.current_patient_id || null
+    }));
+
+    state.patients = (patientsData || []).map(mapSupabasePatientRow);
+
+    state.rooms.forEach(room => {
+      room.queuePatientIds = state.patients
+        .filter(patient => patient.roomId === room.id && patient.status === "waiting")
+        .sort((a, b) => {
+          const aOrder = Number.isFinite(a.queueOrder) ? a.queueOrder : 999999;
+          const bOrder = Number.isFinite(b.queueOrder) ? b.queueOrder : 999999;
+          return aOrder - bOrder;
+        })
+        .map(patient => patient.id);
+
+      room.skippedPatientIds = state.patients
+        .filter(patient => patient.roomId === room.id && patient.status === "skipped")
+        .map(patient => patient.id);
+    });
+
+    cloudState.lastSuccessAt = nowIso();
+    setConnectionStatus(true);
+    clearBoardError();
+    return true;
+  } catch (error) {
+    console.error("Failed to load from Supabase:", error);
+    setConnectionStatus(false);
+    setBoardError("讀取雲端資料失敗，系統會自動重試。");
+    if (showErrorToast) console.warn(formatSupabaseError(error));
+    return false;
+  }
+}
+
+async function refreshFromCloudAndRender(showErrorToast = false, showLoader = false) {
+  if (refreshInFlight) {
+    queuedRefresh = true;
+    return false;
+  }
+
+  refreshInFlight = true;
+
+  try {
+    if (showLoader) setLoadingState(true);
+    const ok = await loadStateFromSupabase(showErrorToast);
+    if (!ok) return false;
+    renderDisplayBoard(false);
+    return true;
+  } finally {
+    if (showLoader) setLoadingState(false);
+    refreshInFlight = false;
+    if (queuedRefresh) {
+      queuedRefresh = false;
+      refreshFromCloudAndRender(false, false);
+    }
+  }
+}
+
+function startBoardPageRotation() {
+  if (boardPageRotateTimer) clearInterval(boardPageRotateTimer);
+  boardPageRotateTimer = setInterval(() => {
+    const visibleRooms = getVisibleBoardRooms();
+    const totalPages = getBoardTotalPages(visibleRooms);
+
+    if (totalPages <= 1) {
+      state.displayPageIndex = 0;
+      renderDisplayBoard(false);
+      return;
+    }
+
+    state.displayPageIndex = (state.displayPageIndex + 1) % totalPages;
+    renderDisplayBoard(true);
+  }, BOARD_PAGE_ROTATE_MS);
+}
+
+async function setupRealtimeAndPolling() {
+  if (realtimeChannel) {
+    try { await sb.removeChannel(realtimeChannel); } catch (e) { console.warn("removeChannel failed", e); }
+  }
+
+  realtimeChannel = sb
+    .channel("emc-cqms-live")
+    .on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, async () => {
+      await refreshFromCloudAndRender(false);
+    })
+    .on("postgres_changes", { event: "*", schema: "public", table: "patients" }, async () => {
+      await refreshFromCloudAndRender(false);
+    })
+    .subscribe((status, err) => {
+      console.log("Realtime subscribe status:", status, err || "");
+      if (status === "SUBSCRIBED") {
+        setConnectionStatus(true);
       }
-    }
-
-    function mapRpcRows(rows) {
-      const roomMap = new Map();
-      const patientList = [];
-
-      for (const row of rows || []) {
-        if (!row || !row.room_id) continue;
-
-        if (!roomMap.has(row.room_id)) {
-          roomMap.set(row.room_id, {
-            id: row.room_id,
-            roomNo: row.room_no,
-            doctorName: row.doctor_name || "",
-            status: row.room_status || "open",
-            pauseReason: row.pause_reason || "",
-            acceptingNew: row.accepting_new !== false,
-            currentPatientId: row.current_patient_id || null
-          });
-        }
-
-        if (row.patient_id) {
-          patientList.push({
-            id: row.patient_id,
-            roomId: row.patient_room_id || "",
-            cumcNo: row.cumc_no,
-            ticketNo: row.ticket_no,
-            sourceType: row.source_type || "walkin",
-            priority: !!row.priority,
-            registeredAt: row.registered_at || null,
-            createdAt: row.created_at || null,
-            status: row.patient_status || "waiting",
-            queueOrder: Number.isFinite(row.queue_order) ? row.queue_order : null,
-            skippedAt: row.skipped_at || null
-          });
-        }
+      if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
+        setConnectionStatus(false);
+        setBoardError("Realtime 連線異常，系統已切換為自動刷新。");
       }
+    });
 
-      state.rooms = [...roomMap.values()];
-      state.patients = patientList;
+  if (liveRefreshTimer) clearInterval(liveRefreshTimer);
+  liveRefreshTimer = setInterval(async () => {
+    await refreshFromCloudAndRender(false);
+  }, POLLING_MS);
+
+  if (boardClockTimer) clearInterval(boardClockTimer);
+  boardClockTimer = setInterval(() => {
+    const timeEl = document.getElementById("boardTime");
+    if (timeEl) {
+      const nextTimeText = formatBoardNow(new Date());
+      if (timeEl.textContent !== nextTimeText) timeEl.textContent = nextTimeText;
     }
+  }, 1000);
 
-    async function loadBoardData() {
-      const { data, error } = await sb.rpc("get_public_queue_board");
-      if (error) throw error;
-      mapRpcRows(data || []);
-    }
+  startBoardPageRotation();
+}
 
-    async function refreshBoard(showLoader = false) {
-      if (refreshInFlight) return;
-      refreshInFlight = true;
+async function initApp() {
+  initFullscreenButton();
 
-      try {
-        if (showLoader) setLoading(true);
-        clearError();
+  window.addEventListener("online", () => {
+    setConnectionStatus(true);
+    clearBoardError();
+    refreshFromCloudAndRender(false);
+  });
 
-        await loadBoardData();
+  window.addEventListener("offline", () => {
+    setConnectionStatus(false);
+    setBoardError("目前網絡離線，系統會在恢復連線後自動同步。");
+  });
 
-        state.lastSuccessAt = new Date().toISOString();
-        setOnlineStatus(true);
-        renderDisplayBoard(true);
-      } catch (error) {
-        console.error("Failed to refresh board:", error);
-        setOnlineStatus(false);
-        showError("讀取看板資料失敗，系統會自動重試。請檢查網絡或資料服務狀態。");
-      } finally {
-        setLoading(false);
-        refreshInFlight = false;
-      }
-    }
+  const ok = await refreshFromCloudAndRender(true, true);
+  if (ok) renderDisplayBoard(true);
 
-    function startBoardPageRotation() {
-      if (boardPageRotateTimer) clearInterval(boardPageRotateTimer);
+  document.getElementById("boardTime").textContent = formatBoardNow(new Date());
+  await setupRealtimeAndPolling();
+}
 
-      boardPageRotateTimer = setInterval(() => {
-        const visibleRooms = getVisibleBoardRooms();
-        const totalPages = getBoardTotalPages(visibleRooms);
-
-        if (totalPages <= 1) {
-          state.displayPageIndex = 0;
-          renderDisplayBoard(false);
-          return;
-        }
-
-        state.displayPageIndex = (state.displayPageIndex + 1) % totalPages;
-        renderDisplayBoard(true);
-      }, state.config.rotateMs);
-    }
-
-    async function setupRealtimeAndPolling() {
-      if (realtimeChannel) {
-        try {
-          await sb.removeChannel(realtimeChannel);
-        } catch (_) {}
-      }
-
-      realtimeChannel = sb
-        .channel("emc-public-display-live")
-        .on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, () => refreshBoard(false))
-        .on("postgres_changes", { event: "*", schema: "public", table: "patients" }, () => refreshBoard(false))
-        .subscribe((status) => {
-          if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
-            setOnlineStatus(false);
-          }
-        });
-
-      if (liveRefreshTimer) clearInterval(liveRefreshTimer);
-      liveRefreshTimer = setInterval(() => refreshBoard(false), state.config.pollingMs);
-
-      if (boardClockTimer) clearInterval(boardClockTimer);
-      boardClockTimer = setInterval(() => {
-        const timeEl = document.getElementById("boardTime");
-        if (timeEl) timeEl.textContent = formatBoardNow(new Date());
-      }, 1000);
-
-      startBoardPageRotation();
-    }
-
-    function initFullscreen() {
-      const btn = document.getElementById("fullscreenBtn");
-
-      btn.addEventListener("click", async () => {
-        try {
-          if (!document.fullscreenElement) {
-            await document.documentElement.requestFullscreen();
-          } else {
-            await document.exitFullscreen();
-          }
-        } catch (error) {
-          console.warn("Fullscreen failed:", error);
-        }
-      });
-
-      document.addEventListener("fullscreenchange", () => {
-        btn.classList.toggle("hidden", !!document.fullscreenElement);
-      });
-    }
-
-    function initWindowEvents() {
-      window.addEventListener("online", () => {
-        setOnlineStatus(true);
-        refreshBoard(false);
-      });
-
-      window.addEventListener("offline", () => {
-        setOnlineStatus(false);
-      });
-
-      window.addEventListener("keydown", (event) => {
-        const totalPages = getBoardTotalPages(getVisibleBoardRooms());
-        if (totalPages <= 0) return;
-
-        if (event.key === "ArrowRight" && state.config.mode !== "tv" && state.config.mode !== "kiosk") {
-          state.displayPageIndex = (state.displayPageIndex + 1) % totalPages;
-          renderDisplayBoard(true);
-        } else if (event.key === "ArrowLeft" && state.config.mode !== "tv" && state.config.mode !== "kiosk") {
-          state.displayPageIndex = (state.displayPageIndex - 1 + totalPages) % totalPages;
-          renderDisplayBoard(true);
-        } else if (event.key.toLowerCase() === "r") {
-          refreshBoard(true);
-        }
-      });
-    }
-
-    async function initApp() {
-      applyConfigFromQuery();
-      initFullscreen();
-      initWindowEvents();
-
-      document.getElementById("boardTime").textContent = formatBoardNow(new Date());
-
-      await refreshBoard(true);
-      await setupRealtimeAndPolling();
-    }
-
-    initApp();
-  </script>
+initApp();
+</script>
 </body>
 </html>
