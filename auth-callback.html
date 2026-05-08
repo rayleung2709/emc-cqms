@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登入處理中 - EMCQMS</title>
+  <link rel="icon" href="data:," />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{
+      --bg:#06101f;
+      --panel:#0b1528;
+      --text:#f8fafc;
+      --sub:#cbd5e1;
+      --line:rgba(255,255,255,0.12);
+      --blue:#2563eb;
+      --green:#22c55e;
+      --red:#ef4444;
+      --shadow:0 18px 40px rgba(0,0,0,.32);
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      padding:0;
+      min-height:100%;
+      font-family:Arial,"Microsoft JhengHei","PingFang TC",sans-serif;
+      background:linear-gradient(180deg,#06101f 0%,#081426 100%);
+      color:var(--text);
+    }
+    body{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .page{width:100%;max-width:560px}
+    .card{
+      background:rgba(11,21,40,.96);
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .head{
+      padding:22px 22px 18px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(90deg,rgba(37,99,235,.24),rgba(37,99,235,.05));
+    }
+    .brand{
+      font-size:1rem;
+      font-weight:900;
+      color:#bfdbfe;
+      letter-spacing:.04em;
+      margin-bottom:10px;
+    }
+    .title{
+      font-size:2rem;
+      font-weight:900;
+      line-height:1.08;
+      margin:0 0 8px;
+    }
+    .subtitle{
+      color:var(--sub);
+      font-size:1rem;
+      line-height:1.6;
+      font-weight:700;
+    }
+    .body{padding:22px}
+    .status{
+      padding:14px 15px;
+      border-radius:14px;
+      font-size:1rem;
+      line-height:1.7;
+      font-weight:800;
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+    .status.info{
+      background:rgba(37,99,235,.14);
+      border:1px solid rgba(96,165,250,.28);
+      color:#dbeafe;
+    }
+    .status.success{
+      background:rgba(34,197,94,.14);
+      border:1px solid rgba(34,197,94,.28);
+      color:#dcfce7;
+    }
+    .status.error{
+      background:rgba(239,68,68,.14);
+      border:1px solid rgba(239,68,68,.3);
+      color:#fee2e2;
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+    .btn{
+      appearance:none;
+      border:none;
+      border-radius:14px;
+      padding:13px 16px;
+      cursor:pointer;
+      font-size:1rem;
+      font-weight:900;
+      transition:.18s ease;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:48px;
+    }
+    .btn-primary{
+      background:linear-gradient(90deg,#2563eb,#3b82f6);
+      color:#fff;
+      flex:1 1 220px;
+    }
+    .btn-secondary{
+      background:rgba(30,41,59,.95);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.12);
+      flex:1 1 180px;
+    }
+    .footer{
+      margin-top:16px;
+      text-align:center;
+      color:#93c5fd;
+      font-size:.92rem;
+      font-weight:800;
+      line-height:1.6;
+    }
+    @media (max-width:560px){
+      body{padding:14px}
+      .title{font-size:1.7rem}
+      .body,.head{padding:18px}
+      .actions{flex-direction:column}
+      .btn{width:100%}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="card">
+      <div class="head">
+        <div class="brand">EMCQMS 急症醫學中心輪候系統</div>
+        <h1 class="title">登入處理中</h1>
+        <div class="subtitle">
+          系統正在處理 magic link / email login。<br>
+          Please wait while we complete the sign-in process.
+        </div>
+      </div>
+
+      <div class="body">
+        <div id="statusBox" class="status info">正在驗證登入連結…</div>
+
+        <div class="actions">
+          <a class="btn btn-primary" href="./">返回主頁</a>
+          <a class="btn btn-secondary" href="./reset-password.html">重設密碼</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      急症醫學中心<br>
+      Emergency Medicine Centre
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://dvyberdrmmfgutjqnpjr.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
+    const HOME_URL = "https://rayleung2709.github.io/emc-cqms/";
+
+    if (!window.supabase || typeof window.supabase.createClient !== "function") {
+      document.body.innerHTML = '<div style="padding:24px;color:#fff;background:#06101f;font-family:Arial,sans-serif">Supabase SDK 載入失敗，請檢查網絡。</div>';
+      throw new Error("Supabase SDK not loaded");
+    }
+
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const statusBox = document.getElementById("statusBox");
+
+    function setStatus(message, type = "info") {
+      statusBox.className = `status ${type}`;
+      statusBox.textContent = message;
+    }
+
+    function getHashParams() {
+      const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
+      return new URLSearchParams(hash);
+    }
+
+    async function handleAuthCallback() {
+      try {
+        const url = new URL(window.location.href);
+        const query = url.searchParams;
+        const hash = getHashParams();
+
+        const access_token = query.get("access_token") || hash.get("access_token");
+        const refresh_token = query.get("refresh_token") || hash.get("refresh_token");
+        const type = query.get("type") || hash.get("type");
+        const error_description = query.get("error_description") || hash.get("error_description");
+        const error_code = query.get("error_code") || hash.get("error_code");
+
+        if (error_description || error_code) {
+          throw new Error(error_description || error_code);
+        }
+
+        if (access_token && refresh_token) {
+          const { error } = await sb.auth.setSession({
+            access_token,
+            refresh_token
+          });
+          if (error) throw error;
+        }
+
+        const { data, error } = await sb.auth.getSession();
+        if (error) throw error;
+
+        if (!data.session) {
+          throw new Error("未能建立登入 session，可能連結已過期或無效。");
+        }
+
+        if (type === "recovery") {
+          setStatus("此連結屬於重設密碼流程，系統將帶你前往改密碼頁面。", "success");
+          setTimeout(() => {
+            window.location.href = "./update-password.html" + window.location.hash;
+          }, 1200);
+          return;
+        }
+
+        setStatus("登入成功，系統將返回主頁。", "success");
+        setTimeout(() => {
+          window.location.href = HOME_URL;
+        }, 1200);
+      } catch (err) {
+        console.error(err);
+        setStatus(`登入失敗：${err.message || "未知錯誤"}`, "error");
+      }
+    }
+
+    handleAuthCallback();
+  </script>
+</body>
+</html>
