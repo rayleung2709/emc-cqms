@@ -1247,7 +1247,6 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const HKT_TIMEZONE = "Asia/Hong_Kong";
 const HKT_OFFSET_MINUTES = 8 * 60;
 
-const GROUP_OPTIONS = ["醫生", "護士", "助理", "文員"];
 const DOCTOR_LEVEL_OPTIONS = ["駐院醫生", "住院醫生", "專科醫生", "顧問醫生", "其他"];
 
 const CATEGORY_OPTIONS = [
@@ -1308,6 +1307,8 @@ const PATIENT_NOTIFIED_OPTIONS = [
   { value: "no", label: "否" }
 ];
 
+const ALLOWED_GROUP_ROLES = ["醫生", "護士", "助理", "文員"];
+
 const authState = {
   user: null,
   profile: null
@@ -1327,7 +1328,8 @@ const state = {
   selectedAssignedStaff: [],
   selectedAssignedGroups: [],
   assignSelectedStaff: [],
-  assignSelectedGroups: []
+  assignSelectedGroups: [],
+  roleOptions: []
 };
 
 let followupStaffOptions = [];
@@ -1510,6 +1512,19 @@ function uniqueStrings(arr) {
   return [...new Set((arr || []).map(v => String(v || "").trim()).filter(Boolean))];
 }
 
+function sortRoles(roleList) {
+  const order = ["醫生", "護士", "助理", "文員"];
+  return [...roleList].sort((a, b) => {
+    const ai = order.indexOf(a);
+    const bi = order.indexOf(b);
+
+    if (ai === -1 && bi === -1) return a.localeCompare(b, "zh-HK");
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
+}
+
 function encodeAssignedTargets(staffNames, groupNames) {
   const staff = uniqueStrings(staffNames);
   const groups = uniqueStrings(groupNames);
@@ -1534,7 +1549,7 @@ function getAssignedGroups(f) {
   if (raw.length) return uniqueStrings(raw);
 
   const all = String(f?.assigned_to || "").split("、").map(v => v.trim()).filter(Boolean);
-  return uniqueStrings(all.filter(x => GROUP_OPTIONS.includes(x)));
+  return uniqueStrings(all.filter(x => state.roleOptions.includes(x)));
 }
 
 function getAssignedDisplayText(f) {
@@ -1724,23 +1739,32 @@ async function loadFollowupStaffOptions() {
       .order("display_name", { ascending: true });
 
     if (error) throw error;
+
     followupStaffOptions = data || [];
+
+    state.roleOptions = sortRoles(
+      [...new Set(
+        followupStaffOptions
+          .map(s => String(s.role || "").trim())
+          .filter(role => role && ALLOWED_GROUP_ROLES.includes(role))
+      )]
+    );
+
     renderAssignmentSelectors();
     populateDoctorRequesterSelect();
   } catch (error) {
     console.error("loadFollowupStaffOptions failed:", error);
     followupStaffOptions = [];
+    state.roleOptions = [];
     renderAssignmentSelectors();
     populateDoctorRequesterSelect();
   }
 }
 
 function getDoctorStaffOptions() {
-  return (followupStaffOptions || []).filter(s => {
-    const role = String(s.role || "").toLowerCase();
-    const name = String(s.display_name || "").toLowerCase();
-    return role.includes("doctor") || role.includes("醫生") || name.includes("dr");
-  });
+  return (followupStaffOptions || []).filter(
+    s => String(s.role || "").trim() === "醫生"
+  );
 }
 
 function populateDoctorRequesterSelect(selected = "") {
@@ -1773,12 +1797,17 @@ function renderStaffChecklist(containerId, selectedValues, dataAttr) {
 function renderGroupChecklist(containerId, selectedValues, dataAttr) {
   const el = document.getElementById(containerId);
   if (!el) return;
-  el.innerHTML = GROUP_OPTIONS.map(group => `
-    <label class="multi-check">
-      <input type="checkbox" ${selectedValues.includes(group) ? "checked" : ""} ${dataAttr}="${escapeHtml(group)}" />
-      <span>${escapeHtml(group)}</span>
-    </label>
-  `).join("");
+
+  const groups = state.roleOptions || [];
+
+  el.innerHTML = groups.length
+    ? groups.map(group => `
+        <label class="multi-check">
+          <input type="checkbox" ${selectedValues.includes(group) ? "checked" : ""} ${dataAttr}="${escapeHtml(group)}" />
+          <span>${escapeHtml(group)}</span>
+        </label>
+      `).join("")
+    : `<span class="helper-text">暫無可選群組</span>`;
 }
 
 function renderAssignmentSelectors() {
@@ -1896,7 +1925,8 @@ function setupRealtimeSubscription() {
     "followup_comments",
     "patients",
     "rooms",
-    "encounters"
+    "encounters",
+    "staff_profiles"
   ].forEach(table => {
     channel.on(
       "postgres_changes",
@@ -2181,6 +2211,7 @@ function getFollowupFiltersFromUi() {
 function getFilteredFollowups() {
   const filters = getFollowupFiltersFromUi();
   const me = getCurrentStaffDisplayText().toLowerCase();
+  const myRole = String(authState.profile?.role || "").trim().toLowerCase();
   let rows = [...state.followups];
 
   if (filters.patientId) rows = rows.filter(f => String(f.patient_id || "").toLowerCase().includes(filters.patientId));
@@ -2214,10 +2245,11 @@ function getFilteredFollowups() {
   if (filters.incompleteOnly) rows = rows.filter(f => !["done", "cancelled"].includes(f.status));
   if (filters.overdueOnly) rows = rows.filter(f => isFollowupOverdue(f));
 
-  if (filters.onlyMine && me) {
+  if (filters.onlyMine && (me || myRole)) {
     rows = rows.filter(f => {
-      const assignees = [...getAssignedStaffNames(f), ...getAssignedGroups(f)];
-      return assignees.some(x => String(x).trim().toLowerCase() === me);
+      const staffNames = getAssignedStaffNames(f).map(x => String(x).trim().toLowerCase());
+      const groupNames = getAssignedGroups(f).map(x => String(x).trim().toLowerCase());
+      return (me && staffNames.includes(me)) || (myRole && groupNames.includes(myRole));
     });
   }
 
@@ -2225,10 +2257,11 @@ function getFilteredFollowups() {
   if (filters.mode === "pending") rows = rows.filter(f => f.status === "pending");
   if (filters.mode === "today_due") rows = rows.filter(f => isFollowupDueToday(f));
   if (filters.mode === "overdue") rows = rows.filter(f => isFollowupOverdue(f));
-  if (filters.mode === "mine" && me) {
+  if (filters.mode === "mine" && (me || myRole)) {
     rows = rows.filter(f => {
-      const assignees = [...getAssignedStaffNames(f), ...getAssignedGroups(f)];
-      return assignees.some(x => String(x).trim().toLowerCase() === me);
+      const staffNames = getAssignedStaffNames(f).map(x => String(x).trim().toLowerCase());
+      const groupNames = getAssignedGroups(f).map(x => String(x).trim().toLowerCase());
+      return (me && staffNames.includes(me)) || (myRole && groupNames.includes(myRole));
     });
   }
   if (filters.mode === "unassigned") {
@@ -2264,6 +2297,7 @@ function getFilteredFollowups() {
 
 function getFollowupSummaryCounts() {
   const me = getCurrentStaffDisplayText().toLowerCase();
+  const myRole = String(authState.profile?.role || "").trim().toLowerCase();
   const today = getHktDateParts(new Date());
   const todayKey = `${today.year}-${today.month}-${today.day}`;
 
@@ -2272,8 +2306,12 @@ function getFollowupSummaryCounts() {
     todayDue: state.followups.filter(f => isFollowupDueToday(f)).length,
     overdue: state.followups.filter(f => isFollowupOverdue(f)).length,
     mine: state.followups.filter(f => {
-      const assignees = [...getAssignedStaffNames(f), ...getAssignedGroups(f)];
-      return assignees.some(x => String(x).trim().toLowerCase() === me) && !["done", "cancelled"].includes(f.status);
+      const staffNames = getAssignedStaffNames(f).map(x => String(x).trim().toLowerCase());
+      const groupNames = getAssignedGroups(f).map(x => String(x).trim().toLowerCase());
+      return (
+        !["done", "cancelled"].includes(f.status) &&
+        ((me && staffNames.includes(me)) || (myRole && groupNames.includes(myRole)))
+      );
     }).length,
     unassigned: state.followups.filter(f =>
       !getAssignedStaffNames(f).length &&
@@ -2298,7 +2336,7 @@ function renderFollowupSummaryCards() {
     { key: "all", label: "未完成", value: c.incomplete, hint: "所有新建立 + 處理中", cls: "" },
     { key: "today_due", label: "今日到期", value: c.todayDue, hint: "今日內要處理", cls: "warning" },
     { key: "overdue", label: "已逾期", value: c.overdue, hint: "最需要優先處理", cls: "danger" },
-    { key: "mine", label: "我的事項", value: c.mine, hint: "已指派給你", cls: "" },
+    { key: "mine", label: "我的事項", value: c.mine, hint: "已指派給你 / 你的角色群組", cls: "" },
     { key: "unassigned", label: "未分派", value: c.unassigned, hint: "等待接手 / 分派", cls: "" },
     { key: "done_today", label: "今日完成", value: c.todayDone, hint: "今日完成數量", cls: "" }
   ];
