@@ -1,0 +1,2922 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EMCQMS 跟進事項管理</title>
+<link rel="icon" href="data:," />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --line: #dbe3ee;
+  --line-soft: #e8eef6;
+  --text: #1f2937;
+  --muted: #64748b;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --soft: #f8fafc;
+  --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  --radius: 18px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, "Microsoft JhengHei", "PingFang TC", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body.modal-open { overflow: hidden; }
+
+.app {
+  max-width: 1680px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.tab-btn {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--text);
+  padding: 10px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.tab-btn.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.panel-title {
+  font-size: 1.1rem;
+  font-weight: 900;
+  margin-bottom: 14px;
+  color: #0f172a;
+}
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+label {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #334155;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.98rem;
+  background: #fff;
+  color: var(--text);
+  font-family: inherit;
+}
+
+input[disabled], select[disabled], textarea[disabled] {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+textarea {
+  min-height: 82px;
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+button {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 0.94rem;
+}
+
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-secondary { background: #e2e8f0; color: #0f172a; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-warning { background: var(--warning); color: #fff; }
+.btn-danger { background: var(--danger); color: #fff; }
+
+.btn-small {
+  padding: 7px 9px;
+  font-size: 0.8rem;
+  border-radius: 9px;
+}
+
+.muted { color: var(--muted); }
+
+.toast-wrap {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+}
+
+.toast {
+  min-width: 240px;
+  max-width: 520px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: #fff;
+  font-weight: 800;
+  box-shadow: var(--shadow);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.toast.success { background: #16a34a; }
+.toast.warning { background: #d97706; }
+.toast.error { background: #dc2626; }
+.toast.info { background: #2563eb; }
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  z-index: 30000;
+}
+
+.modal-backdrop.show {
+  display: flex;
+}
+
+.modal-card {
+  width: min(980px, 100%);
+  max-height: min(90vh, 900px);
+  overflow: auto;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.28);
+  border: 1px solid #dbe3ee;
+}
+
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 18px 18px 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.modal-subtitle {
+  margin-top: 6px;
+  color: #475569;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.modal-close-btn {
+  background: #e2e8f0;
+  color: #0f172a;
+  border-radius: 999px;
+  min-width: 42px;
+  min-height: 42px;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.modal-body {
+  padding: 16px 18px 18px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.modal-section {
+  margin-bottom: 18px;
+}
+
+.modal-section-title {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.info-box {
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.info-label {
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.info-value {
+  font-size: 0.96rem;
+  color: #0f172a;
+  font-weight: 900;
+  line-height: 1.45;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.timeline-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #f8fafc;
+}
+
+.timeline-time {
+  font-size: 0.82rem;
+  color: #475569;
+  font-weight: 900;
+  margin-bottom: 4px;
+}
+
+.timeline-text {
+  font-size: 0.95rem;
+  color: #0f172a;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.followup-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.followup-header-title {
+  font-size: 1.55rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.followup-header-sub {
+  margin-top: 6px;
+  color: #64748b;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.summary-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-1px);
+  border-color: #bfdbfe;
+}
+
+.summary-card.active {
+  border-color: var(--primary);
+  box-shadow: 0 10px 28px rgba(37, 99, 235, 0.12);
+}
+
+.summary-card.warning {
+  border-color: #fcd34d;
+  background: #fffdf5;
+}
+
+.summary-card.danger {
+  border-color: #fca5a5;
+  background: #fff8f8;
+}
+
+.summary-card .label {
+  font-size: 0.88rem;
+  color: #64748b;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.summary-card .value {
+  font-size: 2rem;
+  color: #0f172a;
+  font-weight: 900;
+  line-height: 1.05;
+}
+
+.summary-card .hint {
+  margin-top: 8px;
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.followup-toolbar-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr auto auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.followup-active-filters {
+  margin-top: 12px;
+  color: #475569;
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.followup-table-wrap {
+  overflow-x: auto;
+}
+
+.followup-row-overdue td {
+  background: #fff8f8;
+}
+
+.followup-title-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.followup-main-title {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+.followup-subtext {
+  color: #64748b;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.followup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.followup-more-panel {
+  display: none;
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+}
+
+.followup-more-panel.open {
+  display: block;
+}
+
+.empty-state {
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+  padding: 22px;
+  background: #f8fafc;
+  color: #64748b;
+  font-weight: 900;
+}
+
+.search-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px solid #dbe3ee;
+  font-weight: 800;
+  color: #334155;
+}
+
+.search-checkbox input[type="checkbox"] {
+  width: auto;
+  accent-color: var(--primary);
+}
+
+.quick-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.quick-chip {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #334155;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.88rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.quick-chip.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.quick-chip.overdue-active {
+  background: #dc2626;
+  color: #fff;
+  border-color: #dc2626;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.05;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.priority-low {
+  background: #f8fafc;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+.priority-normal {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #93c5fd;
+}
+
+.priority-high {
+  background: #fff7ed;
+  color: #c2410c;
+  border-color: #fdba74;
+}
+
+.priority-urgent {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+.category-pill {
+  background: #f5f3ff;
+  color: #6d28d9;
+  border-color: #c4b5fd;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.status-open { background: #ecfdf5; color: #047857; border-color: #86efac; }
+.status-pending { background: #fffbeb; color: #b45309; border-color: #fcd34d; }
+.status-done { background: #ecfdf5; color: #047857; border-color: #86efac; }
+.status-cancelled { background: #f3f4f6; color: #6b7280; border-color: #d1d5db; }
+.status-overdue { background: #fef2f2; color: #b91c1c; border-color: #fca5a5; }
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  background: transparent;
+}
+
+thead th {
+  text-align: left;
+  padding: 0 10px 4px 10px;
+  color: #475569;
+  font-size: 0.78rem;
+  font-weight: 900;
+  background: transparent;
+  border-bottom: none;
+  vertical-align: top;
+}
+
+tbody td {
+  background: #fff;
+  padding: 10px 10px;
+  vertical-align: top;
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 0.9rem;
+}
+
+tbody tr td:first-child {
+  border-left: 1px solid var(--line-soft);
+  border-top-left-radius: 14px;
+  border-bottom-left-radius: 14px;
+}
+
+tbody tr td:last-child {
+  border-right: 1px solid var(--line-soft);
+  border-top-right-radius: 14px;
+  border-bottom-right-radius: 14px;
+}
+
+.patient-search-result {
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  background: #fff;
+}
+
+.comment-box {
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px;
+  background: #fff;
+}
+
+.comment-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  margin-bottom: 10px;
+}
+
+.comment-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.comment-author {
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.comment-time {
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 800;
+}
+
+.comment-text {
+  white-space: pre-wrap;
+  line-height: 1.5;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.internal-pill {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #93c5fd;
+}
+
+.external-pill {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #86efac;
+}
+
+.hidden { display: none !important; }
+
+@media (max-width: 1500px) {
+  .grid-6, .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  .followup-toolbar-grid { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+@media (max-width: 900px) {
+  .app { padding: 12px; }
+  .followup-toolbar-grid, .info-grid { grid-template-columns: 1fr; }
+
+  table, thead, tbody, tr, th, td {
+    display: block;
+    width: 100%;
+  }
+
+  thead { display: none; }
+  tbody tr { margin-bottom: 12px; }
+
+  tbody td {
+    border-left: 1px solid var(--line-soft) !important;
+    border-right: 1px solid var(--line-soft) !important;
+    border-radius: 0 !important;
+  }
+
+  tbody tr td:first-child {
+    border-top-left-radius: 14px !important;
+    border-top-right-radius: 14px !important;
+    border-bottom-left-radius: 0 !important;
+  }
+
+  tbody tr td:last-child {
+    border-bottom-left-radius: 14px !important;
+    border-bottom-right-radius: 14px !important;
+    border-top-right-radius: 0 !important;
+  }
+
+  .modal-card { width: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+
+<div class="app">
+  <div class="topbar">
+    <div class="title">
+      急症醫學中心輪候系統<br>Emergency Medicine Centre Queue Management System
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" type="button">跟進事項</button>
+    </div>
+
+    <div class="panel" id="authPanel" style="margin-bottom:0; padding:12px 14px; min-width:320px;">
+      <div style="font-size:0.95rem; font-weight:900; margin-bottom:10px;">職員登入</div>
+
+      <div id="loggedOutView">
+        <div class="form-row" style="margin-bottom:8px;">
+          <label for="loginEmail">CUMC 電郵</label>
+          <input id="loginEmail" type="email" placeholder="試玩: petertmchan@cuhkmc.hk" autocomplete="username" />
+        </div>
+
+        <div class="form-row" style="margin-bottom:10px;">
+          <label for="loginPassword">密碼</label>
+          <input id="loginPassword" type="password" placeholder="試玩: 123456" autocomplete="current-password" />
+        </div>
+
+        <div class="actions" style="justify-content:flex-end;">
+          <button class="btn-primary" id="loginBtn" type="button">登入</button>
+        </div>
+      </div>
+
+      <div id="loggedInView" style="display:none;">
+        <div style="font-weight:800; margin-bottom:6px;">
+          已登入：<span id="currentStaffName">—</span>
+        </div>
+        <div style="font-weight:800; margin-bottom:6px;">
+          電郵：<span id="currentStaffEmail">—</span>
+        </div>
+        <div style="font-weight:800; margin-bottom:10px;">
+          角色：<span id="currentStaffRole">—</span>
+        </div>
+        <div class="actions" style="justify-content:flex-end;">
+          <button class="btn-secondary" id="logoutBtn" type="button">登出</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="followupPage">
+    <div class="panel">
+      <div class="followup-header">
+        <div>
+          <div class="followup-header-title">跟進事項</div>
+          <div class="followup-header-sub">
+            管理病人後續處理、回電、文件、覆診及結果追蹤。<br>
+            俾 staff 每日清 pending、追 overdue、接手處理 follow-up。
+          </div>
+        </div>
+
+        <div class="actions">
+          <label class="search-checkbox">
+            <input type="checkbox" id="followupOnlyMineToggle" />
+            <span>只顯示我的事項</span>
+          </label>
+          <button class="btn-secondary" type="button" id="followupExportBtn">匯出</button>
+          <button class="btn-primary" type="button" id="openNewFollowupBtn">新增跟進事項</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-6" id="followupSummaryCards"></div>
+
+    <div class="panel">
+      <div class="panel-title" style="margin-bottom:10px;">快速篩選</div>
+      <div class="quick-chip-row" id="followupQuickChips"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">搜尋 / 篩選</div>
+
+      <div class="followup-toolbar-grid">
+        <div class="form-row">
+          <label for="filterPatientId">病人編號 / CUMC</label>
+          <input id="filterPatientId" type="text" placeholder="例如：ABC1234" />
+        </div>
+        <div class="form-row">
+          <label for="filterEncounterNo">Encounter No.</label>
+          <input id="filterEncounterNo" type="text" placeholder="例如：AE260415005" />
+        </div>
+        <div class="form-row">
+          <label for="filterCategory">跟進類別</label>
+          <select id="filterCategory">
+            <option value="">全部</option>
+            <option value="callback">callback</option>
+            <option value="abnormal_result">abnormal result</option>
+            <option value="document_request">document request</option>
+            <option value="return_visit">return visit</option>
+            <option value="insurance_form">insurance form</option>
+            <option value="admin">admin</option>
+            <option value="other">other</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="filterStatus">狀態</label>
+          <select id="filterStatus">
+            <option value="">全部</option>
+            <option value="open">open</option>
+            <option value="pending">pending</option>
+            <option value="done">done</option>
+            <option value="cancelled">cancelled</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="filterAssignedTo">負責人</label>
+          <input id="filterAssignedTo" type="text" placeholder="例如：Nurse Chan" />
+        </div>
+        <div class="form-row">
+          <label>&nbsp;</label>
+          <button class="btn-primary" type="button" id="searchFollowupBtn">搜尋</button>
+        </div>
+        <div class="form-row">
+          <label>&nbsp;</label>
+          <button class="btn-secondary" type="button" id="clearFollowupBtn">Clear</button>
+        </div>
+      </div>
+
+      <div class="grid-4" style="margin-top:14px;">
+        <div class="form-row">
+          <label for="filterPriority">優先級</label>
+          <select id="filterPriority">
+            <option value="">全部</option>
+            <option value="low">low</option>
+            <option value="normal">normal</option>
+            <option value="high">high</option>
+            <option value="urgent">urgent</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="filterCreatedBy">建立者</label>
+          <input id="filterCreatedBy" type="text" placeholder="例如：Dr. Wong" />
+        </div>
+        <div class="form-row">
+          <label for="filterRequestedBy">Requested By</label>
+          <input id="filterRequestedBy" type="text" placeholder="例如：doctor / nurse / admin" />
+        </div>
+        <div class="form-row">
+          <label for="filterDueDate">Due Date</label>
+          <input id="filterDueDate" type="date" />
+        </div>
+      </div>
+
+      <div class="actions" style="margin-top:12px;">
+        <label class="search-checkbox">
+          <input type="checkbox" id="filterIncompleteOnly" checked />
+          <span>只顯示未完成</span>
+        </label>
+        <label class="search-checkbox">
+          <input type="checkbox" id="filterOverdueOnly" />
+          <span>只顯示逾期</span>
+        </label>
+      </div>
+
+      <div class="followup-active-filters" id="followupActiveFilters">目前篩選：全部</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">跟進清單</div>
+      <div class="followup-table-wrap" id="followupListWrap"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="followupDetailModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="followupDetailTitle">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="followupDetailTitle">跟進事項詳情</div>
+        <div class="modal-subtitle" id="followupDetailSubtitle">—</div>
+      </div>
+      <button class="modal-close-btn" type="button" data-close-modal="followupDetailModal" aria-label="關閉">×</button>
+    </div>
+    <div class="modal-body" id="followupDetailBody"></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="followupFormModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="followupFormTitle">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="followupFormTitle">新增跟進事項</div>
+        <div class="modal-subtitle" id="followupFormSubtitle">建立病人後續處理、回電、文件、覆診及結果追蹤事項</div>
+      </div>
+      <button class="modal-close-btn" type="button" data-close-modal="followupFormModal" aria-label="關閉">×</button>
+    </div>
+    <div class="modal-body">
+      <input id="fuEditId" type="hidden" />
+      <input id="fuEncounterId" type="hidden" />
+
+      <div class="modal-section">
+        <div class="modal-section-title">病人資料</div>
+        <div class="grid-3">
+          <div class="form-row">
+            <label for="fuPatientId">病人編號 / CUMC *</label>
+            <input id="fuPatientId" type="text" placeholder="例如：ABC1234" />
+          </div>
+          <div class="form-row">
+            <label for="fuEncounterNo">Encounter No.</label>
+            <input id="fuEncounterNo" type="text" placeholder="例如：AE260415005" />
+          </div>
+          <div class="form-row" style="justify-content:flex-end;">
+            <label>&nbsp;</label>
+            <button class="btn-secondary" type="button" id="fuLookupPatientBtn">查找病人</button>
+          </div>
+        </div>
+
+        <div id="fuPatientLookupBox" class="patient-search-result hidden" style="margin-top:12px;"></div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">跟進內容</div>
+
+        <div class="grid-3">
+          <div class="form-row">
+            <label for="fuCategory">跟進類別 *</label>
+            <select id="fuCategory">
+              <option value="callback">回電跟進</option>
+              <option value="abnormal_result">異常結果</option>
+              <option value="document_request">文件申請</option>
+              <option value="return_visit">覆診安排</option>
+              <option value="insurance_form">保險表格</option>
+              <option value="admin">行政事項</option>
+              <option value="other">其他</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="fuPriority">優先級 *</label>
+            <select id="fuPriority">
+              <option value="low">低</option>
+              <option value="normal" selected>一般</option>
+              <option value="high">高</option>
+              <option value="urgent">緊急</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="fuStatus">狀態 *</label>
+            <select id="fuStatus">
+              <option value="open">open / 新建立</option>
+              <option value="pending">pending / 處理中</option>
+              <option value="done">done / 已完成</option>
+              <option value="cancelled">cancelled / 已取消</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row" style="margin-top:14px;">
+          <label for="fuTitleInput">標題 / 主題 *</label>
+          <input id="fuTitleInput" type="text" placeholder="例如：回電通知驗血結果" />
+        </div>
+
+        <div class="form-row" style="margin-top:14px;">
+          <label for="fuDescription">內容說明</label>
+          <textarea id="fuDescription" placeholder="請輸入跟進內容、建立原因、背景、需要處理的事項"></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:14px;">
+          <label for="fuOutcome">處理結果 / Outcome</label>
+          <textarea id="fuOutcome" placeholder="可留空；完成時可填寫結果"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">指派與來源</div>
+
+        <div class="grid-2">
+          <div class="form-row">
+            <label>負責人 Assigned To</label>
+            <div class="grid-2">
+              <div class="form-row">
+                <label for="fuAssignedToSelect">從職員名單選擇</label>
+                <select id="fuAssignedToSelect">
+                  <option value="">請選擇職員</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="fuAssignedTo">或自由輸入</label>
+                <input id="fuAssignedTo" type="text" placeholder="例如：陳姑娘 / Nurse Chan" />
+              </div>
+            </div>
+            <div class="followup-subtext">如同時有填，自由輸入會優先。</div>
+          </div>
+
+          <div class="form-row">
+            <label>建立者 Created By *</label>
+            <div class="grid-2">
+              <div class="form-row">
+                <label for="fuCreatedBySelect">從職員名單選擇</label>
+                <select id="fuCreatedBySelect">
+                  <option value="">請選擇職員</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="fuCreatedBy">或自由輸入</label>
+                <input id="fuCreatedBy" type="text" placeholder="例如：王醫生 / Dr. Wong" />
+              </div>
+            </div>
+            <div class="followup-subtext">如同時有填，自由輸入會優先。</div>
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-top:14px;">
+          <div class="form-row">
+            <label for="fuDueAt">到期時間</label>
+            <input id="fuDueAt" type="datetime-local" />
+          </div>
+
+          <div class="form-row">
+            <label for="fuRequestedBy">要求來源 Requested By</label>
+            <select id="fuRequestedBy">
+              <option value="">—</option>
+              <option value="patient">病人</option>
+              <option value="doctor">醫生</option>
+              <option value="nurse">護士</option>
+              <option value="admin">行政</option>
+              <option value="external">外部</option>
+              <option value="system">系統</option>
+              <option value="other">其他</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="fuSource">建立來源 Source</label>
+            <select id="fuSource">
+              <option value="">—</option>
+              <option value="phone">電話</option>
+              <option value="counter">櫃位</option>
+              <option value="doctor">醫生</option>
+              <option value="lab">化驗 / 檢查</option>
+              <option value="system">系統</option>
+              <option value="email">電郵</option>
+              <option value="admin">行政</option>
+              <option value="other">其他</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" type="button" data-close-modal="followupFormModal">取消</button>
+        <button class="btn-primary" type="button" id="saveFollowupBtn">儲存跟進事項</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="followupAssignModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="followupAssignTitle">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="followupAssignTitle">指派跟進事項</div>
+        <div class="modal-subtitle" id="assignModalSubtitle">—</div>
+      </div>
+      <button class="modal-close-btn" type="button" data-close-modal="followupAssignModal" aria-label="關閉">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="grid-2">
+        <div class="form-row">
+          <label for="assignCurrentUser">目前負責人</label>
+          <input id="assignCurrentUser" type="text" disabled />
+        </div>
+
+        <div class="form-row">
+          <label>新負責人</label>
+          <div class="grid-2">
+            <div class="form-row">
+              <label for="assignNewUserSelect">從職員名單選擇</label>
+              <select id="assignNewUserSelect">
+                <option value="">請選擇職員</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="assignNewUser">或自由輸入</label>
+              <input id="assignNewUser" type="text" placeholder="例如：Nurse Lee" />
+            </div>
+          </div>
+          <div class="followup-subtext">如同時有填，自由輸入會優先。</div>
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-top:14px;">
+        <label for="assignReason">指派原因 / 備註</label>
+        <textarea id="assignReason" placeholder="例如：轉由日更同事接手、需由文員處理文件"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" type="button" data-close-modal="followupAssignModal">取消</button>
+        <button class="btn-primary" type="button" id="saveAssignBtn">儲存指派</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="followupNoteModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="followupNoteTitle">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="followupNoteTitle">更新跟進內容</div>
+        <div class="modal-subtitle" id="noteModalSubtitle">—</div>
+      </div>
+      <button class="modal-close-btn" type="button" data-close-modal="followupNoteModal" aria-label="關閉">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label for="followupNoteText">補充內容</label>
+        <textarea id="followupNoteText" placeholder="例如：已嘗試致電，未接聽；已留語音訊息"></textarea>
+      </div>
+
+      <div class="grid-2" style="margin-top:14px;">
+        <div class="form-row">
+          <label for="followupNoteStatus">是否同時改狀態</label>
+          <select id="followupNoteStatus">
+            <option value="">不更改</option>
+            <option value="open">open</option>
+            <option value="pending">pending</option>
+            <option value="done">done</option>
+            <option value="cancelled">cancelled</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="followupNoteDueAt">下一個到期時間</label>
+          <input id="followupNoteDueAt" type="datetime-local" />
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" type="button" data-close-modal="followupNoteModal">取消</button>
+        <button class="btn-primary" type="button" id="saveNoteBtn">儲存更新</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="followupCompleteModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="followupCompleteTitle">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="followupCompleteTitle">完成跟進事項</div>
+        <div class="modal-subtitle" id="completeModalSubtitle">—</div>
+      </div>
+      <button class="modal-close-btn" type="button" data-close-modal="followupCompleteModal" aria-label="關閉">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label for="followupOutcome">完成備註 / Outcome</label>
+        <textarea id="followupOutcome" placeholder="例如：已回電通知病人、已安排覆診、醫生已 review 毋須再跟進"></textarea>
+      </div>
+
+      <div class="grid-2" style="margin-top:14px;">
+        <div class="form-row">
+          <label for="followupCompletedBy">Completed By</label>
+          <input id="followupCompletedBy" type="text" />
+        </div>
+        <div class="form-row">
+          <label for="followupPatientNotified">是否已通知病人</label>
+          <select id="followupPatientNotified">
+            <option value="unknown">unknown</option>
+            <option value="yes">yes</option>
+            <option value="no">no</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" type="button" data-close-modal="followupCompleteModal">取消</button>
+        <button class="btn-success" type="button" id="saveCompleteBtn">完成事項</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://dvyberdrmmfgutjqnpjr.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
+
+if (!window.supabase || typeof window.supabase.createClient !== "function") {
+  document.body.innerHTML = `
+    <div style="padding:24px;font-family:Arial,sans-serif;">
+      <h2 style="margin:0 0 12px;">系統初始化失敗</h2>
+      <div>Supabase SDK 未能載入，請檢查網絡或 CDN 是否可用。</div>
+    </div>
+  `;
+  throw new Error("Supabase SDK not loaded");
+}
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const HKT_TIMEZONE = "Asia/Hong_Kong";
+const HKT_OFFSET_MINUTES = 8 * 60;
+
+const authState = {
+  user: null,
+  profile: null
+};
+
+const state = {
+  patients: [],
+  rooms: [],
+  encounters: [],
+  followups: [],
+  followupEvents: [],
+  followupComments: [],
+  followupFilterMode: "all",
+  currentFollowupId: null
+};
+
+let followupStaffOptions = [];
+
+function notify(message, type = "info") {
+  const wrap = document.getElementById("toastWrap");
+  const el = document.createElement("div");
+  el.className = "toast " + type;
+  el.textContent = message;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 4200);
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function nowIso() { return new Date().toISOString(); }
+
+function getHktDateParts(date = new Date()) {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: HKT_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23"
+  });
+  const parts = formatter.formatToParts(date);
+  const map = {};
+  for (const p of parts) {
+    if (p.type !== "literal") map[p.type] = p.value;
+  }
+  return {
+    year: map.year,
+    month: map.month,
+    day: map.day,
+    hour: map.hour,
+    minute: map.minute,
+    second: map.second
+  };
+}
+
+function toHktDateTimeLocalValue(date = new Date()) {
+  const p = getHktDateParts(date);
+  return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
+}
+
+function hktLocalDateTimeToIso(value) {
+  if (!value) return null;
+  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+  if (!match) return null;
+  const [, y, m, d, hh, mm] = match;
+  const utcMillis = Date.UTC(Number(y), Number(m) - 1, Number(d), Number(hh), Number(mm) - HKT_OFFSET_MINUTES, 0, 0);
+  return new Date(utcMillis).toISOString();
+}
+
+function formatDateTime(iso) {
+  if (!iso) return "—";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "—";
+  return new Intl.DateTimeFormat("zh-HK", {
+    timeZone: HKT_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23"
+  }).format(date);
+}
+
+function formatRelativeTime(iso) {
+  if (!iso) return "—";
+  const diff = Date.now() - new Date(iso).getTime();
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return "剛剛";
+  if (min < 60) return `${min} 分鐘前`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr} 小時前`;
+  const day = Math.floor(hr / 24);
+  return `${day} 日前`;
+}
+
+function formatSupabaseError(error) {
+  if (!error) return "unknown error";
+  if (typeof error === "string") return error;
+  const parts = [];
+  if (error.message) parts.push(`message: ${error.message}`);
+  if (error.code) parts.push(`code: ${error.code}`);
+  if (error.details) parts.push(`details: ${error.details}`);
+  if (error.hint) parts.push(`hint: ${error.hint}`);
+  return parts.join(" | ") || JSON.stringify(error);
+}
+
+function getCurrentStaffDisplayText() {
+  return String(
+    authState.profile?.display_name ||
+    authState.profile?.email ||
+    authState.user?.email ||
+    ""
+  ).trim();
+}
+
+function updateAuthUi() {
+  const loggedOutView = document.getElementById("loggedOutView");
+  const loggedInView = document.getElementById("loggedInView");
+  const currentStaffName = document.getElementById("currentStaffName");
+  const currentStaffEmail = document.getElementById("currentStaffEmail");
+  const currentStaffRole = document.getElementById("currentStaffRole");
+
+  const isLoggedIn = !!authState.user;
+
+  if (loggedOutView) loggedOutView.style.display = isLoggedIn ? "none" : "block";
+  if (loggedInView) loggedInView.style.display = isLoggedIn ? "block" : "none";
+
+  if (isLoggedIn) {
+    if (currentStaffName) currentStaffName.textContent = authState.profile?.display_name || "未設定名稱";
+    if (currentStaffEmail) currentStaffEmail.textContent = authState.profile?.email || authState.user?.email || "—";
+    if (currentStaffRole) currentStaffRole.textContent = authState.profile?.role || "—";
+  } else {
+    if (currentStaffName) currentStaffName.textContent = "—";
+    if (currentStaffEmail) currentStaffEmail.textContent = "—";
+    if (currentStaffRole) currentStaffRole.textContent = "—";
+  }
+}
+
+async function loadCurrentStaffProfile() {
+  const { data: userData, error: userError } = await sb.auth.getUser();
+
+  if (userError) {
+    authState.user = null;
+    authState.profile = null;
+    updateAuthUi();
+    return;
+  }
+
+  const user = userData?.user || null;
+  authState.user = user;
+
+  if (!user) {
+    authState.profile = null;
+    updateAuthUi();
+    return;
+  }
+
+  const { data: profile, error: profileError } = await sb
+    .from("staff_profiles")
+    .select("id, email, display_name, role, is_active")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError) {
+    authState.profile = null;
+    updateAuthUi();
+    notify("已登入，但讀取 staff profile 失敗", "warning");
+    return;
+  }
+
+  authState.profile = profile;
+  updateAuthUi();
+}
+
+async function loginStaff() {
+  const email = String(document.getElementById("loginEmail")?.value || "").trim();
+  const password = String(document.getElementById("loginPassword")?.value || "");
+
+  if (!email || !password) {
+    notify("請輸入 email 同 password", "warning");
+    return;
+  }
+
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) {
+    notify("登入失敗\n" + formatSupabaseError(error), "error");
+    return;
+  }
+
+  await loadCurrentStaffProfile();
+  await loadFollowupStaffOptions();
+  document.getElementById("loginPassword").value = "";
+  notify("登入成功", "success");
+}
+
+async function logoutStaff() {
+  const { error } = await sb.auth.signOut();
+  if (error) {
+    notify("登出失敗\n" + formatSupabaseError(error), "error");
+    return;
+  }
+
+  authState.user = null;
+  authState.profile = null;
+  updateAuthUi();
+  notify("已登出", "info");
+}
+
+function requireStaffLogin() {
+  if (!authState.user || !authState.profile) {
+    notify("請先以職員帳戶登入", "warning");
+    return false;
+  }
+  if (authState.profile.is_active === false) {
+    notify("此職員帳戶已停用", "error");
+    return false;
+  }
+  return true;
+}
+
+function openModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add("show");
+  el.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+}
+
+function closeModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove("show");
+  el.setAttribute("aria-hidden", "true");
+  if (!document.querySelector(".modal-backdrop.show")) {
+    document.body.classList.remove("modal-open");
+  }
+}
+
+function withButtonLoading(button, fn) {
+  if (!button) return fn();
+  const oldDisabled = button.disabled;
+  button.disabled = true;
+  button.style.opacity = "0.65";
+  button.style.pointerEvents = "none";
+  return Promise.resolve(fn()).finally(() => {
+    button.disabled = oldDisabled;
+    button.style.opacity = "";
+    button.style.pointerEvents = "";
+  });
+}
+
+async function loadFollowupStaffOptions() {
+  try {
+    const { data, error } = await sb
+      .from("staff_profiles")
+      .select("id, email, display_name, role, is_active")
+      .eq("is_active", true)
+      .order("display_name", { ascending: true });
+
+    if (error) throw error;
+    followupStaffOptions = data || [];
+    renderFollowupStaffSelects();
+  } catch (error) {
+    console.error("loadFollowupStaffOptions failed:", error);
+    followupStaffOptions = [];
+    renderFollowupStaffSelects();
+  }
+}
+
+function renderFollowupStaffSelectOptions(includeEmptyLabel = "請選擇職員") {
+  return `
+    <option value="">${includeEmptyLabel}</option>
+    ${(followupStaffOptions || []).map(s => {
+      const display = String(s.display_name || s.email || s.id || "").trim();
+      return `<option value="${escapeHtml(display)}">${escapeHtml(display)}</option>`;
+    }).join("")}
+  `;
+}
+
+function renderFollowupStaffSelects() {
+  const ids = ["fuAssignedToSelect", "fuCreatedBySelect", "assignNewUserSelect"];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      const current = el.value;
+      el.innerHTML = renderFollowupStaffSelectOptions();
+      if ([...el.options].some(o => o.value === current)) el.value = current;
+    }
+  });
+}
+
+async function loadBaseData() {
+  const [patientsRes, roomsRes, encountersRes] = await Promise.all([
+    sb.from("patients").select("*"),
+    sb.from("rooms").select("*"),
+    sb.from("encounters").select("*")
+  ]);
+
+  if (patientsRes.error) throw patientsRes.error;
+  if (roomsRes.error) throw roomsRes.error;
+  if (encountersRes.error) throw encountersRes.error;
+
+  state.patients = (patientsRes.data || []).map(patient => ({
+    id: patient.id,
+    cumcNo: patient.cumc_no,
+    roomId: patient.room_id || "",
+    sourceType: patient.source_type || "walkin",
+    priority: !!patient.priority,
+    registeredAt: patient.registered_at || nowIso(),
+    status: patient.status || "waiting",
+    createdAt: patient.created_at || nowIso(),
+    encounterNo: patient.encounter_no || null
+  }));
+
+  state.rooms = (roomsRes.data || []).map(room => ({
+    id: room.id,
+    roomNo: room.room_no,
+    doctorName: room.doctor_name || "",
+    status: room.status || "open"
+  }));
+
+  state.encounters = encountersRes.data || [];
+}
+
+async function loadFollowupsFromSupabase(showErrorToast = false) {
+  try {
+    const { data: followups, error: fuError } = await sb
+      .from("followups")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (fuError) throw fuError;
+
+    const { data: events, error: eventError } = await sb
+      .from("followup_events")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (eventError) throw eventError;
+
+    const { data: comments, error: commentError } = await sb
+      .from("followup_comments")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (commentError) throw commentError;
+
+    state.followups = followups || [];
+    state.followupEvents = events || [];
+    state.followupComments = comments || [];
+    return true;
+  } catch (error) {
+    console.error("load followups failed:", error);
+    if (showErrorToast) notify("讀取跟進事項失敗\n" + formatSupabaseError(error), "error");
+    return false;
+  }
+}
+
+function getPatientDisplayNo(patient) {
+  return String(patient?.cumcNo || "").trim();
+}
+
+function formatEncounterNoDisplay(encounterNo) {
+  const text = String(encounterNo || "").trim();
+  if (!text) return "—";
+  return text;
+}
+
+function getPatientTypeLabel(type) {
+  if (type === "walkin") return "即場";
+  if (type === "onlineTicket") return "網上取票";
+  if (type === "appointment") return "預約";
+  return "—";
+}
+
+function getStatusLabel(status) {
+  const statusMap = {
+    waiting: "候診中",
+    review_waiting: "回診等候",
+    called: "現正診症",
+    skipped: "過號",
+    done: "已完成",
+    cancelled: "已取消"
+  };
+  return statusMap[status] || status;
+}
+
+function getRoom(roomId) {
+  return state.rooms.find(room => room.id === roomId) || null;
+}
+
+function findPatientByCumcNo(cumcNo) {
+  const key = String(cumcNo || "").trim().toUpperCase();
+  return state.patients.find(p => String(p.cumcNo || "").trim().toUpperCase() === key) || null;
+}
+
+function isFollowupOverdue(f) {
+  if (!f?.due_at) return false;
+  if (["done", "cancelled"].includes(f.status)) return false;
+  return new Date(f.due_at).getTime() < Date.now();
+}
+
+function isFollowupDueToday(f) {
+  if (!f?.due_at) return false;
+  if (["done", "cancelled"].includes(f.status)) return false;
+  const d = new Date(f.due_at);
+  const now = new Date();
+  const a = getHktDateParts(d);
+  const b = getHktDateParts(now);
+  return a.year === b.year && a.month === b.month && a.day === b.day;
+}
+
+function getFollowupStatusClass(status, overdue = false) {
+  if (overdue) return "status-overdue";
+  if (status === "open") return "status-open";
+  if (status === "pending") return "status-pending";
+  if (status === "done") return "status-done";
+  if (status === "cancelled") return "status-cancelled";
+  return "status-open";
+}
+
+function getFollowupStatusLabel(status, overdue = false) {
+  if (overdue) return "已逾期";
+  if (status === "open") return "open / 新建立";
+  if (status === "pending") return "pending / 處理中";
+  if (status === "done") return "done / 已完成";
+  if (status === "cancelled") return "cancelled / 已取消";
+  return status || "open";
+}
+
+function getFollowupPriorityClass(priority) {
+  if (priority === "low") return "priority-low";
+  if (priority === "high") return "priority-high";
+  if (priority === "urgent") return "priority-urgent";
+  return "priority-normal";
+}
+
+function getFollowupCategoryLabel(category) {
+  return String(category || "other").replaceAll("_", " ");
+}
+
+function getFollowupById(id) {
+  return state.followups.find(f => f.id === id) || null;
+}
+
+function getFollowupEventsById(followupId) {
+  return state.followupEvents
+    .filter(e => e.followup_id === followupId)
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+}
+
+function getFollowupCommentsById(followupId) {
+  return state.followupComments
+    .filter(c => c.followup_id === followupId)
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+}
+
+function getLatestFollowupEventSummary(followupId) {
+  const events = getFollowupEventsById(followupId);
+  if (!events.length) return "暫無更新";
+  const e = events[0];
+  return `${formatRelativeTime(e.created_at)}｜${e.event_label || e.event_type || "updated"}`;
+}
+
+function getFollowupFiltersFromUi() {
+  return {
+    patientId: String(document.getElementById("filterPatientId")?.value || "").trim().toLowerCase(),
+    encounterNo: String(document.getElementById("filterEncounterNo")?.value || "").trim().toLowerCase(),
+    category: String(document.getElementById("filterCategory")?.value || "").trim(),
+    status: String(document.getElementById("filterStatus")?.value || "").trim(),
+    assignedTo: String(document.getElementById("filterAssignedTo")?.value || "").trim().toLowerCase(),
+    priority: String(document.getElementById("filterPriority")?.value || "").trim(),
+    createdBy: String(document.getElementById("filterCreatedBy")?.value || "").trim().toLowerCase(),
+    requestedBy: String(document.getElementById("filterRequestedBy")?.value || "").trim().toLowerCase(),
+    dueDate: String(document.getElementById("filterDueDate")?.value || "").trim(),
+    incompleteOnly: !!document.getElementById("filterIncompleteOnly")?.checked,
+    overdueOnly: !!document.getElementById("filterOverdueOnly")?.checked,
+    onlyMine: !!document.getElementById("followupOnlyMineToggle")?.checked,
+    mode: state.followupFilterMode
+  };
+}
+
+function getFilteredFollowups() {
+  const filters = getFollowupFiltersFromUi();
+  const me = getCurrentStaffDisplayText().toLowerCase();
+  let rows = [...state.followups];
+
+  if (filters.patientId) rows = rows.filter(f => String(f.patient_id || "").toLowerCase().includes(filters.patientId));
+  if (filters.encounterNo) {
+    rows = rows.filter(f =>
+      String(f.encounter_no || "").toLowerCase().includes(filters.encounterNo) ||
+      String(f.description || "").toLowerCase().includes(filters.encounterNo) ||
+      String(f.encounter_ref || "").toLowerCase().includes(filters.encounterNo)
+    );
+  }
+
+  if (filters.category) rows = rows.filter(f => f.category === filters.category);
+  if (filters.status) rows = rows.filter(f => f.status === filters.status);
+  if (filters.assignedTo) rows = rows.filter(f => String(f.assigned_to || "").toLowerCase().includes(filters.assignedTo));
+  if (filters.priority) rows = rows.filter(f => f.priority === filters.priority);
+  if (filters.createdBy) rows = rows.filter(f => String(f.created_by || "").toLowerCase().includes(filters.createdBy));
+  if (filters.requestedBy) rows = rows.filter(f => String(f.requested_by || "").toLowerCase().includes(filters.requestedBy));
+
+  if (filters.dueDate) {
+    rows = rows.filter(f => {
+      if (!f.due_at) return false;
+      const p = getHktDateParts(new Date(f.due_at));
+      return `${p.year}-${p.month}-${p.day}` === filters.dueDate;
+    });
+  }
+
+  if (filters.incompleteOnly) rows = rows.filter(f => !["done", "cancelled"].includes(f.status));
+  if (filters.overdueOnly) rows = rows.filter(f => isFollowupOverdue(f));
+  if (filters.onlyMine && me) rows = rows.filter(f => String(f.assigned_to || "").trim().toLowerCase() === me);
+
+  if (filters.mode === "open") rows = rows.filter(f => f.status === "open");
+  if (filters.mode === "pending") rows = rows.filter(f => f.status === "pending");
+  if (filters.mode === "today_due") rows = rows.filter(f => isFollowupDueToday(f));
+  if (filters.mode === "overdue") rows = rows.filter(f => isFollowupOverdue(f));
+  if (filters.mode === "mine" && me) rows = rows.filter(f => String(f.assigned_to || "").trim().toLowerCase() === me);
+  if (filters.mode === "unassigned") rows = rows.filter(f => !String(f.assigned_to || "").trim());
+  if (filters.mode === "done") rows = rows.filter(f => f.status === "done");
+
+  rows.sort((a, b) => {
+    const aOver = isFollowupOverdue(a) ? 1 : 0;
+    const bOver = isFollowupOverdue(b) ? 1 : 0;
+    if (aOver !== bOver) return bOver - aOver;
+
+    const aToday = isFollowupDueToday(a) ? 1 : 0;
+    const bToday = isFollowupDueToday(b) ? 1 : 0;
+    if (aToday !== bToday) return bToday - aToday;
+
+    const order = { urgent: 4, high: 3, normal: 2, low: 1 };
+    const ap = order[a.priority] || 0;
+    const bp = order[b.priority] || 0;
+    if (ap !== bp) return bp - ap;
+
+    const aUnassigned = String(a.assigned_to || "").trim() ? 0 : 1;
+    const bUnassigned = String(b.assigned_to || "").trim() ? 0 : 1;
+    if (aUnassigned !== bUnassigned) return bUnassigned - aUnassigned;
+
+    const au = new Date(a.updated_at || a.created_at || 0).getTime();
+    const bu = new Date(b.updated_at || b.created_at || 0).getTime();
+    return bu - au;
+  });
+
+  return rows;
+}
+
+function getFollowupSummaryCounts() {
+  const me = getCurrentStaffDisplayText().toLowerCase();
+  const today = getHktDateParts(new Date());
+  const todayKey = `${today.year}-${today.month}-${today.day}`;
+
+  return {
+    incomplete: state.followups.filter(f => ["open", "pending"].includes(f.status)).length,
+    todayDue: state.followups.filter(f => isFollowupDueToday(f)).length,
+    overdue: state.followups.filter(f => isFollowupOverdue(f)).length,
+    mine: state.followups.filter(f =>
+      String(f.assigned_to || "").trim().toLowerCase() === me &&
+      !["done", "cancelled"].includes(f.status)
+    ).length,
+    unassigned: state.followups.filter(f =>
+      !String(f.assigned_to || "").trim() &&
+      !["done", "cancelled"].includes(f.status)
+    ).length,
+    todayDone: state.followups.filter(f => {
+      if (f.status !== "done" || !f.updated_at) return false;
+      const p = getHktDateParts(new Date(f.updated_at));
+      return `${p.year}-${p.month}-${p.day}` === todayKey;
+    }).length
+  };
+}
+
+function renderFollowupSummaryCards() {
+  const c = getFollowupSummaryCounts();
+  const mode = state.followupFilterMode;
+  const wrap = document.getElementById("followupSummaryCards");
+  if (!wrap) return;
+
+  const cards = [
+    { key: "all", label: "未完成", value: c.incomplete, hint: "所有 open + pending", cls: "" },
+    { key: "today_due", label: "今日到期", value: c.todayDue, hint: "今日內要處理", cls: "warning" },
+    { key: "overdue", label: "已逾期", value: c.overdue, hint: "最需要優先處理", cls: "danger" },
+    { key: "mine", label: "我的事項", value: c.mine, hint: "assigned to current user", cls: "" },
+    { key: "unassigned", label: "未分派", value: c.unassigned, hint: "等待接手 / 分派", cls: "" },
+    { key: "done_today", label: "今日完成", value: c.todayDone, hint: "今日 throughput", cls: "" }
+  ];
+
+  wrap.innerHTML = cards.map(card => `
+    <div class="summary-card ${card.cls} ${mode === card.key ? "active" : ""}" data-summary-mode="${card.key}">
+      <div class="label">${escapeHtml(card.label)}</div>
+      <div class="value">${card.value}</div>
+      <div class="hint">${escapeHtml(card.hint)}</div>
+    </div>
+  `).join("");
+}
+
+function renderFollowupQuickChips() {
+  const mode = state.followupFilterMode;
+  const wrap = document.getElementById("followupQuickChips");
+  if (!wrap) return;
+
+  const chips = [
+    ["all", "全部"],
+    ["open", "Open"],
+    ["pending", "處理中"],
+    ["today_due", "今日到期"],
+    ["overdue", "已逾期"],
+    ["mine", "我的事項"],
+    ["unassigned", "未分派"],
+    ["done", "已完成"]
+  ];
+
+  wrap.innerHTML = chips.map(([key, label]) => `
+    <button class="quick-chip ${mode === key ? (key === "overdue" ? "overdue-active" : "active") : ""}" type="button" data-followup-chip="${key}">
+      ${label}
+    </button>
+  `).join("");
+}
+
+function renderFollowupActiveFilters() {
+  const el = document.getElementById("followupActiveFilters");
+  if (!el) return;
+  const f = getFollowupFiltersFromUi();
+  const labels = [];
+
+  if (state.followupFilterMode !== "all") labels.push(state.followupFilterMode.replaceAll("_", " "));
+  if (f.patientId) labels.push(`patient:${f.patientId}`);
+  if (f.encounterNo) labels.push(`encounter:${f.encounterNo}`);
+  if (f.category) labels.push(f.category);
+  if (f.status) labels.push(f.status);
+  if (f.assignedTo) labels.push(`assigned:${f.assignedTo}`);
+  if (f.priority) labels.push(`priority:${f.priority}`);
+  if (f.createdBy) labels.push(`created by:${f.createdBy}`);
+  if (f.requestedBy) labels.push(`requested by:${f.requestedBy}`);
+  if (f.dueDate) labels.push(`due:${f.dueDate}`);
+  if (f.incompleteOnly) labels.push("未完成");
+  if (f.overdueOnly) labels.push("逾期");
+  if (f.onlyMine) labels.push("我的事項");
+
+  el.textContent = `目前篩選：${labels.length ? labels.join("、") : "全部"}`;
+}
+
+function renderFollowupList() {
+  const wrap = document.getElementById("followupListWrap");
+  if (!wrap) return;
+
+  const rows = getFilteredFollowups();
+
+  if (!rows.length) {
+    let msg = "找不到符合條件的跟進事項，請調整搜尋條件。";
+    if (state.followupFilterMode === "mine") msg = "你目前沒有未完成跟進事項。";
+    if (state.followupFilterMode === "overdue") msg = "目前沒有逾期跟進事項。";
+    wrap.innerHTML = `<div class="empty-state">${escapeHtml(msg)}</div>`;
+    return;
+  }
+
+  wrap.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Follow-up No.</th>
+          <th>病人 / Encounter</th>
+          <th>標題 / 主題</th>
+          <th>類別</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th>Assigned To</th>
+          <th>Due At</th>
+          <th>最新更新</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(f => {
+          const overdue = isFollowupOverdue(f);
+          return `
+            <tr class="${overdue ? "followup-row-overdue" : ""}">
+              <td><div style="font-weight:900;color:#0f172a;">${escapeHtml(f.followup_no || f.id)}</div></td>
+              <td>
+                <div style="font-weight:900;">${escapeHtml(f.patient_id || "—")}</div>
+                <div class="followup-subtext">${escapeHtml(f.encounter_no || "—")}</div>
+              </td>
+              <td>
+                <div class="followup-title-cell">
+                  <div class="followup-main-title">${escapeHtml(f.title || "—")}</div>
+                  <div class="followup-subtext">${escapeHtml((f.description || "").slice(0, 100))}</div>
+                </div>
+              </td>
+              <td><span class="pill category-pill">${escapeHtml(getFollowupCategoryLabel(f.category))}</span></td>
+              <td><span class="pill ${getFollowupPriorityClass(f.priority)}">${escapeHtml(f.priority || "normal")}</span></td>
+              <td><span class="status-badge ${getFollowupStatusClass(f.status, overdue)}">${escapeHtml(getFollowupStatusLabel(f.status, overdue))}</span></td>
+              <td><div style="font-weight:800;">${escapeHtml(f.assigned_to || "未分派")}</div></td>
+              <td>
+                <div style="font-weight:800;">${escapeHtml(formatDateTime(f.due_at))}</div>
+                <div class="followup-subtext">${overdue ? "已逾期" : (isFollowupDueToday(f) ? "今日到期" : "")}</div>
+              </td>
+              <td>
+                <div style="font-weight:800;">${escapeHtml(formatRelativeTime(f.updated_at || f.created_at))}</div>
+                <div class="followup-subtext">${escapeHtml(getLatestFollowupEventSummary(f.id))}</div>
+              </td>
+              <td>
+                <div class="followup-actions">
+                  <button class="btn-secondary btn-small" type="button" data-fu-action="view" data-fu-id="${f.id}">查看</button>
+                  <button class="btn-primary btn-small" type="button" data-fu-action="edit" data-fu-id="${f.id}">編輯</button>
+                  <button class="btn-primary btn-small" type="button" data-fu-action="assign" data-fu-id="${f.id}">${f.assigned_to ? "改派" : "指派"}</button>
+                  <button class="btn-success btn-small" type="button" data-fu-action="complete" data-fu-id="${f.id}">完成</button>
+                  <button class="btn-secondary btn-small" type="button" data-fu-more="${f.id}">更多</button>
+                </div>
+                <div class="followup-more-panel" data-fu-more-panel="${f.id}">
+                  <div class="actions">
+                    <button class="btn-secondary btn-small" type="button" data-fu-action="note" data-fu-id="${f.id}">更新內容</button>
+                    <button class="btn-warning btn-small" type="button" data-fu-action="pending" data-fu-id="${f.id}">改為處理中</button>
+                    <button class="btn-secondary btn-small" type="button" data-fu-action="reopen" data-fu-id="${f.id}">重新開啟</button>
+                    <button class="btn-danger btn-small" type="button" data-fu-action="cancel" data-fu-id="${f.id}">取消</button>
+                    <button class="btn-danger btn-small" type="button" data-fu-action="delete" data-fu-id="${f.id}">刪除</button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderFollowupPage() {
+  renderFollowupSummaryCards();
+  renderFollowupQuickChips();
+  renderFollowupActiveFilters();
+  renderFollowupList();
+}
+
+function pickTextOrSelect(textId, selectId) {
+  const textVal = String(document.getElementById(textId)?.value || "").trim();
+  const selectVal = String(document.getElementById(selectId)?.value || "").trim();
+  return textVal || selectVal || "";
+}
+
+function resetFollowupForm() {
+  const staff = getCurrentStaffDisplayText();
+
+  document.getElementById("fuEditId").value = "";
+  document.getElementById("fuEncounterId").value = "";
+  document.getElementById("fuPatientId").value = "";
+  document.getElementById("fuEncounterNo").value = "";
+  document.getElementById("fuCategory").value = "callback";
+  document.getElementById("fuPriority").value = "normal";
+  document.getElementById("fuStatus").value = "open";
+  document.getElementById("fuAssignedToSelect").value = "";
+  document.getElementById("fuAssignedTo").value = "";
+  document.getElementById("fuCreatedBySelect").value = "";
+  document.getElementById("fuCreatedBy").value = staff;
+  document.getElementById("fuDueAt").value = "";
+  document.getElementById("fuTitleInput").value = "";
+  document.getElementById("fuDescription").value = "";
+  document.getElementById("fuOutcome").value = "";
+  document.getElementById("fuRequestedBy").value = "";
+  document.getElementById("fuSource").value = "";
+  document.getElementById("fuPatientLookupBox").innerHTML = "";
+  document.getElementById("fuPatientLookupBox").classList.add("hidden");
+
+  document.getElementById("followupFormTitle").textContent = "新增跟進事項";
+  document.getElementById("followupFormSubtitle").textContent = "建立病人後續處理、回電、文件、覆診及結果追蹤事項";
+}
+
+function renderFollowupPatientLookupBoxByCumc(cumcNo) {
+  const box = document.getElementById("fuPatientLookupBox");
+  if (!box) return;
+
+  const patient = findPatientByCumcNo(cumcNo);
+  if (!patient) {
+    box.innerHTML = `
+      <div class="empty-state">找不到對應病人資料：${escapeHtml(cumcNo || "—")}</div>
+    `;
+    box.classList.remove("hidden");
+    return;
+  }
+
+  const room = getRoom(patient.roomId);
+  box.innerHTML = `
+    <div class="info-grid">
+      <div class="info-box">
+        <div class="info-label">病人編號 / CUMC</div>
+        <div class="info-value">${escapeHtml(patient.cumcNo || "—")}</div>
+      </div>
+      <div class="info-box">
+        <div class="info-label">求診號碼</div>
+        <div class="info-value">${escapeHtml(formatEncounterNoDisplay(patient.encounterNo))}</div>
+      </div>
+      <div class="info-box">
+        <div class="info-label">病人狀態</div>
+        <div class="info-value">${escapeHtml(getStatusLabel(patient.status))}</div>
+      </div>
+      <div class="info-box">
+        <div class="info-label">病人類型</div>
+        <div class="info-value">${escapeHtml(getPatientTypeLabel(patient.sourceType))}</div>
+      </div>
+      <div class="info-box">
+        <div class="info-label">診室</div>
+        <div class="info-value">${room ? `${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}` : "—"}</div>
+      </div>
+      <div class="info-box">
+        <div class="info-label">登記時間</div>
+        <div class="info-value">${escapeHtml(formatDateTime(patient.registeredAt))}</div>
+      </div>
+    </div>
+  `;
+  box.classList.remove("hidden");
+}
+
+async function resolveEncounterIdByEncounterNo(encounterNo) {
+  const normalized = String(encounterNo || "").trim();
+  if (!normalized) return null;
+
+  const { data, error } = await sb
+    .from("encounters")
+    .select("id, encounter_no")
+    .eq("encounter_no", normalized)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data?.id || null;
+}
+
+async function createFollowupEvent(followupId, type, label, eventData = {}) {
+  const actor = getCurrentStaffDisplayText() || "system";
+  const { error } = await sb.from("followup_events").insert([{
+    followup_id: followupId,
+    event_type: type,
+    event_label: label,
+    event_data: eventData,
+    actor
+  }]);
+  if (error) throw error;
+}
+
+async function saveFollowupFromModal() {
+  if (!requireStaffLogin()) return;
+
+  try {
+    const editId = String(document.getElementById("fuEditId").value || "").trim();
+    const patientId = String(document.getElementById("fuPatientId").value || "").trim().toUpperCase();
+    const encounterNo = String(document.getElementById("fuEncounterNo").value || "").trim();
+    const category = String(document.getElementById("fuCategory").value || "other").trim();
+    const priority = String(document.getElementById("fuPriority").value || "normal").trim();
+    const status = String(document.getElementById("fuStatus").value || "open").trim();
+    const assignedTo = pickTextOrSelect("fuAssignedTo", "fuAssignedToSelect");
+    const createdBy = pickTextOrSelect("fuCreatedBy", "fuCreatedBySelect") || getCurrentStaffDisplayText();
+    const dueAt = hktLocalDateTimeToIso(document.getElementById("fuDueAt").value || "");
+    const title = String(document.getElementById("fuTitleInput").value || "").trim();
+    const description = String(document.getElementById("fuDescription").value || "").trim();
+    const outcome = String(document.getElementById("fuOutcome").value || "").trim();
+    const requestedBy = String(document.getElementById("fuRequestedBy").value || "").trim();
+    const source = String(document.getElementById("fuSource").value || "").trim();
+
+    if (!patientId || !title) {
+      notify("請至少輸入病人編號同標題", "warning");
+      return;
+    }
+
+    const validStatus = ["open", "pending", "done", "cancelled"];
+    const validPriority = ["low", "normal", "high", "urgent"];
+    const validCategory = ["callback", "abnormal_result", "document_request", "return_visit", "insurance_form", "admin", "other"];
+    const validRequestedBy = ["", "patient", "doctor", "nurse", "admin", "external", "system", "other"];
+    const validSource = ["", "phone", "counter", "doctor", "lab", "system", "email", "admin", "other"];
+
+    if (!validStatus.includes(status)) throw new Error("INVALID_STATUS");
+    if (!validPriority.includes(priority)) throw new Error("INVALID_PRIORITY");
+    if (!validCategory.includes(category)) throw new Error("INVALID_CATEGORY");
+    if (!validRequestedBy.includes(requestedBy)) throw new Error("INVALID_REQUESTED_BY");
+    if (!validSource.includes(source)) throw new Error("INVALID_SOURCE");
+
+    const encounterId = await resolveEncounterIdByEncounterNo(encounterNo);
+
+    const payload = {
+      patient_id: patientId,
+      encounter_id: encounterId,
+      category,
+      title,
+      description: description || null,
+      status,
+      priority,
+      assigned_to: assignedTo || null,
+      created_by: createdBy,
+      due_at: dueAt,
+      source: source || null,
+      requested_by: requestedBy || null,
+      outcome: outcome || null,
+      encounter_no: encounterNo || null
+    };
+
+    if (!editId) {
+      const { data, error } = await sb
+        .from("followups")
+        .insert([payload])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      await createFollowupEvent(data.id, "created", "Follow-up created", {
+        status: data.status,
+        priority: data.priority,
+        assigned_to: data.assigned_to || null,
+        due_at: data.due_at || null
+      });
+
+      closeModal("followupFormModal");
+      resetFollowupForm();
+      notify(`已新增跟進事項：${data.followup_no || data.id}`, "success");
+    } else {
+      const old = getFollowupById(editId);
+
+      const { data, error } = await sb
+        .from("followups")
+        .update(payload)
+        .eq("id", editId)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      if ((old?.assigned_to || "") !== (data.assigned_to || "")) {
+        await createFollowupEvent(
+          data.id,
+          data.assigned_to ? "assigned" : "unassigned",
+          data.assigned_to ? "Assigned follow-up" : "Unassigned follow-up",
+          { from: old?.assigned_to || null, to: data.assigned_to || null }
+        );
+      }
+
+      if ((old?.status || "") !== (data.status || "")) {
+        let eventType = "status_changed";
+        let label = "Status changed";
+
+        if (data.status === "done") {
+          eventType = "completed";
+          label = "Follow-up completed";
+        } else if (data.status === "cancelled") {
+          eventType = "cancelled";
+          label = "Follow-up cancelled";
+        } else if ((old?.status === "done" || old?.status === "cancelled") && (data.status === "open" || data.status === "pending")) {
+          eventType = "reopened";
+          label = "Follow-up reopened";
+        }
+
+        await createFollowupEvent(data.id, eventType, label, {
+          from: old?.status || null,
+          to: data.status || null
+        });
+      }
+
+      if ((old?.priority || "") !== (data.priority || "")) {
+        await createFollowupEvent(data.id, "priority_changed", "Priority changed", {
+          from: old?.priority || null,
+          to: data.priority || null
+        });
+      }
+
+      if ((old?.due_at || null) !== (data.due_at || null)) {
+        await createFollowupEvent(data.id, "due_date_changed", "Due date changed", {
+          from: old?.due_at || null,
+          to: data.due_at || null
+        });
+      }
+
+      closeModal("followupFormModal");
+      resetFollowupForm();
+      notify(`已更新跟進事項：${data.followup_no || data.id}`, "success");
+    }
+
+    await loadFollowupsFromSupabase(true);
+    renderFollowupPage();
+  } catch (error) {
+    console.error(error);
+    notify("儲存跟進事項失敗\n" + formatSupabaseError(error), "error");
+  }
+}
+
+function openEditFollowupModal(followupId) {
+  const f = getFollowupById(followupId);
+  if (!f) return;
+
+  resetFollowupForm();
+
+  document.getElementById("fuEditId").value = f.id;
+  document.getElementById("fuEncounterId").value = f.encounter_id || "";
+  document.getElementById("fuPatientId").value = f.patient_id || "";
+  document.getElementById("fuEncounterNo").value = f.encounter_no || "";
+  document.getElementById("fuCategory").value = f.category || "other";
+  document.getElementById("fuPriority").value = f.priority || "normal";
+  document.getElementById("fuStatus").value = f.status || "open";
+  document.getElementById("fuDueAt").value = f.due_at ? toHktDateTimeLocalValue(new Date(f.due_at)) : "";
+  document.getElementById("fuTitleInput").value = f.title || "";
+  document.getElementById("fuDescription").value = f.description || "";
+  document.getElementById("fuOutcome").value = f.outcome || "";
+  document.getElementById("fuRequestedBy").value = f.requested_by || "";
+  document.getElementById("fuSource").value = f.source || "";
+
+  const assignedMatch = followupStaffOptions.some(s => (s.display_name || s.email || s.id) === f.assigned_to);
+  document.getElementById("fuAssignedToSelect").value = assignedMatch ? (f.assigned_to || "") : "";
+  document.getElementById("fuAssignedTo").value = assignedMatch ? "" : (f.assigned_to || "");
+
+  const createdMatch = followupStaffOptions.some(s => (s.display_name || s.email || s.id) === f.created_by);
+  document.getElementById("fuCreatedBySelect").value = createdMatch ? (f.created_by || "") : "";
+  document.getElementById("fuCreatedBy").value = createdMatch ? "" : (f.created_by || "");
+
+  document.getElementById("followupFormTitle").textContent = "編輯跟進事項";
+  document.getElementById("followupFormSubtitle").textContent = `${f.followup_no || f.id}｜修改跟進內容`;
+
+  renderFollowupPatientLookupBoxByCumc(f.patient_id);
+  openModal("followupFormModal");
+}
+
+function openNewFollowupForPatient(cumcNo = "") {
+  resetFollowupForm();
+  if (cumcNo) {
+    document.getElementById("fuPatientId").value = cumcNo;
+    const patient = findPatientByCumcNo(cumcNo);
+    if (patient) {
+      document.getElementById("fuEncounterNo").value = String(patient.encounterNo || "");
+      document.getElementById("fuTitleInput").value = `跟進：${patient.cumcNo}`;
+      document.getElementById("fuCreatedBy").value = getCurrentStaffDisplayText();
+      document.getElementById("fuAssignedTo").value = getCurrentStaffDisplayText();
+      renderFollowupPatientLookupBoxByCumc(patient.cumcNo);
+    }
+  }
+  openModal("followupFormModal");
+}
+
+function renderFollowupPatientInfoBox(f) {
+  const patient = findPatientByCumcNo(f.patient_id);
+  if (!patient) {
+    return `
+      <div class="info-box">
+        <div class="info-label">病人資料</div>
+        <div class="info-value">
+          CUMC：${escapeHtml(f.patient_id || "—")}<br>
+          系統內未找到對應病人資料
+        </div>
+      </div>
+    `;
+  }
+
+  const room = getRoom(patient.roomId);
+  return `
+    <div class="info-box">
+      <div class="info-label">病人資料</div>
+      <div class="info-value">
+        CUMC：${escapeHtml(patient.cumcNo || "—")}<br>
+        求診號碼：${escapeHtml(formatEncounterNoDisplay(patient.encounterNo))}<br>
+        狀態：${escapeHtml(getStatusLabel(patient.status))}<br>
+        類型：${escapeHtml(getPatientTypeLabel(patient.sourceType))}<br>
+        診室：${room ? `${escapeHtml(room.roomNo)} / ${escapeHtml(room.doctorName)}` : "—"}<br>
+        登記時間：${escapeHtml(formatDateTime(patient.registeredAt))}
+      </div>
+    </div>
+  `;
+}
+
+function renderCommentsPanel(followupId) {
+  const comments = getFollowupCommentsById(followupId);
+
+  return `
+    <div class="comment-box">
+      <div class="form-row">
+        <label for="newCommentText">新增留言</label>
+        <textarea id="newCommentText" placeholder="請輸入留言內容"></textarea>
+      </div>
+
+      <div class="grid-2" style="margin-top:12px;">
+        <div class="form-row">
+          <label style="display:flex;gap:8px;align-items:center;">
+            <input id="newCommentInternal" type="checkbox" checked style="width:auto;" />
+            <span>內部留言（is_internal = true）</span>
+          </label>
+        </div>
+        <div class="actions" style="justify-content:flex-end; align-items:flex-end;">
+          <button class="btn-primary" type="button" id="saveCommentBtn" data-followup-comment-id="${followupId}">新增留言</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;">
+      ${
+        comments.length
+          ? comments.map(c => `
+            <div class="comment-item">
+              <div class="comment-head">
+                <div>
+                  <span class="comment-author">${escapeHtml(c.created_by || "—")}</span>
+                  <span class="pill ${c.is_internal ? "internal-pill" : "external-pill"}" style="margin-left:8px;">
+                    ${c.is_internal ? "內部留言" : "外部留言"}
+                  </span>
+                </div>
+                <div class="comment-time">${escapeHtml(formatDateTime(c.created_at))}</div>
+              </div>
+              <div class="comment-text">${escapeHtml(c.comment_text || "")}</div>
+            </div>
+          `).join("")
+          : `<div class="empty-state">暫無留言</div>`
+      }
+    </div>
+  `;
+}
+
+function openFollowupDetailModal(followupId) {
+  const f = getFollowupById(followupId);
+  if (!f) return;
+
+  const events = getFollowupEventsById(followupId);
+  const overdue = isFollowupOverdue(f);
+
+  document.getElementById("followupDetailTitle").textContent = f.title || "跟進事項詳情";
+  document.getElementById("followupDetailSubtitle").textContent = `${f.followup_no || f.id}｜${f.patient_id || "—"}`;
+
+  document.getElementById("followupDetailBody").innerHTML = `
+    <div class="modal-section">
+      <div class="modal-section-title">摘要</div>
+      <div class="info-grid">
+        <div class="info-box"><div class="info-label">Follow-up No.</div><div class="info-value">${escapeHtml(f.followup_no || f.id)}</div></div>
+        <div class="info-box"><div class="info-label">狀態</div><div class="info-value"><span class="status-badge ${getFollowupStatusClass(f.status, overdue)}">${escapeHtml(getFollowupStatusLabel(f.status, overdue))}</span></div></div>
+        <div class="info-box"><div class="info-label">優先級</div><div class="info-value"><span class="pill ${getFollowupPriorityClass(f.priority)}">${escapeHtml(f.priority || "normal")}</span></div></div>
+        <div class="info-box"><div class="info-label">類別</div><div class="info-value"><span class="pill category-pill">${escapeHtml(getFollowupCategoryLabel(f.category))}</span></div></div>
+        <div class="info-box"><div class="info-label">負責人</div><div class="info-value">${escapeHtml(f.assigned_to || "未分派")}</div></div>
+        <div class="info-box"><div class="info-label">建立者</div><div class="info-value">${escapeHtml(f.created_by || "—")}</div></div>
+        <div class="info-box"><div class="info-label">到期時間</div><div class="info-value">${escapeHtml(formatDateTime(f.due_at))}</div></div>
+        <div class="info-box"><div class="info-label">完成時間</div><div class="info-value">${escapeHtml(formatDateTime(f.closed_at))}</div></div>
+        <div class="info-box"><div class="info-label">Requested By</div><div class="info-value">${escapeHtml(f.requested_by || "—")}</div></div>
+        <div class="info-box"><div class="info-label">Source</div><div class="info-value">${escapeHtml(f.source || "—")}</div></div>
+        <div class="info-box"><div class="info-label">Encounter ID</div><div class="info-value">${escapeHtml(f.encounter_id || "—")}</div></div>
+        <div class="info-box"><div class="info-label">Encounter No / Ref</div><div class="info-value">${escapeHtml(f.encounter_no || "—")} / ${escapeHtml(f.encounter_ref || "—")}</div></div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">病人資料查找</div>
+      <div class="info-grid">
+        ${renderFollowupPatientInfoBox(f)}
+        <div class="info-box">
+          <div class="info-label">系統欄位</div>
+          <div class="info-value">
+            patient_id：${escapeHtml(f.patient_id || "—")}<br>
+            created_at：${escapeHtml(formatDateTime(f.created_at))}<br>
+            updated_at：${escapeHtml(formatDateTime(f.updated_at))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">內容</div>
+      <div class="info-box">
+        <div class="info-label">標題</div>
+        <div class="info-value">${escapeHtml(f.title || "—")}</div>
+      </div>
+      <div class="info-box" style="margin-top:10px;">
+        <div class="info-label">描述</div>
+        <div class="info-value" style="white-space:pre-wrap;">${escapeHtml(f.description || "—")}</div>
+      </div>
+      <div class="info-box" style="margin-top:10px;">
+        <div class="info-label">Outcome</div>
+        <div class="info-value" style="white-space:pre-wrap;">${escapeHtml(f.outcome || "—")}</div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">處理紀錄 Timeline</div>
+      <div class="timeline">
+        ${
+          events.length
+            ? events.map(e => `
+              <div class="timeline-item">
+                <div class="timeline-time">${escapeHtml(formatDateTime(e.created_at))}｜${escapeHtml(e.actor || "system")}</div>
+                <div class="timeline-text">${escapeHtml(e.event_label || e.event_type || "updated")}</div>
+                <div class="followup-subtext">${escapeHtml(JSON.stringify(e.event_data || {}))}</div>
+              </div>
+            `).join("")
+            : `<div class="empty-state">暫無 timeline 紀錄</div>`
+        }
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">跟進留言 / Comments</div>
+      <div id="followupCommentsPanel">
+        ${renderCommentsPanel(f.id)}
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-primary" type="button" data-fu-action="edit" data-fu-id="${f.id}">編輯</button>
+      <button class="btn-primary" type="button" data-fu-action="assign" data-fu-id="${f.id}">接手 / 指派</button>
+      <button class="btn-secondary" type="button" data-fu-action="note" data-fu-id="${f.id}">更新內容</button>
+      <button class="btn-warning" type="button" data-fu-action="pending" data-fu-id="${f.id}">改為處理中</button>
+      <button class="btn-success" type="button" data-fu-action="complete" data-fu-id="${f.id}">完成</button>
+      <button class="btn-danger" type="button" data-fu-action="cancel" data-fu-id="${f.id}">取消</button>
+      <button class="btn-danger" type="button" data-fu-action="delete" data-fu-id="${f.id}">刪除</button>
+      <button class="btn-secondary" type="button" data-close-modal="followupDetailModal">關閉</button>
+    </div>
+  `;
+
+  openModal("followupDetailModal");
+}
+
+async function saveFollowupComment(followupId) {
+  if (!requireStaffLogin()) return;
+
+  try {
+    const commentText = String(document.getElementById("newCommentText")?.value || "").trim();
+    const isInternal = !!document.getElementById("newCommentInternal")?.checked;
+    const createdBy = getCurrentStaffDisplayText();
+
+    if (!commentText) {
+      notify("請輸入留言內容", "warning");
+      return;
+    }
+
+    const { error } = await sb.from("followup_comments").insert([{
+      followup_id: followupId,
+      comment_text: commentText,
+      is_internal: isInternal,
+      created_by: createdBy
+    }]);
+
+    if (error) throw error;
+
+    await loadFollowupsFromSupabase(true);
+    openFollowupDetailModal(followupId);
+    notify("已新增留言", "success");
+  } catch (error) {
+    console.error(error);
+    notify("新增留言失敗\n" + formatSupabaseError(error), "error");
+  }
+}
+
+function openAssignFollowupModal(followupId) {
+  const f = getFollowupById(followupId);
+  if (!f) return;
+  state.currentFollowupId = followupId;
+  document.getElementById("assignModalSubtitle").textContent = `${f.followup_no || f.id}｜${f.title || ""}`;
+  document.getElementById("assignCurrentUser").value = f.assigned_to || "未分派";
+  document.getElementById("assignNewUser").value = "";
+  document.getElementById("assignNewUserSelect").value = "";
+  document.getElementById("assignReason").value = "";
+  openModal("followupAssignModal");
+}
+
+async function saveFollowupAssign() {
+  if (!requireStaffLogin()) return;
+  try {
+    const followupId = state.currentFollowupId;
+    const f = getFollowupById(followupId);
+    if (!f) return;
+
+    const newUserText = String(document.getElementById("assignNewUser").value || "").trim();
+    const newUserSelect = String(document.getElementById("assignNewUserSelect").value || "").trim();
+    const newUser = newUserText || newUserSelect;
+    const reason = String(document.getElementById("assignReason").value || "").trim();
+
+    if (!newUser) {
+      notify("請輸入或選擇新負責人", "warning");
+      return;
+    }
+
+    const nextStatus = f.status === "open" ? "pending" : f.status;
+
+    const { error } = await sb
+      .from("followups")
+      .update({
+        assigned_to: newUser,
+        status: nextStatus
+      })
+      .eq("id", followupId);
+
+    if (error) throw error;
+
+    await createFollowupEvent(followupId, "assigned", "Assigned follow-up", {
+      from: f.assigned_to || null,
+      to: newUser,
+      reason: reason || null
+    });
+
+    if (f.status !== nextStatus) {
+      await createFollowupEvent(followupId, "status_changed", "Status changed", {
+        from: f.status,
+        to: nextStatus
+      });
+    }
+
+    closeModal("followupAssignModal");
+    notify("已更新指派", "success");
+    await loadFollowupsFromSupabase(true);
+    renderFollowupPage();
+    openFollowupDetailModal(followupId);
+  } catch (error) {
+    console.error(error);
+    notify("指派失敗\n" + formatSupabaseError(error), "error");
+  }
+}
+
+function openFollowupNoteModal(followupId) {
+  const f = getFollowupById(followupId);
+  if (!f) return;
+  state.currentFollowupId = followupId;
+  document.getElementById("noteModalSubtitle").textContent = `${f.followup_no || f.id}｜${f.title || ""}`;
+  document.getElementById("followupNoteText").value = "";
+  document.getElementById("followupNoteStatus").value = "";
+  document.getElementById("followupNoteDueAt").value = "";
+  openModal("followupNoteModal");
+}
+
+async function saveFollowupNote() {
+  if (!requireStaffLogin()) return;
+  try {
+    const followupId = state.currentFollowupId;
+    const f = getFollowupById(followupId);
+    if (!f) return;
+
+    const note = String(document.getElementById("followupNoteText").value || "").trim();
+    const nextStatus = String(document.getElementById("followupNoteStatus").value || "").trim();
+    const nextDueAt = hktLocalDateTimeToIso(document.getElementById("followupNoteDueAt").value || "");
+
+    if (!note) {
+      notify("請輸入補充內容", "warning");
+      return;
+    }
+
+    const nextDescription = [String(f.description || "").trim(), `【更新】${note}`]
+      .filter(Boolean)
+      .join("\n");
+
+    const patch = { description: nextDescription };
+    if (nextStatus) patch.status = nextStatus;
+    if (document.getElementById("followupNoteDueAt").value) patch.due_at = nextDueAt;
+
+    const { error } = await sb.from("followups").update(patch).eq("id", followupId);
+    if (error) throw error;
+
+    if (nextStatus && nextStatus !== f.status) {
+      let eventType = "status_changed";
+      let label = "Status changed";
+
+      if (nextStatus === "done") {
+        eventType = "completed";
+        label = "Follow-up completed";
+      } else if (nextStatus === "cancelled") {
+        eventType = "cancelled";
+        label = "Follow-up cancelled";
+      } else if ((f.status === "done" || f.status === "cancelled") && (nextStatus === "open" || nextStatus === "pending")) {
+        eventType = "reopened";
+        label = "Follow-up reopened";
+      }
+
+      await createFollowupEvent(followupId, eventType, label, {
+        from: f.status || null,
+        to: nextStatus || null,
+        note
+      });
+    }
+
+    if ((f.due_at || null) !== (nextDueAt || null) && document.getElementById("followupNoteDueAt").value) {
+      await createFollowupEvent(followupId, "due_date_changed", "Due date changed", {
+        from: f.due_at || null,
+        to: nextDueAt || null,
+        note
+      });
+    }
+
+    closeModal("followupNoteModal");
+    notify("已更新跟進內容", "success");
+    await loadFollowupsFromSupabase(true);
+    renderFollowupPage();
+    openFollowupDetailModal(followupId);
+  } catch (error) {
+    console.error(error);
+    notify("更新內容失敗\n" + formatSupabaseError(error), "error");
+  }
+}
+
+function openFollowupCompleteModal(followupId) {
+  const f = getFollowupById(followupId);
+  if (!f) return;
+  state.currentFollowupId = followupId;
+  document.getElementById("completeModalSubtitle").textContent = `${f.followup_no || f.id}｜${f.title || ""}`;
+  document.getElementById("followupOutcome").value = f.outcome || "";
+  document.getElementById("followupCompletedBy").value = getCurrentStaffDisplayText();
+  document.getElementById("followupPatientNotified").value = "unknown";
+  openModal("followupCompleteModal");
+}
+
+async function saveFollowupComplete() {
+  if (!requireStaffLogin()) return;
+  try {
+    const followupId = state.currentFollowupId;
+    const outcome = String(document.getElementById("followupOutcome").value || "").trim();
+    const completedBy = String(document.getElementById("followupCompletedBy").value || "").trim();
+    const patientNotified = String(document.getElementById("followupPatientNotified").value || "unknown").trim();
+
+    if (!outcome) {
+      notify("請輸入完成備註 / outcome", "warning");
+      return;
+    }
+
+    const { error } = await sb
+      .from("followups")
+      .update({
+        status: "done",
+        outcome
+      })
+      .eq("id", followupId);
+
+    if (error) throw error;
+
+    await createFollowupEvent(followupId, "completed", "Follow-up completed", {
+      outcome,
+      completed_by: completedBy || null,
+      completed_at: nowIso(),
+      patient_notified: patientNotified
+    });
+
+    closeModal("followupCompleteModal");
+    notify("已完成跟進事項", "success");
+    await loadFollowupsFromSupabase(true);
+    renderFollowupPage();
+    openFollowupDetailModal(followupId);
+  } catch (error) {
+    console.error(error);
+    notify("完成事項失敗\n" + formatSupabaseError(error), "error");
+  }
+}
+
+async function quickUpdateFollowup(followupId, patch, eventType, label, eventData = {}) {
+  if (!requireStaffLogin()) return;
+  try {
+    const { error } = await sb.from("followups").update(patch).eq("id", followupId);
+    if (error) throw error;
+
+    if (eventType && label) {
+      await createFollowupEvent(followupId, eventType, label, eventData);
+    }
+
+    await loadFollowupsFromSupabase(true);
+    renderFollowupPage();
+    if (document.getElementById("followupDetailModal")?.classList.contains("show")) {
+      openFollowupDetailModal(followupId);
+    }
+  } catch (error) {
+    console.error(error);
+    notify("更新跟進事項失敗\n" + formatSupabaseError(error), "error");
+  }
+}
+
+async function deleteFollowup(followupId) {
+  if (!requireStaffLogin()) return;
+
+  const f = getFollowupById(followupId);
+  if (!f) return;
+
+  if (!window.confirm(`確定刪除跟進事項？\n${f.followup_no || f.id}\n${f.title || ""}`)) return;
+
+  try {
+    const { error } = await sb.from("followups").delete().eq("id", followupId);
+    if (error) throw error;
+
+    closeModal("followupDetailModal");
+    notify("已刪除跟進事項", "success");
+    await loadFollowupsFromSupabase(true);
+    renderFollowupPage();
+  } catch (error) {
+    console.error(error);
+    notify("刪除跟進事項失敗\n" + formatSupabaseError(error), "error");
+  }
+}
+
+function clearFollowupFilters() {
+  document.getElementById("filterPatientId").value = "";
+  document.getElementById("filterEncounterNo").value = "";
+  document.getElementById("filterCategory").value = "";
+  document.getElementById("filterStatus").value = "";
+  document.getElementById("filterAssignedTo").value = "";
+  document.getElementById("filterPriority").value = "";
+  document.getElementById("filterCreatedBy").value = "";
+  document.getElementById("filterRequestedBy").value = "";
+  document.getElementById("filterDueDate").value = "";
+  document.getElementById("filterIncompleteOnly").checked = true;
+  document.getElementById("filterOverdueOnly").checked = false;
+  document.getElementById("followupOnlyMineToggle").checked = false;
+  state.followupFilterMode = "all";
+  renderFollowupPage();
+}
+
+function exportFollowupsCsv() {
+  const rows = getFilteredFollowups();
+  const headers = [
+    "followup_no", "patient_id", "title", "category", "priority", "status",
+    "assigned_to", "due_at", "created_by", "requested_by", "source", "description", "outcome"
+  ];
+
+  const csv = [
+    headers.join(","),
+    ...rows.map(r => headers.map(h => {
+      const val = String(r[h] ?? "").replaceAll('"', '""');
+      return `"${val}"`;
+    }).join(","))
+  ].join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `followups_${Date.now()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.addEventListener("click", (event) => {
+  const closeModalBtn = event.target.closest("[data-close-modal]");
+  if (closeModalBtn) {
+    closeModal(closeModalBtn.getAttribute("data-close-modal"));
+    return;
+  }
+
+  const summaryCard = event.target.closest("[data-summary-mode]");
+  if (summaryCard) {
+    const mode = summaryCard.getAttribute("data-summary-mode");
+    state.followupFilterMode = mode === "done_today" ? "all" : mode;
+    if (mode === "done_today") {
+      document.getElementById("filterStatus").value = "done";
+      document.getElementById("filterIncompleteOnly").checked = false;
+    }
+    renderFollowupPage();
+    return;
+  }
+
+  const followupChip = event.target.closest("[data-followup-chip]");
+  if (followupChip) {
+    state.followupFilterMode = followupChip.getAttribute("data-followup-chip");
+    renderFollowupPage();
+    return;
+  }
+
+  const fuMoreBtn = event.target.closest("[data-fu-more]");
+  if (fuMoreBtn) {
+    const id = fuMoreBtn.getAttribute("data-fu-more");
+    const panel = document.querySelector(`[data-fu-more-panel="${id}"]`);
+    if (!panel) return;
+    const isOpen = panel.classList.contains("open");
+    document.querySelectorAll(".followup-more-panel.open").forEach(el => el.classList.remove("open"));
+    if (!isOpen) panel.classList.add("open");
+    return;
+  }
+
+  if (!event.target.closest(".followup-more-panel")) {
+    document.querySelectorAll(".followup-more-panel.open").forEach(el => el.classList.remove("open"));
+  }
+
+  const fuActionBtn = event.target.closest("[data-fu-action]");
+  if (fuActionBtn) {
+    const action = fuActionBtn.getAttribute("data-fu-action");
+    const followupId = fuActionBtn.getAttribute("data-fu-id");
+
+    if (action === "view") return openFollowupDetailModal(followupId);
+    if (action === "edit") return openEditFollowupModal(followupId);
+    if (action === "assign") return openAssignFollowupModal(followupId);
+    if (action === "note") return openFollowupNoteModal(followupId);
+    if (action === "complete") return openFollowupCompleteModal(followupId);
+    if (action === "pending") {
+      return quickUpdateFollowup(
+        followupId,
+        { status: "pending" },
+        "status_changed",
+        "Status changed",
+        { status: "pending" }
+      );
+    }
+    if (action === "reopen") {
+      return quickUpdateFollowup(
+        followupId,
+        { status: "open" },
+        "reopened",
+        "Follow-up reopened",
+        { status: "open" }
+      );
+    }
+    if (action === "cancel") {
+      return quickUpdateFollowup(
+        followupId,
+        { status: "cancelled" },
+        "cancelled",
+        "Follow-up cancelled",
+        { status: "cancelled" }
+      );
+    }
+    if (action === "delete") {
+      return deleteFollowup(followupId);
+    }
+  }
+
+  const saveCommentBtn = event.target.closest("#saveCommentBtn");
+  if (saveCommentBtn) {
+    const followupId = saveCommentBtn.getAttribute("data-followup-comment-id");
+    return withButtonLoading(saveCommentBtn, () => saveFollowupComment(followupId));
+  }
+});
+
+document.getElementById("openNewFollowupBtn")?.addEventListener("click", () => {
+  if (!requireStaffLogin()) return;
+  resetFollowupForm();
+  openModal("followupFormModal");
+});
+
+document.getElementById("fuLookupPatientBtn")?.addEventListener("click", () => {
+  const cumc = String(document.getElementById("fuPatientId")?.value || "").trim().toUpperCase();
+  if (!cumc) {
+    notify("請先輸入病人編號 / CUMC", "warning");
+    return;
+  }
+  renderFollowupPatientLookupBoxByCumc(cumc);
+});
+
+document.getElementById("saveFollowupBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, saveFollowupFromModal));
+document.getElementById("saveAssignBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, saveFollowupAssign));
+document.getElementById("saveNoteBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, saveFollowupNote));
+document.getElementById("saveCompleteBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, saveFollowupComplete));
+
+document.getElementById("searchFollowupBtn")?.addEventListener("click", renderFollowupPage);
+document.getElementById("clearFollowupBtn")?.addEventListener("click", clearFollowupFilters);
+document.getElementById("followupOnlyMineToggle")?.addEventListener("change", renderFollowupPage);
+document.getElementById("followupExportBtn")?.addEventListener("click", exportFollowupsCsv);
+
+[
+  "filterCategory", "filterStatus", "filterPriority",
+  "filterDueDate", "filterIncompleteOnly", "filterOverdueOnly"
+].forEach(id => {
+  document.getElementById(id)?.addEventListener("change", renderFollowupPage);
+});
+
+[
+  "filterPatientId", "filterEncounterNo", "filterAssignedTo",
+  "filterCreatedBy", "filterRequestedBy"
+].forEach(id => {
+  document.getElementById(id)?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") renderFollowupPage();
+  });
+});
+
+document.getElementById("loginBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, loginStaff));
+document.getElementById("logoutBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, logoutStaff));
+document.getElementById("loginPassword")?.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    const btn = document.getElementById("loginBtn");
+    if (btn) withButtonLoading(btn, loginStaff);
+  }
+});
+
+["followupDetailModal", "followupFormModal", "followupAssignModal", "followupNoteModal", "followupCompleteModal"].forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener("click", (event) => {
+    if (event.target === el) closeModal(id);
+  });
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    ["followupDetailModal", "followupFormModal", "followupAssignModal", "followupNoteModal", "followupCompleteModal"].forEach(closeModal);
+  }
+});
+
+async function initApp() {
+  await loadCurrentStaffProfile();
+  await loadFollowupStaffOptions();
+
+  try {
+    await loadBaseData();
+  } catch (error) {
+    console.error(error);
+    notify("讀取病人 / 診室 / encounter 資料失敗\n" + formatSupabaseError(error), "error");
+  }
+
+  await loadFollowupsFromSupabase(true);
+  renderFollowupPage();
+}
+
+initApp();
+</script>
+</body>
+</html>
