@@ -73,6 +73,10 @@ body.modal-open { overflow: hidden; }
   border-radius: 999px;
   cursor: pointer;
   font-weight: 800;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tab-btn.active {
@@ -811,6 +815,7 @@ tbody tr td:last-child {
     </div>
 
     <div class="tabs">
+      <a class="tab-btn" href="index.html">主頁</a>
       <button class="tab-btn active" type="button">跟進事項</button>
     </div>
 
@@ -855,10 +860,6 @@ tbody tr td:last-child {
       <div class="followup-header">
         <div>
           <div class="followup-header-title">跟進事項</div>
-          <div class="followup-header-sub">
-            管理病人後續處理、回電、文件、覆診、追蹤報告及專科預約。<br>
-            方便職員每日清理待辦、追蹤逾期事項、協作接手處理。
-          </div>
         </div>
 
         <div class="actions">
@@ -990,7 +991,7 @@ tbody tr td:last-child {
     <div class="modal-head">
       <div>
         <div class="modal-title" id="followupFormTitle">新增跟進事項</div>
-        <div class="modal-subtitle" id="followupFormSubtitle">建立病人後續處理、回電、文件、覆診、追蹤報告及專科預約事項</div>
+        <div class="modal-subtitle" id="followupFormSubtitle">—</div>
       </div>
       <button class="modal-close-btn" type="button" data-close-modal="followupFormModal" aria-label="關閉">×</button>
     </div>
@@ -1081,7 +1082,6 @@ tbody tr td:last-child {
         <div class="form-row" style="margin-top:14px;">
           <label for="fuCreatedByReadonly">建立者 *</label>
           <input id="fuCreatedByReadonly" type="text" disabled />
-          <div class="helper-text">建立者為目前登入職員，不可更改。</div>
         </div>
 
         <div class="grid-3" style="margin-top:14px;">
@@ -1101,14 +1101,10 @@ tbody tr td:last-child {
           </div>
         </div>
 
-        <div class="grid-2 hidden" id="doctorRequesterExtraRow" style="margin-top:14px;">
+        <div class="hidden" id="doctorRequesterExtraRow" style="margin-top:14px;">
           <div class="form-row">
             <label for="fuDoctorLevel">醫生級別</label>
             <select id="fuDoctorLevel"></select>
-          </div>
-          <div class="form-row">
-            <label for="fuRequestedDoctorId">哪一位醫生</label>
-            <select id="fuRequestedDoctorId"></select>
           </div>
         </div>
       </div>
@@ -1751,33 +1747,12 @@ async function loadFollowupStaffOptions() {
     );
 
     renderAssignmentSelectors();
-    populateDoctorRequesterSelect();
   } catch (error) {
     console.error("loadFollowupStaffOptions failed:", error);
     followupStaffOptions = [];
     state.roleOptions = [];
     renderAssignmentSelectors();
-    populateDoctorRequesterSelect();
   }
-}
-
-function getDoctorStaffOptions() {
-  return (followupStaffOptions || []).filter(
-    s => String(s.role || "").trim() === "醫生"
-  );
-}
-
-function populateDoctorRequesterSelect(selected = "") {
-  const doctorOptions = getDoctorStaffOptions();
-  const el = document.getElementById("fuRequestedDoctorId");
-  if (!el) return;
-  el.innerHTML = [`<option value="">—</option>`]
-    .concat(doctorOptions.map(s => {
-      const val = String(s.id || s.display_name || s.email || "");
-      const label = String(s.display_name || s.email || s.id || "");
-      return `<option value="${escapeHtml(val)}" ${String(val) === String(selected) ? "selected" : ""}>${escapeHtml(label)}</option>`;
-    }))
-    .join("");
 }
 
 function renderStaffChecklist(containerId, selectedValues, dataAttr) {
@@ -2510,14 +2485,13 @@ function resetFollowupForm() {
   populateStaticSelect("fuRequestedBy", REQUESTED_BY_OPTIONS, "");
   populateStaticSelect("fuSource", SOURCE_OPTIONS, "");
   populateStaticSelect("fuDoctorLevel", [{ value: "", label: "—" }, ...DOCTOR_LEVEL_OPTIONS.map(v => ({ value: v, label: v }))], "");
-  populateDoctorRequesterSelect("");
 
   toggleDoctorRequesterExtra("");
 
   renderAssignmentSelectors();
 
   document.getElementById("followupFormTitle").textContent = "新增跟進事項";
-  document.getElementById("followupFormSubtitle").textContent = "建立病人後續處理、回電、文件、覆診、追蹤報告及專科預約事項";
+  document.getElementById("followupFormSubtitle").textContent = "—";
 }
 
 function renderFollowupPatientLookupBoxByCumc(cumcNo) {
@@ -2594,11 +2568,11 @@ async function createFollowupEvent(followupId, type, label, eventData = {}) {
 function getRequestedByPayload() {
   const requestedBy = String(document.getElementById("fuRequestedBy").value || "").trim();
   const doctorLevel = String(document.getElementById("fuDoctorLevel").value || "").trim();
-  const requestedDoctorId = String(document.getElementById("fuRequestedDoctorId").value || "").trim();
+
   return {
     requested_by: requestedBy || null,
     requested_doctor_level: requestedBy === "doctor" ? (doctorLevel || null) : null,
-    requested_doctor_id: requestedBy === "doctor" ? (requestedDoctorId || null) : null
+    requested_doctor_id: null
   };
 }
 
@@ -2644,11 +2618,6 @@ async function saveFollowupFromModal() {
     if (!validRequestedBy.includes(String(requestedPayload.requested_by || ""))) throw new Error("INVALID_REQUESTED_BY");
     if (!validSource.includes(source)) throw new Error("INVALID_SOURCE");
 
-    if (requestedPayload.requested_by === "doctor" && !requestedPayload.requested_doctor_id) {
-      notify("如要求來源為醫生，請選擇哪一位醫生", "warning");
-      return;
-    }
-
     const encounterId = await resolveEncounterIdByEncounterNo(encounterNo);
     const assigned = encodeAssignedTargets(state.selectedAssignedStaff, state.selectedAssignedGroups);
 
@@ -2668,7 +2637,7 @@ async function saveFollowupFromModal() {
       source: source || null,
       requested_by: requestedPayload.requested_by,
       requested_doctor_level: requestedPayload.requested_doctor_level,
-      requested_doctor_id: requestedPayload.requested_doctor_id,
+      requested_doctor_id: null,
       outcome: outcome || null,
       encounter_no: encounterNo || null
     };
@@ -2798,7 +2767,6 @@ function openEditFollowupModal(followupId) {
   populateStaticSelect("fuRequestedBy", REQUESTED_BY_OPTIONS, f.requested_by || "");
   populateStaticSelect("fuSource", SOURCE_OPTIONS, f.source || "");
   populateStaticSelect("fuDoctorLevel", [{ value: "", label: "—" }, ...DOCTOR_LEVEL_OPTIONS.map(v => ({ value: v, label: v }))], f.requested_doctor_level || "");
-  populateDoctorRequesterSelect(f.requested_doctor_id || "");
   toggleDoctorRequesterExtra(f.requested_by || "");
 
   renderAssignmentSelectors();
@@ -2923,7 +2891,13 @@ function openFollowupDetailModal(followupId) {
         <div class="info-box"><div class="info-label">建立者</div><div class="info-value">${escapeHtml(f.created_by || "—")}</div></div>
         <div class="info-box"><div class="info-label">到期時間</div><div class="info-value">${escapeHtml(formatDateTime(f.due_at))}</div></div>
         <div class="info-box"><div class="info-label">完成時間</div><div class="info-value">${escapeHtml(formatDateTime(f.closed_at))}</div></div>
-        <div class="info-box"><div class="info-label">要求來源</div><div class="info-value">${escapeHtml(getRequestedByLabel(f.requested_by))}</div></div>
+        <div class="info-box">
+          <div class="info-label">要求來源</div>
+          <div class="info-value">
+            ${escapeHtml(getRequestedByLabel(f.requested_by))}
+            ${f.requested_by === "doctor" && f.requested_doctor_level ? `<br>級別：${escapeHtml(f.requested_doctor_level)}` : ""}
+          </div>
+        </div>
         <div class="info-box"><div class="info-label">建立來源</div><div class="info-value">${escapeHtml(getSourceLabel(f.source))}</div></div>
       </div>
     </div>
@@ -3283,6 +3257,7 @@ function exportFollowupsCsv() {
     formatDateTime(r.due_at),
     r.created_by || "",
     getRequestedByLabel(r.requested_by),
+    r.requested_by === "doctor" && r.requested_doctor_level ? `${getRequestedByLabel(r.requested_by)}(${r.requested_doctor_level})` : getRequestedByLabel(r.requested_by),
     getSourceLabel(r.source),
     r.description || "",
     r.outcome || ""
