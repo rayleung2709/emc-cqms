@@ -325,13 +325,6 @@ button {
   color: #0f172a;
 }
 
-.followup-header-sub {
-  margin-top: 6px;
-  color: #64748b;
-  font-weight: 700;
-  line-height: 1.5;
-}
-
 .summary-card {
   background: #fff;
   border: 1px solid var(--line);
@@ -385,7 +378,7 @@ button {
 
 .followup-toolbar-grid {
   display: grid;
-  grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr auto auto;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr auto auto;
   gap: 12px;
   align-items: end;
 }
@@ -690,7 +683,7 @@ tbody tr td:last-child {
   flex-wrap: wrap;
   gap: 8px;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 6px;
 }
 
@@ -716,7 +709,16 @@ tbody tr td:last-child {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
-  margin-top: 10px;
+  margin-top: 8px;
+  justify-content: flex-end;
+}
+
+.progress-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  min-width: 130px;
 }
 
 .progress-type-pill {
@@ -802,6 +804,8 @@ tbody tr td:last-child {
   }
 
   .modal-card { width: 100%; }
+  .progress-right { min-width: unset; width: 100%; align-items: flex-start; }
+  .progress-actions { justify-content: flex-start; }
 }
 </style>
 </head>
@@ -863,11 +867,6 @@ tbody tr td:last-child {
         </div>
 
         <div class="actions">
-          <label class="search-checkbox">
-            <input type="checkbox" id="followupOnlyMineToggle" />
-            <span>只顯示我的事項</span>
-          </label>
-          <button class="btn-secondary" type="button" id="followupExportBtn">匯出 CSV</button>
           <button class="btn-primary" type="button" id="openNewFollowupBtn">新增跟進事項</button>
         </div>
       </div>
@@ -889,10 +888,6 @@ tbody tr td:last-child {
           <input id="filterPatientId" type="text" />
         </div>
         <div class="form-row">
-          <label for="filterEncounterNo">求診編號</label>
-          <input id="filterEncounterNo" type="text" />
-        </div>
-        <div class="form-row">
           <label for="filterCategory">跟進類別</label>
           <select id="filterCategory"></select>
         </div>
@@ -902,7 +897,11 @@ tbody tr td:last-child {
         </div>
         <div class="form-row">
           <label for="filterAssignedTo">負責人 / 群組</label>
-          <input id="filterAssignedTo" type="text" />
+          <select id="filterAssignedTo"></select>
+        </div>
+        <div class="form-row">
+          <label for="filterPriority">優先級</label>
+          <select id="filterPriority"></select>
         </div>
         <div class="form-row">
           <label>&nbsp;</label>
@@ -916,20 +915,20 @@ tbody tr td:last-child {
 
       <div class="grid-4" style="margin-top:14px;">
         <div class="form-row">
-          <label for="filterPriority">優先級</label>
-          <select id="filterPriority"></select>
-        </div>
-        <div class="form-row">
           <label for="filterCreatedBy">建立者</label>
-          <input id="filterCreatedBy" type="text" />
+          <select id="filterCreatedBy"></select>
         </div>
         <div class="form-row">
           <label for="filterRequestedBy">要求來源</label>
-          <input id="filterRequestedBy" type="text" />
+          <select id="filterRequestedBy"></select>
         </div>
         <div class="form-row">
           <label for="filterDueDate">到期日期</label>
           <input id="filterDueDate" type="date" />
+        </div>
+        <div class="form-row">
+          <label>&nbsp;</label>
+          <div></div>
         </div>
       </div>
 
@@ -942,6 +941,11 @@ tbody tr td:last-child {
           <input type="checkbox" id="filterOverdueOnly" />
           <span>只顯示逾期</span>
         </label>
+        <label class="search-checkbox">
+          <input type="checkbox" id="followupOnlyMineToggle" />
+          <span>只顯示我的事項</span>
+        </label>
+        <button class="btn-secondary" type="button" id="followupExportBtn">匯出 CSV</button>
       </div>
 
       <div class="followup-active-filters" id="followupActiveFilters">目前篩選：全部</div>
@@ -1100,13 +1104,6 @@ tbody tr td:last-child {
             <select id="fuSource"></select>
           </div>
         </div>
-
-        <div class="hidden" id="doctorRequesterExtraRow" style="margin-top:14px;">
-          <div class="form-row">
-            <label for="fuDoctorLevel">醫生級別</label>
-            <select id="fuDoctorLevel"></select>
-          </div>
-        </div>
       </div>
 
       <div class="modal-actions">
@@ -1242,8 +1239,6 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const HKT_TIMEZONE = "Asia/Hong_Kong";
 const HKT_OFFSET_MINUTES = 8 * 60;
-
-const DOCTOR_LEVEL_OPTIONS = ["駐院醫生", "住院醫生", "專科醫生", "顧問醫生", "其他"];
 
 const CATEGORY_OPTIONS = [
   { value: "", label: "全部" },
@@ -1508,6 +1503,10 @@ function uniqueStrings(arr) {
   return [...new Set((arr || []).map(v => String(v || "").trim()).filter(Boolean))];
 }
 
+function sortZhStrings(values) {
+  return [...values].sort((a, b) => String(a).localeCompare(String(b), "zh-HK"));
+}
+
 function sortRoles(roleList) {
   const order = ["醫生", "護士", "助理", "文員"];
   return [...roleList].sort((a, b) => {
@@ -1588,6 +1587,62 @@ function populateStaticSelect(id, options, selected = "") {
   el.innerHTML = options.map(opt => `
     <option value="${escapeHtml(opt.value)}" ${String(opt.value) === String(selected) ? "selected" : ""}>${escapeHtml(opt.label)}</option>
   `).join("");
+}
+
+function populateSelectFromStrings(id, values, selected = "", allLabel = "全部") {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const unique = sortZhStrings([...new Set((values || []).map(v => String(v || "").trim()).filter(Boolean))]);
+  el.innerHTML = [
+    `<option value="">${escapeHtml(allLabel)}</option>`,
+    ...unique.map(v => `<option value="${escapeHtml(v)}" ${String(v) === String(selected) ? "selected" : ""}>${escapeHtml(v)}</option>`)
+  ].join("");
+}
+
+function getAllAssignedOptions() {
+  const values = new Set();
+
+  state.followups.forEach(f => {
+    getAssignedStaffNames(f).forEach(v => values.add(v));
+    getAssignedGroups(f).forEach(v => values.add(v));
+  });
+
+  followupStaffOptions.forEach(staff => {
+    const name = String(staff.display_name || staff.email || staff.id || "").trim();
+    if (name) values.add(name);
+  });
+
+  (state.roleOptions || []).forEach(role => values.add(role));
+  return sortZhStrings([...values]);
+}
+
+function populateFollowupFilterSelects() {
+  populateStaticSelect("filterCategory", CATEGORY_OPTIONS, document.getElementById("filterCategory")?.value || "");
+  populateStaticSelect("filterStatus", STATUS_OPTIONS, document.getElementById("filterStatus")?.value || "");
+  populateStaticSelect("filterPriority", PRIORITY_OPTIONS, document.getElementById("filterPriority")?.value || "");
+
+  populateSelectFromStrings(
+    "filterAssignedTo",
+    getAllAssignedOptions(),
+    document.getElementById("filterAssignedTo")?.value || "",
+    "全部"
+  );
+
+  populateSelectFromStrings(
+    "filterCreatedBy",
+    state.followups.map(f => f.created_by),
+    document.getElementById("filterCreatedBy")?.value || "",
+    "全部"
+  );
+
+  populateStaticSelect(
+    "filterRequestedBy",
+    REQUESTED_BY_OPTIONS.map(x => ({
+      value: x.value,
+      label: x.label === "—" ? "全部" : x.label
+    })),
+    document.getElementById("filterRequestedBy")?.value || ""
+  );
 }
 
 function updateAuthUi() {
@@ -1736,7 +1791,11 @@ async function loadFollowupStaffOptions() {
 
     if (error) throw error;
 
-    followupStaffOptions = data || [];
+    followupStaffOptions = (data || []).sort((a, b) => {
+      const aa = String(a.display_name || a.email || a.id || "");
+      const bb = String(b.display_name || b.email || b.id || "");
+      return aa.localeCompare(bb, "zh-HK");
+    });
 
     state.roleOptions = sortRoles(
       [...new Set(
@@ -2106,13 +2165,8 @@ function buildReadableEventText(e) {
     return parts.join("｜");
   }
 
-  if (type === "cancelled") {
-    return "已取消跟進事項";
-  }
-
-  if (type === "reopened") {
-    return "已重新開啟跟進事項";
-  }
+  if (type === "cancelled") return "已取消跟進事項";
+  if (type === "reopened") return "已重新開啟跟進事項";
 
   if (type === "priority_changed") {
     return `已更改優先級：由「${getFollowupPriorityLabel(data.from)}」改為「${getFollowupPriorityLabel(data.to)}」`;
@@ -2139,6 +2193,11 @@ function getLatestFollowupEventSummary(followupId) {
   return `${formatRelativeTime(merged[0].created_at)}｜${merged[0].text}`;
 }
 
+function canEditComment(comment) {
+  const me = getCurrentStaffDisplayText();
+  return !!me && String(comment?.created_by || "").trim() === me;
+}
+
 function getCombinedProgressItems(followupId) {
   const eventItems = getFollowupEventsById(followupId).map(e => ({
     kind: "event",
@@ -2157,8 +2216,8 @@ function getCombinedProgressItems(followupId) {
     actor: c.created_by || "—",
     text: `留言：${c.comment_text || ""}`,
     rawCommentText: c.comment_text || "",
-    editable: true,
-    deletable: true
+    editable: canEditComment(c),
+    deletable: canEditComment(c)
   }));
 
   return [...eventItems, ...commentItems]
@@ -2168,7 +2227,6 @@ function getCombinedProgressItems(followupId) {
 function getFollowupFiltersFromUi() {
   return {
     patientId: String(document.getElementById("filterPatientId")?.value || "").trim().toLowerCase(),
-    encounterNo: String(document.getElementById("filterEncounterNo")?.value || "").trim().toLowerCase(),
     category: String(document.getElementById("filterCategory")?.value || "").trim(),
     status: String(document.getElementById("filterStatus")?.value || "").trim(),
     assignedTo: String(document.getElementById("filterAssignedTo")?.value || "").trim().toLowerCase(),
@@ -2190,14 +2248,6 @@ function getFilteredFollowups() {
   let rows = [...state.followups];
 
   if (filters.patientId) rows = rows.filter(f => String(f.patient_id || "").toLowerCase().includes(filters.patientId));
-
-  if (filters.encounterNo) {
-    rows = rows.filter(f =>
-      String(f.encounter_no || "").toLowerCase().includes(filters.encounterNo) ||
-      String(f.description || "").toLowerCase().includes(filters.encounterNo)
-    );
-  }
-
   if (filters.category) rows = rows.filter(f => f.category === filters.category);
   if (filters.status) rows = rows.filter(f => f.status === filters.status);
 
@@ -2207,7 +2257,7 @@ function getFilteredFollowups() {
 
   if (filters.priority) rows = rows.filter(f => f.priority === filters.priority);
   if (filters.createdBy) rows = rows.filter(f => String(f.created_by || "").toLowerCase().includes(filters.createdBy));
-  if (filters.requestedBy) rows = rows.filter(f => getRequestedByLabel(f.requested_by).toLowerCase().includes(filters.requestedBy));
+  if (filters.requestedBy) rows = rows.filter(f => String(f.requested_by || "").toLowerCase() === filters.requestedBy);
 
   if (filters.dueDate) {
     rows = rows.filter(f => {
@@ -2356,13 +2406,12 @@ function renderFollowupActiveFilters() {
 
   if (state.followupFilterMode !== "all") labels.push(state.followupFilterMode.replaceAll("_", " "));
   if (f.patientId) labels.push(`病人:${f.patientId}`);
-  if (f.encounterNo) labels.push(`求診編號:${f.encounterNo}`);
   if (f.category) labels.push(`類別:${getFollowupCategoryLabel(f.category)}`);
   if (f.status) labels.push(`狀態:${getFollowupStatusLabel(f.status)}`);
   if (f.assignedTo) labels.push(`負責人:${f.assignedTo}`);
   if (f.priority) labels.push(`優先級:${getFollowupPriorityLabel(f.priority)}`);
   if (f.createdBy) labels.push(`建立者:${f.createdBy}`);
-  if (f.requestedBy) labels.push(`要求來源:${f.requestedBy}`);
+  if (f.requestedBy) labels.push(`要求來源:${getRequestedByLabel(f.requestedBy)}`);
   if (f.dueDate) labels.push(`到期日期:${f.dueDate}`);
   if (f.incompleteOnly) labels.push("未完成");
   if (f.overdueOnly) labels.push("逾期");
@@ -2390,7 +2439,7 @@ function renderFollowupList() {
       <thead>
         <tr>
           <th>跟進編號</th>
-          <th>病人 / 求診編號</th>
+          <th>病人編號</th>
           <th>標題 / 主題</th>
           <th>類別</th>
           <th>優先級</th>
@@ -2410,7 +2459,6 @@ function renderFollowupList() {
               <td><div style="font-weight:900;color:#0f172a;">${escapeHtml(f.followup_no || f.id)}</div></td>
               <td>
                 <div style="font-weight:900;">${escapeHtml(f.patient_id || "—")}</div>
-                <div class="followup-subtext">${escapeHtml(f.encounter_no || "—")}</div>
               </td>
               <td>
                 <div class="followup-title-cell">
@@ -2455,6 +2503,7 @@ function renderFollowupList() {
 }
 
 function renderFollowupPage() {
+  populateFollowupFilterSelects();
   renderFollowupSummaryCards();
   renderFollowupQuickChips();
   renderFollowupActiveFilters();
@@ -2484,9 +2533,6 @@ function resetFollowupForm() {
   populateStaticSelect("fuStatus", STATUS_OPTIONS_FORM, "open");
   populateStaticSelect("fuRequestedBy", REQUESTED_BY_OPTIONS, "");
   populateStaticSelect("fuSource", SOURCE_OPTIONS, "");
-  populateStaticSelect("fuDoctorLevel", [{ value: "", label: "—" }, ...DOCTOR_LEVEL_OPTIONS.map(v => ({ value: v, label: v }))], "");
-
-  toggleDoctorRequesterExtra("");
 
   renderAssignmentSelectors();
 
@@ -2567,20 +2613,11 @@ async function createFollowupEvent(followupId, type, label, eventData = {}) {
 
 function getRequestedByPayload() {
   const requestedBy = String(document.getElementById("fuRequestedBy").value || "").trim();
-  const doctorLevel = String(document.getElementById("fuDoctorLevel").value || "").trim();
-
   return {
     requested_by: requestedBy || null,
-    requested_doctor_level: requestedBy === "doctor" ? (doctorLevel || null) : null,
+    requested_doctor_level: null,
     requested_doctor_id: null
   };
-}
-
-function toggleDoctorRequesterExtra(value) {
-  const row = document.getElementById("doctorRequesterExtraRow");
-  if (!row) return;
-  if (value === "doctor") row.classList.remove("hidden");
-  else row.classList.add("hidden");
 }
 
 async function saveFollowupFromModal() {
@@ -2636,7 +2673,7 @@ async function saveFollowupFromModal() {
       due_at: dueAt,
       source: source || null,
       requested_by: requestedPayload.requested_by,
-      requested_doctor_level: requestedPayload.requested_doctor_level,
+      requested_doctor_level: null,
       requested_doctor_id: null,
       outcome: outcome || null,
       encounter_no: encounterNo || null
@@ -2766,8 +2803,6 @@ function openEditFollowupModal(followupId) {
   populateStaticSelect("fuStatus", STATUS_OPTIONS_FORM, f.status || "open");
   populateStaticSelect("fuRequestedBy", REQUESTED_BY_OPTIONS, f.requested_by || "");
   populateStaticSelect("fuSource", SOURCE_OPTIONS, f.source || "");
-  populateStaticSelect("fuDoctorLevel", [{ value: "", label: "—" }, ...DOCTOR_LEVEL_OPTIONS.map(v => ({ value: v, label: v }))], f.requested_doctor_level || "");
-  toggleDoctorRequesterExtra(f.requested_by || "");
 
   renderAssignmentSelectors();
 
@@ -2842,25 +2877,29 @@ function renderProgressPanel(followupId) {
           ? items.map(item => `
             <div class="progress-item">
               <div class="progress-head">
-                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:1;">
                   <span class="progress-actor">${escapeHtml(item.actor || "—")}</span>
                   <span class="progress-type-pill ${item.kind === "comment" ? "comment" : ""}">
                     ${item.kind === "comment" ? "留言" : "系統更新"}
                   </span>
                 </div>
-                <div class="progress-time">${escapeHtml(formatDateTime(item.created_at))}</div>
+
+                <div class="progress-right">
+                  <div class="progress-time">${escapeHtml(formatDateTime(item.created_at))}</div>
+                  ${
+                    item.kind === "comment" && (item.editable || item.deletable)
+                      ? `
+                        <div class="progress-actions">
+                          ${item.editable ? `<button class="btn-secondary btn-small" type="button" data-comment-action="edit" data-comment-id="${item.id}" data-followup-id="${followupId}">編輯</button>` : ""}
+                          ${item.deletable ? `<button class="btn-danger btn-small" type="button" data-comment-action="delete" data-comment-id="${item.id}" data-followup-id="${followupId}">刪除</button>` : ""}
+                        </div>
+                      `
+                      : ``
+                  }
+                </div>
               </div>
+
               <div class="progress-text">${escapeHtml(item.text || "")}</div>
-              ${
-                item.kind === "comment"
-                  ? `
-                    <div class="progress-actions">
-                      <button class="btn-secondary btn-small" type="button" data-comment-action="edit" data-comment-id="${item.id}" data-followup-id="${followupId}">編輯</button>
-                      <button class="btn-danger btn-small" type="button" data-comment-action="delete" data-comment-id="${item.id}" data-followup-id="${followupId}">刪除</button>
-                    </div>
-                  `
-                  : ``
-              }
             </div>
           `).join("")
           : `<div class="empty-state">暫無處理進展</div>`
@@ -2895,7 +2934,6 @@ function openFollowupDetailModal(followupId) {
           <div class="info-label">要求來源</div>
           <div class="info-value">
             ${escapeHtml(getRequestedByLabel(f.requested_by))}
-            ${f.requested_by === "doctor" && f.requested_doctor_level ? `<br>級別：${escapeHtml(f.requested_doctor_level)}` : ""}
           </div>
         </div>
         <div class="info-box"><div class="info-label">建立來源</div><div class="info-value">${escapeHtml(getSourceLabel(f.source))}</div></div>
@@ -2988,6 +3026,11 @@ function openEditCommentModal(commentId, followupId) {
   const comment = state.followupComments.find(c => c.id === commentId);
   if (!comment) return;
 
+  if (!canEditComment(comment)) {
+    notify("只可編輯自己留言", "warning");
+    return;
+  }
+
   document.getElementById("editCommentId").value = comment.id;
   document.getElementById("editCommentFollowupId").value = followupId;
   document.getElementById("editCommentText").value = comment.comment_text || "";
@@ -3002,9 +3045,15 @@ async function saveEditedComment() {
     const commentId = String(document.getElementById("editCommentId").value || "").trim();
     const followupId = String(document.getElementById("editCommentFollowupId").value || "").trim();
     const text = String(document.getElementById("editCommentText").value || "").trim();
+    const comment = state.followupComments.find(c => c.id === commentId);
 
     if (!commentId || !followupId) {
       notify("找不到留言資料", "error");
+      return;
+    }
+
+    if (!canEditComment(comment)) {
+      notify("只可編輯自己留言", "warning");
       return;
     }
 
@@ -3038,6 +3087,11 @@ async function deleteComment(commentId, followupId) {
   if (!requireStaffLogin()) return;
   const comment = state.followupComments.find(c => c.id === commentId);
   if (!comment) return;
+
+  if (!canEditComment(comment)) {
+    notify("只可刪除自己留言", "warning");
+    return;
+  }
 
   if (!window.confirm(`確定刪除此留言？\n\n${comment.comment_text || ""}`)) return;
 
@@ -3224,7 +3278,6 @@ async function deleteFollowup(followupId) {
 
 function clearFollowupFilters() {
   document.getElementById("filterPatientId").value = "";
-  document.getElementById("filterEncounterNo").value = "";
   document.getElementById("filterCategory").value = "";
   document.getElementById("filterStatus").value = "";
   document.getElementById("filterAssignedTo").value = "";
@@ -3242,8 +3295,19 @@ function clearFollowupFilters() {
 function exportFollowupsCsv() {
   const rows = getFilteredFollowups();
   const headers = [
-    "跟進編號", "病人編號", "標題", "類別", "優先級", "狀態",
-    "負責人", "到期時間", "建立者", "要求來源", "建立來源", "內容說明", "處理結果"
+    "跟進編號",
+    "病人編號",
+    "標題",
+    "類別",
+    "優先級",
+    "狀態",
+    "負責人",
+    "到期時間",
+    "建立者",
+    "要求來源",
+    "建立來源",
+    "內容說明",
+    "處理結果"
   ];
 
   const dataRows = rows.map(r => [
@@ -3257,18 +3321,17 @@ function exportFollowupsCsv() {
     formatDateTime(r.due_at),
     r.created_by || "",
     getRequestedByLabel(r.requested_by),
-    r.requested_by === "doctor" && r.requested_doctor_level ? `${getRequestedByLabel(r.requested_by)}(${r.requested_doctor_level})` : getRequestedByLabel(r.requested_by),
     getSourceLabel(r.source),
     r.description || "",
     r.outcome || ""
   ]);
 
   const csv = [
-    headers.join(","),
+    headers.map(val => `"${String(val).replaceAll('"', '""')}"`).join(","),
     ...dataRows.map(row => row.map(val => `"${String(val ?? "").replaceAll('"', '""')}"`).join(","))
   ].join("\n");
 
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -3382,15 +3445,12 @@ function renderCurrentPatientDetail() {
 }
 
 function initStaticUi() {
-  populateStaticSelect("filterCategory", CATEGORY_OPTIONS, "");
-  populateStaticSelect("filterStatus", STATUS_OPTIONS, "");
-  populateStaticSelect("filterPriority", PRIORITY_OPTIONS, "");
+  populateFollowupFilterSelects();
   populateStaticSelect("fuCategory", CATEGORY_OPTIONS.filter(x => x.value !== ""), "callback");
   populateStaticSelect("fuPriority", PRIORITY_OPTIONS.filter(x => x.value !== ""), "normal");
   populateStaticSelect("fuStatus", STATUS_OPTIONS_FORM, "open");
   populateStaticSelect("fuRequestedBy", REQUESTED_BY_OPTIONS, "");
   populateStaticSelect("fuSource", SOURCE_OPTIONS, "");
-  populateStaticSelect("fuDoctorLevel", [{ value: "", label: "—" }, ...DOCTOR_LEVEL_OPTIONS.map(v => ({ value: v, label: v }))], "");
   populateStaticSelect("followupPatientNotified", PATIENT_NOTIFIED_OPTIONS, "unknown");
 
   renderBubbleRow("fuTitleBubbleRow", QUICK_BUBBLES.title, "fuTitleInput");
@@ -3561,10 +3621,6 @@ document.getElementById("fuLookupPatientBtn")?.addEventListener("click", () => {
   renderFollowupPatientLookupBoxByCumc(cumc);
 });
 
-document.getElementById("fuRequestedBy")?.addEventListener("change", (e) => {
-  toggleDoctorRequesterExtra(String(e.target.value || ""));
-});
-
 document.getElementById("saveFollowupBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, saveFollowupFromModal));
 document.getElementById("saveAssignBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, saveFollowupAssign));
 document.getElementById("saveCompleteBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, saveFollowupComplete));
@@ -3592,14 +3648,14 @@ document.getElementById("patientDetailClearBtn")?.addEventListener("click", () =
 
 [
   "filterCategory", "filterStatus", "filterPriority",
+  "filterAssignedTo", "filterCreatedBy", "filterRequestedBy",
   "filterDueDate", "filterIncompleteOnly", "filterOverdueOnly"
 ].forEach(id => {
   document.getElementById(id)?.addEventListener("change", renderFollowupPage);
 });
 
 [
-  "filterPatientId", "filterEncounterNo", "filterAssignedTo",
-  "filterCreatedBy", "filterRequestedBy"
+  "filterPatientId"
 ].forEach(id => {
   document.getElementById(id)?.addEventListener("keydown", (event) => {
     if (event.key === "Enter") renderFollowupPage();
