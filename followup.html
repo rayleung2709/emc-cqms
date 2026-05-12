@@ -1091,7 +1091,7 @@ tbody tr td:last-child {
           <input id="fuCreatedByReadonly" type="text" disabled />
         </div>
 
-        <div class="grid-3" style="margin-top:14px;">
+        <div class="grid-2" style="margin-top:14px;">
           <div class="form-row">
             <label for="fuDueAt">到期時間</label>
             <input id="fuDueAt" type="datetime-local" />
@@ -1100,11 +1100,6 @@ tbody tr td:last-child {
           <div class="form-row">
             <label for="fuRequestedBy">要求來源</label>
             <select id="fuRequestedBy"></select>
-          </div>
-
-          <div class="form-row">
-            <label for="fuSource">建立來源</label>
-            <select id="fuSource"></select>
           </div>
         </div>
       </div>
@@ -1283,17 +1278,6 @@ const REQUESTED_BY_OPTIONS = [
   { value: "assistant", label: "助理" },
   { value: "clerk", label: "文員" },
   { value: "other_department", label: "其他部門" }
-];
-
-const SOURCE_OPTIONS = [
-  { value: "", label: "—" },
-  { value: "in_person", label: "親身" },
-  { value: "phone", label: "電話" },
-  { value: "email", label: "電郵" },
-  { value: "fax", label: "傳真" },
-  { value: "sms", label: "短訊" },
-  { value: "system", label: "系統" },
-  { value: "other", label: "其他" }
 ];
 
 const PATIENT_NOTIFIED_OPTIONS = [
@@ -1924,6 +1908,21 @@ async function loadFollowupsFromSupabase(showErrorToast = false) {
   }
 }
 
+async function refreshAllViewsAfterDataChange(options = {}) {
+  const {
+    reopenDetail = false,
+    followupId = state.currentFollowupId
+  } = options;
+
+  await loadFollowupsFromSupabase(true);
+  renderFollowupPage();
+  renderCurrentPatientDetail();
+
+  if (reopenDetail && followupId) {
+    openFollowupDetailModal(followupId);
+  }
+}
+
 async function reloadAllDataAndRender(showToast = false) {
   try {
     await Promise.all([
@@ -2089,19 +2088,6 @@ function getRequestedByLabel(value) {
     assistant: "助理",
     clerk: "文員",
     other_department: "其他部門"
-  };
-  return map[value] || "—";
-}
-
-function getSourceLabel(value) {
-  const map = {
-    in_person: "親身",
-    phone: "電話",
-    email: "電郵",
-    fax: "傳真",
-    sms: "短訊",
-    system: "系統",
-    other: "其他"
   };
   return map[value] || "—";
 }
@@ -2546,7 +2532,6 @@ function resetFollowupForm() {
   populateStaticSelect("fuPriority", PRIORITY_OPTIONS.filter(x => x.value !== ""), "normal");
   populateStaticSelect("fuStatus", STATUS_OPTIONS_FORM, "open");
   populateStaticSelect("fuRequestedBy", REQUESTED_BY_OPTIONS, "");
-  populateStaticSelect("fuSource", SOURCE_OPTIONS, "");
 
   renderAssignmentSelectors();
 
@@ -2648,7 +2633,6 @@ async function saveFollowupFromModal() {
     const title = String(document.getElementById("fuTitleInput").value || "").trim();
     const description = String(document.getElementById("fuDescription").value || "").trim();
     const outcome = String(document.getElementById("fuOutcome").value || "").trim();
-    const source = String(document.getElementById("fuSource").value || "").trim();
     const createdBy = editId ? (getFollowupById(editId)?.created_by || getCurrentStaffDisplayText()) : getCurrentStaffDisplayText();
     const requestedPayload = getRequestedByPayload();
 
@@ -2661,13 +2645,11 @@ async function saveFollowupFromModal() {
     const validPriority = ["low", "normal", "high", "urgent"];
     const validCategory = ["callback", "abnormal_result", "document_request", "return_visit", "insurance_form", "admin", "report_followup", "specialist_booking", "other"];
     const validRequestedBy = ["", "patient", "doctor", "nurse", "assistant", "clerk", "other_department"];
-    const validSource = ["", "in_person", "phone", "email", "fax", "sms", "system", "other"];
 
     if (!validStatus.includes(status)) throw new Error("INVALID_STATUS");
     if (!validPriority.includes(priority)) throw new Error("INVALID_PRIORITY");
     if (!validCategory.includes(category)) throw new Error("INVALID_CATEGORY");
     if (!validRequestedBy.includes(String(requestedPayload.requested_by || ""))) throw new Error("INVALID_REQUESTED_BY");
-    if (!validSource.includes(source)) throw new Error("INVALID_SOURCE");
 
     const encounterId = await resolveEncounterIdByEncounterNo(encounterNo);
     const assigned = encodeAssignedTargets(state.selectedAssignedStaff, state.selectedAssignedGroups);
@@ -2685,7 +2667,6 @@ async function saveFollowupFromModal() {
       assigned_groups: assigned.assigned_groups,
       created_by: createdBy,
       due_at: dueAt,
-      source: source || null,
       requested_by: requestedPayload.requested_by,
       requested_doctor_level: null,
       requested_doctor_id: null,
@@ -2713,6 +2694,7 @@ async function saveFollowupFromModal() {
       closeModal("followupFormModal");
       resetFollowupForm();
       notify(`已新增跟進事項：${data.followup_no || data.id}`, "success");
+      await refreshAllViewsAfterDataChange();
     } else {
       const old = getFollowupById(editId);
 
@@ -2782,11 +2764,11 @@ async function saveFollowupFromModal() {
       closeModal("followupFormModal");
       resetFollowupForm();
       notify(`已更新跟進事項：${data.followup_no || data.id}`, "success");
+      await refreshAllViewsAfterDataChange({
+        reopenDetail: document.getElementById("followupDetailModal")?.classList.contains("show"),
+        followupId: data.id
+      });
     }
-
-    await loadFollowupsFromSupabase(true);
-    renderFollowupPage();
-    renderCurrentPatientDetail();
   } catch (error) {
     console.error(error);
     notify("儲存跟進事項失敗\n" + formatSupabaseError(error), "error");
@@ -2816,7 +2798,6 @@ function openEditFollowupModal(followupId) {
   populateStaticSelect("fuPriority", PRIORITY_OPTIONS.filter(x => x.value !== ""), f.priority || "normal");
   populateStaticSelect("fuStatus", STATUS_OPTIONS_FORM, f.status || "open");
   populateStaticSelect("fuRequestedBy", REQUESTED_BY_OPTIONS, f.requested_by || "");
-  populateStaticSelect("fuSource", SOURCE_OPTIONS, f.source || "");
 
   renderAssignmentSelectors();
 
@@ -2953,7 +2934,6 @@ function openFollowupDetailModal(followupId) {
             ${escapeHtml(getRequestedByLabel(f.requested_by))}
           </div>
         </div>
-        <div class="info-box"><div class="info-label">建立來源</div><div class="info-value">${escapeHtml(getSourceLabel(f.source))}</div></div>
       </div>
     </div>
 
@@ -2961,14 +2941,6 @@ function openFollowupDetailModal(followupId) {
       <div class="modal-section-title">病人資料</div>
       <div class="info-grid">
         ${renderFollowupPatientInfoBox(f)}
-        <div class="info-box">
-          <div class="info-label">系統欄位</div>
-          <div class="info-value">
-            病人編號：${escapeHtml(f.patient_id || "—")}<br>
-            跟進建立時間：${escapeHtml(formatDateTime(f.created_at))}<br>
-            跟進更新時間：${escapeHtml(formatDateTime(f.updated_at))}
-          </div>
-        </div>
       </div>
     </div>
 
@@ -3029,10 +3001,11 @@ async function saveFollowupComment(followupId) {
 
     if (error) throw error;
 
-    await loadFollowupsFromSupabase(true);
-    openFollowupDetailModal(followupId);
-    renderCurrentPatientDetail();
     notify("已新增留言", "success");
+    await refreshAllViewsAfterDataChange({
+      reopenDetail: true,
+      followupId
+    });
   } catch (error) {
     console.error(error);
     notify("新增留言失敗\n" + formatSupabaseError(error), "error");
@@ -3090,10 +3063,11 @@ async function saveEditedComment() {
     if (error) throw error;
 
     closeModal("commentEditModal");
-    await loadFollowupsFromSupabase(true);
-    openFollowupDetailModal(followupId);
-    renderCurrentPatientDetail();
     notify("已更新留言", "success");
+    await refreshAllViewsAfterDataChange({
+      reopenDetail: true,
+      followupId
+    });
   } catch (error) {
     console.error(error);
     notify("更新留言失敗\n" + formatSupabaseError(error), "error");
@@ -3110,12 +3084,10 @@ async function quickUpdateFollowup(followupId, patch, eventType, label, eventDat
       await createFollowupEvent(followupId, eventType, label, eventData);
     }
 
-    await loadFollowupsFromSupabase(true);
-    renderFollowupPage();
-    renderCurrentPatientDetail();
-    if (document.getElementById("followupDetailModal")?.classList.contains("show")) {
-      openFollowupDetailModal(followupId);
-    }
+    await refreshAllViewsAfterDataChange({
+      reopenDetail: document.getElementById("followupDetailModal")?.classList.contains("show"),
+      followupId
+    });
   } catch (error) {
     console.error(error);
     notify("更新跟進事項失敗\n" + formatSupabaseError(error), "error");
@@ -3136,9 +3108,7 @@ async function deleteFollowup(followupId) {
 
     closeModal("followupDetailModal");
     notify("已刪除跟進事項", "success");
-    await loadFollowupsFromSupabase(true);
-    renderFollowupPage();
-    renderCurrentPatientDetail();
+    await refreshAllViewsAfterDataChange();
   } catch (error) {
     console.error(error);
     notify("刪除跟進事項失敗\n" + formatSupabaseError(error), "error");
@@ -3174,7 +3144,6 @@ function exportFollowupsCsv() {
     "到期時間",
     "建立者",
     "要求來源",
-    "建立來源",
     "內容說明",
     "處理結果"
   ];
@@ -3190,7 +3159,6 @@ function exportFollowupsCsv() {
     formatDateTime(r.due_at),
     r.created_by || "",
     getRequestedByLabel(r.requested_by),
-    getSourceLabel(r.source),
     r.description || "",
     r.outcome || ""
   ]);
@@ -3319,7 +3287,6 @@ function initStaticUi() {
   populateStaticSelect("fuPriority", PRIORITY_OPTIONS.filter(x => x.value !== ""), "normal");
   populateStaticSelect("fuStatus", STATUS_OPTIONS_FORM, "open");
   populateStaticSelect("fuRequestedBy", REQUESTED_BY_OPTIONS, "");
-  populateStaticSelect("fuSource", SOURCE_OPTIONS, "");
   populateStaticSelect("followupPatientNotified", PATIENT_NOTIFIED_OPTIONS, "unknown");
 
   renderBubbleRow("fuTitleBubbleRow", QUICK_BUBBLES.title, "fuTitleInput");
@@ -3607,10 +3574,10 @@ async function saveFollowupAssign() {
 
     closeModal("followupAssignModal");
     notify("已更新指派", "success");
-    await loadFollowupsFromSupabase(true);
-    renderFollowupPage();
-    renderCurrentPatientDetail();
-    openFollowupDetailModal(followupId);
+    await refreshAllViewsAfterDataChange({
+      reopenDetail: true,
+      followupId
+    });
   } catch (error) {
     console.error(error);
     notify("指派失敗\n" + formatSupabaseError(error), "error");
@@ -3673,10 +3640,10 @@ async function saveFollowupComplete() {
 
     closeModal("followupCompleteModal");
     notify("已完成跟進事項", "success");
-    await loadFollowupsFromSupabase(true);
-    renderFollowupPage();
-    renderCurrentPatientDetail();
-    openFollowupDetailModal(followupId);
+    await refreshAllViewsAfterDataChange({
+      reopenDetail: true,
+      followupId
+    });
   } catch (error) {
     console.error(error);
     notify("完成事項失敗\n" + formatSupabaseError(error), "error");
