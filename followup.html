@@ -1242,6 +1242,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const HKT_TIMEZONE = "Asia/Hong_Kong";
 const HKT_OFFSET_MINUTES = 8 * 60;
+const COMMENT_EDIT_LIMIT_MS = 15 * 60 * 1000;
 
 const CATEGORY_OPTIONS = [
   { value: "", label: "全部" },
@@ -2198,7 +2199,13 @@ function getLatestFollowupEventSummary(followupId) {
 
 function canEditComment(comment) {
   const me = getCurrentStaffDisplayText();
-  return !!me && String(comment?.created_by || "").trim() === me;
+  if (!me) return false;
+  if (String(comment?.created_by || "").trim() !== me) return false;
+
+  const createdAt = new Date(comment?.created_at || "").getTime();
+  if (Number.isNaN(createdAt)) return false;
+
+  return Date.now() - createdAt <= COMMENT_EDIT_LIMIT_MS;
 }
 
 function getCombinedProgressItems(followupId) {
@@ -2212,16 +2219,20 @@ function getCombinedProgressItems(followupId) {
     deletable: false
   }));
 
-  const commentItems = getFollowupCommentsById(followupId).map(c => ({
-    kind: "comment",
-    id: c.id,
-    created_at: c.created_at,
-    actor: c.created_by || "—",
-    text: `留言：${c.comment_text || ""}`,
-    rawCommentText: c.comment_text || "",
-    editable: canEditComment(c),
-    deletable: canEditComment(c)
-  }));
+  const commentItems = getFollowupCommentsById(followupId).map(c => {
+    const editable = canEditComment(c);
+    return {
+      kind: "comment",
+      id: c.id,
+      created_at: c.created_at,
+      actor: c.created_by || "—",
+      text: `留言：${c.comment_text || ""}`,
+      rawCommentText: c.comment_text || "",
+      editable,
+      deletable: false,
+      locked: !editable
+    };
+  });
 
   return [...eventItems, ...commentItems]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -2890,11 +2901,14 @@ function renderProgressPanel(followupId) {
                 <div class="progress-right">
                   <div class="progress-time">${escapeHtml(formatDateTime(item.created_at))}</div>
                   ${
-                    item.kind === "comment" && (item.editable || item.deletable)
+                    item.kind === "comment"
                       ? `
                         <div class="progress-actions">
-                          ${item.editable ? `<button class="btn-secondary btn-small" type="button" data-comment-action="edit" data-comment-id="${item.id}" data-followup-id="${followupId}">編輯</button>` : ""}
-                          ${item.deletable ? `<button class="btn-danger btn-small" type="button" data-comment-action="delete" data-comment-id="${item.id}" data-followup-id="${followupId}">刪除</button>` : ""}
+                          ${
+                            item.editable
+                              ? `<button class="btn-secondary btn-small" type="button" data-comment-action="edit" data-comment-id="${item.id}" data-followup-id="${followupId}">編輯</button>`
+                              : `<span class="helper-text">已鎖定</span>`
+                          }
                         </div>
                       `
                       : ``
@@ -3030,7 +3044,7 @@ function openEditCommentModal(commentId, followupId) {
   if (!comment) return;
 
   if (!canEditComment(comment)) {
-    notify("只可編輯自己留言", "warning");
+    notify("只可於留言建立後 15 分鐘內編輯自己留言", "warning");
     return;
   }
 
@@ -3056,7 +3070,7 @@ async function saveEditedComment() {
     }
 
     if (!canEditComment(comment)) {
-      notify("只可編輯自己留言", "warning");
+      notify("此留言已超過 15 分鐘，只可於時限內編輯自己留言", "warning");
       return;
     }
 
@@ -3083,154 +3097,6 @@ async function saveEditedComment() {
   } catch (error) {
     console.error(error);
     notify("更新留言失敗\n" + formatSupabaseError(error), "error");
-  }
-}
-
-async function deleteComment(commentId, followupId) {
-  if (!requireStaffLogin()) return;
-  const comment = state.followupComments.find(c => c.id === commentId);
-  if (!comment) return;
-
-  if (!canEditComment(comment)) {
-    notify("只可刪除自己留言", "warning");
-    return;
-  }
-
-  if (!window.confirm(`確定刪除此留言？\n\n${comment.comment_text || ""}`)) return;
-
-  try {
-    const { error } = await sb.from("followup_comments").delete().eq("id", commentId);
-    if (error) throw error;
-
-    await loadFollowupsFromSupabase(true);
-    openFollowupDetailModal(followupId);
-    renderCurrentPatientDetail();
-    notify("已刪除留言", "success");
-  } catch (error) {
-    console.error(error);
-    notify("刪除留言失敗\n" + formatSupabaseError(error), "error");
-  }
-}
-
-function openAssignFollowupModal(followupId) {
-  const f = getFollowupById(followupId);
-  if (!f) return;
-  state.currentFollowupId = followupId;
-  state.assignSelectedStaff = getAssignedStaffNames(f);
-  state.assignSelectedGroups = getAssignedGroups(f);
-  document.getElementById("assignModalSubtitle").textContent = `${f.followup_no || f.id}｜${f.title || ""}`;
-  document.getElementById("assignCurrentUser").value = getAssignedDisplayText(f);
-  document.getElementById("assignReason").value = "";
-  renderAssignmentSelectors();
-  openModal("followupAssignModal");
-}
-
-async function saveFollowupAssign() {
-  if (!requireStaffLogin()) return;
-  try {
-    const followupId = state.currentFollowupId;
-    const f = getFollowupById(followupId);
-    if (!f) return;
-
-    const reason = String(document.getElementById("assignReason").value || "").trim();
-    const assigned = encodeAssignedTargets(state.assignSelectedStaff, state.assignSelectedGroups);
-
-    if (!assigned.assigned_staff_names.length && !assigned.assigned_groups.length) {
-      notify("請至少選擇一位職員或一個群組", "warning");
-      return;
-    }
-
-    const nextStatus = f.status === "open" ? "pending" : f.status;
-
-    const { error } = await sb
-      .from("followups")
-      .update({
-        assigned_to: assigned.assigned_to,
-        assigned_staff_names: assigned.assigned_staff_names,
-        assigned_groups: assigned.assigned_groups,
-        status: nextStatus
-      })
-      .eq("id", followupId);
-
-    if (error) throw error;
-
-    await createFollowupEvent(followupId, "assigned", "已指派跟進事項", {
-      from_staff_names: getAssignedStaffNames(f),
-      from_groups: getAssignedGroups(f),
-      to_staff_names: assigned.assigned_staff_names,
-      to_groups: assigned.assigned_groups,
-      reason: reason || null
-    });
-
-    if (f.status !== nextStatus) {
-      await createFollowupEvent(followupId, "status_changed", "已更改狀態", {
-        from: f.status,
-        to: nextStatus
-      });
-    }
-
-    closeModal("followupAssignModal");
-    notify("已更新指派", "success");
-    await loadFollowupsFromSupabase(true);
-    renderFollowupPage();
-    renderCurrentPatientDetail();
-    openFollowupDetailModal(followupId);
-  } catch (error) {
-    console.error(error);
-    notify("指派失敗\n" + formatSupabaseError(error), "error");
-  }
-}
-
-function openFollowupCompleteModal(followupId) {
-  const f = getFollowupById(followupId);
-  if (!f) return;
-  state.currentFollowupId = followupId;
-  document.getElementById("completeModalSubtitle").textContent = `${f.followup_no || f.id}｜${f.title || ""}`;
-  document.getElementById("followupOutcomeComplete").value = f.outcome || "";
-  document.getElementById("followupCompletedBy").value = getCurrentStaffDisplayText();
-  populateStaticSelect("followupPatientNotified", PATIENT_NOTIFIED_OPTIONS, "unknown");
-  openModal("followupCompleteModal");
-}
-
-async function saveFollowupComplete() {
-  if (!requireStaffLogin()) return;
-  try {
-    const followupId = state.currentFollowupId;
-    const outcome = String(document.getElementById("followupOutcomeComplete").value || "").trim();
-    const completedBy = String(document.getElementById("followupCompletedBy").value || "").trim();
-    const patientNotified = String(document.getElementById("followupPatientNotified").value || "unknown").trim();
-
-    if (!outcome) {
-      notify("請輸入完成備註 / 結果", "warning");
-      return;
-    }
-
-    const { error } = await sb
-      .from("followups")
-      .update({
-        status: "done",
-        outcome
-      })
-      .eq("id", followupId);
-
-    if (error) throw error;
-
-    await createFollowupEvent(followupId, "completed", "已完成跟進事項", {
-      outcome,
-      completed_by: completedBy || null,
-      completed_at: nowIso(),
-      patient_notified: patientNotified
-    });
-
-    closeModal("followupCompleteModal");
-    notify("已完成跟進事項", "success");
-    await loadFollowupsFromSupabase(true);
-    renderFollowupPage();
-    renderCurrentPatientDetail();
-    openFollowupDetailModal(followupId);
-  } catch (error) {
-    console.error(error);
-    notify("完成事項失敗\n" + formatSupabaseError(error), "error");
   }
 }
 
@@ -3605,7 +3471,6 @@ document.addEventListener("click", (event) => {
     const followupId = commentActionBtn.getAttribute("data-followup-id");
 
     if (action === "edit") return openEditCommentModal(commentId, followupId);
-    if (action === "delete") return deleteComment(commentId, followupId);
   }
 });
 
@@ -3695,6 +3560,128 @@ document.addEventListener("keydown", (event) => {
     ["followupDetailModal", "followupFormModal", "followupAssignModal", "followupCompleteModal", "commentEditModal"].forEach(closeModal);
   }
 });
+
+async function saveFollowupAssign() {
+  if (!requireStaffLogin()) return;
+  try {
+    const followupId = state.currentFollowupId;
+    const f = getFollowupById(followupId);
+    if (!f) return;
+
+    const reason = String(document.getElementById("assignReason").value || "").trim();
+    const assigned = encodeAssignedTargets(state.assignSelectedStaff, state.assignSelectedGroups);
+
+    if (!assigned.assigned_staff_names.length && !assigned.assigned_groups.length) {
+      notify("請至少選擇一位職員或一個群組", "warning");
+      return;
+    }
+
+    const nextStatus = f.status === "open" ? "pending" : f.status;
+
+    const { error } = await sb
+      .from("followups")
+      .update({
+        assigned_to: assigned.assigned_to,
+        assigned_staff_names: assigned.assigned_staff_names,
+        assigned_groups: assigned.assigned_groups,
+        status: nextStatus
+      })
+      .eq("id", followupId);
+
+    if (error) throw error;
+
+    await createFollowupEvent(followupId, "assigned", "已指派跟進事項", {
+      from_staff_names: getAssignedStaffNames(f),
+      from_groups: getAssignedGroups(f),
+      to_staff_names: assigned.assigned_staff_names,
+      to_groups: assigned.assigned_groups,
+      reason: reason || null
+    });
+
+    if (f.status !== nextStatus) {
+      await createFollowupEvent(followupId, "status_changed", "已更改狀態", {
+        from: f.status,
+        to: nextStatus
+      });
+    }
+
+    closeModal("followupAssignModal");
+    notify("已更新指派", "success");
+    await loadFollowupsFromSupabase(true);
+    renderFollowupPage();
+    renderCurrentPatientDetail();
+    openFollowupDetailModal(followupId);
+  } catch (error) {
+    console.error(error);
+    notify("指派失敗\n" + formatSupabaseError(error), "error");
+  }
+}
+
+function openAssignFollowupModal(followupId) {
+  const f = getFollowupById(followupId);
+  if (!f) return;
+  state.currentFollowupId = followupId;
+  state.assignSelectedStaff = getAssignedStaffNames(f);
+  state.assignSelectedGroups = getAssignedGroups(f);
+  document.getElementById("assignModalSubtitle").textContent = `${f.followup_no || f.id}｜${f.title || ""}`;
+  document.getElementById("assignCurrentUser").value = getAssignedDisplayText(f);
+  document.getElementById("assignReason").value = "";
+  renderAssignmentSelectors();
+  openModal("followupAssignModal");
+}
+
+function openFollowupCompleteModal(followupId) {
+  const f = getFollowupById(followupId);
+  if (!f) return;
+  state.currentFollowupId = followupId;
+  document.getElementById("completeModalSubtitle").textContent = `${f.followup_no || f.id}｜${f.title || ""}`;
+  document.getElementById("followupOutcomeComplete").value = f.outcome || "";
+  document.getElementById("followupCompletedBy").value = getCurrentStaffDisplayText();
+  populateStaticSelect("followupPatientNotified", PATIENT_NOTIFIED_OPTIONS, "unknown");
+  openModal("followupCompleteModal");
+}
+
+async function saveFollowupComplete() {
+  if (!requireStaffLogin()) return;
+  try {
+    const followupId = state.currentFollowupId;
+    const outcome = String(document.getElementById("followupOutcomeComplete").value || "").trim();
+    const completedBy = String(document.getElementById("followupCompletedBy").value || "").trim();
+    const patientNotified = String(document.getElementById("followupPatientNotified").value || "unknown").trim();
+
+    if (!outcome) {
+      notify("請輸入完成備註 / 結果", "warning");
+      return;
+    }
+
+    const { error } = await sb
+      .from("followups")
+      .update({
+        status: "done",
+        outcome
+      })
+      .eq("id", followupId);
+
+    if (error) throw error;
+
+    await createFollowupEvent(followupId, "completed", "已完成跟進事項", {
+      outcome,
+      completed_by: completedBy || null,
+      completed_at: nowIso(),
+      patient_notified: patientNotified
+    });
+
+    closeModal("followupCompleteModal");
+    notify("已完成跟進事項", "success");
+    await loadFollowupsFromSupabase(true);
+    renderFollowupPage();
+    renderCurrentPatientDetail();
+    openFollowupDetailModal(followupId);
+  } catch (error) {
+    console.error(error);
+    notify("完成事項失敗\n" + formatSupabaseError(error), "error");
+  }
+}
 
 async function initApp() {
   initStaticUi();
