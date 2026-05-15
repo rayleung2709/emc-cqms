@@ -258,7 +258,7 @@ body {
 .board-body {
   background: var(--board-panel);
   display: grid;
-  grid-template-rows: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
   min-height: 0;
 }
 
@@ -683,6 +683,182 @@ body {
     padding: 10px 14px;
   }
 }
+
+/* ===== Portrait only: more compact vertical layout ===== */
+@media (orientation: portrait) {
+  .app {
+    padding: 6px 8px 4px;
+  }
+
+  .board-toolbar {
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .board-title-wrap {
+    gap: 1px;
+  }
+
+  .board-title {
+    line-height: 1;
+  }
+
+  .board-subtitle {
+    font-size: 0.82rem;
+    line-height: 1;
+  }
+
+  .board-toolbar-right {
+    gap: 6px;
+  }
+
+  .toolbar-chip-row {
+    gap: 5px;
+  }
+
+  .toolbar-chip {
+    min-height: 28px;
+    padding: 4px 9px;
+    font-size: 0.72rem;
+  }
+
+  .toolbar-btn {
+    padding: 6px 10px;
+    font-size: 0.74rem;
+  }
+
+  .board-time {
+    font-size: 1rem;
+  }
+
+  .info-card {
+    padding: 4px 8px;
+    margin-bottom: 4px;
+    border-radius: 10px;
+  }
+
+  .inline-note {
+    font-size: 0.7rem;
+    line-height: 1.12;
+  }
+
+  .board-pagination-bar {
+    margin-bottom: 4px;
+    gap: 8px;
+  }
+
+  .board-page-indicator {
+    font-size: 0.88rem;
+  }
+
+  .board-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .board-mobile-list {
+    gap: 6px;
+  }
+
+  .mobile-room-card {
+    border-radius: 14px;
+  }
+
+  .mobile-room-head {
+    padding: 6px 8px 5px;
+    gap: 8px;
+  }
+
+  .mobile-room-left {
+    gap: 10px;
+  }
+
+  .mobile-room-no {
+    font-size: 2.2rem;
+  }
+
+  .mobile-room-doctor .board-doctor-zh {
+    font-size: 1.18rem;
+    line-height: 1.02;
+  }
+
+  .mobile-room-doctor .board-doctor-en {
+    font-size: 0.78rem;
+    line-height: 1.02;
+  }
+
+  .mobile-room-body {
+    padding: 6px 6px 7px;
+    gap: 6px;
+  }
+
+  .mobile-section {
+    padding: 6px;
+    gap: 4px;
+    border-radius: 10px;
+  }
+
+  .mobile-section-title {
+    font-size: 0.8rem;
+    margin-bottom: 0;
+    line-height: 1;
+  }
+
+  .mobile-section-title small {
+    font-size: 0.62rem;
+  }
+
+  .mobile-current-box {
+    gap: 2px;
+  }
+
+  .mobile-current-label {
+    font-size: 0.68rem;
+  }
+
+  .mobile-current-ticket {
+    font-size: 1.65rem;
+    line-height: 1;
+  }
+
+  .board-meta {
+    font-size: 0.72rem;
+    line-height: 1;
+  }
+
+  .mobile-tag-list {
+    gap: 5px;
+  }
+
+  .board-tag {
+    padding: 6px 8px;
+    font-size: 0.98rem;
+    min-width: 68px;
+  }
+
+  .mobile-empty {
+    font-size: 0.8rem;
+  }
+
+  .board-cutoff-tag {
+    min-width: 72px;
+    padding: 4px 6px;
+  }
+
+  .board-cutoff-zh {
+    font-size: 0.62rem;
+  }
+
+  .board-cutoff-en {
+    font-size: 0.46rem;
+  }
+
+  .board-footer-tip {
+    margin-top: 3px;
+    font-size: 0.64rem;
+    line-height: 1;
+  }
+}
 </style>
 </head>
 <body>
@@ -738,7 +914,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const HKT_TIMEZONE = "Asia/Hong_Kong";
 const BOARD_ROOMS_PER_PAGE = 3;
-const BOARD_PAGE_ROTATE_MS = 10000;
+const BOARD_PAGE_ROTATE_MS = 8000;
 const POLLING_MS = 10000;
 
 const cloudState = {
@@ -1458,6 +1634,14 @@ async function initApp() {
   window.addEventListener("offline", () => {
     setConnectionStatus(false);
     setBoardError("目前網絡離線，系統會在恢復連線後自動同步。");
+  });
+
+  window.addEventListener("resize", () => {
+    renderDisplayBoard(true);
+  });
+
+  window.addEventListener("orientationchange", () => {
+    setTimeout(() => renderDisplayBoard(true), 120);
   });
 
   const ok = await refreshFromCloudAndRender(true, true);
