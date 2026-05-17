@@ -54,7 +54,7 @@ html, body {
 
 body.display-mode {
   background: var(--board-bg);
-  overflow: auto;
+  overflow: hidden;
 }
 
 body.modal-open {
@@ -173,7 +173,7 @@ body.display-mode #displayPage {
   height: 100vh;
   padding: 12px 16px 12px;
   background: var(--board-bg);
-  overflow: auto;
+  overflow: hidden;
 }
 
 .panel {
@@ -812,6 +812,7 @@ tbody tr td:last-child {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .board-pagination-bar {
@@ -860,7 +861,7 @@ tbody tr td:last-child {
   width: 100%;
   flex: 1 1 auto;
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .board-head {
@@ -870,9 +871,6 @@ tbody tr td:last-child {
   color: #fff;
   font-weight: 900;
   padding: 0;
-  position: sticky;
-  top: 0;
-  z-index: 5;
 }
 
 .board-head div {
@@ -905,7 +903,7 @@ tbody tr td:last-child {
 .board-body {
   background: var(--board-panel);
   display: grid;
-  grid-template-rows: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
   min-height: 0;
 }
 
@@ -1011,7 +1009,9 @@ tbody tr td:last-child {
   font-weight: 900;
 }
 
-.board-queue, .board-skip, .board-review {
+.board-queue,
+.board-skip,
+.board-review {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -1751,6 +1751,180 @@ tbody tr td:last-child {
     padding: 10px 14px;
   }
 }
+
+@media (orientation: portrait) {
+  .app {
+    padding: 6px 8px 4px;
+  }
+
+  .board-toolbar {
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .board-title-wrap {
+    gap: 1px;
+  }
+
+  .board-title {
+    line-height: 1;
+  }
+
+  .board-subtitle {
+    font-size: 0.82rem;
+    line-height: 1;
+  }
+
+  .board-toolbar-right {
+    gap: 6px;
+  }
+
+  .toolbar-chip-row {
+    gap: 5px;
+  }
+
+  .toolbar-chip {
+    min-height: 28px;
+    padding: 4px 9px;
+    font-size: 0.72rem;
+  }
+
+  .toolbar-btn {
+    padding: 6px 10px;
+    font-size: 0.74rem;
+  }
+
+  .board-time {
+    font-size: 1rem;
+  }
+
+  .info-card {
+    padding: 4px 8px;
+    margin-bottom: 4px;
+    border-radius: 10px;
+  }
+
+  .inline-note {
+    font-size: 0.7rem;
+    line-height: 1.12;
+  }
+
+  .board-pagination-bar {
+    margin-bottom: 4px;
+    gap: 8px;
+  }
+
+  .board-page-indicator {
+    font-size: 0.88rem;
+  }
+
+  .board-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .board-mobile-list {
+    gap: 6px;
+  }
+
+  .mobile-room-card {
+    border-radius: 14px;
+  }
+
+  .mobile-room-head {
+    padding: 6px 8px 5px;
+    gap: 8px;
+  }
+
+  .mobile-room-left {
+    gap: 10px;
+  }
+
+  .mobile-room-no {
+    font-size: 2.2rem;
+  }
+
+  .mobile-room-doctor .board-doctor-zh {
+    font-size: 1.18rem;
+    line-height: 1.02;
+  }
+
+  .mobile-room-doctor .board-doctor-en {
+    font-size: 0.78rem;
+    line-height: 1.02;
+  }
+
+  .mobile-room-body {
+    padding: 6px 6px 7px;
+    gap: 6px;
+  }
+
+  .mobile-section {
+    padding: 6px;
+    border-radius: 10px;
+  }
+
+  .mobile-section-title {
+    font-size: 0.8rem;
+    margin-bottom: 6px;
+    line-height: 1;
+  }
+
+  .mobile-section-title small {
+    font-size: 0.62rem;
+  }
+
+  .mobile-current-box {
+    gap: 2px;
+  }
+
+  .mobile-current-label {
+    font-size: 0.68rem;
+  }
+
+  .mobile-current-ticket {
+    font-size: 1.65rem;
+    line-height: 1;
+  }
+
+  .board-meta {
+    font-size: 0.72rem;
+    line-height: 1;
+  }
+
+  .mobile-tag-list {
+    gap: 6px;
+  }
+
+  .board-tag {
+    padding: 6px 8px;
+    font-size: 0.98rem;
+    min-width: 68px;
+  }
+
+  .mobile-empty {
+    font-size: 0.8rem;
+  }
+
+  .board-cutoff-tag {
+    min-width: 72px;
+    padding: 4px 6px;
+  }
+
+  .board-cutoff-zh {
+    font-size: 0.62rem;
+  }
+
+  .board-cutoff-en {
+    font-size: 0.46rem;
+  }
+
+  .board-footer-tip {
+    margin-top: 3px;
+    font-size: 0.64rem;
+    line-height: 1;
+  }
+}
 </style>
 </head>
 <body>
@@ -2306,7 +2480,7 @@ tbody tr td:last-child {
     <div
       class="board-toolbar"
       data-help-title="候診看板"
-      data-help="候診看板會顯示目前開放或暫停中的診室。每頁最多顯示 4 間房，系統會自動輪播。"
+      data-help="候診看板會顯示目前開放或暫停中的診室。每頁內容會按畫面高度自動分頁，系統會自動輪播。"
     >
       <div class="board-title-wrap">
         <div class="board-title">候診情況</div>
@@ -2349,9 +2523,11 @@ tbody tr td:last-child {
   <div class="overlay-card error hidden" id="errorOverlay"></div>
 </div>
 
+<div id="pageMeasureHost" style="position:fixed;left:-99999px;top:0;visibility:hidden;pointer-events:none;z-index:-1;"></div>
+
 <script>
 const SUPABASE_URL = "https://dvyberdrmmfgutjqnpjr.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
 
 if (!window.supabase || typeof window.supabase.createClient !== "function") {
   document.body.innerHTML = `
@@ -2367,7 +2543,6 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const HKT_TIMEZONE = "Asia/Hong_Kong";
 const HKT_OFFSET_MINUTES = 8 * 60;
-const BOARD_ROOMS_PER_PAGE = 4;
 const BOARD_PAGE_ROTATE_MS = 8000;
 const POLLING_MS = 10000;
 const RENDER_DEBOUNCE_MS = 80;
@@ -2415,6 +2590,7 @@ const state = {
   rooms: [],
   patients: [],
   displayPageIndex: 0,
+  boardPages: [],
   uiBusyUntil: 0,
   currentTab: "staffPage",
   lastSearchRenderKey: "",
@@ -3686,10 +3862,6 @@ function getVisibleBoardRooms() {
   return sortedRooms().filter(room => room.status !== "closed");
 }
 
-function getBoardTotalPages(rooms) {
-  return Math.max(1, Math.ceil(rooms.length / BOARD_ROOMS_PER_PAGE));
-}
-
 function normalizeBoardPageIndex(totalPages) {
   if (totalPages <= 0) {
     state.displayPageIndex = 0;
@@ -3699,13 +3871,8 @@ function normalizeBoardPageIndex(totalPages) {
   if (state.displayPageIndex < 0) state.displayPageIndex = 0;
 }
 
-function getBoardRenderModel() {
-  const visibleRooms = getVisibleBoardRooms();
-  const totalPages = getBoardTotalPages(visibleRooms);
-  normalizeBoardPageIndex(totalPages);
-  const startIndex = state.displayPageIndex * BOARD_ROOMS_PER_PAGE;
-  const pageRooms = visibleRooms.slice(startIndex, startIndex + BOARD_ROOMS_PER_PAGE);
-  return { visibleRooms, totalPages, pageRooms };
+function isMobileBoardLayout() {
+  return window.matchMedia("(max-width: 1300px), (orientation: portrait)").matches;
 }
 
 function renderDesktopRows(pageRooms) {
@@ -3923,6 +4090,122 @@ function renderMobileCards(pageRooms) {
   }).join("");
 }
 
+function getDisplayBoardAvailableHeight() {
+  const el = document.getElementById("displayBoard");
+  return el ? el.clientHeight : window.innerHeight;
+}
+
+function createMeasureShell() {
+  const displayBoard = document.getElementById("displayBoard");
+  const shell = document.createElement("div");
+  shell.style.width = `${displayBoard ? displayBoard.clientWidth : window.innerWidth}px`;
+  shell.style.boxSizing = "border-box";
+  shell.style.display = "block";
+  shell.style.overflow = "visible";
+  return shell;
+}
+
+function renderMeasureMarkup(pageRooms) {
+  const dotsHtml = `<span class="board-dot active"></span>`;
+
+  if (isMobileBoardLayout()) {
+    return `
+      <div class="board-pagination-bar">
+        <div class="board-page-indicator">第 1 頁 / 共 1 頁</div>
+        <div class="board-page-dots">${dotsHtml}</div>
+      </div>
+      <div class="board-mobile-list" style="display:flex;">
+        ${renderMobileCards(pageRooms)}
+      </div>
+    `;
+  }
+
+  return `
+    <div class="board-pagination-bar">
+      <div class="board-page-indicator">第 1 頁 / 共 1 頁</div>
+      <div class="board-page-dots">${dotsHtml}</div>
+    </div>
+    <div class="board-wrap desktop-layout" style="display:block;flex:none;height:auto;min-height:0;">
+      <div class="board-head">
+        <div><span class="board-head-zh">診室</span><span class="board-head-en">ROOM</span></div>
+        <div><span class="board-head-zh">醫生</span><span class="board-head-en">DOCTOR</span></div>
+        <div><span class="board-head-zh">現正診症</span><span class="board-head-en">NOW SERVING</span></div>
+        <div><span class="board-head-zh">候診</span><span class="board-head-en">WAITING</span></div>
+        <div><span class="board-head-zh">回診</span><span class="board-head-en">REVIEW</span></div>
+        <div><span class="board-head-zh">過號</span><span class="board-head-en">MISSED</span></div>
+      </div>
+      <div class="board-body" style="display:block;">
+        ${renderDesktopRows(pageRooms)}
+      </div>
+    </div>
+  `;
+}
+
+function measurePageHeightForRooms(pageRooms) {
+  const host = document.getElementById("pageMeasureHost");
+  if (!host) return 0;
+
+  const shell = createMeasureShell();
+  shell.innerHTML = renderMeasureMarkup(pageRooms);
+
+  host.innerHTML = "";
+  host.appendChild(shell);
+
+  const height = Math.ceil(shell.getBoundingClientRect().height);
+  host.innerHTML = "";
+  return height;
+}
+
+function buildBoardPages() {
+  const visibleRooms = getVisibleBoardRooms();
+  const availableHeight = getDisplayBoardAvailableHeight();
+
+  if (!visibleRooms.length) {
+    state.boardPages = [[]];
+    state.displayPageIndex = 0;
+    return;
+  }
+
+  const pages = [];
+  let currentPage = [];
+
+  for (const room of visibleRooms) {
+    const trialPage = [...currentPage, room];
+    const trialHeight = measurePageHeightForRooms(trialPage);
+
+    if (currentPage.length === 0 || trialHeight <= availableHeight) {
+      currentPage = trialPage;
+    } else {
+      pages.push(currentPage);
+      currentPage = [room];
+    }
+  }
+
+  if (currentPage.length) {
+    pages.push(currentPage);
+  }
+
+  state.boardPages = pages.length ? pages : [[]];
+  normalizeBoardPageIndex(state.boardPages.length);
+}
+
+function getBoardRenderModel() {
+  const visibleRooms = getVisibleBoardRooms();
+
+  if (!state.boardPages || !state.boardPages.length) {
+    buildBoardPages();
+  }
+
+  const totalPages = Math.max(1, state.boardPages.length);
+  normalizeBoardPageIndex(totalPages);
+
+  return {
+    visibleRooms,
+    totalPages,
+    pageRooms: state.boardPages[state.displayPageIndex] || []
+  };
+}
+
 function renderDisplayBoard(force = false) {
   const container = document.getElementById("displayBoard");
   const timeEl = document.getElementById("boardTime");
@@ -3968,29 +4251,32 @@ function renderDisplayBoard(force = false) {
     <span class="board-dot ${i === state.displayPageIndex ? "active" : ""}"></span>
   `).join("");
 
-  const desktopRows = renderDesktopRows(pageRooms);
-  const mobileCards = renderMobileCards(pageRooms);
-
-  const html = `
-    <div class="board-pagination-bar">
-      <div class="board-page-indicator">第 ${state.displayPageIndex + 1} 頁 / 共 ${totalPages} 頁</div>
-      <div class="board-page-dots">${dotsHtml}</div>
-    </div>
-
-    <div class="board-wrap desktop-layout">
-      <div class="board-head">
-        <div><span class="board-head-zh">診室</span><span class="board-head-en">ROOM</span></div>
-        <div><span class="board-head-zh">醫生</span><span class="board-head-en">DOCTOR</span></div>
-        <div><span class="board-head-zh">現正診症</span><span class="board-head-en">NOW SERVING</span></div>
-        <div><span class="board-head-zh">候診</span><span class="board-head-en">WAITING</span></div>
-        <div><span class="board-head-zh">回診</span><span class="board-head-en">REVIEW</span></div>
-        <div><span class="board-head-zh">過號</span><span class="board-head-en">MISSED</span></div>
+  const html = isMobileBoardLayout()
+    ? `
+      <div class="board-pagination-bar">
+        <div class="board-page-indicator">第 ${state.displayPageIndex + 1} 頁 / 共 ${totalPages} 頁</div>
+        <div class="board-page-dots">${dotsHtml}</div>
       </div>
-      <div class="board-body">${desktopRows}</div>
-    </div>
+      <div class="board-mobile-list">${renderMobileCards(pageRooms)}</div>
+    `
+    : `
+      <div class="board-pagination-bar">
+        <div class="board-page-indicator">第 ${state.displayPageIndex + 1} 頁 / 共 ${totalPages} 頁</div>
+        <div class="board-page-dots">${dotsHtml}</div>
+      </div>
 
-    <div class="board-mobile-list">${mobileCards}</div>
-  `;
+      <div class="board-wrap desktop-layout">
+        <div class="board-head">
+          <div><span class="board-head-zh">診室</span><span class="board-head-en">ROOM</span></div>
+          <div><span class="board-head-zh">醫生</span><span class="board-head-en">DOCTOR</span></div>
+          <div><span class="board-head-zh">現正診症</span><span class="board-head-en">NOW SERVING</span></div>
+          <div><span class="board-head-zh">候診</span><span class="board-head-en">WAITING</span></div>
+          <div><span class="board-head-zh">回診</span><span class="board-head-en">REVIEW</span></div>
+          <div><span class="board-head-zh">過號</span><span class="board-head-en">MISSED</span></div>
+        </div>
+        <div class="board-body">${renderDesktopRows(pageRooms)}</div>
+      </div>
+    `;
 
   if (force || state.lastBoardRenderKey !== html) {
     container.innerHTML = html;
@@ -4481,6 +4767,7 @@ function renderRoomOnly(roomId, force = true) {
 
 function renderLightForRoomChange(roomId) {
   renderRoomOnly(roomId, true);
+  buildBoardPages();
   renderDisplayBoard(true);
   populateRoomSelect();
   populateSearchRoomSelect();
@@ -4490,6 +4777,7 @@ function renderLightForRoomChange(roomId) {
 function renderRoomsPair(roomIdA, roomIdB) {
   if (roomIdA) renderRoomOnly(roomIdA, true);
   if (roomIdB && roomIdB !== roomIdA) renderRoomOnly(roomIdB, true);
+  buildBoardPages();
   renderDisplayBoard(true);
   populateRoomSelect();
   populateSearchRoomSelect();
@@ -4514,6 +4802,8 @@ function renderAll(force = false, options = {}) {
   if (!(activeTab === "staffPage" && isUiBusy())) {
     renderRoomsPartial(force);
   }
+
+  buildBoardPages();
   renderDisplayBoard(force);
 }
 
@@ -4739,6 +5029,14 @@ function scheduleRenderAll(delay = RENDER_DEBOUNCE_MS, force = false, options = 
   }, delay);
 }
 
+function scheduleBoardRebuildAndRender() {
+  if (renderTimer) clearTimeout(renderTimer);
+  renderTimer = setTimeout(() => {
+    buildBoardPages();
+    renderDisplayBoard(true);
+  }, 80);
+}
+
 async function refreshFromCloudAndRender(showErrorToast = false, showLoader = false) {
   if (refreshInFlight) {
     queuedRefresh = true;
@@ -4755,6 +5053,7 @@ async function refreshFromCloudAndRender(showErrorToast = false, showLoader = fa
 
     const activeTab = getActiveTabId();
     if (activeTab === "staffPage" && isUiBusy()) {
+      buildBoardPages();
       renderDisplayBoard(false);
       return true;
     }
@@ -4985,6 +5284,7 @@ async function callNextPatient(roomId) {
 
     sortRoomQueue(room);
     renderRoomOnly(roomId, true);
+    buildBoardPages();
     renderDisplayBoard(true);
     populateRoomSelect();
     populateSearchRoomSelect();
@@ -5022,6 +5322,7 @@ async function finishCurrent(roomId) {
 
     room.currentPatientId = null;
     renderRoomOnly(roomId, true);
+    buildBoardPages();
     renderDisplayBoard(true);
     populateRoomSelect();
     populateSearchRoomSelect();
@@ -5058,6 +5359,7 @@ async function skipCurrent(roomId) {
 
     room.currentPatientId = null;
     renderRoomOnly(roomId, true);
+    buildBoardPages();
     renderDisplayBoard(true);
     populateRoomSelect();
     populateSearchRoomSelect();
@@ -5091,6 +5393,7 @@ async function moveCurrentToReview(roomId) {
     addPatientLog(patient, "轉去回診等候", `${room.roomNo} / ${room.doctorName} 已轉去回診等候`);
 
     renderRoomOnly(room.id, true);
+    buildBoardPages();
     renderDisplayBoard(true);
     populateRoomSelect();
     populateSearchRoomSelect();
@@ -5126,6 +5429,7 @@ async function moveWaitingToReview(patientId) {
     sortRoomQueue(room);
 
     renderRoomOnly(room.id, true);
+    buildBoardPages();
     renderDisplayBoard(true);
 
     await savePatientToSupabase(patient);
@@ -5167,6 +5471,7 @@ async function callReviewPatient(patientId) {
     addPatientLog(patient, "醫生回診叫號", `${room.roomNo} / ${room.doctorName} 已由回診等候叫號`);
 
     renderRoomOnly(room.id, true);
+    buildBoardPages();
     renderDisplayBoard(true);
 
     await savePatientToSupabase(patient);
@@ -5198,6 +5503,7 @@ async function returnReviewToWaiting(patientId) {
     addPatientLog(patient, "返回候診", `${room.roomNo} / ${room.doctorName} 已返回候診，現排第 ${actualPosition} 位`);
 
     renderRoomOnly(room.id, true);
+    buildBoardPages();
     renderDisplayBoard(true);
 
     await savePatientToSupabase(patient);
@@ -5228,6 +5534,7 @@ async function finishReviewPatient(patientId) {
     addPatientLog(patient, "完成", `${room ? room.roomNo + " / " + room.doctorName : "診室"} 已完成回診流程`);
 
     if (room) renderRoomOnly(room.id, true);
+    buildBoardPages();
     renderDisplayBoard(true);
     await savePatientToSupabase(patient);
     if (room) await syncRoomQueuePatients(room);
@@ -5266,6 +5573,7 @@ async function recallSkipped(patientId) {
     addPatientLog(patient, "醫生重新叫號", `${room.roomNo} / ${room.doctorName} 已為過號病人重新叫號`);
 
     renderRoomOnly(room.id, true);
+    buildBoardPages();
     renderDisplayBoard(true);
     populateRoomSelect();
     populateSearchRoomSelect();
@@ -5296,6 +5604,7 @@ async function requeueSkipped(patientId) {
     addPatientLog(patient, "返回原房隊列", `${room.roomNo} / ${room.doctorName} 已按登記時間自動排到第 ${actualPosition} 位`);
 
     renderRoomOnly(room.id, true);
+    buildBoardPages();
     renderDisplayBoard(true);
     populateRoomSelect();
     populateSearchRoomSelect();
@@ -5334,6 +5643,7 @@ async function cancelPatient(patientId) {
     addPatientLog(patient, "取消輪候", `病人已取消輪候${room ? `（原診室：${room.roomNo} / ${room.doctorName}）` : ""}`);
 
     if (room) renderRoomOnly(room.id, true);
+    buildBoardPages();
     renderDisplayBoard(true);
     populateRoomSelect();
     populateSearchRoomSelect();
@@ -5376,6 +5686,7 @@ async function togglePriority(patientId) {
       );
 
       renderRoomOnly(room.id, true);
+      buildBoardPages();
       renderDisplayBoard(true);
 
       await savePatientToSupabase(patient);
@@ -5388,6 +5699,7 @@ async function togglePriority(patientId) {
       );
 
       if (room) renderRoomOnly(room.id, true);
+      buildBoardPages();
       renderDisplayBoard(true);
       await savePatientToSupabase(patient);
     }
@@ -5416,6 +5728,7 @@ async function moveToFront(patientId) {
     addPatientLog(patient, "移至隊首", `${room.roomNo} / ${room.doctorName} 已移至第 ${actualPosition} 位`);
 
     renderRoomOnly(room.id, true);
+    buildBoardPages();
     renderDisplayBoard(true);
 
     await savePatientToSupabase(patient);
@@ -5447,6 +5760,7 @@ async function insertWaitingPatientAtPosition(patientId) {
 
     addPatientLog(patient, "移至指定位置", `${room.roomNo} / ${room.doctorName} 已移至第 ${actualPosition} 位`);
     renderRoomOnly(room.id, true);
+    buildBoardPages();
     renderDisplayBoard(true);
 
     await savePatientToSupabase(patient);
@@ -6283,6 +6597,7 @@ async function saveClinicalActivityFromModal() {
     const room = getRoom(patient.roomId);
 
     if (room) renderRoomOnly(room.id, true);
+    buildBoardPages();
     renderDisplayBoard(true);
 
     await savePatientToSupabase(patient);
@@ -6359,6 +6674,7 @@ document.addEventListener("click", (event) => {
     tabBtn.classList.add("active");
     document.getElementById(tabId).classList.add("active");
     setDisplayModeByTab(tabId);
+    buildBoardPages();
     renderDisplayBoard(true);
     return;
   }
@@ -6567,14 +6883,14 @@ document.addEventListener("pointerdown", (event) => {
 function startBoardPageRotation() {
   if (boardPageRotateTimer) clearInterval(boardPageRotateTimer);
   boardPageRotateTimer = setInterval(() => {
-    const visibleRooms = getVisibleBoardRooms();
-    const totalPages = getBoardTotalPages(visibleRooms);
+    const totalPages = Math.max(1, state.boardPages?.length || 1);
 
     if (totalPages <= 1) {
       state.displayPageIndex = 0;
       renderDisplayBoard(false);
       return;
     }
+
     state.displayPageIndex = (state.displayPageIndex + 1) % totalPages;
     renderDisplayBoard(true);
   }, BOARD_PAGE_ROTATE_MS);
@@ -6637,6 +6953,16 @@ async function initApp() {
   window.addEventListener("offline", () => {
     setConnectionStatus(false);
     setBoardError("目前網絡離線，系統會在恢復連線後自動同步。");
+  });
+
+  window.addEventListener("resize", () => {
+    scheduleBoardRebuildAndRender();
+  });
+
+  window.addEventListener("orientationchange", () => {
+    setTimeout(() => {
+      scheduleBoardRebuildAndRender();
+    }, 120);
   });
 
   await loadCurrentStaffProfile();
