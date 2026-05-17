@@ -25,6 +25,7 @@
 html, body {
   margin: 0;
   padding: 0;
+  height: 100%;
   font-family: Arial, "Microsoft JhengHei", "PingFang TC", sans-serif;
   background: var(--board-bg);
   color: var(--board-text);
@@ -32,16 +33,18 @@ html, body {
 
 body {
   min-height: 100vh;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .app {
   width: 100%;
+  height: 100vh;
   min-height: 100vh;
   padding: 12px 16px 12px;
   background: var(--board-bg);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .board-toolbar {
@@ -164,6 +167,7 @@ body {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .board-pagination-bar {
@@ -213,7 +217,7 @@ body {
   width: 100%;
   flex: 1 1 auto;
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .board-head {
@@ -223,9 +227,6 @@ body {
   color: #fff;
   font-weight: 900;
   padding: 0;
-  position: sticky;
-  top: 0;
-  z-index: 5;
 }
 
 .board-head div {
@@ -258,7 +259,7 @@ body {
 .board-body {
   background: var(--board-panel);
   display: grid;
-  grid-template-rows: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
   min-height: 0;
 }
 
@@ -364,7 +365,9 @@ body {
   font-weight: 900;
 }
 
-.board-queue, .board-skip, .board-review {
+.board-queue,
+.board-skip,
+.board-review {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -684,7 +687,7 @@ body {
   }
 }
 
-/* ===== Portrait only: more compact vertical layout ===== */
+/* portrait compact */
 @media (orientation: portrait) {
   .app {
     padding: 6px 8px 4px;
@@ -794,13 +797,12 @@ body {
 
   .mobile-section {
     padding: 6px;
-    gap: 4px;
     border-radius: 10px;
   }
 
   .mobile-section-title {
     font-size: 0.8rem;
-    margin-bottom: 6;
+    margin-bottom: 6px;
     line-height: 1;
   }
 
@@ -896,6 +898,8 @@ body {
   <div class="overlay-card error hidden" id="errorOverlay"></div>
 </div>
 
+<div id="pageMeasureHost" style="position:fixed;left:-99999px;top:0;visibility:hidden;pointer-events:none;z-index:-1;"></div>
+
 <script>
 const SUPABASE_URL = "https://dvyberdrmmfgutjqnpjr.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2eWJlcmRybW1mZ3V0anFucGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDc3NTMsImV4cCI6MjA5MTQ4Mzc1M30.9aRRSP2xAAozx2bxH9a1Z13tDDwot82Mb8ax5hxirck";
@@ -913,7 +917,6 @@ if (!window.supabase || typeof window.supabase.createClient !== "function") {
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const HKT_TIMEZONE = "Asia/Hong_Kong";
-const BOARD_ROOMS_PER_PAGE = 3;
 const BOARD_PAGE_ROTATE_MS = 8000;
 const POLLING_MS = 10000;
 
@@ -927,6 +930,7 @@ const state = {
   rooms: [],
   patients: [],
   displayPageIndex: 0,
+  boardPages: [],
   lastBoardRenderKey: ""
 };
 
@@ -936,6 +940,7 @@ let boardPageRotateTimer = null;
 let realtimeChannel = null;
 let refreshInFlight = false;
 let queuedRefresh = false;
+let rebuildPagesDebounceTimer = null;
 
 function nowIso() {
   return new Date().toISOString();
@@ -1098,10 +1103,6 @@ function sortedRooms() {
   return [...state.rooms].sort((a, b) => a.roomNo.localeCompare(b.roomNo, "zh-HK", { numeric: true }));
 }
 
-function getRoom(roomId) {
-  return state.rooms.find(room => room.id === roomId) || null;
-}
-
 function getPatient(patientId) {
   return state.patients.find(patient => patient.id === patientId) || null;
 }
@@ -1196,10 +1197,6 @@ function getVisibleBoardRooms() {
   return sortedRooms().filter(room => room.status !== "closed");
 }
 
-function getBoardTotalPages(rooms) {
-  return Math.max(1, Math.ceil(rooms.length / BOARD_ROOMS_PER_PAGE));
-}
-
 function normalizeBoardPageIndex(totalPages) {
   if (totalPages <= 0) {
     state.displayPageIndex = 0;
@@ -1209,13 +1206,8 @@ function normalizeBoardPageIndex(totalPages) {
   if (state.displayPageIndex < 0) state.displayPageIndex = 0;
 }
 
-function getBoardRenderModel() {
-  const visibleRooms = getVisibleBoardRooms();
-  const totalPages = getBoardTotalPages(visibleRooms);
-  normalizeBoardPageIndex(totalPages);
-  const startIndex = state.displayPageIndex * BOARD_ROOMS_PER_PAGE;
-  const pageRooms = visibleRooms.slice(startIndex, startIndex + BOARD_ROOMS_PER_PAGE);
-  return { visibleRooms, totalPages, pageRooms };
+function isMobileBoardLayout() {
+  return window.matchMedia("(max-width: 1300px), (orientation: portrait)").matches;
 }
 
 function renderDesktopRows(pageRooms) {
@@ -1433,6 +1425,121 @@ function renderMobileCards(pageRooms) {
   }).join("");
 }
 
+function getDisplayBoardAvailableHeight() {
+  const el = document.getElementById("displayBoard");
+  return el ? el.clientHeight : window.innerHeight;
+}
+
+function createMeasureShell() {
+  const displayBoard = document.getElementById("displayBoard");
+  const shell = document.createElement("div");
+  shell.style.width = `${displayBoard ? displayBoard.clientWidth : window.innerWidth}px`;
+  shell.style.boxSizing = "border-box";
+  shell.style.display = "block";
+  shell.style.overflow = "visible";
+  return shell;
+}
+
+function renderMeasureMarkup(pageRooms) {
+  const dotsHtml = `<span class="board-dot active"></span>`;
+  if (isMobileBoardLayout()) {
+    return `
+      <div class="board-pagination-bar">
+        <div class="board-page-indicator">第 1 頁 / 共 1 頁</div>
+        <div class="board-page-dots">${dotsHtml}</div>
+      </div>
+      <div class="board-mobile-list" style="display:flex;">
+        ${renderMobileCards(pageRooms)}
+      </div>
+    `;
+  }
+
+  return `
+    <div class="board-pagination-bar">
+      <div class="board-page-indicator">第 1 頁 / 共 1 頁</div>
+      <div class="board-page-dots">${dotsHtml}</div>
+    </div>
+    <div class="board-wrap desktop-layout" style="display:block;flex:none;height:auto;min-height:0;">
+      <div class="board-head">
+        <div><span class="board-head-zh">診室</span><span class="board-head-en">ROOM</span></div>
+        <div><span class="board-head-zh">醫生</span><span class="board-head-en">DOCTOR</span></div>
+        <div><span class="board-head-zh">現正診症</span><span class="board-head-en">NOW SERVING</span></div>
+        <div><span class="board-head-zh">候診</span><span class="board-head-en">WAITING</span></div>
+        <div><span class="board-head-zh">回診</span><span class="board-head-en">REVIEW</span></div>
+        <div><span class="board-head-zh">過號</span><span class="board-head-en">MISSED</span></div>
+      </div>
+      <div class="board-body" style="display:block;">
+        ${renderDesktopRows(pageRooms)}
+      </div>
+    </div>
+  `;
+}
+
+function measurePageHeightForRooms(pageRooms) {
+  const host = document.getElementById("pageMeasureHost");
+  if (!host) return 0;
+
+  const shell = createMeasureShell();
+  shell.innerHTML = renderMeasureMarkup(pageRooms);
+
+  host.innerHTML = "";
+  host.appendChild(shell);
+
+  const height = Math.ceil(shell.getBoundingClientRect().height);
+  host.innerHTML = "";
+  return height;
+}
+
+function buildBoardPages() {
+  const visibleRooms = getVisibleBoardRooms();
+  const availableHeight = getDisplayBoardAvailableHeight();
+
+  if (!visibleRooms.length) {
+    state.boardPages = [[]];
+    state.displayPageIndex = 0;
+    return;
+  }
+
+  const pages = [];
+  let currentPage = [];
+
+  for (const room of visibleRooms) {
+    const trialPage = [...currentPage, room];
+    const trialHeight = measurePageHeightForRooms(trialPage);
+
+    if (currentPage.length === 0 || trialHeight <= availableHeight) {
+      currentPage = trialPage;
+    } else {
+      pages.push(currentPage);
+      currentPage = [room];
+    }
+  }
+
+  if (currentPage.length) {
+    pages.push(currentPage);
+  }
+
+  state.boardPages = pages.length ? pages : [[]];
+  normalizeBoardPageIndex(state.boardPages.length);
+}
+
+function getBoardRenderModel() {
+  const visibleRooms = getVisibleBoardRooms();
+
+  if (!state.boardPages.length) {
+    buildBoardPages();
+  }
+
+  const totalPages = Math.max(1, state.boardPages.length);
+  normalizeBoardPageIndex(totalPages);
+
+  return {
+    visibleRooms,
+    totalPages,
+    pageRooms: state.boardPages[state.displayPageIndex] || []
+  };
+}
+
 function renderDisplayBoard(force = false) {
   const container = document.getElementById("displayBoard");
   const timeEl = document.getElementById("boardTime");
@@ -1478,34 +1585,45 @@ function renderDisplayBoard(force = false) {
     <span class="board-dot ${i === state.displayPageIndex ? "active" : ""}"></span>
   `).join("");
 
-  const desktopRows = renderDesktopRows(pageRooms);
-  const mobileCards = renderMobileCards(pageRooms);
-
-  const html = `
-    <div class="board-pagination-bar">
-      <div class="board-page-indicator">第 ${state.displayPageIndex + 1} 頁 / 共 ${totalPages} 頁</div>
-      <div class="board-page-dots">${dotsHtml}</div>
-    </div>
-
-    <div class="board-wrap desktop-layout">
-      <div class="board-head">
-        <div><span class="board-head-zh">診室</span><span class="board-head-en">ROOM</span></div>
-        <div><span class="board-head-zh">醫生</span><span class="board-head-en">DOCTOR</span></div>
-        <div><span class="board-head-zh">現正診症</span><span class="board-head-en">NOW SERVING</span></div>
-        <div><span class="board-head-zh">候診</span><span class="board-head-en">WAITING</span></div>
-        <div><span class="board-head-zh">回診</span><span class="board-head-en">REVIEW</span></div>
-        <div><span class="board-head-zh">過號</span><span class="board-head-en">MISSED</span></div>
+  const html = isMobileBoardLayout()
+    ? `
+      <div class="board-pagination-bar">
+        <div class="board-page-indicator">第 ${state.displayPageIndex + 1} 頁 / 共 ${totalPages} 頁</div>
+        <div class="board-page-dots">${dotsHtml}</div>
       </div>
-      <div class="board-body">${desktopRows}</div>
-    </div>
+      <div class="board-mobile-list">${renderMobileCards(pageRooms)}</div>
+    `
+    : `
+      <div class="board-pagination-bar">
+        <div class="board-page-indicator">第 ${state.displayPageIndex + 1} 頁 / 共 ${totalPages} 頁</div>
+        <div class="board-page-dots">${dotsHtml}</div>
+      </div>
 
-    <div class="board-mobile-list">${mobileCards}</div>
-  `;
+      <div class="board-wrap desktop-layout">
+        <div class="board-head">
+          <div><span class="board-head-zh">診室</span><span class="board-head-en">ROOM</span></div>
+          <div><span class="board-head-zh">醫生</span><span class="board-head-en">DOCTOR</span></div>
+          <div><span class="board-head-zh">現正診症</span><span class="board-head-en">NOW SERVING</span></div>
+          <div><span class="board-head-zh">候診</span><span class="board-head-en">WAITING</span></div>
+          <div><span class="board-head-zh">回診</span><span class="board-head-en">REVIEW</span></div>
+          <div><span class="board-head-zh">過號</span><span class="board-head-en">MISSED</span></div>
+        </div>
+        <div class="board-body">${renderDesktopRows(pageRooms)}</div>
+      </div>
+    `;
 
   if (force || state.lastBoardRenderKey !== html) {
     container.innerHTML = html;
     state.lastBoardRenderKey = html;
   }
+}
+
+function scheduleRebuildAndRender() {
+  if (rebuildPagesDebounceTimer) clearTimeout(rebuildPagesDebounceTimer);
+  rebuildPagesDebounceTimer = setTimeout(() => {
+    buildBoardPages();
+    renderDisplayBoard(true);
+  }, 80);
 }
 
 async function loadStateFromSupabase(showErrorToast = true) {
@@ -1553,7 +1671,8 @@ async function refreshFromCloudAndRender(showErrorToast = false, showLoader = fa
     if (showLoader) setLoadingState(true);
     const ok = await loadStateFromSupabase(showErrorToast);
     if (!ok) return false;
-    renderDisplayBoard(false);
+    buildBoardPages();
+    renderDisplayBoard(true);
     return true;
   } finally {
     if (showLoader) setLoadingState(false);
@@ -1568,14 +1687,14 @@ async function refreshFromCloudAndRender(showErrorToast = false, showLoader = fa
 function startBoardPageRotation() {
   if (boardPageRotateTimer) clearInterval(boardPageRotateTimer);
   boardPageRotateTimer = setInterval(() => {
-    const visibleRooms = getVisibleBoardRooms();
-    const totalPages = getBoardTotalPages(visibleRooms);
+    const totalPages = Math.max(1, state.boardPages.length || 1);
 
     if (totalPages <= 1) {
       state.displayPageIndex = 0;
       renderDisplayBoard(false);
       return;
     }
+
     state.displayPageIndex = (state.displayPageIndex + 1) % totalPages;
     renderDisplayBoard(true);
   }, BOARD_PAGE_ROTATE_MS);
@@ -1583,7 +1702,11 @@ function startBoardPageRotation() {
 
 async function setupRealtimeAndPolling() {
   if (realtimeChannel) {
-    try { await sb.removeChannel(realtimeChannel); } catch (e) { console.warn("removeChannel failed", e); }
+    try {
+      await sb.removeChannel(realtimeChannel);
+    } catch (e) {
+      console.warn("removeChannel failed", e);
+    }
   }
 
   realtimeChannel = sb
@@ -1637,17 +1760,20 @@ async function initApp() {
   });
 
   window.addEventListener("resize", () => {
-    renderDisplayBoard(true);
+    scheduleRebuildAndRender();
   });
 
   window.addEventListener("orientationchange", () => {
-    setTimeout(() => renderDisplayBoard(true), 120);
+    setTimeout(() => {
+      scheduleRebuildAndRender();
+    }, 120);
   });
 
-  const ok = await refreshFromCloudAndRender(true, true);
-  if (ok) renderDisplayBoard(true);
+  await refreshFromCloudAndRender(true, true);
 
-  document.getElementById("boardTime").textContent = formatBoardNow(new Date());
+  const timeEl = document.getElementById("boardTime");
+  if (timeEl) timeEl.textContent = formatBoardNow(new Date());
+
   await setupRealtimeAndPolling();
 }
 
