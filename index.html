@@ -2034,7 +2034,7 @@ tbody tr td:last-child {
 
           <div class="form-row">
             <label for="clinicalFollowupDueAt">到期時間（可留空）</label>
-            <input id="clinicalFollowupDueAt" type="datetime-local" />
+            <input id="clinicalFollowupDueAt" type="datetime-local" lang="en-GB" step="60" />
           </div>
         </div>
 
@@ -2224,7 +2224,7 @@ tbody tr td:last-child {
             data-help="預設會用而家時間。若勾選手動登記時間，就可以為補錄、預約或網上取票個案輸入原本登記時間。"
           >
             <label for="registeredAt">登記時間</label>
-            <input id="registeredAt" type="datetime-local" disabled />
+            <input id="registeredAt" type="datetime-local" lang="en-GB" step="60" disabled />
             <label
               style="display:flex;gap:8px;align-items:center;"
               data-help-title="使用手動登記時間"
@@ -3190,14 +3190,19 @@ function getReviewWaitingPatients(room) {
 
 function getOrderedWaitingPatients(room, excludePatientId = null) {
   const waiting = getWaitingPatientsArray(room, excludePatientId);
+
   waiting.sort((a, b) => {
     const aOrder = Number.isFinite(a.queueOrder) ? a.queueOrder : null;
     const bOrder = Number.isFinite(b.queueOrder) ? b.queueOrder : null;
-    if (aOrder !== null && bOrder !== null && aOrder !== bOrder) return aOrder - bOrder;
-    if (aOrder !== null && bOrder === null) return -1;
-    if (aOrder === null && bOrder !== null) return 1;
+
+    if (aOrder !== null && bOrder !== null) {
+      if (aOrder !== bOrder) return aOrder - bOrder;
+      return compareWaitingBase(a, b);
+    }
+
     return compareWaitingBase(a, b);
   });
+
   return waiting;
 }
 
@@ -3209,7 +3214,8 @@ function rebuildRoomQueue(room, waitingPatients) {
 }
 
 function sortRoomQueue(room) {
-  const waitingPatients = getOrderedWaitingPatients(room);
+  const waitingPatients = getWaitingPatientsArray(room);
+  waitingPatients.sort(compareWaitingBase);
   rebuildRoomQueue(room, waitingPatients);
 }
 
@@ -4905,7 +4911,8 @@ async function loadStateFromSupabase(showErrorToast = true) {
         .sort((a, b) => {
           const aOrder = Number.isFinite(a.queueOrder) ? a.queueOrder : 999999;
           const bOrder = Number.isFinite(b.queueOrder) ? b.queueOrder : 999999;
-          return aOrder - bOrder;
+          if (aOrder !== bOrder) return aOrder - bOrder;
+          return compareWaitingBase(a, b);
         })
         .map(patient => patient.id);
 
@@ -5207,6 +5214,16 @@ async function addPatient() {
     const inserted = mapSupabasePatientRow(insertedRow);
 
     await refreshFromCloudAndRender(false);
+
+    const insertedRoom = state.rooms.find(r => r.id === inserted.roomId);
+    const insertedPatient = state.patients.find(p => p.id === inserted.id);
+
+    if (insertedRoom && insertedPatient && insertedPatient.status === "waiting") {
+      sortRoomQueue(insertedRoom);
+      const affectedPatients = getOrderedWaitingPatients(insertedRoom);
+      await savePatientsBatchToSupabase(affectedPatients);
+      await refreshFromCloudAndRender(false);
+    }
 
     document.getElementById("patientCumcNo").value = "";
     document.getElementById("isPriority").value = "false";
